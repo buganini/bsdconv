@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <bsdconv.h>
 
 struct bsdconv_codec_t {
 	desc
