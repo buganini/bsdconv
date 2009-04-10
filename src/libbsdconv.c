@@ -13,8 +13,10 @@ struct bsdconv_t {
 	to
 };
 
-bsdconv_create(){
-
+struct bsdconv_t *bsdconv_create(const char *ofrom, const char *oto, const char *ointer=NULL){
+	bsdconv_t *ret=new malloc(sizeof(bsdcont_t));
+	int nfrom,nto,ninter;
+	
 }
 
 bsdconv_destroy(){
