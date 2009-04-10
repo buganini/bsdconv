@@ -1,51 +1,52 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
-#include <bsdconv.h>
+#include <string.h>
+#include "bsdconv.h"
 
 struct bsdconv_codec_t {
 	char *desc;
 	int fd;
 	void *z;
-}
+};
 
 struct bsdconv_t {
 	int nfrom;
 	int ninter;
 	int nto;
-	bsdconv_codec_t from[];
-	bsdconv_codec_t inter[];
-	bsdconv_codec_t to[];
+	struct bsdconv_codec_t *from;
+	struct bsdconv_codec_t *inter;
+	struct bsdconv_codec_t *to;
 };
 
-#define COUNT(X) do{		\
-	if(X){			\
-		nX=1;		\
-	}else{			\
-		nX=0;		\
-	}			\
-	for(t=X;t;++t){		\
-		if(*t==','){	\
-			nX++;	\
-		}		\
-	}			\
-	ret->nX=nX;		\
+#define COUNT(X) do{			\
+	if(o##X){			\
+		n##X=1;			\
+	}else{				\
+		n##X=0;			\
+	}				\
+	for(t=(char *)o##X;t;++t){		\
+		if(*t==','){		\
+			n##X++;		\
+		}			\
+	}				\
+	ret->n##X=n##X;			\
 }while(0);
 
 #define GENLIST(X) do{										\
-	X=strdup(X);										\
-	ret->X=malloc(nX * sizeof(bsdconv_codec_t));						\
+	X=strdup(o##X);										\
+	ret->X=malloc(n##X * sizeof(struct bsdconv_codec_t));					\
 	ret->X[0].desc=X;									\
 	for(j=0,t=X;t;++t){									\
 		if(*t==','){									\
 			*t=0;									\
-			mkmmap:									\
 			ret->X[j].fd=open(ret->X[j].desc, O_RDONLY);				\
 			fstat(ret->X[j].fd, &stat);						\
 			ret->X[j].z=mmap(0,stat.st_size,PROT_READ|PROT_WRITE,0,ret->X[j].fd,0);	\
-			if(j+1 < nX){								\
+			if(j+1 < n##X){								\
 				ret->X[++j].desc=t+1;						\
 			}									\
 		}else{										\
@@ -54,10 +55,10 @@ struct bsdconv_t {
 	}											\
 }while(0);
 
-struct bsdconv_t *bsdconv_create(char *from, char *to, char *inter=NULL){
-	bsdconv_t *ret=new malloc(sizeof(bsdcont_t));
+struct bsdconv_t *bsdconv_create(const char *ofrom, const char *oto, const char *ointer){
+	struct bsdconv_t *ret=malloc(sizeof(struct bsdconv_t));
 	struct stat stat;
-	char *t;
+	char *t, *from, *inter, *to;
 	int i,j,nfrom,nto,ninter;
 	COUNT(from);
 	COUNT(inter);
@@ -74,6 +75,7 @@ struct bsdconv_t *bsdconv_create(char *from, char *to, char *inter=NULL){
 	}else{
 		GENLIST(inter);
 	}
+	return ret;
 }
 
 bsdconv_destroy(struct bsdconv_t *cd){
@@ -83,22 +85,23 @@ bsdconv_destroy(struct bsdconv_t *cd){
 bsd_conv(struct bsdconv_t *cd, const char *inbuf, size_t *inlen, char *outbuf, size_t *outlen){
 	int from_state=0, inter_state=0, to_state=0;
 	int from_index=0, inter_index=0, to_index=0;
+	unsigned char from_data;
 	int i;
-	char *from_ptr=inbuf;
+	char *from_ptr=(char *) inbuf;
 	struct state_s from_match={.len=0},inter_data;
 	struct state_s blackhole={
-		.len=0;
-	}
+		.len=0,
+	};
 	struct state_s terminator={
-		.date="\x3f",
+		.data="\x3f",
 		.len=1,
-	}
+	};
 
 	//from
 	phase_from:
-	while(from_ptr<inbuf+inlen){
+	while(from_ptr < inbuf+*inlen){
 		from_data=*from_ptr;
-		from_state=cd->from[from_index].z[from_state]->sub[from_data];
+		from_state=(struct state_s *)(cd->from[from_index].z[from_state])->sub[from_data];
 		switch(from_state->status){
 			case DEADEND:
 				if(from_match.len){
@@ -120,8 +123,8 @@ bsd_conv(struct bsdconv_t *cd, const char *inbuf, size_t *inlen, char *outbuf, s
 				}
 				break;
 			case MATCH:
-				from_match.data=from_state->data;
-				from_match.len=from_state->len;
+				from_match.data=cd->from[from_index].z[from_state]->data;
+				from_match.len=cd->from[from_index].z[from_state]->len;
 				from_match.sub[0]=from_ptr;
 				++from_ptr;
 				break;
