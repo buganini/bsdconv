@@ -1,1 +1,1 @@
-All: libbsdconv.o
+All: libbsdconv.o bsdconv_mktable
