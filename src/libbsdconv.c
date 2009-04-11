@@ -10,7 +10,7 @@
 struct bsdconv_codec_t {
 	char *desc;
 	int fd;
-	void *z;
+	unsigned char *z;
 };
 
 struct bsdconv_t {
@@ -88,44 +88,50 @@ bsd_conv(struct bsdconv_t *cd, const char *inbuf, size_t *inlen, char *outbuf, s
 	unsigned char from_data;
 	int i;
 	char *from_ptr=(char *) inbuf;
-	struct state_s from_match={.len=0},inter_data;
+	struct state_s state_tmp, from_match;
+	struct data_s data_tmp, inter_data, to_data;
 	struct state_s blackhole={
-		.len=0,
+		.data=0,
 	};
-	struct state_s terminator={
-		.data="\x3f",
-		.len=1,
+	struct data_s terminator={
+		.data=(int)"\x01\x3f",
+		.len=2,
 	};
 
+	from_match.sub[0]=(int)from_ptr;
 	//from
 	phase_from:
 	while(from_ptr < inbuf+*inlen){
 		from_data=*from_ptr;
-		from_state=(struct state_s *)(cd->from[from_index].z[from_state])->sub[from_data];
-		switch(from_state->status){
+		memcpy(&state_tmp, cd->from[from_index].z + from_state, sizeof(struct state_s));
+		from_state=(int)state_tmp.sub[from_data];
+		memcpy(&state_tmp, cd->from[from_index].z + from_state, sizeof(struct state_s));
+		switch(state_tmp.status){
 			case DEADEND:
-				if(from_match.len){
-					inter_data=from_match;
-					from_match.len=0;
+				if(from_match.data){
+					memcpy(&data_tmp, cd->from[from_index].z + from_match.data, sizeof(struct data_s));
+					inter_data.data=data_tmp.data;
+					inter_data.len=data_tmp.len;
+					from_match.data=0;
 					from_index=0;
 					from_state=0;
-					++from_ptr;
+					from_ptr=(char *)from_match.sub[0];
 					goto phase_inter;
 				}else if(from_index==cd->nfrom){
-					inter_data=terminator;
+					inter_data.data=terminator.data;
+					inter_data.len=terminator.len;
 					from_index=0;
 					from_state=0;
 					++from_ptr;
 				}else{
 					from_index++;
 					from_state=0;
-					++from_ptr;
+					from_ptr=(char *)from_match.sub[0];
 				}
 				break;
 			case MATCH:
-				from_match.data=cd->from[from_index].z[from_state]->data;
-				from_match.len=cd->from[from_index].z[from_state]->len;
-				from_match.sub[0]=from_ptr;
+				from_match.data=(int)cd->from[from_index].z + state_tmp.data;
+				from_match.sub[0]=(int)from_ptr;
 				++from_ptr;
 				break;
 			default:
@@ -135,9 +141,15 @@ bsd_conv(struct bsdconv_t *cd, const char *inbuf, size_t *inlen, char *outbuf, s
 
 	//inter
 	phase_inter:
-	to_data=empty;
-	for(i=0;i<data_len;i++){
-		inter_state=cd->inter[inter_index].z[inter_state]->sub[inter_data];
+	for(i=0;i<inter_data->len;i++){
+		memcpy(&tmp, &(cd->inter[inter_index].z[inter_state]), sizeof(struct state_s));
+		from_state=tmp.sub[inter_data];
+		memcpy(&tmp, &(cd->inter[inter_index].z[inter_state]), sizeof(struct state_s));
+		switch(tmp.status){
+			case DEADEND:
+			case MATCH:
+			default:
+		}
 		if(inter_state->len){
 			has_match=1;
 		}else if(has_match){
