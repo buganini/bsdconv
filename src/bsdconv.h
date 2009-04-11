@@ -5,12 +5,12 @@ enum bsdconv_status{
 };
 
 struct data_s{
-	int data;
+	unsigned char *data;
 	size_t len;
-}
+};
 
 struct state_s{
-	char status;
-	int data;
-	int sub[257];
+	int status;
+	unsigned char *data;
+	unsigned char *sub[257];
 };
