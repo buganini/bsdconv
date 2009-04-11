@@ -55,7 +55,7 @@ struct bsdconv_t {
 	}											\
 }while(0);
 
-struct bsdconv_t *bsdconv_create(const char *ofrom, const char *oto, const char *ointer){
+struct bsdconv_t *bsdconv_create(const char *ofrom, const char *ointer, const char *oto){
 	struct bsdconv_t *ret=malloc(sizeof(struct bsdconv_t));
 	struct stat stat;
 	char *t, *from, *inter, *to;
@@ -64,17 +64,13 @@ struct bsdconv_t *bsdconv_create(const char *ofrom, const char *oto, const char 
 	COUNT(inter);
 	COUNT(to);
 	chdir("/usr/local/share/bsdconv/codecs");
-	if(nfrom==0 || nto==0){
-		fprintf(stderr, "Need at least 1 from and to encoding.\n");
+	if(nfrom==0 || nto==0 || ninter){
+		fprintf(stderr, "Need at least 1 from and to encoding.\n Use \"dummy\" for none inter-map.");
 		return NULL;
 	}
 	GENLIST(from);
+	GENLIST(inter);
 	GENLIST(to);
-	if(ninter){
-		ret->inter=NULL;
-	}else{
-		GENLIST(inter);
-	}
 	return ret;
 }
 
@@ -85,10 +81,11 @@ bsdconv_destroy(struct bsdconv_t *cd){
 bsd_conv(struct bsdconv_t *cd, const char *inbuf, size_t *inlen, char *outbuf, size_t *outlen){
 	int from_state=0, inter_state=0, to_state=0;
 	int from_index=0, inter_index=0, to_index=0;
+	int inter_z, to_z;
 	unsigned char from_data;
 	int i;
 	char *from_ptr=(char *) inbuf;
-	struct state_s state_tmp, from_match;
+	struct state_s state_tmp, from_match, inter_match;
 	struct data_s data_tmp, inter_data, to_data;
 	struct state_s blackhole={
 		.data=0,
@@ -109,8 +106,10 @@ bsd_conv(struct bsdconv_t *cd, const char *inbuf, size_t *inlen, char *outbuf, s
 		switch(state_tmp.status){
 			case DEADEND:
 				if(from_match.data){
+					pass_to_inter:
 					memcpy(&data_tmp, cd->from[from_index].z + from_match.data, sizeof(struct data_s));
-					inter_data.data=data_tmp.data;
+					inter_data.data=(int)cd->from[from_index].z + data_tmp.data;
+					inter_z=cd->from[from_index].z;
 					inter_data.len=data_tmp.len;
 					from_match.data=0;
 					from_index=0;
@@ -141,28 +140,37 @@ bsd_conv(struct bsdconv_t *cd, const char *inbuf, size_t *inlen, char *outbuf, s
 
 	//inter
 	phase_inter:
-	for(i=0;i<inter_data->len;i++){
-		memcpy(&tmp, &(cd->inter[inter_index].z[inter_state]), sizeof(struct state_s));
-		from_state=tmp.sub[inter_data];
-		memcpy(&tmp, &(cd->inter[inter_index].z[inter_state]), sizeof(struct state_s));
+		for(i=0;i<inter_data->len;i++){
+			memcpy(&tmp, cd->inter[inter_index].z + inter_state], sizeof(struct state_s));
+			from_state=tmp.sub[inter_data];
+			memcpy(&tmp, cd->inter[inter_index].z + inter_state], sizeof(struct state_s));
+			switch(tmp.status){
+				case DEADEND:
+					if(inter_match.data){
+					
+					}else if(inter_index==ninter){
+						to_data=inter_data;
+					}else{
+					
+					}
+			}
+		}
 		switch(tmp.status){
-			case DEADEND:
 			case MATCH:
-			default:
+				inter_match.data=(int)cd->inter[inter_index].z + state_tmp.data;
+				inter_match.sub[0]=(int)from_ptr;
+				++from_ptr;
+				break;
 		}
-		if(inter_state->len){
-			has_match=1;
-		}else if(has_match){
-			has_match=0;
-			to_date=last_match;
-			inter_index=0;
-			inter_state=0;
-		}else if(inter_index==index_index_end){
-			to_date=inter_data;
+		memcpy(&data_tmp, inter_z + inter_data->next, sizeof(struct data_s));
+		inter_data=data_tmp.next;
+		if(data_tmp.next){
+			inter_data.data=inter_z + data_tmp.data;
+			inter_data.len=data_tmp.len;
 		}else{
-			inter_index++;
+			break;
 		}
-	}
+
 
 	//to
 	phase_to:
@@ -178,14 +186,16 @@ bsd_conv(struct bsdconv_t *cd, const char *inbuf, size_t *inlen, char *outbuf, s
 		}
 	}
 
+	//repeat and flush
 	if(from_ptr<inbuf+inlen){
 		goto phase_from;
 	}
-	if(from_match.len){
-		inter_data=from_match;
-		from_match.len=0;
-		goto phase_inter;
+	if(from_match.data){
+		goto pass_to_inter;
 	}
 	
+	if(inter_match.data){
+		goto pass_to_to;
+	}
 }
 
