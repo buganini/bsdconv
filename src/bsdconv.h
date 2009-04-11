@@ -7,6 +7,7 @@ enum bsdconv_status{
 struct data_s{
 	int data;
 	size_t len;
+	int next;
 };
 
 struct state_s{
