@@ -32,10 +32,12 @@ int offset=0;
 int main(int argc, char *argv[]){
 	int i, j, k, l, c;
 	int state_deadend;
-	FILE *in;
+	FILE *fp;
 	char f[256], t[256], dat[256], *tmp;
 	struct m_data_s *data_r, *data_p=NULL, *data_t=NULL;
 	struct m_state_s *state_r, *state_p, *state_t;
+	struct state_s dstate;
+	struct data_s ddata;
 	struct stat stat;
 
 	table['0']=0;
@@ -61,7 +63,7 @@ int main(int argc, char *argv[]){
 	table['f']=15;
 	table['F']=15;
 	
-	in=fopen(argv[1], "r");
+	fp=fopen(argv[1], "r");
 
 	state_t=state_p=state_r=(struct m_state_s *)malloc(sizeof(struct m_state_s));
 	state_p->status=DEADEND;
@@ -73,7 +75,7 @@ int main(int argc, char *argv[]){
 		state_r->sub[i]=0;
 	}
 
-	while(fscanf(in, "%s\t%s\n", f, t)==2){
+	while(fscanf(fp, "%s\t%s\n", f, t)==2){
 		state_p=state_r;
 		tmp=f;
 		j=1;
@@ -198,4 +200,30 @@ int main(int argc, char *argv[]){
 		goto flush;
 		data_p=NULL;
 	}
+	fclose(fp);
+	fp=fopen(argv[2],"w");
+	fclose(fp);
+	k=open(argv[2], O_RDWR);
+	ftruncate(k,offset);
+	tmp=mmap(0,offset,PROT_READ|PROT_WRITE,0,k,0);
+	state_t=state_r;
+	while(state_t){
+		dstate.status=state_t->status;
+		dstate.data=state_t->data;
+		memcpy(dstate.sub, state_t->sub, 257);
+		memcpy(&tmp[state_t->p], &dstate, sizeof(struct state_s));
+		state_t=state_t->n;
+	}
+	data_t=data_r;
+	while(data_t){
+		ddata.data=data_t->data;
+		ddata.len=data_t->len;
+		ddata.next=data_t->next;
+		memcpy(&tmp[data_t->p], &ddata, sizeof(struct data_s));
+		memcpy(&tmp[ddata.data], data_t->dp, ddata.len);
+		data_t=data_t->n;
+	}
+	munmap(tmp,offset);
+	close(k);
+	return 0;
 }
