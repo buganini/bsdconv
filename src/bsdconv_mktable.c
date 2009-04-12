@@ -1,3 +1,10 @@
+#define DEBUG
+#ifdef DEBUG
+#define DPRINTF(fmt, args...) printf("DEBUG: " fmt "\n", ## args); fflush(stdout);
+#else
+#define DPRINTF(fmt, args...)
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -30,10 +37,9 @@ unsigned char table[256]={};
 int offset=0;
 
 int main(int argc, char *argv[]){
-	int i, j, k, l, c;
-	int state_deadend;
+	int i, j, k, l, c, deadend, flushing;
 	FILE *fp;
-	char f[256], t[256], dat[256], *tmp;
+	char inbuf[1024], *f, *t, dat[256], *tmp;
 	struct m_data_s *data_r, *data_p=NULL, *data_t=NULL;
 	struct m_state_s *state_r, *state_p, *state_t;
 	struct state_s dstate;
@@ -71,31 +77,47 @@ int main(int argc, char *argv[]){
 	state_p->p=offset;
 	state_t->n=NULL;
 	offset+=sizeof(struct state_s);
+
+	state_t->n=(struct m_state_s *)malloc(sizeof(struct m_state_s));
+	state_t->status=DEADEND;
+	state_t->data=0;
+	deadend=state_t->p=offset;
+	state_t=state_t->n;
+	state_t->n=NULL;
+	offset+=sizeof(struct state_s);
+
 	for(i=0;i<257;i++){
-		state_r->sub[i]=0;
+		state_r->sub[i]=deadend;
+		state_r->psub[i]=NULL;
+		state_t->sub[i]=deadend;
+		state_t->psub[i]=NULL;
 	}
 
-	while(fscanf(fp, "%s\t%s\n", f, t)==2){
+	while(fgets(inbuf, 1024, fp)){
+		tmp=inbuf;
+		f=strsep(&tmp, "\t");
+		t=strsep(&tmp, "\t\r\n");
 		state_p=state_r;
-		tmp=f;
 		j=1;
-		while(*tmp){
-			if(*tmp==','){
+		while(*f){
+			if(*f==','){
 				j=1;
-				c=257;
+				c=256;
 			}else if(j){
-				c=table[*tmp];
+				c=table[*f];
 				j=0;
 			}else{
 				c*=16;
-				c+=table[*tmp];
+				c+=table[*f];
 				j=1;
 			}
 			if(j){
 				if(state_p->status==DEADEND){
 					state_p->status=CONTINUE;
 				}
-				if(!state_p->psub[c]){
+				if(state_p->psub[c]){
+					state_p=state_p->psub[c];
+				}else{
 					state_p->psub[c]=(struct m_state_s *)malloc(sizeof(struct m_state_s));
 					state_p->sub[c]=offset;
 					state_t->n=state_p->psub[c];
@@ -107,21 +129,19 @@ int main(int argc, char *argv[]){
 					state_p->status=DEADEND;
 					state_p->data=0;
 					for(i=0;i<257;i++){
-						state_p->sub[i]=0;
+						state_p->sub[i]=deadend;
 						state_p->psub[i]=NULL;
 					}
-				}else{
-					state_p=state_p->psub[c];
 				}
 			}
-			++tmp;
+			++f;
 		}
-		tmp=t;
 		j=1;
 		l=0;
 		k=1;
-		while(*tmp){
-			if(*tmp==','){
+		flushing=0;
+		while(*t){
+			if(*t==','){
 				flush:
 				if(l){
 					if(data_p){
@@ -181,31 +201,37 @@ int main(int argc, char *argv[]){
 						state_p->status=MATCH;
 						state_p->data=data_p->p;
 					}
+					if(flushing){
+						break;
+					}
 					l=0;
 				}
 			}else{
 				if(j){
-					c=table[*tmp];
+					c=table[*t];
 					j=0;
 				}else{
 					c*=16;
-					c+=table[*tmp];
+					c+=table[*t];
 					j=1;
 					dat[l]=c;
 					++l;
 				}
 			}
-			++tmp;
+			++t;
 		}
-		goto flush;
-		data_p=NULL;
+		if(flushing){
+			data_p=NULL;
+		}else{
+			flushing=1;
+			goto flush;
+		}
 	}
 	fclose(fp);
-	fp=fopen(argv[2],"w");
-	fclose(fp);
-	k=open(argv[2], O_RDWR);
+	k=open(argv[2], O_RDWR|O_CREAT|O_TRUNC, 0644);
 	ftruncate(k,offset);
-	tmp=mmap(0,offset,PROT_READ|PROT_WRITE,0,k,0);
+	printf("Total size: %d\n", offset);
+	tmp=mmap(0,offset,PROT_READ|PROT_WRITE,MAP_SHARED,k,0);
 	state_t=state_r;
 	while(state_t){
 		dstate.status=state_t->status;
