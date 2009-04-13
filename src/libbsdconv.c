@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -5,6 +6,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <string.h>
+#include <ctype.h>
 #include "bsdconv.h"
 
 struct bsdconv_codec_t {
@@ -40,14 +42,14 @@ struct bsdconv_t {
 	X=strdup(o##X);										\
 	ret->X=malloc(n##X * sizeof(struct bsdconv_codec_t));					\
 	ret->X[0].desc=X;									\
-	for(j=0,t=X;t;++t){									\
+	for(i=0,t=X;t;++t){									\
 		if(*t==','){									\
 			*t=0;									\
-			ret->X[j].fd=open(ret->X[j].desc, O_RDONLY);				\
-			fstat(ret->X[j].fd, &stat);						\
-			ret->X[j].z=mmap(0,stat.st_size,PROT_READ|PROT_WRITE,0,ret->X[j].fd,0);	\
-			if(j+1 < n##X){								\
-				ret->X[++j].desc=t+1;						\
+			ret->X[i].fd=open(ret->X[i].desc, O_RDONLY);				\
+			fstat(ret->X[i].fd, &stat);						\
+			ret->X[i].z=mmap(0,stat.st_size,PROT_READ|PROT_WRITE,0,ret->X[i].fd,0);	\
+			if(i+1 < n##X){								\
+				ret->X[++i].desc=t+1;						\
 			}									\
 		}else{										\
 			*t=toupper(*t); 							\
@@ -71,7 +73,7 @@ struct bsdconv_t *bsdconv_create(const char *ofrom, const char *ointer, const ch
 	struct bsdconv_t *ret=malloc(sizeof(struct bsdconv_t));
 	struct stat stat;
 	char *t, *from, *inter, *to;
-	int i,j,nfrom,nto,ninter;
+	int i,nfrom,nto,ninter;
 	COUNT(from);
 	COUNT(inter);
 	COUNT(to);
@@ -86,11 +88,11 @@ struct bsdconv_t *bsdconv_create(const char *ofrom, const char *ointer, const ch
 	return ret;
 }
 
-bsdconv_destroy(struct bsdconv_t *cd){
+void bsdconv_destroy(struct bsdconv_t *cd){
 	free(cd);
 }
 
-bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
+int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	struct state_s from_state, inter_state, to_state;
 	int from_index=0, inter_index=0, to_index=0;
 	unsigned char *inter_d, *to_d, *out_d, *inter_z, *to_z, *out_z;
@@ -99,9 +101,6 @@ bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	char *from_ptr=ins->in_buf;
 	struct state_s from_match, inter_match, to_match;
 	struct data_s inter_data, to_data, out_data;
-	struct state_s blackhole={
-		.data=0,
-	};
 	struct data_s iterminator={
 		.data=(int)"\x01\x3f",
 		.len=2,
@@ -219,7 +218,6 @@ bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 		switch(to_state.status){
 			case DEADEND:
 				if(to_match.data){
-					pass_to_out:
 					memcpy(&out_data, out_z + to_match.data, sizeof(struct data_s));
 					out_d=out_data.data+out_z;
 					to_match.data=0;
@@ -276,5 +274,6 @@ bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	if(inter_match.data)						goto pass_to_to;
 
 //	hibernate:
+	return 0;
 }
 

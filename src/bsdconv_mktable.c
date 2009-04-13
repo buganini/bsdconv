@@ -5,6 +5,7 @@
 #define DPRINTF(fmt, args...)
 #endif
 
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -44,7 +45,6 @@ int main(int argc, char *argv[]){
 	struct m_state_s *state_r, *state_p, *state_t;
 	struct state_s dstate;
 	struct data_s ddata;
-	struct stat stat;
 
 	table['0']=0;
 	table['1']=1;
@@ -105,11 +105,11 @@ int main(int argc, char *argv[]){
 				j=1;
 				c=256;
 			}else if(j){
-				c=table[*f];
+				c=table[(int)*f];
 				j=0;
 			}else{
 				c*=16;
-				c+=table[*f];
+				c+=table[(int)*f];
 				j=1;
 			}
 			if(j){
@@ -209,11 +209,11 @@ int main(int argc, char *argv[]){
 				}
 			}else{
 				if(j){
-					c=table[*t];
+					c=table[(int)*t];
 					j=0;
 				}else{
 					c*=16;
-					c+=table[*t];
+					c+=table[(int)*t];
 					j=1;
 					dat[l]=c;
 					++l;
