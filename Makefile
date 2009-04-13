@@ -1,1 +1,2 @@
-All: libbsdconv.o bsdconv_mktable
+All: src/libbsdconv.o src/bsdconv_mktable codecs
+codecs:
