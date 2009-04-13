@@ -94,9 +94,10 @@ int main(int argc, char *argv[]){
 	}
 
 	while(fgets(inbuf, 1024, fp)){
+		if(inbuf[0]=='#') continue;
 		tmp=inbuf;
-		f=strsep(&tmp, "\t");
-		t=strsep(&tmp, "\t\r\n");
+		f=strsep(&tmp, "\t ");
+		t=strsep(&tmp, "\t\r\n# ");
 		state_p=state_r;
 		j=1;
 		while(*f){
