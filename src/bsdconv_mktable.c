@@ -245,6 +245,7 @@ int main(int argc, char *argv[]){
 		ddata.data=data_t->data;
 		ddata.len=data_t->len;
 		ddata.next=data_t->next;
+		ddata.p=data_t->p;
 		memcpy(&tmp[data_t->p], &ddata, sizeof(struct data_s));
 		memcpy(&tmp[ddata.data], data_t->dp, ddata.len);
 		data_t=data_t->n;
