@@ -9,21 +9,6 @@
 #include <ctype.h>
 #include "bsdconv.h"
 
-struct bsdconv_codec_t {
-	char *desc;
-	int fd;
-	unsigned char *z;
-};
-
-struct bsdconv_t {
-	int nfrom;
-	int ninter;
-	int nto;
-	struct bsdconv_codec_t *from;
-	struct bsdconv_codec_t *inter;
-	struct bsdconv_codec_t *to;
-};
-
 #define COUNT(X) do{				\
 	if(o##X){				\
 		n##X=1;				\
