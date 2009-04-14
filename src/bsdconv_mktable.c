@@ -45,6 +45,7 @@ int main(int argc, char *argv[]){
 	struct m_state_s *state_r, *state_p, *state_t;
 	struct state_s dstate;
 	struct data_s ddata;
+	void *tofree;
 
 	table['0']=0;
 	table['1']=1;
@@ -239,7 +240,9 @@ int main(int argc, char *argv[]){
 		dstate.data=state_t->data;
 		memcpy(dstate.sub, state_t->sub, 257);
 		memcpy(&tmp[state_t->p], &dstate, sizeof(struct state_s));
+		tofree=state_t;
 		state_t=state_t->n;
+		free(tofree);
 	}
 	data_t=data_r;
 	while(data_t){
@@ -249,7 +252,9 @@ int main(int argc, char *argv[]){
 		ddata.p=data_t->p;
 		memcpy(&tmp[data_t->p], &ddata, sizeof(struct data_s));
 		memcpy(&tmp[ddata.data], data_t->dp, ddata.len);
+		tofree=data_t;
 		data_t=data_t->n;
+		free(data_t);
 	}
 	munmap(tmp,offset);
 	close(k);
