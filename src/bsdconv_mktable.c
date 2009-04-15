@@ -38,7 +38,7 @@ unsigned char table[256]={};
 int offset=0;
 
 int main(int argc, char *argv[]){
-	int i, j, k, l, c, deadend, flushing;
+	int i, j, k, l, c;
 	FILE *fp;
 	char inbuf[1024], *f, *t, dat[256], *tmp;
 	struct m_data_s *data_r, *data_p=NULL, *data_t=NULL;
@@ -69,7 +69,6 @@ int main(int argc, char *argv[]){
 	table['E']=14;
 	table['f']=15;
 	table['F']=15;
-	
 	fp=fopen(argv[1], "r");
 
 	state_t=state_p=state_r=(struct m_state_s *)malloc(sizeof(struct m_state_s));
@@ -78,20 +77,9 @@ int main(int argc, char *argv[]){
 	state_p->p=offset;
 	state_t->n=NULL;
 	offset+=sizeof(struct state_s);
-
-	state_t->n=(struct m_state_s *)malloc(sizeof(struct m_state_s));
-	state_t->status=DEADEND;
-	state_t->data=0;
-	deadend=state_t->p=offset;
-	state_t=state_t->n;
-	state_t->n=NULL;
-	offset+=sizeof(struct state_s);
-
 	for(i=0;i<257;i++){
-		state_r->sub[i]=deadend;
+		state_r->sub[i]=0;
 		state_r->psub[i]=NULL;
-		state_t->sub[i]=deadend;
-		state_t->psub[i]=NULL;
 	}
 
 	while(fgets(inbuf, 1024, fp)){
@@ -100,20 +88,21 @@ int main(int argc, char *argv[]){
 		f=strsep(&tmp, "\t ");
 		t=strsep(&tmp, "\t\r\n# ");
 		state_p=state_r;
-		j=1;
+		j=0;
 		while(*f){
 			if(*f==','){
 				j=1;
 				c=256;
-			}else if(j){
+			}else if(j==0){
 				c=table[(int)*f];
-				j=0;
+				j=1;
 			}else{
 				c*=16;
 				c+=table[(int)*f];
 				j=1;
 			}
 			if(j){
+				j=0;
 				if(state_p->status==DEADEND){
 					state_p->status=CONTINUE;
 				}
@@ -125,26 +114,29 @@ int main(int argc, char *argv[]){
 					state_t->n=state_p->psub[c];
 					state_t=state_t->n;
 					state_t->n=NULL;
+
 					state_p=state_p->psub[c];
 					state_p->p=offset;
+
 					offset+=sizeof(struct state_s);
 					state_p->status=DEADEND;
 					state_p->data=0;
 					for(i=0;i<257;i++){
-						state_p->sub[i]=deadend;
+						state_p->sub[i]=0;
 						state_p->psub[i]=NULL;
 					}
 				}
 			}
+			if(*f==0){
+				break;
+			}
 			++f;
 		}
-		j=1;
+		j=0;
 		l=0;
 		k=1;
-		flushing=0;
-		while(*t){
-			if(*t==','){
-				flush:
+		while(1){
+			if(*t==',' || *t==0){
 				if(l){
 					if(data_p){
 						//make new cell
@@ -203,30 +195,25 @@ int main(int argc, char *argv[]){
 						state_p->status=MATCH;
 						state_p->data=data_p->p;
 					}
-					if(flushing){
+					if(*t==0){
+						data_p=NULL;
 						break;
 					}
 					l=0;
 				}
 			}else{
-				if(j){
+				if(j==0){
 					c=table[(int)*t];
-					j=0;
+					j=1;
 				}else{
 					c*=16;
 					c+=table[(int)*t];
-					j=1;
+					j=0;
 					dat[l]=c;
 					++l;
 				}
 			}
 			++t;
-		}
-		if(flushing){
-			data_p=NULL;
-		}else{
-			flushing=1;
-			goto flush;
 		}
 	}
 	fclose(fp);

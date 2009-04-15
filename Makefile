@@ -1,4 +1,4 @@
-CFLAGS=-Wall
+CFLAGS=-Wall -g
 
 All: builddir libbsdconv bsdconv_mktable bsdconv codecs
 
@@ -8,13 +8,13 @@ builddir:
 	mkdir -p build/share/bsdconv
 
 libbsdconv:
-	$(CC) src/libbsdconv.c -shared -o build/lib/libbsdconv.so
+	$(CC) ${CFLAGS} src/libbsdconv.c -shared -o build/lib/libbsdconv.so
 
 bsdconv:
-	$(CC) build/lib/libbsdconv.so src/bsdconv.c -o build/bin/bsdconv
+	$(CC) ${CFLAGS} src//libbsdconv.c src/bsdconv.c -o build/bin/bsdconv
 
 bsdconv_mktable:
-	$(CC) src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
+	$(CC) ${CFLAGS} src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
 
 clean:
 	rm -rf build

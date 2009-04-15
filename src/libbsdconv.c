@@ -12,13 +12,13 @@
 #define COUNT(X) do{				\
 	if(o##X){				\
 		n##X=1;				\
+		for(t=(char *)o##X;*t;t++){	\
+			if(*t==','){	\
+				n##X++;		\
+			}			\
+		}				\
 	}else{					\
 		n##X=0;				\
-	}					\
-	for(t=(char *)o##X;t;++t){		\
-		if(*t==','){			\
-			n##X++;			\
-		}				\
 	}					\
 	ret->n##X=n##X;				\
 }while(0);
@@ -27,22 +27,25 @@
 	X=strdup(o##X);										\
 	ret->X=malloc(n##X * sizeof(struct bsdconv_codec_t));					\
 	ret->X[0].desc=X;									\
-	for(i=0,t=X;t;++t){									\
-		if(*t==','){									\
+	for(i=0,t=X;;++t){									\
+		if(*t==',' || *t==0){									\
 			*t=0;									\
 			ret->X[i].fd=open(ret->X[i].desc, O_RDONLY);				\
 			fstat(ret->X[i].fd, &stat);						\
-			ret->X[i].z=mmap(0,stat.st_size,PROT_READ|PROT_WRITE,0,ret->X[i].fd,0);	\
+			ret->X[i].z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,ret->X[i].fd,0);	\
 			if(i+1 < n##X){								\
 				ret->X[++i].desc=t+1;						\
 			}									\
+			if(*t==0){				\
+				break;				\
+			}					\
 		}else{										\
 			*t=toupper(*t); 							\
 		}										\
 	}											\
 }while(0);
 
-void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, char *inbuf, size_t inlen, char *outbuf, size_t outlen){
+void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, unsigned char *inbuf, size_t inlen, unsigned char *outbuf, size_t outlen){
 	ins->in_buf=inbuf;
 	ins->in_len=inlen;
 	ins->out_buf=outbuf;	//*
@@ -60,9 +63,9 @@ void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, char *i
 	ins->inter_index=0;
 	ins->to_index=0;
 	
-	memcpy(&ins->from_state, cd->from[0].z + 0, sizeof(struct state_s));
-	memcpy(&ins->inter_state, cd->inter[0].z + 0, sizeof(struct state_s));
-	memcpy(&ins->to_state, cd->to[0].z + 0, sizeof(struct state_s));
+	memcpy(&ins->from_state, cd->from[0].z, sizeof(struct state_s));
+	memcpy(&ins->inter_state, cd->inter[0].z, sizeof(struct state_s));
+	memcpy(&ins->to_state, cd->to[0].z, sizeof(struct state_s));
 }
 
 struct bsdconv_t *bsdconv_create(const char *ofrom, const char *ointer, const char *oto){
@@ -70,12 +73,14 @@ struct bsdconv_t *bsdconv_create(const char *ofrom, const char *ointer, const ch
 	struct stat stat;
 	char *t, *from, *inter, *to;
 	int i,nfrom,nto,ninter;
+
 	COUNT(from);
 	COUNT(inter);
 	COUNT(to);
 	chdir("/usr/local/share/bsdconv/codecs");
-	if(nfrom==0 || nto==0 || ninter){
+	if(nfrom==0 || nto==0 || ninter==0){
 		fprintf(stderr, "Need at least 1 from and to encoding.\n Use \"dummy\" for none inter-map.");
+		fflush(stderr);
 		return NULL;
 	}
 	GENLIST(from);
@@ -102,9 +107,9 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 		.next=0,
 	};
 
-	ins->in_len+=ins->feed - ins->in_buf;
+	ins->feed_len+=ins->feed - ins->in_buf;
 	ins->feed=ins->in_buf;
-	if(ins->in_len==0){
+	if(ins->feed_len==0){
 		if(ins->from_match.data)	goto pass_to_inter;
 		if(ins->inter_match.data)	goto pass_to_to;
 		if(ins->to_data.data)		goto pass_to_out;
@@ -116,6 +121,8 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	ins->from_match.sub[0]=(int)ins->feed;
 	ins->from_match.sub[1]=ins->feed_len;
 	while(ins->feed_len){
+//	printf("%x\n",(int)*ins->feed);
+	fflush(stdout);
 		memcpy(&ins->from_state, cd->from[ins->from_index].z + ins->from_state.sub[*ins->feed], sizeof(struct state_s));
 		switch(ins->from_state.status){
 			case DEADEND:
@@ -125,7 +132,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 					ins->inter_d=ins->inter_data.data+ins->inter_z;
 					ins->from_match.data=0;
 					memcpy(&ins->from_state, cd->from[ins->from_index].z, sizeof(struct state_s));
-					ins->feed=(char *)ins->from_match.sub[0];
+					ins->feed=(unsigned char *)ins->from_match.sub[0];
 					ins->feed_len=ins->from_match.sub[1];
 					goto phase_inter;
 				}else if(ins->from_index==cd->nfrom){
@@ -136,7 +143,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				}else{
 					ins->from_index++;
 					memcpy(&ins->from_state, cd->from[ins->from_index].z, sizeof(struct state_s));
-					ins->feed=(char *)ins->from_match.sub[0];
+					ins->feed=(unsigned char *)ins->from_match.sub[0];
 					ins->feed_len=ins->from_match.sub[1];
 					continue;
 				}

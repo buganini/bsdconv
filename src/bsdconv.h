@@ -33,13 +33,13 @@ struct state_s{
 };
 
 struct bsdconv_instruction{
-	char *in_buf;
+	unsigned char *in_buf;
 	size_t in_len;
-	char *out_buf;
+	unsigned char *out_buf;
 	size_t out_len;
-	char *feed;
+	unsigned char *feed;
 	size_t feed_len;
-	char *back;
+	unsigned char *back;
 	size_t back_len;
 
 	unsigned char ierr, oerr;
@@ -52,7 +52,7 @@ struct bsdconv_instruction{
 	struct data_s inter_data, to_data, out_data;
 };
 
-void bsdconv_init(struct bsdconv_t *, struct bsdconv_instruction *, char *, size_t, char *, size_t);
+void bsdconv_init(struct bsdconv_t *, struct bsdconv_instruction *, unsigned char *, size_t, unsigned char *, size_t);
 struct bsdconv_t *bsdconv_create(const char *, const char *, const char *);
 void bsdconv_destroy(struct bsdconv_t *);
 int bsd_conv(struct bsdconv_t *, struct bsdconv_instruction *);
