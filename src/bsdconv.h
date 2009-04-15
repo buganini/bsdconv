@@ -27,7 +27,7 @@ struct data_s{
 };
 
 struct state_s{
-	int status;
+	char status;
 	int data;
 	int sub[257];
 };
@@ -41,6 +41,15 @@ struct bsdconv_instruction{
 	size_t feed_len;
 	char *back;
 	size_t back_len;
+
+	unsigned char ierr, oerr;
+
+	struct state_s from_state, inter_state, to_state;
+	int from_index, inter_index, to_index;
+	unsigned char *inter_d, *to_d, *out_d, *inter_z, *to_z, *out_z;
+	struct state_s from_match;
+	struct state_s inter_match, to_match;
+	struct data_s inter_data, to_data, out_data;
 };
 
 void bsdconv_init(struct bsdconv_t *, struct bsdconv_instruction *, char *, size_t, char *, size_t);
