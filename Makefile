@@ -1,14 +1,22 @@
 CFLAGS=-Wall
 
-All: libbsdconv src/bsdconv_mktable bsdconv codecs
+All: builddir libbsdconv bsdconv_mktable bsdconv codecs
+
+builddir:
+	mkdir -p build/bin
+	mkdir -p build/lib
+	mkdir -p build/share/bsdconv
 
 libbsdconv:
-	$(CC) src/libbsdconv.c -shared -o src/libbsdconv.so
+	$(CC) src/libbsdconv.c -shared -o build/lib/libbsdconv.so
 
 bsdconv:
-	$(CC) src/libbsdconv.so src/bsdconv.c -o src/bsdconv
+	$(CC) build/lib/libbsdconv.so src/bsdconv.c -o build/bin/bsdconv
+
+bsdconv_mktable:
+	$(CC) src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
 
 clean:
-	rm src/bsdconv src/libbsdconv.so src/bsdconv_mktable
+	rm -rf build
 
 codecs:
