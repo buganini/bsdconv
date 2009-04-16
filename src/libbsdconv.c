@@ -59,10 +59,14 @@ void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, unsigne
 	ins->ierr=0;
 	ins->oerr=0;
 
-	ins->from_index=0;
-	ins->inter_index=0;
-	ins->to_index=0;
-	
+//	ins->from_index=0;
+//	ins->inter_index=0;
+//	ins->to_index=0;
+
+	ins->inter_data.data=0;
+	ins->to_data.data=0;
+	ins->out_data.data=0;
+
 	memcpy(&ins->from_state, cd->from[0].z, sizeof(struct state_s));
 	memcpy(&ins->inter_state, cd->inter[0].z, sizeof(struct state_s));
 	memcpy(&ins->to_state, cd->to[0].z, sizeof(struct state_s));
@@ -86,6 +90,10 @@ struct bsdconv_t *bsdconv_create(const char *ofrom, const char *ointer, const ch
 	GENLIST(from);
 	GENLIST(inter);
 	GENLIST(to);
+	
+	ret->nfrom--;
+	ret->nto--;
+	ret->ninter--;
 	return ret;
 }
 
@@ -94,7 +102,7 @@ void bsdconv_destroy(struct bsdconv_t *cd){
 }
 
 int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
-	int i;
+	unsigned int i;
 
 	struct data_s iterminator={
 		.data=(int)"\x01\x3f",
@@ -107,25 +115,32 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 		.next=0,
 	};
 
+	ins->back_len=0;
+
 	ins->feed_len+=ins->feed - ins->in_buf;
 	ins->feed=ins->in_buf;
 	if(ins->feed_len==0){
-		if(ins->from_match.data)	goto pass_to_inter;
-		if(ins->inter_match.data)	goto pass_to_to;
-		if(ins->to_data.data)		goto pass_to_out;
+		if(ins->from_match.data){
+			goto pass_to_inter;}
+		if(ins->inter_match.data){
+			goto pass_to_to;}
+		if(ins->to_data.data){
+			goto pass_to_out;}
 	}
 
+#define FROM_NEXT() \
+--ins->feed_len;	\
+++ins->feed;
 	//from
 	phase_from:
 	ins->from_index=0;
 	ins->from_match.sub[0]=(int)ins->feed;
 	ins->from_match.sub[1]=ins->feed_len;
 	while(ins->feed_len){
-//	printf("%x\n",(int)*ins->feed);
-	fflush(stdout);
 		memcpy(&ins->from_state, cd->from[ins->from_index].z + ins->from_state.sub[*ins->feed], sizeof(struct state_s));
 		switch(ins->from_state.status){
 			case DEADEND:
+				FROM_NEXT();
 				pass_to_inter:
 				if(ins->from_match.data){
 					memcpy(&ins->inter_data, ins->inter_z + ins->from_match.data, sizeof(struct data_s));
@@ -135,17 +150,18 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 					ins->feed=(unsigned char *)ins->from_match.sub[0];
 					ins->feed_len=ins->from_match.sub[1];
 					goto phase_inter;
-				}else if(ins->from_index==cd->nfrom){
-					ins->ierr=1;
-					ins->inter_data=iterminator;
-					memcpy(&ins->from_state, cd->from[ins->from_index].z, sizeof(struct state_s));
-					goto phase_inter;
-				}else{
+				}else if(ins->from_index<cd->nfrom){
 					ins->from_index++;
 					memcpy(&ins->from_state, cd->from[ins->from_index].z, sizeof(struct state_s));
 					ins->feed=(unsigned char *)ins->from_match.sub[0];
 					ins->feed_len=ins->from_match.sub[1];
 					continue;
+				}else{
+					ins->ierr++;
+					ins->inter_data=iterminator;
+					ins->inter_z=0;
+					memcpy(&ins->from_state, cd->from[ins->from_index].z, sizeof(struct state_s));
+					goto phase_inter;
 				}
 				break;
 			case MATCH:
@@ -155,10 +171,17 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				ins->from_match.sub[1]=ins->feed_len;
 				break;
 		}
-		++ins->feed;
-		--ins->feed_len;
+		FROM_NEXT();
 	}
 
+#define INTER_NEXT()	\
+memcpy(&ins->inter_state, cd->inter[ins->inter_index].z + ins->inter_state.sub[256], sizeof(struct state_s));	\
+if(ins->inter_data.next){	\
+	memcpy(&ins->inter_data, ins->inter_z + ins->inter_data.next, sizeof(struct data_s));	\
+	ins->inter_d=ins->inter_data.data + ins->inter_z;	\
+}else{	\
+	ins->inter_data.data=0;	\
+}
 	//inter
 	phase_inter:
 	ins->inter_index=0;
@@ -172,6 +195,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 		}
 		switch(ins->inter_state.status){
 			case DEADEND:
+				INTER_NEXT();
 				pass_to_to:
 				if(ins->inter_match.data){
 					memcpy(&ins->to_data, ins->to_z + ins->inter_match.data, sizeof(struct data_s));
@@ -181,18 +205,18 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 					memcpy(&ins->inter_data, (char *)ins->inter_match.sub[0], sizeof(struct data_s));
 					i=0;
 					goto phase_to;
-				}else if(ins->inter_index==cd->ninter){
-					ins->to_data=ins->inter_data;
-					ins->to_z=ins->inter_z;
-					ins->to_d=ins->to_data.data+ins->to_z;
-					memcpy(&ins->inter_state, cd->inter[ins->inter_index].z, sizeof(struct state_s));
-					goto phase_to;
-				}else{
+				}else if(ins->inter_index < cd->ninter){
 					ins->inter_index++;
 					memcpy(&ins->inter_state, cd->inter[ins->inter_index].z, sizeof(struct state_s));
 					memcpy(&ins->inter_data, (char *)ins->inter_match.sub[0], sizeof(struct data_s));
 					i=0;
 					continue;
+				}else{
+					ins->to_data=ins->inter_data;
+					ins->to_z=ins->inter_z;
+					ins->to_d=ins->to_data.data+ins->to_z;
+					memcpy(&ins->inter_state, cd->inter[ins->inter_index].z, sizeof(struct state_s));
+					goto phase_to;
 				}
 				break;
 			case MATCH:
@@ -201,14 +225,17 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				ins->inter_match.sub[0]=ins->inter_data.p + (int)ins->inter_z;
 				break;
 		}
-		memcpy(&ins->inter_state, cd->inter[ins->inter_index].z + ins->inter_state.sub[256], sizeof(struct state_s));
-		if(ins->inter_data.next){
-			memcpy(&ins->inter_data, ins->inter_z + ins->inter_data.next, sizeof(struct data_s));
-			ins->inter_d=ins->inter_data.data + ins->inter_z;
-		}else{
-			ins->inter_data.data=0;
-		}
+		INTER_NEXT();
 	}
+
+#define TO_NEXT()	\
+memcpy(&ins->to_state, cd->to[ins->to_index].z + ins->to_state.sub[256], sizeof(struct state_s));	\
+if(ins->to_data.next){	\
+	memcpy(&ins->to_data, ins->to_z + ins->to_data.next, sizeof(struct data_s));	\
+	ins->to_d=ins->to_data.data + ins->to_z;	\
+}else{	\
+	ins->to_data.data=0;	\
+}
 
 	//to
 	phase_to:
@@ -223,6 +250,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 		}
 		switch(ins->to_state.status){
 			case DEADEND:
+				TO_NEXT();
 				pass_to_out:
 				if(ins->to_match.data){
 					memcpy(&ins->out_data, ins->out_z + ins->to_match.data, sizeof(struct data_s));
@@ -231,20 +259,23 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
 					memcpy(&ins->to_data, (char *)ins->to_match.sub[0], sizeof(struct data_s));
 					i=0;
+printf("a:%d\n", ins->out_data.len);
 					goto phase_out;
-				}else if(ins->to_index==cd->nto){
-					ins->oerr=1;
-					ins->out_data=oterminator;
-					ins->out_z=0;
-					ins->out_d=ins->out_data.data+ins->out_z;
-					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
-					goto phase_out;
-				}else{
+				}else if(ins->to_index < cd->nto){
 					ins->to_index++;
 					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
 					memcpy(&ins->to_data, (char *)ins->to_match.sub[0], sizeof(struct data_s));
 					i=0;
+printf("b:%d\n", ins->out_data.len);
+fflush(stdout);
 					continue;
+				}else{
+					ins->oerr++;
+					ins->out_data=oterminator;
+					ins->out_z=0;
+					ins->out_d=(unsigned char *)ins->out_data.data;
+					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
+					goto phase_out;
 				}
 				break;
 			case MATCH:
@@ -253,13 +284,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				ins->to_match.sub[0]=ins->to_data.p + (int)ins->to_z;
 				break;
 		}
-		memcpy(&ins->to_state, cd->to[ins->to_index].z + ins->to_state.sub[256], sizeof(struct state_s));
-		if(ins->to_data.next){
-			memcpy(&ins->to_data, ins->to_z + ins->to_data.next, sizeof(struct data_s));
-			ins->to_d=ins->to_data.data + ins->to_z;
-		}else{
-			ins->to_data.data=0;
-		}
+		TO_NEXT();
 	}
 
 	//out
@@ -273,14 +298,14 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 			ins->feed_len=ins->in_len - ins->feed_len;
 			return 1;
 		}else{
-			memcpy(ins->back, ins->to_d, ins->out_data.len);
+			memcpy(ins->back, ins->out_d, ins->out_data.len);
 			ins->back_len=i;
 		}
 		if(ins->out_data.next){
-			memcpy(&ins->out_data, ins->out_z + ins->to_data.next, sizeof(struct data_s));
-			ins->to_d=ins->to_data.data + ins->to_z;
+			memcpy(&ins->out_data, ins->out_z + ins->out_data.next, sizeof(struct data_s));
+			ins->out_d=ins->out_data.data + ins->out_z;
 		}else{
-			ins->to_data.data=0;
+			ins->out_data.data=0;
 		}
 	}
 

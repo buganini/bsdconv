@@ -1,3 +1,10 @@
+#define DEBUG
+#ifdef DEBUG
+#define DPRINTF(fmt, args...) printf("DEBUG: " fmt "\n", ## args); fflush(stdout);
+#else
+#define DPRINTF(fmt, args...)
+#endif
+
 struct bsdconv_codec_t {
 	char *desc;
 	int fd;
@@ -20,16 +27,16 @@ enum bsdconv_status{
 };
 
 struct data_s{
-	int p;
-	int data;
+	unsigned int p;
+	unsigned int data;
 	size_t len;
-	int next;
+	unsigned int next;
 };
 
 struct state_s{
 	char status;
-	int data;
-	int sub[257];
+	unsigned int data;
+	unsigned int sub[257];
 };
 
 struct bsdconv_instruction{
