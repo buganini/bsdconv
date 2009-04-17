@@ -24,6 +24,7 @@ enum bsdconv_status{
 	CONTINUE,
 	DEADEND,
 	MATCH,	
+	SUBMATCH,	
 };
 
 struct data_s{
@@ -54,8 +55,7 @@ struct bsdconv_instruction{
 	struct state_s from_state, inter_state, to_state;
 	int from_index, inter_index, to_index;
 	unsigned char *inter_d, *to_d, *out_d, *inter_z, *to_z, *out_z;
-	struct state_s from_match;
-	struct state_s inter_match, to_match;
+	struct state_s from_match, inter_match, to_match;
 	struct data_s inter_data, to_data, out_data;
 };
 
