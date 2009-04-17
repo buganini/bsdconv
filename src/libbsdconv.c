@@ -67,6 +67,10 @@ void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, unsigne
 	ins->to_data.data=0;
 	ins->out_data.data=0;
 
+	ins->from_match.data=0;
+	ins->inter_match.data=0;
+	ins->to_match.data=0;
+
 	memcpy(&ins->from_state, cd->from[0].z, sizeof(struct state_s));
 	memcpy(&ins->inter_state, cd->inter[0].z, sizeof(struct state_s));
 	memcpy(&ins->to_state, cd->to[0].z, sizeof(struct state_s));
@@ -102,7 +106,7 @@ void bsdconv_destroy(struct bsdconv_t *cd){
 }
 
 int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
-	unsigned int i;
+	unsigned int i, nofeed=0;
 
 	struct data_s iterminator={
 		.data=(int)"\x01\x3f",
@@ -120,43 +124,58 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	ins->feed_len+=ins->feed - ins->in_buf;
 	ins->feed=ins->in_buf;
 	if(ins->feed_len==0){
-		if(ins->from_match.data){
-			goto pass_to_inter;}
-		if(ins->inter_match.data){
-			goto pass_to_to;}
-		if(ins->to_data.data){
-			goto pass_to_out;}
+		nofeed=1;
+	}
+	if(ins->to_data.data){
+		DPRINTF("JUMP TO pass_to_out");
+		goto pass_to_out;
+	}
+	if(ins->inter_match.data){
+		DPRINTF("JUMP TO pass_to_to");
+		goto pass_to_to;
+	}
+	if(ins->from_match.data){
+		DPRINTF("JUMP TO pass_to_inter");
+		goto pass_to_inter;
+	}
+	if(nofeed){
+		goto pass_to_to;
 	}
 
-#define FROM_NEXT() \
---ins->feed_len;	\
-++ins->feed;
 	//from
 	phase_from:
+DPRINTF("FROM");
 	ins->from_index=0;
 	ins->from_match.sub[0]=(int)ins->feed;
 	ins->from_match.sub[1]=ins->feed_len;
 	while(ins->feed_len){
+DPRINTF("%d:%d", __LINE__,ins->feed_len);
+DPRINTF("BYTE:%X", (int) *ins->feed);
 		memcpy(&ins->from_state, cd->from[ins->from_index].z + ins->from_state.sub[*ins->feed], sizeof(struct state_s));
+		--ins->feed_len;
+		++ins->feed;
 		switch(ins->from_state.status){
 			case DEADEND:
-				FROM_NEXT();
 				pass_to_inter:
 				if(ins->from_match.data){
+DPRINTF("%d", __LINE__);
 					memcpy(&ins->inter_data, ins->inter_z + ins->from_match.data, sizeof(struct data_s));
 					ins->inter_d=ins->inter_data.data+ins->inter_z;
 					ins->from_match.data=0;
+					memcpy(&ins->inter_state, cd->inter[0].z, sizeof(struct state_s));
 					memcpy(&ins->from_state, cd->from[ins->from_index].z, sizeof(struct state_s));
 					ins->feed=(unsigned char *)ins->from_match.sub[0];
 					ins->feed_len=ins->from_match.sub[1];
 					goto phase_inter;
-				}else if(ins->from_index<cd->nfrom){
+				}else if(ins->from_index < cd->nfrom){
+DPRINTF("%d", __LINE__);
 					ins->from_index++;
 					memcpy(&ins->from_state, cd->from[ins->from_index].z, sizeof(struct state_s));
 					ins->feed=(unsigned char *)ins->from_match.sub[0];
 					ins->feed_len=ins->from_match.sub[1];
 					continue;
 				}else{
+DPRINTF("%d", __LINE__);
 					ins->ierr++;
 					ins->inter_data=iterminator;
 					ins->inter_z=0;
@@ -165,53 +184,62 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				}
 				break;
 			case MATCH:
+DPRINTF("%d", __LINE__);
 				ins->from_match.data=ins->from_state.data;
 				ins->inter_z=cd->from[ins->from_index].z;
 				ins->from_match.sub[0]=(int)ins->feed;
 				ins->from_match.sub[1]=ins->feed_len;
 				break;
+			default:
+DPRINTF("%d", __LINE__);
 		}
-		FROM_NEXT();
 	}
 
-#define INTER_NEXT()	\
-memcpy(&ins->inter_state, cd->inter[ins->inter_index].z + ins->inter_state.sub[256], sizeof(struct state_s));	\
-if(ins->inter_data.next){	\
-	memcpy(&ins->inter_data, ins->inter_z + ins->inter_data.next, sizeof(struct data_s));	\
-	ins->inter_d=ins->inter_data.data + ins->inter_z;	\
-}else{	\
-	ins->inter_data.data=0;	\
-}
 	//inter
 	phase_inter:
 	ins->inter_index=0;
 	ins->inter_match.sub[0]=ins->inter_data.p + (int)ins->inter_z;
 	while(ins->inter_data.data){
+DPRINTF("INTER %d: %d", __LINE__, ins->inter_data.data);
 		for(i=0;i<ins->inter_data.len;i++){
 			memcpy(&ins->inter_state, cd->inter[ins->inter_index].z + ins->inter_state.sub[ins->inter_d[i]], sizeof(struct state_s));
 			if(ins->inter_state.status==DEADEND){
 				break;
 			}
 		}
-		switch(ins->inter_state.status){
+		i=ins->inter_state.status;
+		memcpy(&ins->inter_state, cd->inter[ins->inter_index].z + ins->inter_state.sub[256], sizeof(struct state_s));
+		DPRINTF("INTER_DATA.P=%d", ins->inter_data.p);
+		if(ins->inter_data.next){
+			memcpy(&ins->inter_data, ins->inter_z + ins->inter_data.next, sizeof(struct data_s));
+			ins->inter_d=ins->inter_data.data + ins->inter_z;
+			DPRINTF("A");
+		}else{
+			DPRINTF("B");
+			ins->inter_data.data=0;
+		}
+		switch(i){
 			case DEADEND:
-				INTER_NEXT();
 				pass_to_to:
 				if(ins->inter_match.data){
+DPRINTF("M%d", __LINE__);
 					memcpy(&ins->to_data, ins->to_z + ins->inter_match.data, sizeof(struct data_s));
 					ins->to_d=ins->to_data.data+ins->to_z;
 					ins->inter_match.data=0;
+					memcpy(&ins->to_state, cd->to[0].z, sizeof(struct state_s));
 					memcpy(&ins->inter_state, cd->inter[ins->inter_index].z, sizeof(struct state_s));
 					memcpy(&ins->inter_data, (char *)ins->inter_match.sub[0], sizeof(struct data_s));
 					i=0;
 					goto phase_to;
 				}else if(ins->inter_index < cd->ninter){
+DPRINTF("N%d", __LINE__);
 					ins->inter_index++;
 					memcpy(&ins->inter_state, cd->inter[ins->inter_index].z, sizeof(struct state_s));
 					memcpy(&ins->inter_data, (char *)ins->inter_match.sub[0], sizeof(struct data_s));
 					i=0;
 					continue;
 				}else{
+DPRINTF("P%d", __LINE__);
 					ins->to_data=ins->inter_data;
 					ins->to_z=ins->inter_z;
 					ins->to_d=ins->to_data.data+ins->to_z;
@@ -220,37 +248,40 @@ if(ins->inter_data.next){	\
 				}
 				break;
 			case MATCH:
+DPRINTF("inter_match %d", __LINE__);
 				ins->inter_match.data=ins->inter_state.data;
 				ins->to_z=cd->inter[ins->inter_index].z;
 				ins->inter_match.sub[0]=ins->inter_data.p + (int)ins->inter_z;
 				break;
+			default:
+DPRINTF("%d", __LINE__);
 		}
-		INTER_NEXT();
 	}
-
-#define TO_NEXT()	\
-memcpy(&ins->to_state, cd->to[ins->to_index].z + ins->to_state.sub[256], sizeof(struct state_s));	\
-if(ins->to_data.next){	\
-	memcpy(&ins->to_data, ins->to_z + ins->to_data.next, sizeof(struct data_s));	\
-	ins->to_d=ins->to_data.data + ins->to_z;	\
-}else{	\
-	ins->to_data.data=0;	\
-}
 
 	//to
 	phase_to:
+DPRINTF("PRETO");
 	ins->to_index=0;
 	ins->to_match.sub[0]=ins->to_data.p + (int)ins->to_z;
 	while(ins->to_data.data){
+DPRINTF("TO%d", __LINE__);
 		for(i=0;i<ins->to_data.len;i++){
 			memcpy(&ins->to_state, cd->to[ins->to_index].z + ins->to_state.sub[ins->to_d[i]], sizeof(struct state_s));
 			if(ins->to_state.status==DEADEND){
 				break;
 			}
 		}
-		switch(ins->to_state.status){
+		i=ins->to_state.status;
+		memcpy(&ins->to_state, cd->to[ins->to_index].z + ins->to_state.sub[256], sizeof(struct state_s));
+		if(ins->to_data.next){
+			memcpy(&ins->to_data, ins->to_z + ins->to_data.next, sizeof(struct data_s));
+			ins->to_d=ins->to_data.data + ins->to_z;
+		}else{
+			ins->to_data.data=0;
+		}
+		switch(i){
 			case DEADEND:
-				TO_NEXT();
+DPRINTF("%d", __LINE__);
 				pass_to_out:
 				if(ins->to_match.data){
 					memcpy(&ins->out_data, ins->out_z + ins->to_match.data, sizeof(struct data_s));
@@ -259,15 +290,12 @@ if(ins->to_data.next){	\
 					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
 					memcpy(&ins->to_data, (char *)ins->to_match.sub[0], sizeof(struct data_s));
 					i=0;
-printf("a:%d\n", ins->out_data.len);
 					goto phase_out;
 				}else if(ins->to_index < cd->nto){
 					ins->to_index++;
 					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
 					memcpy(&ins->to_data, (char *)ins->to_match.sub[0], sizeof(struct data_s));
 					i=0;
-printf("b:%d\n", ins->out_data.len);
-fflush(stdout);
 					continue;
 				}else{
 					ins->oerr++;
@@ -279,39 +307,58 @@ fflush(stdout);
 				}
 				break;
 			case MATCH:
+DPRINTF("%d", __LINE__);
 				ins->to_match.data=ins->to_state.data;
 				ins->out_z=cd->to[ins->to_index].z;
 				ins->to_match.sub[0]=ins->to_data.p + (int)ins->to_z;
 				break;
 		}
-		TO_NEXT();
 	}
 
 	//out
 	phase_out:
+DPRINTF("OUT");
 	while(ins->out_data.data){
 		i=ins->back_len + ins->out_data.len;
 		if(i > ins->out_len){
-			//hibernate;
-			memcpy(ins->in_buf, ins->feed, ins->feed_len);
-			ins->feed=ins->in_buf + ins->feed_len;
-			ins->feed_len=ins->in_len - ins->feed_len;
-			return 1;
+DPRINTF("HIBERNATE");
+			goto hibernate;
 		}else{
+DPRINTF("Copyout %d",ins->out_data.len);
 			memcpy(ins->back, ins->out_d, ins->out_data.len);
 			ins->back_len=i;
 		}
 		if(ins->out_data.next){
 			memcpy(&ins->out_data, ins->out_z + ins->out_data.next, sizeof(struct data_s));
 			ins->out_d=ins->out_data.data + ins->out_z;
+DPRINTF("Rotate OK");
 		}else{
 			ins->out_data.data=0;
+DPRINTF("Rotate END");
 		}
 	}
 
-	if(ins->to_data.data)	goto phase_to;
-	if(ins->inter_data.data)goto phase_inter;
-	if(ins->feed_len)	goto phase_from;
+	if(ins->to_data.data){
+DPRINTF("goto phase_to");
+		goto phase_to;
+	}
+	if(ins->inter_data.data){
+DPRINTF("goto phase_inter");
+		goto phase_inter;
+	}
+	if(ins->feed_len){
+DPRINTF("goto phase_from");
+		goto phase_from;
+	}
+	if(nofeed && ins->back_len==0){
+DPRINTF("RETURN 0");
+		return 0;
+	}
 
-	return 0;
+	hibernate:
+		memcpy(ins->in_buf, ins->feed, ins->feed_len);
+		ins->feed=ins->in_buf + ins->feed_len;
+		ins->feed_len=ins->in_len - ins->feed_len;
+DPRINTF("return 1");
+		return 1;
 }
