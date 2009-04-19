@@ -34,7 +34,7 @@ int main(int argc, char *argv[]){
 	int i, j, k, l, c;
 	FILE *fp;
 	unsigned char inbuf[1024], *f, *t, dat[256], *tmp;
-	struct m_data_s *data_r, *data_p=NULL, *data_t=NULL;
+	struct m_data_s *data_r=NULL, *data_p=NULL, *data_t=NULL;
 	struct m_state_s *state_r, *state_p, *state_t;
 	struct state_s dstate;
 	struct data_s ddata;
@@ -64,6 +64,10 @@ int main(int argc, char *argv[]){
 	table['F']=15;
 	fp=fopen(argv[1], "r");
 
+	DPRINTF("STATUS CONTINUE: %d", CONTINUE);
+	DPRINTF("STATUS DEADEND: %d", DEADEND);
+	DPRINTF("STATUS MATCH: %d", MATCH);
+	DPRINTF("STATUS SUBMATCH: %d", SUBMATCH);
 	state_t=state_p=state_r=(struct m_state_s *)malloc(sizeof(struct m_state_s));
 	state_p->status=DEADEND;
 	state_p->data=0;
