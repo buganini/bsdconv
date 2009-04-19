@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "bsdconv.h"
 
 int main(int argc, char *argv[]){
@@ -9,6 +10,10 @@ int main(int argc, char *argv[]){
 	cd=bsdconv_create(argv[1], argv[2], argv[3]);
 	bsdconv_init(cd, &ins, in, 1024, out, 1024);
 	int r;
+	if(!inf){
+		fprintf(stderr, "Unable to open file %s\n", argv[4]);
+		exit(1);
+	}
 	do{
 		if(ins.feed_len) ins.feed_len=fread(ins.feed, 1, ins.feed_len, inf);
 		r=bsd_conv(cd, &ins);

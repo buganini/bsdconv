@@ -32,6 +32,10 @@
 		if(*t==',' || *t==0){									\
 			*t=0;									\
 			ret->X[i].fd=open(ret->X[i].desc, O_RDONLY);				\
+			if(!ret->X[i].fd){	\
+				fprintf(stderr, "No such codec %s/%s", #X, ret->X[i].desc);	\
+				exit(1);	\
+			}	\
 			fstat(ret->X[i].fd, &stat);						\
 			ret->X[i].z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,ret->X[i].fd,0);	\
 			if(i+1 < n##X){								\
