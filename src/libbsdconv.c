@@ -134,27 +134,21 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 		goto phase_out;
 	}
 	if(ins->pend_from){
-		DPRINTF("JUMP TO pass_to_inter");
 		goto pass_to_inter;
 	}
 	if(ins->pend_inter){
-		DPRINTF("JUMP TO pass_to_to");
 		goto pass_to_to;
 	}
 	if(ins->pend_to){
-		DPRINTF("JUMP TO pass_to_out");
 		goto pass_to_out;
 	}
 
 	//from
 	phase_from:
-DPRINTF("FROM");
 	while(ins->feed_len){
-DPRINTF("BYTE:%X", (int) *ins->feed);
 		memcpy(&ins->from_state, cd->from[ins->from_index].z + ins->from_state.sub[*ins->feed], sizeof(struct state_s));
 		--ins->feed_len;
 		++ins->feed;
-DPRINTF("from left %d", ins->feed_len);
 		switch(ins->from_state.status){
 			case DEADEND:
 				pass_to_inter:
@@ -252,7 +246,6 @@ DPRINTF("from left %d", ins->feed_len);
 				ins->inter_match.data=ins->inter_state.data;
 				ins->to_z=cd->inter[ins->inter_index].z;
 				ins->inter_match.sub[0]=ins->inter_data.p + (unsigned int)ins->inter_z;
-				DPRINTF("inter_match.sub[0]=%d", ins->inter_match.sub[0]);
 				break;
 			case CONTINUE:
 				ins->pend_inter=1;
@@ -282,7 +275,6 @@ DPRINTF("from left %d", ins->feed_len);
 				pass_to_out:
 				ins->pend_to=0;
 				if(ins->to_match.data){
-DPRINTF("AA");
 					memcpy(&ins->out_data, ins->out_z + ins->to_match.data, sizeof(struct data_s));
 					ins->out_d=ins->out_data.data+ins->out_z;
 					ins->to_match.data=0;
@@ -292,14 +284,12 @@ DPRINTF("AA");
 					ins->to_index=0;
 					goto phase_out;
 				}else if(ins->to_index < cd->nto){
-DPRINTF("BB");
 					ins->to_index++;
 					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
 					memcpy(&ins->to_data, (char *)ins->to_match.sub[0], sizeof(struct data_s));
 					i=0;
 					continue;
 				}else{
-DPRINTF("CC");
 					ins->to_index=0;
 					ins->oerr++;
 					ins->out_data=oterminator;
@@ -321,38 +311,29 @@ DPRINTF("CC");
 
 	//out
 	phase_out:
-DPRINTF("OUT %u", ins->out_data.data);
 	while(ins->out_data.data){
 		i=ins->back_len + ins->out_data.len;
 		if(i > ins->out_len){
-DPRINTF("HIBERNATE");
 			goto hibernate;
 		}else{
-DPRINTF("Copyout %d",ins->out_data.len);
 			memcpy(ins->back + ins->back_len, ins->out_d, ins->out_data.len);
 			ins->back_len=i;
 		}
 		if(ins->out_data.next){
 			memcpy(&ins->out_data, ins->out_z + ins->out_data.next, sizeof(struct data_s));
 			ins->out_d=ins->out_data.data + ins->out_z;
-DPRINTF("Rotate OK");
 		}else{
 			ins->out_data.data=0;
-DPRINTF("Rotate END");
 		}
 	}
 
 	if(ins->to_data.data){
-DPRINTF("goto phase_to");
 		goto phase_to;
 	}
 	if(ins->inter_data.data){
-DPRINTF("goto phase_inter");
 		goto phase_inter;
 	}
-	DPRINTF("Left Len: %u", ins->feed_len);
 	if(ins->feed_len){
-DPRINTF("goto phase_from");
 		goto phase_from;
 	}
 
@@ -362,6 +343,5 @@ DPRINTF("goto phase_from");
 		memcpy(ins->in_buf, ins->feed, ins->feed_len);
 		ins->feed=ins->in_buf + ins->feed_len;
 		ins->feed_len=ins->in_len - ins->feed_len;
-DPRINTF("return 1");
 		return 1;
 }

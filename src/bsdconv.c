@@ -11,7 +11,6 @@ int main(int argc, char *argv[]){
 	int r;
 	do{
 		if(ins.feed_len) ins.feed_len=fread(ins.feed, 1, ins.feed_len, inf);
-		DPRINTF("bsdconv()");
 		r=bsd_conv(cd, &ins);
 		if(ins.back_len)fwrite(ins.back, 1, ins.back_len, stdout);
 	}while(r);
