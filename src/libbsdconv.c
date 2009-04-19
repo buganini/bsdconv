@@ -85,11 +85,17 @@ void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, unsigne
 	memcpy(&ins->to_state, cd->to[0].z, sizeof(struct state_s));
 }
 
-struct bsdconv_t *bsdconv_create(const char *ofrom, const char *ointer, const char *oto){
+struct bsdconv_t *bsdconv_create(const char *conversion){
 	struct bsdconv_t *ret=malloc(sizeof(struct bsdconv_t));
 	struct stat stat;
+	char *ofrom, *ointer, *oto;
 	char *t, *from, *inter, *to;
 	int i,nfrom,nto,ninter;
+
+	t=strdup(conversion);
+	ofrom=(char *)strsep(&t, ":");
+	ointer=(char *)strsep(&t, ":");
+	oto=(char *)strsep(&t, ":");
 
 	COUNT(from);
 	COUNT(inter);
@@ -111,6 +117,7 @@ struct bsdconv_t *bsdconv_create(const char *ofrom, const char *ointer, const ch
 }
 
 void bsdconv_destroy(struct bsdconv_t *cd){
+	free(cd->from[0].desc);
 	free(cd);
 }
 

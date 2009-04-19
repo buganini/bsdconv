@@ -5,13 +5,13 @@
 int main(int argc, char *argv[]){
 	struct bsdconv_instruction ins;
 	struct bsdconv_t *cd;
-	FILE *inf=fopen(argv[4],"rb");
+	FILE *inf=fopen(argv[2],"rb");
 	unsigned char in[1024], out[1024];
-	cd=bsdconv_create(argv[1], argv[2], argv[3]);
+	cd=bsdconv_create(argv[1]);
 	bsdconv_init(cd, &ins, in, 1024, out, 1024);
 	int r;
 	if(!inf){
-		fprintf(stderr, "Unable to open file %s\n", argv[4]);
+		fprintf(stderr, "Unable to open file %s\n", argv[2]);
 		exit(1);
 	}
 	do{

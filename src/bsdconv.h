@@ -62,7 +62,7 @@ struct bsdconv_instruction{
 };
 
 void bsdconv_init(struct bsdconv_t *, struct bsdconv_instruction *, unsigned char *, size_t, unsigned char *, size_t);
-struct bsdconv_t *bsdconv_create(const char *, const char *, const char *);
+struct bsdconv_t *bsdconv_create(const char *);
 void bsdconv_destroy(struct bsdconv_t *);
 int bsd_conv(struct bsdconv_t *, struct bsdconv_instruction *);
 
