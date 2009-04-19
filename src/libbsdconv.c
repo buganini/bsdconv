@@ -27,6 +27,7 @@
 	X=strdup(o##X);										\
 	ret->X=malloc(n##X * sizeof(struct bsdconv_codec_t));					\
 	ret->X[0].desc=X;									\
+	chdir(#X);	\
 	for(i=0,t=X;;++t){									\
 		if(*t==',' || *t==0){									\
 			*t=0;									\
@@ -43,6 +44,7 @@
 			*t=toupper(*t); 							\
 		}										\
 	}											\
+	chdir("..");	\
 }while(0);
 
 void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, unsigned char *inbuf, size_t inlen, unsigned char *outbuf, size_t outlen){
@@ -88,7 +90,7 @@ struct bsdconv_t *bsdconv_create(const char *ofrom, const char *ointer, const ch
 	COUNT(from);
 	COUNT(inter);
 	COUNT(to);
-	chdir("/usr/local/share/bsdconv/codecs");
+	chdir("/usr/local/share/bsdconv");
 	if(nfrom==0 || nto==0 || ninter==0){
 		fprintf(stderr, "Need at least 1 from and to encoding.\n Use \"dummy\" for none inter-map.");
 		fflush(stderr);
@@ -110,7 +112,6 @@ void bsdconv_destroy(struct bsdconv_t *cd){
 
 int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	unsigned int i;
-	struct state_s tmp_state;
 
 	struct data_s iterminator={
 		.data=(unsigned int)"\x01\x3f",
