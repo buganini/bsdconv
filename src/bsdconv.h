@@ -1,6 +1,6 @@
-#define DEBUG
+//define DEBUG
 #ifdef DEBUG
-#define DPRINTF(fmt, args...) printf("DEBUG: " fmt "\n", ## args); fflush(stdout);
+#define DPRINTF(fmt, args...) printf("DEBUG: %d " fmt "\n", __LINE__, ## args); fflush(stdout);
 #else
 #define DPRINTF(fmt, args...)
 #endif
@@ -49,6 +49,8 @@ struct bsdconv_instruction{
 	size_t feed_len;
 	unsigned char *back;
 	size_t back_len;
+
+	unsigned char pend_from, pend_inter, pend_to;
 
 	unsigned char ierr, oerr;
 
