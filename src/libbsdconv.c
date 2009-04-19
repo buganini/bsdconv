@@ -9,45 +9,45 @@
 #include <ctype.h>
 #include "bsdconv.h"
 
-#define COUNT(X) do{				\
-	if(o##X){				\
-		n##X=1;				\
+#define COUNT(X) do{	\
+	if(o##X){	\
+		n##X=1;	\
 		for(t=(char *)o##X;*t;t++){	\
 			if(*t==','){	\
-				n##X++;		\
-			}			\
-		}				\
-	}else{					\
-		n##X=0;				\
-	}					\
-	ret->n##X=n##X;				\
+				n##X++;	\
+			}	\
+		}	\
+	}else{	\
+		n##X=0;	\
+	}	\
+	ret->n##X=n##X;		\
 }while(0);
 
-#define GENLIST(X) do{										\
-	X=strdup(o##X);										\
-	ret->X=malloc(n##X * sizeof(struct bsdconv_codec_t));					\
-	ret->X[0].desc=X;									\
+#define GENLIST(X) do{	\
+	X=strdup(o##X);	\
+	ret->X=malloc(n##X * sizeof(struct bsdconv_codec_t));		\
+	ret->X[0].desc=X;	\
 	chdir(#X);	\
-	for(i=0,t=X;;++t){									\
-		if(*t==',' || *t==0){									\
-			*t=0;									\
-			ret->X[i].fd=open(ret->X[i].desc, O_RDONLY);				\
+	for(i=0,t=X;;++t){	\
+		if(*t==',' || *t==0){	\
+			*t=0;	\
+			ret->X[i].fd=open(ret->X[i].desc, O_RDONLY);	\
 			if(!ret->X[i].fd){	\
 				fprintf(stderr, "No such codec %s/%s", #X, ret->X[i].desc);	\
 				exit(1);	\
 			}	\
-			fstat(ret->X[i].fd, &stat);						\
+			fstat(ret->X[i].fd, &stat);		\
 			ret->X[i].z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,ret->X[i].fd,0);	\
-			if(i+1 < n##X){								\
-				ret->X[++i].desc=t+1;						\
-			}									\
-			if(*t==0){				\
-				break;				\
-			}					\
-		}else{										\
-			*t=toupper(*t); 							\
-		}										\
-	}											\
+			if(i+1 < n##X){	\
+				ret->X[++i].desc=t+1;	\
+			}	\
+			if(*t==0){	\
+				break;	\
+			}	\
+		}else{	\
+			*t=toupper(*t); 	\
+		}	\
+	}	\
 	chdir("..");	\
 }while(0);
 
