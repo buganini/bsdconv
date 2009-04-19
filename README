@@ -1,0 +1,4 @@
+Map format:
+from<tab>to
+
+in to field, UNICODE is prefixed with 01
