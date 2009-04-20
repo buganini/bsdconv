@@ -40,6 +40,8 @@ int main(int argc, char *argv[]){
 	struct data_s ddata;
 	void *tofree;
 
+	printf("Converting: %s\n", argv[1]);
+
 	table['0']=0;
 	table['1']=1;
 	table['2']=2;
