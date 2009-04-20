@@ -349,6 +349,9 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 		goto phase_from;
 	}
 
+	if(ins->pend_from || ins->pend_inter || ins->pend_to)
+		goto hibernate;
+
 	return 0;
 
 	hibernate:
