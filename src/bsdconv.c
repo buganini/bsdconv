@@ -10,7 +10,7 @@ int main(int argc, char *argv[]){
 
 	int r;
 	if(argc<2){
-		fprintf(stderr, "Usage:\n\t %s from:inter:to [input] [output]\n", argv[0]);
+		fprintf(stderr, "Usage:\n\t %s from[,from2...]:[inter[,inter2,...]]:to[,to2...] [input [output]]\n", argv[0]);
 		exit(1);
 	}
 	if(argc>2){
