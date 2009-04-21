@@ -355,7 +355,13 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	return 0;
 
 	hibernate:
+		/*
+		XXX
+		SUBMATCH -> Hibernate -> DEADEND
+		leads to restore failure
+		*/
 		memcpy(ins->in_buf, ins->feed, ins->feed_len);
+
 		ins->feed=ins->in_buf + ins->feed_len;
 		ins->feed_len=ins->in_len - ins->feed_len;
 		return 1;
