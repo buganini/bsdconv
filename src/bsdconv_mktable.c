@@ -34,14 +34,14 @@ int offset=0;
 int main(int argc, char *argv[]){
 	int i, j, k, l, c;
 	FILE *fp;
-	unsigned char inbuf[1024], *f, *t, dat[256], *tmp;
+	unsigned char inbuf[1024], *f, *t, dat[256], *tmp, *of, *ot;
 	struct m_data_s *data_r=NULL, *data_p=NULL, *data_t=NULL;
 	struct m_state_s *state_r, *state_p, *state_t;
 	struct state_s dstate;
 	struct data_s ddata;
 	void *tofree;
 
-	printf("Converting: %s\n", argv[1]);
+	printf("Making table %s\n", argv[1]);
 
 	table['0']=0;
 	table['1']=1;
@@ -85,8 +85,8 @@ int main(int argc, char *argv[]){
 	while(fgets((char *)inbuf, 1024, fp)){
 		if(inbuf[0]=='#') continue;
 		tmp=inbuf;
-		f=(unsigned char *)strsep((char **)&tmp, "\t ");
-		t=(unsigned char *)strsep((char **)&tmp, "\t\r\n# ");
+		f=of=(unsigned char *)strsep((char **)&tmp, "\t ");
+		t=ot=(unsigned char *)strsep((char **)&tmp, "\t\r\n# ");
 		state_p=state_r;
 		while(*f){
 			if(*f==','){
@@ -126,6 +126,11 @@ int main(int argc, char *argv[]){
 			++f;
 		}
 
+		if(state_p->data){
+			printf("Duplicated key: %s, dropping data: %s\n", of, ot);
+			continue;
+		}
+
 		j=0;
 		l=0;
 		k=1;
@@ -138,51 +143,28 @@ int main(int argc, char *argv[]){
 						data_p->next=offset;
 						data_p=data_t=data_t->n;
 DPRINTF("%d.next=%d", data_p->p, offset);
-						//init new cell
-						data_p->p=offset;
-						data_p->next=0;
-						data_p->n=NULL;
-						offset+=sizeof(struct data_s);
-
-						data_p->dp=(unsigned char *)malloc(l);
-						memcpy(data_p->dp,dat,l);
-						data_p->len=l;
-						data_p->data=offset;
-						offset+=l;
 					}else if(data_t){
 						//make new cell
 						data_t->n=(struct m_data_s *)malloc(sizeof(struct m_data_s));
 						data_p=data_t=data_t->n;
-
-						//init new cell
-						data_p->p=offset;
-						data_p->next=0;
-						data_p->n=NULL;
-						offset+=sizeof(struct data_s);
-
-						//put data
-						data_p->dp=(unsigned char *)malloc(l);
-						memcpy(data_p->dp,dat,l);
-						data_p->len=l;
-						data_p->data=offset;
-						offset+=l;
 					}else{
 						//make new cell
 						data_t=data_p=data_r=(struct m_data_s *)malloc(sizeof(struct m_data_s));
-
-						//init new cell
-						data_p->p=offset;
-						data_p->next=0;
-						data_p->n=NULL;
-						offset+=sizeof(struct data_s);
-
-						//put data
-						data_p->dp=(unsigned char *)malloc(l);
-						memcpy(data_p->dp, dat, l);
-						data_p->len=l;
-						data_p->data=offset;
-						offset+=l;
 					}
+
+					//init new cell
+					data_p->p=offset;
+					data_p->next=0;
+					data_p->n=NULL;
+					offset+=sizeof(struct data_s);
+
+					//put data
+					data_p->dp=(unsigned char *)malloc(l);
+					memcpy(data_p->dp, dat, l);
+					data_p->len=l;
+					data_p->data=offset;
+					offset+=l;
+
 					DPRINTF("%d.data=(%d) %d", data_p->p, data_p->len, data_p->data);
 					if(k){
 						k=0;
