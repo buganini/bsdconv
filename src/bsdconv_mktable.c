@@ -24,6 +24,7 @@ struct m_state_s{
 	struct m_state_s *psub[257];
 	unsigned int p;
 	struct m_state_s *n;
+	int child;
 };
 
 unsigned char table[256]={};
@@ -97,12 +98,18 @@ int main(int argc, char *argv[]){
 				c+=table[*f];
 			}
 			if(state_p->psub[c]){
+				if(state_p->status==MATCH){
+					state_p->status=SUBMATCH;
+				}
 				state_p=state_p->psub[c];
 			}else{
 //				DPRINTF("%d[%x]=%d\n", state_p->p, (int)c, offset);
 				state_p->psub[c]=(struct m_state_s *)malloc(sizeof(struct m_state_s));
 				state_p->sub[c]=offset;
+				state_p->child++;
+
 				state_t->n=state_p->psub[c];
+
 				state_t=state_t->n;
 				state_t->n=NULL;
 					state_p=state_p->psub[c];
@@ -110,6 +117,7 @@ int main(int argc, char *argv[]){
 					offset+=sizeof(struct state_s);
 				state_p->status=CONTINUE;
 				state_p->data=0;
+				state_p->child=0;
 				for(i=0;i<257;i++){
 					state_p->sub[i]=0;
 					state_p->psub[i]=NULL;
@@ -136,7 +144,6 @@ DPRINTF("%d.next=%d", data_p->p, offset);
 						data_p->n=NULL;
 						offset+=sizeof(struct data_s);
 
-						//put data
 						data_p->dp=(unsigned char *)malloc(l);
 						memcpy(data_p->dp,dat,l);
 						data_p->len=l;
@@ -179,7 +186,11 @@ DPRINTF("%d.next=%d", data_p->p, offset);
 					DPRINTF("%d.data=(%d) %d", data_p->p, data_p->len, data_p->data);
 					if(k){
 						k=0;
-						state_p->status=MATCH;
+						if(state_p->child){
+							state_p->status=SUBMATCH;
+						}else{
+							state_p->status=MATCH;
+						}
 						state_p->data=data_p->p;
 					}
 					if(*t==0){
