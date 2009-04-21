@@ -6,7 +6,7 @@ int main(int argc, char *argv[]){
 	struct bsdconv_instruction ins;
 	struct bsdconv_t *cd;
 	FILE *inf, *otf;
-	unsigned char in[1024], out[1024];
+	unsigned char in[1024], out[1024], verbose=0;
 
 	int r;
 	if(argc<2){
@@ -32,6 +32,10 @@ int main(int argc, char *argv[]){
 		otf=stdout;
 	}
 
+	if(argc>4 && strcmp(argv[4],"-v")==0){
+		verbose=1;
+	}
+
 	cd=bsdconv_create(argv[1]);
 	bsdconv_init(cd, &ins, in, 1024, out, 1024);
 	do{
@@ -39,8 +43,12 @@ int main(int argc, char *argv[]){
 		r=bsd_conv(cd, &ins);
 		if(ins.back_len)fwrite(ins.back, 1, ins.back_len, otf);
 	}while(r);
-	printf("Input failure: %u\n", ins.ierr);
-	printf("Output failure: %u\n", ins.oerr);
+
+	if(verbose){
+		fprintf(stderr, "Input failure: %u\n", ins.ierr);
+		fprintf(stderr, "Output failure: %u\n", ins.oerr);
+	}
+
 	bsdconv_destroy(cd);
 	if(inf!=stdin){
 		fclose(inf);
