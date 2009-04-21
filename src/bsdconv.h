@@ -23,8 +23,9 @@ struct bsdconv_t {
 enum bsdconv_status{
 	CONTINUE,
 	DEADEND,
-	MATCH,	
-	SUBMATCH,	
+	MATCH,
+	SUBMATCH,
+	CALLBACK,
 };
 
 struct data_s{
