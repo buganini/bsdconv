@@ -195,11 +195,13 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				}
 				break;
 			case MATCH:
+			case SUBMATCH:
 				ins->from_match.data=ins->from_state.data;
 				ins->inter_z=cd->from[ins->from_index].z;
 				ins->from_match.sub[0]=(unsigned int)ins->feed;
 				ins->from_match.sub[1]=ins->feed_len;
 				break;
+			case CALLBACK:
 			case CONTINUE:
 				ins->pend_from=1;
 		}
@@ -255,6 +257,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				}
 				break;
 			case MATCH:
+			case SUBMATCH:
 				ins->inter_match.data=ins->inter_state.data;
 				ins->to_z=cd->inter[ins->inter_index].z;
 				ins->inter_match.sub[0]=ins->inter_data.p + (unsigned int)ins->inter_z;
@@ -312,10 +315,12 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				}
 				break;
 			case MATCH:
+			case SUBMATCH:
 				ins->to_match.data=ins->to_state.data;
 				ins->out_z=cd->to[ins->to_index].z;
 				ins->to_match.sub[0]=ins->to_data.p + (unsigned int)ins->to_z;
 				break;
+			case CALLBACK:
 			case CONTINUE:
 				ins->pend_to=1;
 		}
