@@ -10,7 +10,7 @@
 #include "bsdconv.h"
 
 #define COUNT(X) do{	\
-	if(o##X){	\
+	if(*o##X){	\
 		n##X=1;	\
 		for(t=(char *)o##X;*t;t++){	\
 			if(*t==','){	\
@@ -108,9 +108,15 @@ struct bsdconv_t *bsdconv_create(const char *conversion){
 	COUNT(from);
 	COUNT(inter);
 	COUNT(to);
+
+	if(ninter==0){
+		ninter=2;
+		ointer="DUMMY";
+	}
+
 	chdir("/usr/local/share/bsdconv");
-	if(nfrom==0 || nto==0 || ninter==0){
-		fprintf(stderr, "Need at least 1 from and to encoding.\n Use \"dummy\" for none inter-map.");
+	if(nfrom==0 || nto==0){
+		fprintf(stderr, "Need at least 1 from and to encoding.\n");
 		fflush(stderr);
 		return NULL;
 	}
@@ -373,7 +379,12 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 		SUBMATCH -> Hibernate -> DEADEND
 		leads to restore failure
 		*/
-		memcpy(ins->in_buf, ins->feed, ins->feed_len);
+		if(ins->pend_from){
+			/* XXX not verified */
+			memcpy(ins->in_buf, (char *) ins->from_match.sub[0], ins->from_match.sub[1]);
+		}else{
+			memcpy(ins->in_buf, ins->feed, ins->feed_len);
+		}
 
 		ins->feed=ins->in_buf + ins->feed_len;
 		ins->feed_len=ins->in_len - ins->feed_len;
