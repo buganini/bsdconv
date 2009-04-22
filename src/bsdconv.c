@@ -49,8 +49,8 @@ int main(int argc, char *argv[]){
 		if(ins.back_len)fwrite(ins.back, 1, ins.back_len, otf);
 	}while(r);
 
-	fprintf(stderr, "Input failure: %u\n", ins.ierr);
-	fprintf(stderr, "Output failure: %u\n", ins.oerr);
+	fprintf(stderr, "Decoding failure: %u\n", ins.ierr);
+	fprintf(stderr, "Encoding failure: %u\n", ins.oerr);
 
 	bsdconv_destroy(cd);
 	if(inf!=stdin){
