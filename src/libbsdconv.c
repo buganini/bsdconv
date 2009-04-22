@@ -28,8 +28,12 @@
 	ret->X=malloc(n##X * sizeof(struct bsdconv_codec_t));		\
 	ret->X[0].desc=X;	\
 	chdir(#X);	\
+	brk=0;	\
 	for(i=0,t=X;;++t){	\
 		if(*t==',' || *t==0){	\
+			if(*t==0){	\
+				brk=1;	\
+			}	\
 			*t=0;	\
 			ret->X[i].fd=open(ret->X[i].desc, O_RDONLY);	\
 			if(!ret->X[i].fd){	\
@@ -38,10 +42,14 @@
 			}	\
 			fstat(ret->X[i].fd, &stat);		\
 			ret->X[i].z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,ret->X[i].fd,0);	\
+			if(!ret->X[i].z){	\
+				fprintf(stderr, "Memory map failed for %s/%s", #X, ret->X[i].desc);	\
+				exit(1);	\
+			}	\
 			if(i+1 < n##X){	\
 				ret->X[++i].desc=t+1;	\
 			}	\
-			if(*t==0){	\
+			if(brk){	\
 				break;	\
 			}	\
 		}else{	\
@@ -90,7 +98,7 @@ struct bsdconv_t *bsdconv_create(const char *conversion){
 	struct stat stat;
 	char *ofrom, *ointer, *oto;
 	char *t, *from, *inter, *to;
-	int i,nfrom,nto,ninter;
+	int i,nfrom,nto,ninter, brk;
 
 	t=strdup(conversion);
 	ofrom=(char *)strsep(&t, ":");
