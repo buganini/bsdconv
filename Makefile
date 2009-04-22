@@ -20,7 +20,7 @@ bsdconv_mktable:
 
 codecs: bsdconv_mktable
 	cd codecs && \
-	find * -type f | awk -F. '{cmd="../build/bin/bsdconv_mktable "$$1"."$$2" ../build/share/bsdconv/"$$1; system(cmd);}'
+	find */*.txt -type f | awk -F. '{cmd="../build/bin/bsdconv_mktable "$$1"."$$2" ../build/share/bsdconv/"$$1; system(cmd);}'
 
 clean:
 	rm -rf build
