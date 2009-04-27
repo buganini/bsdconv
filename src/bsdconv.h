@@ -29,7 +29,7 @@ enum bsdconv_status{
 };
 
 struct data_s{
-	unsigned int p;
+//	unsigned int p;
 	unsigned int data;
 	size_t len;
 	unsigned int next;
@@ -57,9 +57,9 @@ struct bsdconv_instruction{
 
 	struct state_s from_state, inter_state, to_state;
 	int from_index, inter_index, to_index;
-	unsigned char *inter_d, *to_d, *out_d, *inter_z, *to_z, *out_z;
+	unsigned char *inter_d, *to_d, *out_d;
 	struct state_s from_match, inter_match, to_match;
-	struct data_s inter_data, to_data, out_data;
+	struct data_s *inter_data_head, *to_data_head, *out_data_head, **inter_data_tail, **to_data_tail, **out_data_tail;
 };
 
 void bsdconv_init(struct bsdconv_t *, struct bsdconv_instruction *, unsigned char *, size_t, unsigned char *, size_t);
