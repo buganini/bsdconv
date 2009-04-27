@@ -108,13 +108,13 @@ int main(int argc, char *argv[]){
 				state_p->sub[c]=offset;
 				state_p->child++;
 
-				state_t->n=state_p->psub[c];
+				state_p=state_t->n=state_p->psub[c];
 
 				state_t=state_t->n;
 				state_t->n=NULL;
-					state_p=state_p->psub[c];
+
 				state_p->p=offset;
-					offset+=sizeof(struct state_s);
+				offset+=sizeof(struct state_s);
 				state_p->status=CONTINUE;
 				state_p->data=0;
 				state_p->child=0;
