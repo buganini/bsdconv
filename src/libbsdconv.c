@@ -59,7 +59,7 @@
 	chdir("..");	\
 }while(0);
 
-#define listcpy(X,Y,Z) for(data_ptr=(Y)+(int)(Z);data_ptr;data_ptr=data_ptr.next){	\
+#define listcpy(X,Y,Z) for(data_ptr=(Y)+(int)(Z);data_ptr;data_ptr=data_ptr->next){	\
 	*(ins->X##_data_tail)=malloc(sizeof(struct data_s));	\
 	memcpy(*(ins->X##_data_tail),data_ptr+(int)(Z), sizeof(struct data_s));	\
 	ptr=*(ins->X##_data_tail)->data+(int)(Z);	\
@@ -202,7 +202,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				pass_to_inter:
 				ins->pend_from=0;
 				if(ins->from_match.data){
-					listcpy(inter, ins->from_match.data,cd->from[ins->from_index].z);
+					listcpy(inter, ins->from_match.data, cd->from[ins->from_index].z);
 					ins->from_match.data=NULL;
 					memcpy(&ins->from_state, cd->from[ins->from_index].z, sizeof(struct state_s));
 					ins->feed=(unsigned char *)ins->from_match.sub[0];
@@ -244,7 +244,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	}
 
 #define INTER_NEXT() do{	\
-	inter_data=inter_data.next;	\
+	inter_data=inter_data->next;	\
 	memcpy(&ins->inter_state, (int)cd->inter[ins->inter_index].z + ins->inter_state.sub[256], sizeof(struct state_s));	\
 	if(ins->inter_state.status==DEADEND){ goto pass_to_to;}	\
 }while(0);
@@ -253,8 +253,8 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	ins->inter_match.sub[0]=(struct state_s *)ins->inter_data_head;
 	inter_data=ins->inter_data_head;
 	while(inter_data){
-		for(i=0;i<inter_data.len;i++){
-			memcpy(&ins->inter_state, (int)cd->inter[ins->inter_index].z + ins->inter_state.sub[*(inter_data.data+i)], sizeof(struct state_s));
+		for(i=0;i<inter_data->len;i++){
+			memcpy(&ins->inter_state, (int)cd->inter[ins->inter_index].z + ins->inter_state.sub[*(inter_data->data+i)], sizeof(struct state_s));
 			if(ins->inter_state.status==DEADEND){
 				break;
 			}
@@ -304,7 +304,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	}
 
 #define TO_NEXT() do{        \
-	to_data=inter_data.next;     \
+	to_data=inter_data->next;     \
 	memcpy(&ins->to_state, (int)cd->to[ins->to_index].z + ins->to_state.sub[256], sizeof(struct state_s));   \
 	if(ins->to_state.status==DEADEND){ goto pass_to_out;} \
 }while(0);
@@ -313,7 +313,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	ins->to_match.sub[0]=(struct state_s *)ins->to_data_head;
 	to_data=ins->to_data_head;
 	while(to_data){
-		for(i=0;i<to_data.len;i++){
+		for(i=0;i<to_data->len;i++){
 			memcpy(&ins->to_state, (int)cd->to[ins->to_index].z + ins->to_state.sub[ins->to_d[i]], sizeof(struct state_s));
 			if(ins->to_state.status==DEADEND){
 				break;
@@ -345,7 +345,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 					ins->to_index=0;
 					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
 
-					listfree(to,to_data.next);
+					listfree(to,to_data->next);
 					to_data=ins->to_data_head;
 
 					goto phase_out;
