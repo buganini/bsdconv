@@ -194,6 +194,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	//from
 	phase_from:
 	while(ins->feed_len){
+fprintf(stderr, "%p [%d]=%X\n", cd->from[ins->from_index].z, (int)*ins->feed, (int)ins->from_state.sub[*ins->feed]); fflush(stderr);
 		memcpy(&ins->from_state, (int)cd->from[ins->from_index].z + ins->from_state.sub[*ins->feed], sizeof(struct state_s));
 		--ins->feed_len;
 		++ins->feed;

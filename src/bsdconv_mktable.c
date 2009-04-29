@@ -11,8 +11,7 @@
 struct m_data_s{
 	unsigned char *data;
 	size_t len;
-
-	struct m_data_s *next;
+	struct data_s *next;
 
 	struct m_data_s *p;
 	unsigned char *dp;
@@ -29,7 +28,7 @@ struct m_state_s{
 	struct m_state_s *psub[257];
 	struct m_state_s *p;
 	struct m_state_s *n;
-	int child;	
+	int child;
 };
 
 unsigned char table[256]={};
@@ -108,7 +107,7 @@ int main(int argc, char *argv[]){
 				}
 				state_p=state_p->psub[c];
 			}else{
-//				DPRINTF("%d[%x]=%d\n", state_p->p, (int)c, offset);
+//				printf("%X[%X]=%X\n", (int)state_p->p, (int)c, (int)offset);
 				state_p->psub[c]=(struct m_state_s *)malloc(sizeof(struct m_state_s));
 				state_p->sub[c]=(struct state_s *)offset;
 				state_p->child++;
@@ -145,9 +144,9 @@ int main(int argc, char *argv[]){
 					if(data_p){
 						//make new cell
 						data_t->n=(struct m_data_s *)malloc(sizeof(struct m_data_s));
-						data_p->next=(struct m_data_s *)offset;
+						data_p->next=(struct data_s *)offset;
 						data_p=data_t=data_t->n;
-DPRINTF("%d.next=%d", data_p->p, offset);
+DPRINTF("%d.next=%d", (int)data_p->p, offset);
 					}else if(data_t){
 						//make new cell
 						data_t->n=(struct m_data_s *)malloc(sizeof(struct m_data_s));
@@ -170,7 +169,7 @@ DPRINTF("%d.next=%d", data_p->p, offset);
 					data_p->data=(unsigned char *)offset;
 					offset+=l;
 
-					DPRINTF("%d.data=(%d) %d", data_p->p, data_p->len, data_p->data);
+					DPRINTF("%d.data=(%d) %d", (int)data_p->p, data_p->len, (int)data_p->data);
 					if(k){
 						k=0;
 						if(state_p->child){
@@ -210,7 +209,9 @@ DPRINTF("%d.next=%d", data_p->p, offset);
 	while(state_t){
 		dstate.status=state_t->status;
 		dstate.data=(struct data_s *)state_t->data;
-		memcpy(dstate.sub, state_t->sub, 257 * sizeof(unsigned int));
+		for(i=0;i<257;i++){
+			dstate.sub[i]=state_t->sub[i];
+		}
 		memcpy(&tmp[(int)state_t->p], &dstate, sizeof(struct state_s));
 		tofree=state_t;
 		state_t=state_t->n;
@@ -220,7 +221,7 @@ DPRINTF("%d.next=%d", data_p->p, offset);
 	while(data_t){
 		ddata.data=data_t->data;
 		ddata.len=data_t->len;
-		ddata.next=(struct data_s *)data_t->next;
+		ddata.next=data_t->next;
 		memcpy(&tmp[(int)data_t->p], &ddata, sizeof(struct data_s));
 		memcpy(&tmp[(int)ddata.data], data_t->dp, ddata.len);
 		tofree=data_t;
