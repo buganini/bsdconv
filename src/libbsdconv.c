@@ -61,11 +61,11 @@
 
 #define listcpy(X,Y,Z) for(data_ptr=(Y)+(int)(Z);data_ptr;data_ptr=data_ptr->next){	\
 	*(ins->X##_data_tail)=malloc(sizeof(struct data_s));	\
-	memcpy(*(ins->X##_data_tail),data_ptr+(int)(Z), sizeof(struct data_s));	\
-	ptr=*(ins->X##_data_tail)->data+(int)(Z);	\
-	*(ins->X##_data_tail)->data=malloc(*(ins->X##_data_tail)->len);	\
-	memcpy(*(ins->X##_data_tail)->data,ptr,*(ins->X##_data_tail)->len);	\
-	ins->X##_data_tail=&(*(ins->X##_data_tail)->next);	\
+	memcpy( *(ins->X##_data_tail), data_ptr+(int)(Z), sizeof(struct data_s));	\
+	ptr=(*(ins->X##_data_tail))->data+(int)(Z);	\
+	(*(ins->X##_data_tail))->data=malloc( (*(ins->X##_data_tail))->len );	\
+	memcpy( (*(ins->X##_data_tail))->data, ptr, (*(ins->X##_data_tail))->len );	\
+	ins->X##_data_tail=&( (*(ins->X##_data_tail))->next );	\
 	*(ins->X##_data_tail)=NULL;	\
 }
 

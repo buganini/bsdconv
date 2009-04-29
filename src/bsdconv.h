@@ -5,6 +5,8 @@
 #define DPRINTF(fmt, args...)
 #endif
 
+#include <unistd.h>
+
 struct bsdconv_codec_t {
 	char *desc;
 	int fd;
