@@ -29,16 +29,15 @@ enum bsdconv_status{
 };
 
 struct data_s{
-//	unsigned int p;
-	unsigned int data;
+	unsigned char *data;
 	size_t len;
-	unsigned int next;
+	struct data_s *next;
 };
 
 struct state_s{
 	char status;
-	unsigned int data;
-	unsigned int sub[257];
+	struct data_s *data;
+	struct state_s *sub[257];
 };
 
 struct bsdconv_instruction{
