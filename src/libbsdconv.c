@@ -60,6 +60,7 @@
 }while(0);
 
 #define listcpy(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
+printf("A:%p\n",*(ins->X##_data_tail));	\
 	*(ins->X##_data_tail)=malloc(sizeof(struct data_s));	\
 printf("A:%p %p\n",data_ptr, *(ins->X##_data_tail));	\
 printf("B:%p\n",*(ins->X##_data_tail));	\
@@ -416,8 +417,7 @@ printf("%d\n", __LINE__);
 
 	hibernate:
 		if(ins->pend_from){
-			/* XXX use memmove */
-			memcpy(ins->in_buf, (char *) ins->from_match.sub[0], (int)ins->from_match.sub[1]);
+			memmove(ins->in_buf, (char *) ins->from_match.sub[0], (int)ins->from_match.sub[1]);
 			ins->feed=ins->in_buf + (int)ins->from_match.sub[1];
 			ins->feed_len=ins->in_len - (int)ins->from_match.sub[1];
 			ins->from_match.sub[0]=(struct state_s *) ins->in_buf;
