@@ -13,7 +13,7 @@ struct m_data_s{
 	size_t len;
 	struct data_s *next;
 
-	struct m_data_s *p;
+	unsigned int p;
 	unsigned char *dp;
 	struct m_data_s *n;
 
@@ -23,10 +23,10 @@ struct m_state_s{
 	char status;
 	struct state_s *sub[257];
 
-	struct m_data_s *data;
+	unsigned int data;
 
 	struct m_state_s *psub[257];
-	struct m_state_s *p;
+	unsigned int p;
 	struct m_state_s *n;
 	int child;
 };
@@ -78,7 +78,7 @@ int main(int argc, char *argv[]){
 	state_t=state_p=state_r=(struct m_state_s *)malloc(sizeof(struct m_state_s));
 	state_p->status=DEADEND;
 	state_p->data=0;
-	state_p->p=(struct m_state_s *)offset;
+	state_p->p=offset;
 	state_t->n=NULL;
 	offset+=sizeof(struct state_s);
 	for(i=0;i<257;i++){
@@ -107,7 +107,7 @@ int main(int argc, char *argv[]){
 				}
 				state_p=state_p->psub[c];
 			}else{
-//				printf("%X[%X]=%X\n", (int)state_p->p, (int)c, (int)offset);
+//	printf("%u[%X]=%u\n", state_p->p, c, offset);
 				state_p->psub[c]=(struct m_state_s *)malloc(sizeof(struct m_state_s));
 				state_p->sub[c]=(struct state_s *)offset;
 				state_p->child++;
@@ -117,7 +117,7 @@ int main(int argc, char *argv[]){
 				state_t=state_t->n;
 				state_t->n=NULL;
 
-				state_p->p=(struct m_state_s *)offset;
+				state_p->p=offset;
 				offset+=sizeof(struct state_s);
 				state_p->status=CONTINUE;
 				state_p->data=0;
@@ -146,7 +146,7 @@ int main(int argc, char *argv[]){
 						data_t->n=(struct m_data_s *)malloc(sizeof(struct m_data_s));
 						data_p->next=(struct data_s *)offset;
 						data_p=data_t=data_t->n;
-DPRINTF("%d.next=%d", (int)data_p->p, offset);
+DPRINTF("%u.next=%d", data_p->p, offset);
 					}else if(data_t){
 						//make new cell
 						data_t->n=(struct m_data_s *)malloc(sizeof(struct m_data_s));
@@ -157,7 +157,7 @@ DPRINTF("%d.next=%d", (int)data_p->p, offset);
 					}
 
 					//init new cell
-					data_p->p=(struct m_data_s *)offset;
+					data_p->p=offset;
 					data_p->next=0;
 					data_p->n=NULL;
 					offset+=sizeof(struct data_s);
@@ -169,7 +169,7 @@ DPRINTF("%d.next=%d", (int)data_p->p, offset);
 					data_p->data=(unsigned char *)offset;
 					offset+=l;
 
-					DPRINTF("%d.data=(%d) %d", (int)data_p->p, data_p->len, (int)data_p->data);
+					DPRINTF("%u.data=(%d) %d", data_p->p, data_p->len, (int)data_p->data);
 					if(k){
 						k=0;
 						if(state_p->child){
@@ -212,7 +212,7 @@ DPRINTF("%d.next=%d", (int)data_p->p, offset);
 		for(i=0;i<257;i++){
 			dstate.sub[i]=state_t->sub[i];
 		}
-		memcpy(&tmp[(int)state_t->p], &dstate, sizeof(struct state_s));
+		memcpy(&tmp[state_t->p], &dstate, sizeof(struct state_s));
 		tofree=state_t;
 		state_t=state_t->n;
 		free(tofree);
@@ -222,7 +222,7 @@ DPRINTF("%d.next=%d", (int)data_p->p, offset);
 		ddata.data=data_t->data;
 		ddata.len=data_t->len;
 		ddata.next=data_t->next;
-		memcpy(&tmp[(int)data_t->p], &ddata, sizeof(struct data_s));
+		memcpy(&tmp[data_t->p], &ddata, sizeof(struct data_s));
 		memcpy(&tmp[(int)ddata.data], data_t->dp, ddata.len);
 		tofree=data_t;
 		data_t=data_t->n;
