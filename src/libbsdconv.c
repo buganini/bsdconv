@@ -60,29 +60,22 @@
 }while(0);
 
 #define listcpy(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
-printf("A:%p\n",*(ins->X##_data_tail));	\
-	*(ins->X##_data_tail)=malloc(sizeof(struct data_s));	\
-printf("A:%p %p\n",data_ptr, *(ins->X##_data_tail));	\
-printf("B:%p\n",*(ins->X##_data_tail));	\
-	memcpy( *(ins->X##_data_tail), (unsigned char *)((Z)+(unsigned int)data_ptr), sizeof(struct data_s));	\
-printf("B:%p\n",*(ins->X##_data_tail));	\
-	ptr=(unsigned char *)((Z)+(unsigned int)(*(ins->X##_data_tail))->data);	\
-printf("C:\n");	\
-	(*(ins->X##_data_tail))->data=malloc( (*(ins->X##_data_tail))->len );	\
-printf("D:%p\n",ptr);	\
-	memcpy( (*(ins->X##_data_tail))->data, ptr, (*(ins->X##_data_tail))->len );	\
-	\
-	data_ptr=(*(ins->X##_data_tail))->next;	\
-	ins->X##_data_tail=&( (*(ins->X##_data_tail))->next );	\
-	*(ins->X##_data_tail)=NULL;	\
+	ins->X##_data_tail->next=malloc(sizeof(struct data_s));	\
+	ins->X##_data_tail=ins->X##_data_tail->next;	\
+	memcpy(ins->X##_data_tail, (unsigned char *)((Z)+(unsigned int)data_ptr), sizeof(struct data_s));	\
+	data_ptr=ins->X##_data_tail->next;	\
+	ins->X##_data_tail->next=NULL;	\
+	ptr=(unsigned char *)((Z)+(unsigned int)ins->X##_data_tail->data);	\
+	ins->X##_data_tail->data=malloc(ins->X##_data_tail->len);	\
+	memcpy(ins->X##_data_tail->data, ptr, ins->X##_data_tail->len);	\
 }
 
-#define listfree(X,Y) while(ins->X##_data_head && data_ptr!=(struct data_s *)(Y)){	\
-	data_ptr=ins->X##_data_head->next;	\
-	free(ins->X##_data_head->data);	\
-	free(ins->X##_data_head);	\
-	ins->X##_data_head=data_ptr;	\
-}
+#define listfree(X,Y)	while(ins->X##_data_head->next!=(struct data_s *)(Y)){	\
+		data_ptr=ins->X##_data_head->next->next;	\
+		free(ins->X##_data_head->next->data);	\
+		free(ins->X##_data_head->next);	\
+		ins->X##_data_head->next=data_ptr;	\
+	}
 
 void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, unsigned char *inbuf, size_t inlen, unsigned char *outbuf, size_t outlen){
 	ins->in_buf=inbuf;
@@ -102,12 +95,18 @@ void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, unsigne
 	ins->inter_index=0;
 	ins->to_index=0;
 
-	ins->inter_data_head=NULL;
-	ins->to_data_head=NULL;
-	ins->out_data_head=NULL;
-	ins->inter_data_tail=&ins->inter_data_head;
-	ins->to_data_tail=&ins->to_data_head;
-	ins->out_data_tail=&ins->out_data_head;
+	ins->inter_data_head=&ins->inter_data_ent;
+	ins->to_data_head=&ins->to_data_ent;
+	ins->out_data_head=&ins->out_data_ent;
+
+	ins->inter_data_head->next=
+	ins->to_data_head->next=
+	ins->out_data_head->next=
+	NULL;
+
+	ins->inter_data_tail=ins->inter_data_head;
+	ins->to_data_tail=ins->to_data_head;
+	ins->out_data_tail=ins->out_data_head;
 
 	ins->from_match.data=0;
 	ins->inter_match.data=0;
@@ -167,7 +166,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	unsigned int i;
 	struct data_s *data_ptr;
 	unsigned char *ptr;
-	struct data_s *inter_data, *to_data, *out_data;
+	struct data_s *inter_data, *to_data;
 
 	struct data_s iterminator={
 		.data=(unsigned char *)"\x01\x3f",
@@ -186,7 +185,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	ins->feed=ins->in_buf;
 	ins->from_match.sub[1]=(struct state_s *)ins->feed_len;
 
-	if(ins->out_data_head){
+	if(ins->out_data_head->next){
 		goto phase_out;
 	}
 	if(ins->pend_from){
@@ -205,7 +204,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 }while(0);	\
 	//from
 	phase_from:
-printf("%d\n", __LINE__);
+printf("FROM:%d\n", __LINE__);
 	while(ins->feed_len){
 		memcpy(&ins->from_state, cd->from[ins->from_index].z + (unsigned int)ins->from_state.sub[*ins->feed], sizeof(struct state_s));
 		switch(ins->from_state.status){
@@ -213,7 +212,6 @@ printf("%d\n", __LINE__);
 				pass_to_inter:
 				ins->pend_from=0;
 				if(ins->from_match.data){
-printf("%p\n",cd->from[ins->from_index].z);
 					listcpy(inter, ins->from_match.data, cd->from[ins->from_index].z);
 					ins->from_match.data=NULL;
 					memcpy(&ins->from_state, cd->from[ins->from_index].z, sizeof(struct state_s));
@@ -259,14 +257,14 @@ printf("%p\n",cd->from[ins->from_index].z);
 	}
 
 #define INTER_NEXT() if((inter_data=inter_data->next)){	\
-	memcpy(&ins->inter_state, (unsigned int)cd->inter[ins->inter_index].z + ins->inter_state.sub[256], sizeof(struct state_s));	\
+	memcpy(&ins->inter_state, cd->inter[ins->inter_index].z + (unsigned int)ins->inter_state.sub[256], sizeof(struct state_s));	\
 	if(ins->inter_state.status==DEADEND){ goto pass_to_to;}	\
 }
 	//inter
 	phase_inter:
-printf("%d\n", __LINE__);
-	ins->inter_match.sub[0]=(struct state_s *)ins->inter_data_head;
-	inter_data=ins->inter_data_head;
+printf("INTER%d\n", __LINE__);
+	ins->inter_match.sub[0]=(struct state_s *)ins->inter_data_head->next;
+	inter_data=ins->inter_data_head->next;
 	while(inter_data){
 		for(i=0;i<inter_data->len;i++){
 			memcpy(&ins->inter_state, cd->inter[ins->inter_index].z + (unsigned int)ins->inter_state.sub[*(inter_data->data+i)], sizeof(struct state_s));
@@ -290,12 +288,13 @@ printf("%d\n", __LINE__);
 				}else if(ins->inter_index < cd->ninter){
 					ins->inter_index++;
 					memcpy(&ins->inter_state, cd->inter[ins->inter_index].z, sizeof(struct state_s));
-					inter_data=ins->inter_data_head;
+					inter_data=ins->inter_data_head->next;
 					continue;
 				}else{
-					ins->to_data_head=ins->inter_data_head;
-					ins->inter_data_head=ins->inter_data_head->next;
-					ins->to_data_head->next=0;
+					data_ptr=ins->inter_data_head->next;
+					ins->inter_data_head->next=ins->inter_data_head->next->next;
+					data_ptr->next=NULL;
+					ins->to_data_tail->next=data_ptr;
 
 					ins->inter_index=0;
 					memcpy(&ins->inter_state, cd->inter[ins->inter_index].z, sizeof(struct state_s));
@@ -319,15 +318,15 @@ printf("%d\n", __LINE__);
 		}
 	}
 
-#define TO_NEXT() if((to_data=inter_data->next)){     \
-	memcpy(&ins->to_state, (unsigned int)cd->to[ins->to_index].z + ins->to_state.sub[256], sizeof(struct state_s));   \
+#define TO_NEXT() if((to_data=to_data->next)){     \
+	memcpy(&ins->to_state, cd->to[ins->to_index].z + (unsigned int)ins->to_state.sub[256], sizeof(struct state_s));   \
 	if(ins->to_state.status==DEADEND){ goto pass_to_out;} \
 }
 	//to
 	phase_to:
-printf("%d\n", __LINE__);
-	ins->to_match.sub[0]=(struct state_s *)ins->to_data_head;
-	to_data=ins->to_data_head;
+printf("TO%d\n", __LINE__);
+	ins->to_match.sub[0]=(struct state_s *)ins->to_data_head->next;
+	to_data=ins->to_data_head->next;
 	while(to_data){
 		for(i=0;i<to_data->len;i++){
 			memcpy(&ins->to_state, cd->to[ins->to_index].z + (unsigned int)ins->to_state.sub[*(to_data->data+i)], sizeof(struct state_s));
@@ -351,7 +350,7 @@ printf("%d\n", __LINE__);
 				}else if(ins->to_index < cd->nto){
 					ins->to_index++;
 					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
-					to_data=ins->to_data_head;
+					to_data=ins->to_data_head->next;
 					continue;
 				}else{
 					ins->oerr++;
@@ -361,7 +360,6 @@ printf("%d\n", __LINE__);
 					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
 
 					listfree(to,to_data->next);
-					to_data=ins->to_data_head;
 
 					goto phase_out;
 				}
@@ -369,6 +367,7 @@ printf("%d\n", __LINE__);
 			case MATCH:
 			case SUBMATCH:
 				ins->to_match.data=ins->to_state.data;
+				ins->to_match.sub[0]=NULL;
 				TO_NEXT();
 				ins->to_match.sub[0]=(struct state_s *)to_data;
 				break;
@@ -385,30 +384,30 @@ printf("%d\n", __LINE__);
 
 	//out
 	phase_out:
-	out_data=ins->out_data_head;
-	while(out_data){
-		i=ins->back_len + out_data->len;
+	while(ins->out_data_head->next){
+		i=ins->back_len + ins->out_data_head->len;
 		if(i > ins->out_len){
 			goto hibernate;
 		}else{
-			memcpy(ins->back + ins->back_len, out_data->data, out_data->len);
+			memcpy(ins->back + ins->back_len, ins->out_data_head->next->data, ins->out_data_head->next->len);
 			ins->back_len=i;
 		}
-		data_ptr=out_data;
-		out_data=out_data->next;
+		data_ptr=ins->out_data_head->next;
+		ins->out_data_head->next=ins->out_data_head->next->next;
+		free(data_ptr->data);
 		free(data_ptr);
 	}
 
-	if(ins->to_data_head){
+	if(to_data){
 		goto phase_to;
 	}
-	if(ins->inter_data_head){
+	if(inter_data){
 		goto phase_inter;
 	}
+
 	if(ins->feed_len){
 		goto phase_from;
 	}
-
 	if(ins->pend_from || ins->pend_inter || ins->pend_to){
 		goto hibernate;
 	}
