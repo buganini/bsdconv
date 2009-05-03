@@ -61,6 +61,7 @@ struct bsdconv_instruction{
 	struct state_s from_match, inter_match, to_match;
 	struct data_s inter_data_ent, to_data_ent, out_data_ent;
 	struct data_s *inter_data_head, *to_data_head, *out_data_head, *inter_data_tail, *to_data_tail, *out_data_tail;
+	struct data_s *inter_data, *to_data;
 };
 
 void bsdconv_init(struct bsdconv_t *, struct bsdconv_instruction *, unsigned char *, size_t, unsigned char *, size_t);

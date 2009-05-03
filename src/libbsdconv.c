@@ -70,12 +70,17 @@
 	memcpy(ins->X##_data_tail->data, ptr, ins->X##_data_tail->len);	\
 }
 
-#define listfree(X,Y)	while(ins->X##_data_head->next!=(struct data_s *)(Y)){	\
+#define listfree(X,Y)	do{	\
+	while(ins->X##_data_head->next!=(struct data_s *)(Y)){	\
 		data_ptr=ins->X##_data_head->next->next;	\
 		free(ins->X##_data_head->next->data);	\
 		free(ins->X##_data_head->next);	\
 		ins->X##_data_head->next=data_ptr;	\
-	}
+	}	\
+	if(!ins->X##_data_head->next){	\
+		ins->X##_data_tail=ins->X##_data_head;	\
+	}	\
+}while(0);
 
 void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, unsigned char *inbuf, size_t inlen, unsigned char *outbuf, size_t outlen){
 	ins->in_buf=inbuf;
@@ -166,7 +171,6 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	unsigned int i;
 	struct data_s *data_ptr;
 	unsigned char *ptr;
-	struct data_s *inter_data, *to_data;
 
 	struct data_s iterminator={
 		.data=(unsigned char *)"\x01\x3f",
@@ -205,13 +209,18 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	//from
 	phase_from:
 printf("FROM:%d\n", __LINE__);
+	ins->from_match.sub[0]=(struct state_s *)ins->feed;
+	ins->from_match.sub[1]=(struct state_s *)ins->feed_len;
 	while(ins->feed_len){
+//printf("FROM feed: %02X\n", *ins->feed);
 		memcpy(&ins->from_state, cd->from[ins->from_index].z + (unsigned int)ins->from_state.sub[*ins->feed], sizeof(struct state_s));
 		switch(ins->from_state.status){
 			case DEADEND:
+printf("FORM DEADEND\n");
 				pass_to_inter:
 				ins->pend_from=0;
 				if(ins->from_match.data){
+printf("FORM DEADEND A\n");
 					listcpy(inter, ins->from_match.data, cd->from[ins->from_index].z);
 					ins->from_match.data=NULL;
 					memcpy(&ins->from_state, cd->from[ins->from_index].z, sizeof(struct state_s));
@@ -220,12 +229,14 @@ printf("FROM:%d\n", __LINE__);
 					ins->from_index=0;
 					goto phase_inter;
 				}else if(ins->from_index < cd->nfrom){
+printf("FORM DEADEND B\n");
 					ins->from_index++;
 					memcpy(&ins->from_state, cd->from[ins->from_index].z, sizeof(struct state_s));
 					ins->feed=(unsigned char *)ins->from_match.sub[0];
 					ins->feed_len=(unsigned int)ins->from_match.sub[1];
 					continue;
 				}else{
+printf("FORM DEADEND C\n");
 					ins->from_index=0;
 					ins->ierr++;
 
@@ -242,6 +253,7 @@ printf("FROM:%d\n", __LINE__);
 				break;
 			case MATCH:
 			case SUBMATCH:
+printf("FORM MATCH\n");
 				ins->from_match.data=ins->from_state.data;
 				FROM_NEXT();
 				ins->from_match.sub[0]=(struct state_s *)ins->feed;
@@ -256,7 +268,7 @@ printf("FROM:%d\n", __LINE__);
 		}
 	}
 
-#define INTER_NEXT() if((inter_data=inter_data->next)){	\
+#define INTER_NEXT() if((ins->inter_data=ins->inter_data->next)){	\
 	memcpy(&ins->inter_state, cd->inter[ins->inter_index].z + (unsigned int)ins->inter_state.sub[256], sizeof(struct state_s));	\
 	if(ins->inter_state.status==DEADEND){ goto pass_to_to;}	\
 }
@@ -264,14 +276,18 @@ printf("FROM:%d\n", __LINE__);
 	phase_inter:
 printf("INTER%d\n", __LINE__);
 	ins->inter_match.sub[0]=(struct state_s *)ins->inter_data_head->next;
-	inter_data=ins->inter_data_head->next;
-	while(inter_data){
-		for(i=0;i<inter_data->len;i++){
-			memcpy(&ins->inter_state, cd->inter[ins->inter_index].z + (unsigned int)ins->inter_state.sub[*(inter_data->data+i)], sizeof(struct state_s));
+	ins->inter_data=ins->inter_data_head->next;
+printf("inter_data: %p\n", ins->inter_data);
+printf("INTER feed: ");
+	while(ins->inter_data){
+		for(i=0;i<ins->inter_data->len;i++){
+printf("%02X", *(ins->inter_data->data+i));
+			memcpy(&ins->inter_state, cd->inter[ins->inter_index].z + (unsigned int)ins->inter_state.sub[*(ins->inter_data->data+i)], sizeof(struct state_s));
 			if(ins->inter_state.status==DEADEND){
 				break;
 			}
 		}
+printf("\n");
 		switch(ins->inter_state.status){
 			case DEADEND:
 				pass_to_to:
@@ -288,7 +304,7 @@ printf("INTER%d\n", __LINE__);
 				}else if(ins->inter_index < cd->ninter){
 					ins->inter_index++;
 					memcpy(&ins->inter_state, cd->inter[ins->inter_index].z, sizeof(struct state_s));
-					inter_data=ins->inter_data_head->next;
+					ins->inter_data=ins->inter_data_head->next;
 					continue;
 				}else{
 					data_ptr=ins->inter_data_head->next;
@@ -306,7 +322,7 @@ printf("INTER%d\n", __LINE__);
 			case SUBMATCH:
 				ins->inter_match.data=ins->inter_state.data;
 				INTER_NEXT();
-				ins->inter_match.sub[0]=(struct state_s *)inter_data;
+				ins->inter_match.sub[0]=(struct state_s *)ins->inter_data;
 				break;
 			case CONTINUE:
 				ins->pend_inter=1;
@@ -318,7 +334,7 @@ printf("INTER%d\n", __LINE__);
 		}
 	}
 
-#define TO_NEXT() if((to_data=to_data->next)){     \
+#define TO_NEXT() if((ins->to_data=ins->to_data->next)){     \
 	memcpy(&ins->to_state, cd->to[ins->to_index].z + (unsigned int)ins->to_state.sub[256], sizeof(struct state_s));   \
 	if(ins->to_state.status==DEADEND){ goto pass_to_out;} \
 }
@@ -326,10 +342,10 @@ printf("INTER%d\n", __LINE__);
 	phase_to:
 printf("TO%d\n", __LINE__);
 	ins->to_match.sub[0]=(struct state_s *)ins->to_data_head->next;
-	to_data=ins->to_data_head->next;
-	while(to_data){
-		for(i=0;i<to_data->len;i++){
-			memcpy(&ins->to_state, cd->to[ins->to_index].z + (unsigned int)ins->to_state.sub[*(to_data->data+i)], sizeof(struct state_s));
+	ins->to_data=ins->to_data_head->next;
+	while(ins->to_data){
+		for(i=0;i<ins->to_data->len;i++){
+			memcpy(&ins->to_state, cd->to[ins->to_index].z + (unsigned int)ins->to_state.sub[*(ins->to_data->data+i)], sizeof(struct state_s));
 			if(ins->to_state.status==DEADEND){
 				break;
 			}
@@ -350,7 +366,7 @@ printf("TO%d\n", __LINE__);
 				}else if(ins->to_index < cd->nto){
 					ins->to_index++;
 					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
-					to_data=ins->to_data_head->next;
+					ins->to_data=ins->to_data_head->next;
 					continue;
 				}else{
 					ins->oerr++;
@@ -359,7 +375,7 @@ printf("TO%d\n", __LINE__);
 					ins->to_index=0;
 					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
 
-					listfree(to,to_data->next);
+					listfree(to,ins->to_data->next);
 
 					goto phase_out;
 				}
@@ -369,7 +385,7 @@ printf("TO%d\n", __LINE__);
 				ins->to_match.data=ins->to_state.data;
 				ins->to_match.sub[0]=NULL;
 				TO_NEXT();
-				ins->to_match.sub[0]=(struct state_s *)to_data;
+				ins->to_match.sub[0]=(struct state_s *)ins->to_data;
 				break;
 			case CALLBACK:
 			case CONTINUE:
@@ -398,10 +414,10 @@ printf("TO%d\n", __LINE__);
 		free(data_ptr);
 	}
 
-	if(to_data){
+	if(ins->to_data){
 		goto phase_to;
 	}
-	if(inter_data){
+	if(ins->inter_data){
 		goto phase_inter;
 	}
 
