@@ -219,14 +219,18 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				if(ins->from_match.data){
 					listcpy(inter, ins->from_match.data, cd->from[ins->from_index].z);
 					ins->from_match.data=NULL;
+
+					ins->from_index=0;
 					memcpy(&ins->from_state, cd->from[ins->from_index].z, sizeof(struct state_s));
+
 					ins->feed=(unsigned char *)ins->from_match.sub[0];
 					ins->feed_len=(unsigned int)ins->from_match.sub[1];
-					ins->from_index=0;
+
 					goto phase_inter;
 				}else if(ins->from_index < cd->nfrom){
 					ins->from_index++;
 					memcpy(&ins->from_state, cd->from[ins->from_index].z, sizeof(struct state_s));
+
 					ins->feed=(unsigned char *)ins->from_match.sub[0];
 					ins->feed_len=(unsigned int)ins->from_match.sub[1];
 					continue;
