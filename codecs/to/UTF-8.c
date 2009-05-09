@@ -19,6 +19,7 @@ void callback(struct bsdconv_instruction *ins){
 		ins->to_state.status=DEADEND;
 		return;
 	}
+	ins->to_state.status=NEXTPHASE;
 	data+=1;
 	len=ins->to_data->len-1;
 
@@ -65,7 +66,7 @@ void callback(struct bsdconv_instruction *ins){
 					ins->out_data_tail->data=malloc(3);
 					p=ins->out_data_tail->data;
 					*p=bb11100000;
-					*p |= *data & bb00001111;
+					*p |= (*data >> 4) & bb00001111;
 					p++;
 					*p=bb10000000;
 					*p |= (*data << 2) & bb00111100;
