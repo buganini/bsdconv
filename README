@@ -1,3 +1,13 @@
+NOTICE:
+Currently bsdconv_mktable doesn't support CALLBACK
+please follow steps below to generate CALLBACK table
+
+make
+cp build/share/bsdconv/inter/DUMMY build/share/bsdconv/to/UTF-8
+hexedit build/share/bsdconv/to/UTF-8 (Change first byte to 04)
+sudo make install
+
+--
 Table format:
 from<tab>to
 
@@ -14,3 +24,4 @@ sudo ldconfig -m /usr/local/share/bsdconv/to/
 Run:
 Convert traditional chinese big5 to simplified chinese utf-8
 bsdconv cp950,ascii,iso-8859-1:chs:utf-8 in.txt out.txt
+
