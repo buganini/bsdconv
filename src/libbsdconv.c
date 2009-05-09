@@ -263,6 +263,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				FROM_NEXT();
 				ins->from_match.sub[0]=(struct state_s *)ins->feed;
 				ins->from_match.sub[1]=(struct state_s *)ins->feed_len;
+				ins->pend_from=1;
 				break;
 			case CALLBACK:
 				goto from_x;
@@ -331,6 +332,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 			case SUBMATCH:
 				ins->inter_match.data=ins->inter_state.data;
 				ins->inter_match.sub[0]=(struct state_s *)ins->inter_data->next;
+				ins->pend_inter=1;
 				break;
 			case NEXTPHASE:
 				goto phase_to;
@@ -393,6 +395,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				ins->to_match.data=ins->to_state.data;
 				ins->to_match.sub[0]=NULL;
 				ins->to_match.sub[0]=(struct state_s *)ins->to_data->next;
+				ins->pend_to=1;
 				break;
 			case CALLBACK:
 				cd->to[ins->to_index].callback(ins);
