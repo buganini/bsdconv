@@ -1,4 +1,16 @@
-Map format:
+Table format:
 from<tab>to
 
 in to field, UNICODE is prefixed with 01
+
+--
+Compiling & Installation (FreeBSD):
+make
+sudo make install
+sudo ldconfig -m /usr/local/share/bsdconv/from/
+sudo ldconfig -m /usr/local/share/bsdconv/to/
+
+--
+Run:
+Convert traditional chinese big5 to simplified chinese utf-8
+bsdconv cp950,ascii,iso-8859-1:chs:utf-8 in.txt out.txt
