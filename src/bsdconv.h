@@ -11,6 +11,8 @@ struct bsdconv_codec_t {
 	char *desc;
 	int fd;
 	unsigned char *z;
+	void *dl;
+	void (*callback)(struct bsdconv_instruction *);
 };
 
 struct bsdconv_t {

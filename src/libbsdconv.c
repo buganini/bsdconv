@@ -1,3 +1,4 @@
+#include <dlfcn.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,6 +46,11 @@
 			if(!ret->X[i].z){	\
 				fprintf(stderr, "Memory map failed for %s/%s", #X, ret->X[i].desc);	\
 				exit(1);	\
+			}	\
+			strcpy(buf, ret->X[i].desc);	\
+			strcat(buf, ".so");	\
+			if((ret->X[i].dl=dlopen(buf, RTLD_LAZY))){	\
+				ret->X[i].callback=dlsym(ret->X[i].dl,"callback");	\
 			}	\
 			if(i+1 < n##X){	\
 				ret->X[++i].desc=t+1;	\
@@ -131,6 +137,7 @@ struct bsdconv_t *bsdconv_create(const char *conversion){
 	char *ofrom, *ointer, *oto;
 	char *t, *from, *inter, *to;
 	int i,nfrom,nto,ninter, brk;
+	char buf[64];
 
 	t=strdup(conversion);
 	ofrom=(char *)strsep(&t, ":");
@@ -212,6 +219,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	ins->from_match.sub[1]=(struct state_s *)ins->feed_len;
 	while(ins->feed_len){
 		memcpy(&ins->from_state, cd->from[ins->from_index].z + (unsigned int)ins->from_state.sub[*ins->feed], sizeof(struct state_s));
+		from_x:
 		switch(ins->from_state.status){
 			case DEADEND:
 				pass_to_inter:
@@ -257,6 +265,10 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				ins->from_match.sub[1]=(struct state_s *)ins->feed_len;
 				break;
 			case CALLBACK:
+				goto from_x;
+			case NEXTPHASE:
+				goto phase_inter;
+				break;
 			case CONTINUE:
 				ins->pend_from=1;
 				FROM_NEXT();
@@ -320,6 +332,9 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				ins->inter_match.data=ins->inter_state.data;
 				ins->inter_match.sub[0]=(struct state_s *)ins->inter_data->next;
 				break;
+			case NEXTPHASE:
+				goto phase_to;
+				break;
 			case CONTINUE:
 				ins->pend_inter=1;
 				break;
@@ -339,6 +354,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				break;
 			}
 		}
+		to_x:
 		switch(ins->to_state.status){
 			case DEADEND:
 				pass_to_out:
@@ -379,6 +395,12 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				ins->to_match.sub[0]=(struct state_s *)ins->to_data->next;
 				break;
 			case CALLBACK:
+				cd->to[ins->to_index].callback(ins);
+				listfree(to,ins->to_data->next);
+				goto to_x;
+			case NEXTPHASE:
+				goto phase_out;
+				break;
 			case CONTINUE:
 				ins->pend_to=1;
 				break;
