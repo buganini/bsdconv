@@ -28,6 +28,7 @@ enum bsdconv_status{
 	MATCH,
 	SUBMATCH,
 	CALLBACK,
+	NEXTPHASE,
 };
 
 struct data_s{
