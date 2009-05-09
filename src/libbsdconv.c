@@ -76,17 +76,15 @@
 	memcpy(ins->X##_data_tail->data, ptr, ins->X##_data_tail->len);	\
 }
 
-#define listfree(X,Y)	do{	\
-	while(ins->X##_data_head->next!=(struct data_s *)(Y)){	\
-		data_ptr=ins->X##_data_head->next->next;	\
-		free(ins->X##_data_head->next->data);	\
-		if(ins->X##_data_tail==ins->X##_data_head->next){	\
-			ins->X##_data_tail=ins->X##_data_head;	\
-		}	\
-		free(ins->X##_data_head->next);	\
-		ins->X##_data_head->next=data_ptr;	\
+#define listfree(X,Y)	while(ins->X##_data_head->next!=(struct data_s *)(Y)){	\
+	data_ptr=ins->X##_data_head->next->next;	\
+	free(ins->X##_data_head->next->data);	\
+	if(ins->X##_data_tail==ins->X##_data_head->next){	\
+		ins->X##_data_tail=ins->X##_data_head;	\
 	}	\
-}while(0);
+	free(ins->X##_data_head->next);	\
+	ins->X##_data_head->next=data_ptr;	\
+}
 
 void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, unsigned char *inbuf, size_t inlen, unsigned char *outbuf, size_t outlen){
 	ins->in_buf=inbuf;
