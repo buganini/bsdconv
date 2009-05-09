@@ -397,6 +397,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 			case CALLBACK:
 				cd->to[ins->to_index].callback(ins);
 				listfree(to,ins->to_data->next);
+				ins->to_data=ins->to_data_head;
 				goto to_x;
 			case NEXTPHASE:
 				goto phase_out;
