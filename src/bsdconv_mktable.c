@@ -90,6 +90,9 @@ int main(int argc, char *argv[]){
 		if(inbuf[0]=='#') continue;
 		tmp=inbuf;
 		f=of=(unsigned char *)strsep((char **)&tmp, "\t ");
+		while(index("\t ",*tmp)){
+			tmp++;
+		}
 		t=ot=(unsigned char *)strsep((char **)&tmp, "\t\r\n# ");
 		state_p=state_r;
 		while(*f){
@@ -142,16 +145,18 @@ int main(int argc, char *argv[]){
 			if(*t==',' || *t==0){
 				if(l){
 					if(data_p){
+						//data after head
 						//make new cell
 						data_t->n=(struct m_data_s *)malloc(sizeof(struct m_data_s));
 						data_p->next=(struct data_s *)offset;
 						data_p=data_t=data_t->n;
-DPRINTF("%u.next=%d", data_p->p, offset);
 					}else if(data_t){
+						//data head
 						//make new cell
 						data_t->n=(struct m_data_s *)malloc(sizeof(struct m_data_s));
 						data_p=data_t=data_t->n;
 					}else{
+						//frist
 						//make new cell
 						data_t=data_p=data_r=(struct m_data_s *)malloc(sizeof(struct m_data_s));
 					}
