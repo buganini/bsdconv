@@ -25,5 +25,10 @@ sudo ldconfig -m /usr/local/share/bsdconv/to/
 --
 Run:
 Convert traditional chinese big5 to simplified chinese utf-8
-bsdconv cp950,ascii,iso-8859-1:chs:utf-8 in.txt out.txt
+> bsdconv cp950,ascii,iso-8859-1:chs:utf-8 in.txt out.txt
+
+Convert big5 data, traditional chinese to simplified chinese, 
+CRLF/CR/LF to CRLF, to big5 data, translate simplified chinese words which are
+not in big5 to HTML entities
+> bsdconv cp950,ascii,iso-8859-1:chs,win:cp950,ascii,iso-8859-1,htmlentity in.txt out.txt
 
