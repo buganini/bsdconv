@@ -49,8 +49,13 @@
 			}	\
 			strcpy(buf, ret->X[i].desc);	\
 			strcat(buf, ".so");	\
+			ret->X[i].callback=NULL;	\
+			ret->X[i].cbinit=NULL;	\
+			ret->X[i].cbclear=NULL;	\
 			if((ret->X[i].dl=dlopen(buf, RTLD_LAZY))){	\
 				ret->X[i].callback=dlsym(ret->X[i].dl,"callback");	\
+				ret->X[i].cbinit=dlsym(ret->X[i].dl,"cbinit");	\
+				ret->X[i].cbclear=dlsym(ret->X[i].dl,"cbclear");	\
 			}	\
 			if(i+1 < n##X){	\
 				ret->X[++i].desc=t+1;	\
@@ -92,6 +97,8 @@
 }while(0);
 
 void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, unsigned char *inbuf, size_t inlen, unsigned char *outbuf, size_t outlen){
+	int i;
+	
 	ins->in_buf=inbuf;
 	ins->in_len=inlen;
 	ins->out_buf=outbuf;	// *
@@ -101,6 +108,22 @@ void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, unsigne
 	ins->back=outbuf;	// *
 	ins->back_len=0;
 	/* (*)never changed */
+	
+	ins->fpriv=malloc(cd->nfrom * sizeof(void *));
+	ins->ipriv=malloc(cd->ninter * sizeof(void *));
+	ins->tpriv=malloc(cd->nto * sizeof(void *));
+	for(i=0;i<=cd->nfrom;i++){
+		if(cd->from[i].cbinit)
+			ins->fpriv[i]=cd->from[i].cbinit();
+	}
+	for(i=0;i<=cd->ninter;i++){
+		if(cd->inter[i].cbinit)
+			ins->ipriv[i]=cd->inter[i].cbinit();
+	}
+	for(i=0;i<=cd->nto;i++){
+		if(cd->to[i].cbinit)
+			ins->tpriv[i]=cd->to[i].cbinit();
+	}
 
 	ins->ierr=0;
 	ins->oerr=0;
@@ -263,8 +286,10 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				ins->pend_from=1;
 				break;
 			case CALLBACK:
+				cd->from[ins->from_index].callback(ins);
 				goto from_x;
 			case NEXTPHASE:
+				RESET(from);
 				goto phase_inter;
 				break;
 			case CONTINUE:
@@ -347,8 +372,13 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 		ins->to_data=ins->to_data->next;
 		for(i=0;i<ins->to_data->len;i++){
 			memcpy(&ins->to_state, cd->to[ins->to_index].z + (unsigned int)ins->to_state.sub[*(ins->to_data->data+i)], sizeof(struct state_s));
-			if(ins->to_state.status==DEADEND){
-				break;
+			switch(ins->to_state.status){
+				case DEADEND:
+					goto pass_to_out;
+					break;
+				case CALLBACK:
+					goto to_callback;
+					break;
 			}
 		}
 		to_x:
@@ -391,6 +421,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				ins->pend_to=1;
 				break;
 			case CALLBACK:
+				to_callback:
 				cd->to[ins->to_index].callback(ins);
 				goto to_x;
 			case NEXTPHASE:

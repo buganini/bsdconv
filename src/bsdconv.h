@@ -57,7 +57,7 @@ struct bsdconv_instruction{
 	struct data_s inter_data_ent, to_data_ent, out_data_ent;
 	struct data_s *inter_data_head, *to_data_head, *out_data_head, *inter_data_tail, *to_data_tail, *out_data_tail;
 	struct data_s *inter_data, *to_data;
-	void **priv;
+	void **fpriv, **ipriv, **tpriv;
 };
 
 struct bsdconv_codec_t {
@@ -66,6 +66,8 @@ struct bsdconv_codec_t {
 	unsigned char *z;
 	void *dl;
 	void (*callback)(struct bsdconv_instruction *);
+	void *(*cbinit)(void);
+	void (*cbclear)(void *);
 };
 
 void bsdconv_init(struct bsdconv_t *, struct bsdconv_instruction *, unsigned char *, size_t, unsigned char *, size_t);
