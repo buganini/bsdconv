@@ -22,14 +22,12 @@ void callback(struct bsdconv_instruction *ins){
 	ins->out_data_tail->next=NULL;
 
 	p=buf;
-	sprintf(p,"&#x");
-	TAILIZE(p);
-	sprintf(p,"%X", data[0]);
-	TAILIZE(p);
+	sprintf(p,"&#x%X",data[0]);
 	for(i=1;i<len;i++){
-		sprintf(p,"%02X", data[i]);
 		TAILIZE(p);
+		sprintf(p,"%02X", data[i]);
 	}
+	TAILIZE(p);
 	*p=';';
 	len=strlen(buf);
 	ins->out_data_tail->len=len;
