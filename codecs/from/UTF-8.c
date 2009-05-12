@@ -58,7 +58,6 @@ void cbclear(void *p){
 void callback(struct bsdconv_instruction *ins){
 	struct my_s *t=ins->fpriv[ins->from_index];
 	unsigned char d=*ins->feed, *p;
-printf("%d %X\n", t->status, d);
 	switch(t->status){
 		case 0:
 			if((d & bb10000000) == 0){
