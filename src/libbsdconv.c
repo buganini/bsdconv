@@ -243,14 +243,12 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	ins->from_match.sub[0]=(struct state_s *)ins->feed;
 	ins->from_match.sub[1]=(struct state_s *)ins->feed_len;
 	while(ins->feed_len){
-printf("%p\n",ins->feed);
 		memcpy(&ins->from_state, cd->from[ins->from_index].z + (unsigned int)ins->from_state.sub[*ins->feed], sizeof(struct state_s));
 		from_x:
 		switch(ins->from_state.status){
 			case DEADEND:
 				pass_to_inter:
 				ins->pend_from=0;
-printf("blah\n");
 				if(ins->from_match.data){
 					listcpy(inter, ins->from_match.data, cd->from[ins->from_index].z);
 					ins->from_match.data=NULL;
@@ -296,6 +294,9 @@ printf("blah\n");
 			case NEXTPHASE:
 				RESET(from);
 				FROM_NEXT();
+				ins->from_match.sub[0]=(struct state_s *)ins->feed;
+				ins->from_match.sub[1]=(struct state_s *)ins->feed_len;
+				ins->pend_from=0;
 				goto phase_inter;
 				break;
 			case CONTINUE:
@@ -422,7 +423,6 @@ printf("blah\n");
 			case MATCH:
 			case SUBMATCH:
 				ins->to_match.data=ins->to_state.data;
-				ins->to_match.sub[0]=NULL;
 				ins->to_match.sub[0]=(struct state_s *)ins->to_data->next;
 				ins->pend_to=1;
 				break;
@@ -434,6 +434,9 @@ printf("blah\n");
 				listfree(to,ins->to_data->next);
 				ins->to_data=ins->to_data_head;
 				RESET(to);
+				ins->to_match.data=ins->to_state.data;
+				ins->to_match.sub[0]=(struct state_s *)ins->to_data->next;
+				ins->pend_to=0;
 				goto phase_out;
 				break;
 			case CONTINUE:
@@ -481,9 +484,9 @@ printf("blah\n");
 
 	hibernate:
 		if(ins->pend_from){
-			memmove(ins->in_buf, (char *) ins->from_match.sub[0], (int)ins->from_match.sub[1]);
-			ins->feed=ins->in_buf + (int)ins->from_match.sub[1];
-			ins->feed_len=ins->in_len - (int)ins->from_match.sub[1];
+			memmove(ins->in_buf, (char *) ins->from_match.sub[0], (unsigned int)ins->from_match.sub[1]);
+			ins->feed=ins->in_buf + (unsigned int)ins->from_match.sub[1];
+			ins->feed_len=ins->in_len - (unsigned int)ins->from_match.sub[1];
 			ins->from_match.sub[0]=(struct state_s *) ins->in_buf;
 		}else{
 			memcpy(ins->in_buf, ins->feed, ins->feed_len);
