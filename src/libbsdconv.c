@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -52,7 +53,8 @@
 			ret->X[i].callback=NULL;	\
 			ret->X[i].cbinit=NULL;	\
 			ret->X[i].cbclear=NULL;	\
-			if((ret->X[i].dl=dlopen(buf, RTLD_LAZY))){	\
+			realpath(buf, path);	\
+			if((ret->X[i].dl=dlopen(path	, RTLD_LAZY))){	\
 				ret->X[i].callback=dlsym(ret->X[i].dl,"callback");	\
 				ret->X[i].cbinit=dlsym(ret->X[i].dl,"cbinit");	\
 				ret->X[i].cbclear=dlsym(ret->X[i].dl,"cbclear");	\
@@ -113,8 +115,9 @@ void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, unsigne
 	ins->ipriv=malloc(cd->ninter * sizeof(void *));
 	ins->tpriv=malloc(cd->nto * sizeof(void *));
 	for(i=0;i<=cd->nfrom;i++){
-		if(cd->from[i].cbinit)
+		if(cd->from[i].cbinit){
 			ins->fpriv[i]=cd->from[i].cbinit();
+		}
 	}
 	for(i=0;i<=cd->ninter;i++){
 		if(cd->inter[i].cbinit)
@@ -159,7 +162,7 @@ struct bsdconv_t *bsdconv_create(const char *conversion){
 	char *ofrom, *ointer, *oto;
 	char *t, *from, *inter, *to;
 	int i,nfrom,nto,ninter, brk;
-	char buf[64];
+	char buf[64], path[512];
 
 	t=strdup(conversion);
 	ofrom=(char *)strsep(&t, ":");
@@ -240,12 +243,14 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	ins->from_match.sub[0]=(struct state_s *)ins->feed;
 	ins->from_match.sub[1]=(struct state_s *)ins->feed_len;
 	while(ins->feed_len){
+printf("%p\n",ins->feed);
 		memcpy(&ins->from_state, cd->from[ins->from_index].z + (unsigned int)ins->from_state.sub[*ins->feed], sizeof(struct state_s));
 		from_x:
 		switch(ins->from_state.status){
 			case DEADEND:
 				pass_to_inter:
 				ins->pend_from=0;
+printf("blah\n");
 				if(ins->from_match.data){
 					listcpy(inter, ins->from_match.data, cd->from[ins->from_index].z);
 					ins->from_match.data=NULL;
@@ -290,6 +295,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				goto from_x;
 			case NEXTPHASE:
 				RESET(from);
+				FROM_NEXT();
 				goto phase_inter;
 				break;
 			case CONTINUE:
