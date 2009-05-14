@@ -140,16 +140,14 @@ void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, unsigne
 	ins->out_data_head->next=
 	NULL;
 
-	ins->inter_data=ins->inter_data_tail=ins->inter_data_head;
-	ins->to_data=ins->to_data_tail=ins->to_data_head;
+	ins->from_bak=ins->from_data=ins->in_buf;
+	ins->inter_bak=ins->inter_data=ins->inter_data_tail=ins->inter_data_head;
+	ins->to_bak=ins->to_data=ins->to_data_tail=ins->to_data_head;
 	ins->out_data_tail=ins->out_data_head;
 
-	ins->from_match.data=0;
-	ins->inter_match.data=0;
-	ins->to_match.data=0;
-
-	ins->from_match.sub[0]=(struct state_s *)ins->feed;
-	ins->from_match.sub[1]=(struct state_s *)ins->feed_len;
+	ins->from_match=NULL;
+	ins->inter_match=NULL;
+	ins->to_match=NULL;
 
 	RESET(from);
 	RESET(inter);
@@ -217,13 +215,19 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 
 	ins->back_len=0;
 
-	ins->feed_len+=ins->feed - ins->in_buf;
-	ins->feed=ins->in_buf;
-	ins->from_match.sub[1]=(struct state_s *)ins->feed_len;
-
 	if(ins->out_data_head->next){
 		goto phase_out;
 	}
+	if(ins->to_data_head->next){
+		goto phase_to;
+	}
+	if(ins->inter_data_head->next){
+		goto phase_inter;
+	}
+	if(ins->in_buf < ins->feed+ins->feed_len){
+		goto phase_from;
+	}
+
 	if(ins->pend_from){
 		goto pass_to_inter;
 	}
@@ -234,37 +238,32 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 		goto pass_to_out;
 	}
 
+	return 0;
+
 #define FROM_NEXT() do{	\
-	--ins->feed_len;	\
-	++ins->feed;	\
+++ins->from_data;	\
 }while(0);	\
 	//from
 	phase_from:
-	ins->from_match.sub[0]=(struct state_s *)ins->feed;
-	ins->from_match.sub[1]=(struct state_s *)ins->feed_len;
-	while(ins->feed_len){
-		memcpy(&ins->from_state, cd->from[ins->from_index].z + (unsigned int)ins->from_state.sub[*ins->feed], sizeof(struct state_s));
+	while(ins->from_data < ins->feed+ins->feed_len){
+		memcpy(&ins->from_state, cd->from[ins->from_index].z + (unsigned int)ins->from_state.sub[*ins->from_data], sizeof(struct state_s));
 		from_x:
 		switch(ins->from_state.status){
 			case DEADEND:
 				pass_to_inter:
 				ins->pend_from=0;
-				if(ins->from_match.data){
-					listcpy(inter, ins->from_match.data, cd->from[ins->from_index].z);
-					ins->from_match.data=NULL;
-
+				if(ins->from_match){
+					listcpy(inter, ins->from_match, cd->from[ins->from_index].z);
+					ins->from_match=NULL;
 					RESET(from);
 
-					ins->feed=(unsigned char *)ins->from_match.sub[0];
-					ins->feed_len=(unsigned int)ins->from_match.sub[1];
-
+					ins->from_data=ins->from_bak;
 					goto phase_inter;
 				}else if(ins->from_index < cd->nfrom){
 					ins->from_index++;
 					memcpy(&ins->from_state, cd->from[ins->from_index].z, sizeof(struct state_s));
 
-					ins->feed=(unsigned char *)ins->from_match.sub[0];
-					ins->feed_len=(unsigned int)ins->from_match.sub[1];
+					ins->from_data=ins->from_bak;
 					continue;
 				}else{
 					ins->ierr++;
@@ -272,20 +271,17 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 					listcpy(inter, &iterminator, 0);
 					RESET(from);
 
-					ins->feed=(unsigned char *)ins->from_match.sub[0];
-					ins->feed_len=(unsigned int)ins->from_match.sub[1];
+					ins->from_data=ins->from_bak;
 					FROM_NEXT();
-					ins->from_match.sub[0]=(struct state_s *)ins->feed;
-					ins->from_match.sub[1]=(struct state_s *)ins->feed_len;
+					ins->from_bak=ins->from_data;
 					goto phase_inter;
 				}
 				break;
 			case MATCH:
 			case SUBMATCH:
-				ins->from_match.data=ins->from_state.data;
+				ins->from_match=ins->from_state.data;
 				FROM_NEXT();
-				ins->from_match.sub[0]=(struct state_s *)ins->feed;
-				ins->from_match.sub[1]=(struct state_s *)ins->feed_len;
+				ins->from_bak=ins->from_data;
 				ins->pend_from=1;
 				break;
 			case CALLBACK:
@@ -294,8 +290,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 			case NEXTPHASE:
 				RESET(from);
 				FROM_NEXT();
-				ins->from_match.sub[0]=(struct state_s *)ins->feed;
-				ins->from_match.sub[1]=(struct state_s *)ins->feed_len;
+				ins->from_bak=ins->from_data;
 				ins->pend_from=0;
 				goto phase_inter;
 				break;
@@ -310,7 +305,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 
 	//inter
 	phase_inter:
-	ins->inter_match.sub[0]=(struct state_s *)ins->inter_data_head->next;
+	ins->inter_bak=ins->inter_data_head->next;
 	while(ins->inter_data->next){
 		ins->inter_data=ins->inter_data->next;
 		for(i=0;i<ins->inter_data->len;i++){
@@ -323,11 +318,11 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 			case DEADEND:
 				pass_to_to:
 				ins->pend_inter=0;
-				if(ins->inter_match.data){
-					listcpy(to, ins->inter_match.data, cd->inter[ins->inter_index].z);
-					ins->inter_match.data=0;
-					listfree(inter,ins->inter_match.sub[0]);
-					ins->inter_data=(struct data_s *)ins->inter_match.sub[0];
+				if(ins->inter_match){
+					listcpy(to, ins->inter_match, cd->inter[ins->inter_index].z);
+					ins->inter_match=0;
+					listfree(inter,ins->inter_bak);
+					ins->inter_data=ins->inter_bak;
 
 					RESET(inter);
 
@@ -336,7 +331,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				}else if(ins->inter_index < cd->ninter){
 					ins->inter_index++;
 					memcpy(&ins->inter_state, cd->inter[ins->inter_index].z, sizeof(struct state_s));
-					ins->inter_data=(struct data_s *)ins->inter_match.sub[0];
+					ins->inter_data=ins->inter_bak;
 					ins->inter_data=ins->inter_data_head;
 					continue;
 				}else{
@@ -357,8 +352,8 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				break;
 			case MATCH:
 			case SUBMATCH:
-				ins->inter_match.data=ins->inter_state.data;
-				ins->inter_match.sub[0]=(struct state_s *)ins->inter_data->next;
+				ins->inter_match=ins->inter_state.data;
+				ins->inter_bak=ins->inter_data->next;
 				ins->pend_inter=1;
 				break;
 			case NEXTPHASE:
@@ -374,7 +369,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 
 	//to
 	phase_to:
-	ins->to_match.sub[0]=(struct state_s *)ins->to_data_head->next;
+	ins->to_bak=ins->to_data_head->next;
 	while(ins->to_data->next){
 		ins->to_data=ins->to_data->next;
 		for(i=0;i<ins->to_data->len;i++){
@@ -393,10 +388,10 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 			case DEADEND:
 				pass_to_out:
 				ins->pend_to=0;
-				if(ins->to_match.data){
-					listcpy(out, ins->to_match.data, cd->to[ins->to_index].z);
-					ins->to_match.data=0;
-					listfree(to,ins->to_match.sub[0]);
+				if(ins->to_match){
+					listcpy(out, ins->to_match, cd->to[ins->to_index].z);
+					ins->to_match=0;
+					listfree(to,ins->to_bak);
 					ins->to_data=ins->to_data_head;
 
 					RESET(to);
@@ -405,7 +400,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				}else if(ins->to_index < cd->nto){
 					ins->to_index++;
 					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
-					ins->to_data=(struct data_s *)ins->to_match.sub[0];
+					ins->to_data=(struct data_s *)ins->to_bak;
 					ins->to_data=ins->to_data_head;
 					continue;
 				}else{
@@ -422,8 +417,8 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				break;
 			case MATCH:
 			case SUBMATCH:
-				ins->to_match.data=ins->to_state.data;
-				ins->to_match.sub[0]=(struct state_s *)ins->to_data->next;
+				ins->to_match=ins->to_state.data;
+				ins->to_bak=ins->to_data->next;
 				ins->pend_to=1;
 				break;
 			case CALLBACK:
@@ -434,8 +429,8 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				listfree(to,ins->to_data->next);
 				ins->to_data=ins->to_data_head;
 				RESET(to);
-				ins->to_match.data=ins->to_state.data;
-				ins->to_match.sub[0]=(struct state_s *)ins->to_data->next;
+				ins->to_match=ins->to_state.data;
+				ins->to_bak=ins->to_data->next;
 				ins->pend_to=0;
 				goto phase_out;
 				break;
@@ -473,25 +468,16 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 		goto phase_inter;
 	}
 
-	if(ins->feed_len){
+	if(ins->from_data < ins->feed+ins->feed_len){
 		goto phase_from;
 	}
-	if(ins->pend_from || ins->pend_inter || ins->pend_to){
-		goto hibernate;
-	}
-
-	return 0;
 
 	hibernate:
-		if(ins->pend_from){
-			memmove(ins->in_buf, (char *) ins->from_match.sub[0], (unsigned int)ins->from_match.sub[1]);
-			ins->feed=ins->in_buf + (unsigned int)ins->from_match.sub[1];
-			ins->feed_len=ins->in_len - (unsigned int)ins->from_match.sub[1];
-			ins->from_match.sub[0]=(struct state_s *) ins->in_buf;
-		}else{
-			memcpy(ins->in_buf, ins->feed, ins->feed_len);
-			ins->feed=ins->in_buf + ins->feed_len;
-			ins->feed_len=ins->in_len - ins->feed_len;
-		}
+		ins->from_data-=(ins->from_bak - ins->in_buf);
+		i=(ins->feed+ins->feed_len)-ins->from_bak;
+		memmove(ins->in_buf, ins->from_bak, i);
+		ins->feed=ins->in_buf+i;
+		ins->feed_len=ins->in_len - i;
+		ins->from_bak=ins->in_buf;
 		return 1;
 }

@@ -46,6 +46,7 @@ struct bsdconv_instruction{
 	size_t feed_len;
 	unsigned char *back;
 	size_t back_len;
+	unsigned char *from_data;
 
 	unsigned char pend_from, pend_inter, pend_to;
 
@@ -53,7 +54,9 @@ struct bsdconv_instruction{
 
 	struct state_s from_state, inter_state, to_state;
 	int from_index, inter_index, to_index;
-	struct state_s from_match, inter_match, to_match;
+	struct data_s *from_match, *inter_match, *to_match;
+	unsigned char *from_bak;
+	struct data_s *inter_bak, *to_bak;
 	struct data_s inter_data_ent, to_data_ent, out_data_ent;
 	struct data_s *inter_data_head, *to_data_head, *out_data_head, *inter_data_tail, *to_data_tail, *out_data_tail;
 	struct data_s *inter_data, *to_data;
