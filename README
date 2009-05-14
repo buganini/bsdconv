@@ -19,8 +19,6 @@ in to field, UNICODE is prefixed with 01
 Compiling & Installation (FreeBSD):
 make
 sudo make install
-sudo ldconfig -m /usr/local/share/bsdconv/from/
-sudo ldconfig -m /usr/local/share/bsdconv/to/
 
 --
 Run:
