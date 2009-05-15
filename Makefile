@@ -1,4 +1,5 @@
-CFLAGS=-Wall -g
+PREFIX?=/usr/local
+CFLAGS=-Wall -g -DPREFIX='"${PREFIX}"'
 
 All: builddir libbsdconv bsdconv_mktable bsdconv codecs
 
@@ -27,4 +28,4 @@ clean:
 	rm -rf build
 
 install:
-	cp -R build/ /usr/local/
+	cp -R build/ ${PREFIX}

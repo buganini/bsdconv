@@ -176,7 +176,7 @@ struct bsdconv_t *bsdconv_create(const char *conversion){
 		ointer="DUMMY";
 	}
 
-	chdir("/usr/local/share/bsdconv");
+	chdir(PREFIX "/share/bsdconv");
 	if(nfrom==0 || nto==0){
 		fprintf(stderr, "Need at least 1 from and to encoding.\n");
 		fflush(stderr);
