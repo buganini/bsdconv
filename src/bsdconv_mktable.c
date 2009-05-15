@@ -182,7 +182,6 @@ int main(int argc, char *argv[]){
 		l=0;
 		k=1;
 		if(*t=='?'){
-printf("CALLBAK\n");
 			if(!callback){
 				state_t->n=(struct m_state_s *)malloc(sizeof(struct m_state_s));
 				state_t=state_t->n;
