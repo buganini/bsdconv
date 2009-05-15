@@ -16,7 +16,6 @@ struct m_data_s{
 	unsigned int p;
 	unsigned char *dp;
 	struct m_data_s *n;
-
 };
 
 struct m_state_s{
@@ -31,18 +30,26 @@ struct m_state_s{
 	int child;
 };
 
+struct list{
+	struct m_state_s *p;
+	int u,l;
+	struct list *n;
+};
+
 unsigned char table[256]={};
 
 int offset=0;
 
 int main(int argc, char *argv[]){
-	int i, j, k, l, c;
+	int i, j, k, l, c, cu, cl;
 	FILE *fp;
 	unsigned char inbuf[1024], *f, *t, dat[256], *tmp, *of, *ot;
 	struct m_data_s *data_r=NULL, *data_p=NULL, *data_t=NULL;
-	struct m_state_s *state_r, *state_p, *state_t;
+	struct m_state_s *state_r, *state_t;
+	struct list *todo=NULL, *newtodo, *newtodo_tail, *state_p;
 	struct state_s dstate;
 	struct data_s ddata;
+	int callback=0;
 	void *tofree;
 
 	printf("Making table %s\n", argv[1]);
@@ -71,14 +78,17 @@ int main(int argc, char *argv[]){
 	table['F']=15;
 	fp=fopen(argv[1], "r");
 
+	newtodo=malloc(sizeof(struct list));
+	newtodo_tail=newtodo;
+
 	DPRINTF("STATUS CONTINUE: %d", CONTINUE);
 	DPRINTF("STATUS DEADEND: %d", DEADEND);
 	DPRINTF("STATUS MATCH: %d", MATCH);
 	DPRINTF("STATUS SUBMATCH: %d", SUBMATCH);
-	state_t=state_p=state_r=(struct m_state_s *)malloc(sizeof(struct m_state_s));
-	state_p->status=DEADEND;
-	state_p->data=0;
-	state_p->p=offset;
+	state_t=state_r=(struct m_state_s *)malloc(sizeof(struct m_state_s));
+	state_t->status=DEADEND;
+	state_t->data=0;
+	state_t->p=offset;
 	state_t->n=NULL;
 	offset+=sizeof(struct state_s);
 	for(i=0;i<257;i++){
@@ -94,54 +104,109 @@ int main(int argc, char *argv[]){
 			tmp++;
 		}
 		t=ot=(unsigned char *)strsep((char **)&tmp, "\t\r\n# ");
-		state_p=state_r;
+
 		while(*f){
-			if(*f==','){
-				c=256;
+			if(*f=='*'){
+				cl=0;
+				cu=255;
+			}else if(*f==','){
+				cu=cl=256;
 			}else{
-				c=table[*f];
+				cl=table[*f];
 				++f;
-				c*=16;
-				c+=table[*f];
+				cl*=16;
+				cl+=table[*f];
+				cu=cl;
 			}
-			if(state_p->psub[c]){
-				if(state_p->status==MATCH){
-					state_p->status=SUBMATCH;
+			if(todo){
+				state_p=todo;
+				while(todo){
+					state_p=todo;
+					for(c=state_p->l;c<=state_p->u;c++){
+						if(state_p->p->psub[c]){
+							if(state_p->p->status==MATCH){
+								state_p->p->status=SUBMATCH;
+							}
+							newtodo_tail->n=malloc(sizeof(struct list));
+							newtodo_tail=newtodo_tail->n;
+							newtodo_tail->p=state_p->p->psub[c];
+							newtodo_tail->l=cl;
+							newtodo_tail->u=cu;
+							newtodo_tail->n=NULL;
+						}else{
+			//	printf("%u[%X]=%u\n", state_p->p, c, offset);
+							state_p->p->psub[c]=(struct m_state_s *)malloc(sizeof(struct m_state_s));
+							state_p->p->sub[c]=(struct state_s *)offset;
+							state_p->p->child++;
+
+							newtodo_tail->n=malloc(sizeof(struct list));
+							newtodo_tail=newtodo_tail->n;
+							newtodo_tail->n=NULL;
+							newtodo_tail->p=state_p->p->psub[c];
+							newtodo_tail->l=cl;
+							newtodo_tail->u=cu;
+
+							state_t->n=state_p->p->psub[c];
+
+							state_t=state_t->n;
+							state_t->n=NULL;
+
+							newtodo_tail->p->p=offset;
+							offset+=sizeof(struct state_s);
+							newtodo_tail->p->status=CONTINUE;
+							newtodo_tail->p->data=0;
+							newtodo_tail->p->child=0;
+							for(i=0;i<257;i++){
+								newtodo_tail->p->sub[i]=0;
+								newtodo_tail->p->psub[i]=NULL;
+							}
+						}
+					}
+					todo=todo->n;
+					free(state_p);
 				}
-				state_p=state_p->psub[c];
+				todo=newtodo->n;
+				newtodo->n=NULL;
+				newtodo_tail=newtodo;
 			}else{
-//	printf("%u[%X]=%u\n", state_p->p, c, offset);
-				state_p->psub[c]=(struct m_state_s *)malloc(sizeof(struct m_state_s));
-				state_p->sub[c]=(struct state_s *)offset;
-				state_p->child++;
-
-				state_p=state_t->n=state_p->psub[c];
-
-				state_t=state_t->n;
-				state_t->n=NULL;
-
-				state_p->p=offset;
-				offset+=sizeof(struct state_s);
-				state_p->status=CONTINUE;
-				state_p->data=0;
-				state_p->child=0;
-				for(i=0;i<257;i++){
-					state_p->sub[i]=0;
-					state_p->psub[i]=NULL;
-				}
+				todo=malloc(sizeof(struct list));
+				todo->n=NULL;
+				todo->p=state_r;
+				todo->u=cu;
+				todo->l=cl;
 			}
 			++f;
-		}
-
-		if(state_p->data){
-			printf("Duplicated key: %s, dropping data: %s\n", of, ot);
-			continue;
 		}
 
 		j=0;
 		l=0;
 		k=1;
-		while(1){
+		if(*t=='?'){
+printf("CALLBAK\n");
+			if(!callback){
+				state_t->n=(struct m_state_s *)malloc(sizeof(struct m_state_s));
+				state_t=state_t->n;
+				state_t->status=CALLBACK;
+				state_t->data=0;
+				state_t->p=offset;
+				state_t->n=NULL;
+				callback=offset;
+				for(i=0;i<256;i++){
+					state_t->sub[i]=(struct state_s *)callback;
+					state_t->psub[i]=NULL;
+				}
+				state_t->sub[256]=0;
+				offset+=sizeof(struct state_s);
+			}
+			while(todo){
+				state_p=todo;
+				for(c=state_p->l;c<=state_p->u;c++){
+					state_p->p->sub[c]=(struct state_s *)callback;
+				}
+				todo=todo->n;
+				free(state_p);
+			}
+		}else while(1){
 			if(*t==',' || *t==0){
 				if(l){
 					if(data_p){
@@ -177,12 +242,23 @@ int main(int argc, char *argv[]){
 					DPRINTF("%u.data=(%d) %d", data_p->p, data_p->len, (int)data_p->data);
 					if(k){
 						k=0;
-						if(state_p->child){
-							state_p->status=SUBMATCH;
-						}else{
-							state_p->status=MATCH;
+						while(todo){
+							state_p=todo;
+							for(c=state_p->l;c<=state_p->u;c++){
+								if(state_p->p->data){
+									printf("Duplicated key: %s[%X], dropping data: %s\n", of, c, ot);
+									continue;
+								}
+								if(state_p->p->child){
+									state_p->p->status=SUBMATCH;
+								}else{
+									state_p->p->status=MATCH;
+								}
+								state_p->p->data=data_p->p;
+							}
+							todo=todo->n;
+							free(state_p);
 						}
-						state_p->data=data_p->p;
 					}
 					if(*t==0){
 						data_p=NULL;
@@ -204,6 +280,7 @@ int main(int argc, char *argv[]){
 			}
 			++t;
 		}
+		todo=NULL;
 	}
 	fclose(fp);
 	k=open(argv[2], O_RDWR|O_CREAT|O_TRUNC, 0644);
