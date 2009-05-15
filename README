@@ -1,15 +1,3 @@
-NOTICE:
-Currently bsdconv_mktable doesn't support CALLBACK
-please follow steps below to generate CALLBACK table
-
-make
-cp build/share/bsdconv/inter/DUMMY build/share/bsdconv/to/BLAH
-hexedit build/share/bsdconv/to/BLAH (Change first byte to 04)
-sudo make install
-
-*BLAH could be UTF-8, HTMLENTITY, etc.
-
---
 Table format:
 from<tab>to
 
