@@ -244,8 +244,17 @@ int main(int argc, char *argv[]){
 						while(todo){
 							state_p=todo;
 							for(c=state_p->l;c<=state_p->u;c++){
+								if(!state_p->p->psub[c]){
+									state_p->p->psub[c]=state_t->n=malloc(sizeof(struct m_state_s));
+									state_t=state_t->n;
+									state_p->p->sub[c]=(struct state_s *)offset;
+									state_p->p->psub[c]->p=offset;
+									state_p->p->psub[c]->data=0;
+									offset+=sizeof(struct state_s);
+								}
+								state_p->p=state_p->p->psub[c];
 								if(state_p->p->data){
-									printf("Duplicated key: %s[%X], dropping data: %s\n", of, c, ot);
+									printf("Duplicated key: %s dropping data: %s\n", of, ot);
 									continue;
 								}
 								if(state_p->p->child){
