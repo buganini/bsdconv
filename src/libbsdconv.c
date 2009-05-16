@@ -268,13 +268,12 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				}else{
 					ins->ierr++;
 
-					listcpy(inter, &iterminator, 0);
 					RESET(from);
 
 					ins->from_data=ins->from_bak;
 					FROM_NEXT();
 					ins->from_bak=ins->from_data;
-					goto phase_inter;
+					continue;
 				}
 				break;
 			case MATCH:
@@ -405,14 +404,13 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 					continue;
 				}else{
 					ins->oerr++;
-					listcpy(out, &oterminator, 0);
 
 					RESET(to);
 
 					listfree(to,ins->to_data->next);
 					ins->to_data=ins->to_data_head;
 
-					goto phase_out;
+					continue;
 				}
 				break;
 			case MATCH:
