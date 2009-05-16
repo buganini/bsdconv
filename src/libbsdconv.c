@@ -202,17 +202,6 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	struct data_s *data_ptr;
 	unsigned char *ptr;
 
-	struct data_s iterminator={
-		.data=(unsigned char *)"\x01\x3f",
-		.len=2,
-		.next=0,
-	};
-	struct data_s oterminator={
-		.data=(unsigned char *)"?",
-		.len=1,
-		.next=0,
-	};
-
 	ins->back_len=0;
 
 	if(ins->out_data_head->next){

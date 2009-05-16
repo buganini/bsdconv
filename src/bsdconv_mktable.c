@@ -45,7 +45,7 @@ int main(int argc, char *argv[]){
 	FILE *fp;
 	unsigned char inbuf[1024], *f, *t, dat[256], *tmp, *of, *ot;
 	struct m_data_s *data_r=NULL, *data_p=NULL, *data_t=NULL;
-	struct m_state_s *state_r, *state_t, holder, *state_i;
+	struct m_state_s *state_r, *state_t, holder;
 	struct list *todo=NULL, *newtodo, *newtodo_tail, *state_p;
 	struct state_s dstate;
 	struct data_s ddata;
@@ -252,7 +252,7 @@ int main(int argc, char *argv[]){
 									}
 								}else{
 									state_p->p->psub[c]=state_t->n=malloc(sizeof(struct m_state_s));
-									state_p->p->sub[c]=offset;
+									state_p->p->sub[c]=(struct state_s *)offset;
 									state_t=state_t->n;
 									state_t->p=offset;
 									state_t->status=MATCH;
