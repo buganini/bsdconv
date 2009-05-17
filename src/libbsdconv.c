@@ -287,7 +287,7 @@ printf("%02X\n", *ins->from_data);
 
 	//inter
 	phase_inter:
-	ins->inter_bak=ins->inter_data_head->next;
+//	ins->inter_bak=ins->inter_data_head->next;
 printf("INTER\n");
 	while(ins->inter_data->next){
 printf("INTER LOOP\n");
@@ -327,7 +327,7 @@ printf("INTER LOOP\n");
 					if(ins->inter_data_tail==data_ptr){
 						ins->inter_data_tail=ins->inter_data_head;
 					}
-					ins->inter_data=ins->inter_data_head;
+					ins->inter_bak=ins->inter_data=ins->inter_data_head;
 
 					RESET(inter);
 
@@ -363,7 +363,7 @@ printf("INTER LOOP\n");
 
 	//to
 	phase_to:
-	ins->to_bak=ins->to_data_head->next;
+//	ins->to_bak=ins->to_data_head->next;
 printf("TO\n");
 	while(ins->to_data->next){
 printf("TO LOOP\n");
@@ -404,7 +404,7 @@ printf("TO LOOP\n");
 					RESET(to);
 
 					listfree(to,ins->to_data->next);
-					ins->to_data=ins->to_data_head;
+					ins->to_bak=ins->to_data=ins->to_data_head;
 
 					continue;
 				}
