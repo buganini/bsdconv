@@ -204,28 +204,14 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 
 	ins->back_len=0;
 
-	if(ins->out_data_head->next){
-		goto phase_out;
-	}
-	if(ins->to_data_head->next){
-		goto phase_to;
-	}
-	if(ins->inter_data_head->next){
-		goto phase_inter;
-	}
-	if(ins->in_buf < ins->feed+ins->feed_len){
-		goto phase_from;
-	}
+	if(ins->out_data_head->next) goto phase_out;
+	if(ins->to_data_head->next) goto phase_to;
+	if(ins->inter_data_head->next) goto phase_inter;
+	if(ins->in_buf < ins->feed+ins->feed_len) goto phase_from;
 
-	if(ins->pend_from){
-		goto pass_to_inter;
-	}
-	if(ins->pend_inter){
-		goto pass_to_to;
-	}
-	if(ins->pend_to){
-		goto pass_to_out;
-	}
+	if(ins->pend_from) goto pass_to_inter;
+	if(ins->pend_inter) goto pass_to_to;
+	if(ins->pend_to) goto pass_to_out;
 
 	return 0;
 
@@ -477,16 +463,9 @@ printf("OUT\n");
 		free(data_ptr);
 	}
 
-	if(ins->to_data->next){
-		goto phase_to;
-	}
-	if(ins->inter_data->next){
-		goto phase_inter;
-	}
-
-	if(ins->from_data < ins->feed+ins->feed_len){
-		goto phase_from;
-	}
+	if(ins->to_data->next) goto phase_to;
+	if(ins->inter_data->next) goto phase_inter;
+	if(ins->from_data < ins->feed+ins->feed_len) goto phase_from;
 
 	hibernate:
 		ins->from_data-=(ins->from_bak - ins->in_buf);
