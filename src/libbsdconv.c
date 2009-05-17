@@ -235,6 +235,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	//from
 	phase_from:
 	while(ins->from_data < ins->feed+ins->feed_len){
+printf("%02X\n", *ins->from_data);
 		memcpy(&ins->from_state, cd->from[ins->from_index].z + (unsigned int)ins->from_state.sub[*ins->from_data], sizeof(struct state_s));
 		from_x:
 		switch(ins->from_state.status){
@@ -266,6 +267,13 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				}
 				break;
 			case MATCH:
+				FROM_NEXT();
+				ins->from_bak=ins->from_data;
+				listcpy(inter, ins->from_state.data, cd->from[ins->from_index].z);
+				ins->pend_from=0;
+				ins->from_match=NULL;
+				RESET(from);
+				goto phase_inter;
 			case SUBMATCH:
 				ins->from_match=ins->from_state.data;
 				FROM_NEXT();
@@ -294,7 +302,9 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	//inter
 	phase_inter:
 	ins->inter_bak=ins->inter_data_head->next;
+printf("INTER\n");
 	while(ins->inter_data->next){
+printf("INTER LOOP\n");
 		ins->inter_data=ins->inter_data->next;
 		for(i=0;i<ins->inter_data->len;i++){
 			memcpy(&ins->inter_state, cd->inter[ins->inter_index].z + (unsigned int)ins->inter_state.sub[*(ins->inter_data->data+i)], sizeof(struct state_s));
@@ -308,7 +318,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				ins->pend_inter=0;
 				if(ins->inter_match){
 					listcpy(to, ins->inter_match, cd->inter[ins->inter_index].z);
-					ins->inter_match=0;
+					ins->inter_match=NULL;
 					listfree(inter,ins->inter_bak);
 					ins->inter_data=ins->inter_bak;
 
@@ -339,6 +349,16 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				}
 				break;
 			case MATCH:
+				ins->inter_data=ins->inter_bak=ins->inter_data->next;
+				listcpy(to, ins->inter_state.data, cd->inter[ins->inter_index].z);
+				listfree(inter,ins->inter_bak);
+				ins->pend_inter=0;
+				ins->inter_match=NULL;
+
+				RESET(inter);
+
+				ins->inter_data=ins->inter_data_head;
+				goto phase_to;
 			case SUBMATCH:
 				ins->inter_match=ins->inter_state.data;
 				ins->inter_bak=ins->inter_data->next;
@@ -358,7 +378,9 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	//to
 	phase_to:
 	ins->to_bak=ins->to_data_head->next;
+printf("TO\n");
 	while(ins->to_data->next){
+printf("TO LOOP\n");
 		ins->to_data=ins->to_data->next;
 		for(i=0;i<ins->to_data->len;i++){
 			memcpy(&ins->to_state, cd->to[ins->to_index].z + (unsigned int)ins->to_state.sub[*(ins->to_data->data+i)], sizeof(struct state_s));
@@ -388,7 +410,6 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				}else if(ins->to_index < cd->nto){
 					ins->to_index++;
 					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
-					ins->to_data=(struct data_s *)ins->to_bak;
 					ins->to_data=ins->to_data_head;
 					continue;
 				}else{
@@ -403,6 +424,14 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				}
 				break;
 			case MATCH:
+				ins->to_bak=ins->to_data->next;
+				listcpy(out, ins->to_state.data, cd->to[ins->to_index].z);
+				listfree(to, ins->to_bak);
+				ins->to_data=ins->to_data_head;
+				ins->pend_to=0;
+				ins->to_match=NULL;
+				RESET(to);
+				goto phase_out;
 			case SUBMATCH:
 				ins->to_match=ins->to_state.data;
 				ins->to_bak=ins->to_data->next;
@@ -416,7 +445,6 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				listfree(to,ins->to_data->next);
 				ins->to_data=ins->to_data_head;
 				RESET(to);
-				ins->to_match=ins->to_state.data;
 				ins->to_bak=ins->to_data->next;
 				ins->pend_to=0;
 				goto phase_out;
@@ -431,6 +459,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 
 	//out
 	phase_out:
+printf("OUT\n");
 	while(ins->out_data_head->next){
 		i=ins->back_len + ins->out_data_head->next->len;
 		if(i > ins->out_len){
