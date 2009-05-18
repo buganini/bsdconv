@@ -111,9 +111,9 @@ void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, unsigne
 	ins->back_len=0;
 	/* (*)never changed */
 	
-	ins->fpriv=malloc(cd->nfrom * sizeof(void *));
-	ins->ipriv=malloc(cd->ninter * sizeof(void *));
-	ins->tpriv=malloc(cd->nto * sizeof(void *));
+	ins->fpriv=malloc((cd->nfrom+1) * sizeof(void *));
+	ins->ipriv=malloc((cd->ninter+1) * sizeof(void *));
+	ins->tpriv=malloc((cd->nto+1) * sizeof(void *));
 	for(i=0;i<=cd->nfrom;i++){
 		if(cd->from[i].cbinit){
 			ins->fpriv[i]=cd->from[i].cbinit();
@@ -221,7 +221,6 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	//from
 	phase_from:
 	while(ins->from_data < ins->feed+ins->feed_len){
-printf("%02X\n", *ins->from_data);
 		memcpy(&ins->from_state, cd->from[ins->from_index].z + (unsigned int)ins->from_state.sub[*ins->from_data], sizeof(struct state_s));
 		from_x:
 		switch(ins->from_state.status){
@@ -287,10 +286,7 @@ printf("%02X\n", *ins->from_data);
 
 	//inter
 	phase_inter:
-//	ins->inter_bak=ins->inter_data_head->next;
-printf("INTER\n");
 	while(ins->inter_data->next){
-printf("INTER LOOP\n");
 		ins->inter_data=ins->inter_data->next;
 		for(i=0;i<ins->inter_data->len;i++){
 			memcpy(&ins->inter_state, cd->inter[ins->inter_index].z + (unsigned int)ins->inter_state.sub[*(ins->inter_data->data+i)], sizeof(struct state_s));
@@ -363,10 +359,7 @@ printf("INTER LOOP\n");
 
 	//to
 	phase_to:
-//	ins->to_bak=ins->to_data_head->next;
-printf("TO\n");
 	while(ins->to_data->next){
-printf("TO LOOP\n");
 		ins->to_data=ins->to_data->next;
 		for(i=0;i<ins->to_data->len;i++){
 			memcpy(&ins->to_state, cd->to[ins->to_index].z + (unsigned int)ins->to_state.sub[*(ins->to_data->data+i)], sizeof(struct state_s));
@@ -445,7 +438,6 @@ printf("TO LOOP\n");
 
 	//out
 	phase_out:
-printf("OUT\n");
 	while(ins->out_data_head->next){
 		i=ins->back_len + ins->out_data_head->next->len;
 		if(i > ins->out_len){
