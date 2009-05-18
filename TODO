@@ -1,0 +1,2 @@
+* move HTMLENTITY to inter/ to make it more general, need to make dummy map as filter for each codecs
+* loopback in tailed wildcard state
