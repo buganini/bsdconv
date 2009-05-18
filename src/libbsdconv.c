@@ -37,7 +37,9 @@
 				brk=1;	\
 			}	\
 			*t=0;	\
-			ret->X[i].fd=open(ret->X[i].desc, O_RDONLY);	\
+			strcpy(buf, ret->X[i].desc);	\
+			realpath(buf, path);	\
+			ret->X[i].fd=open(path, O_RDONLY);	\
 			if(!ret->X[i].fd){	\
 				fprintf(stderr, "No such codec %s/%s", #X, ret->X[i].desc);	\
 				exit(1);	\
@@ -48,12 +50,10 @@
 				fprintf(stderr, "Memory map failed for %s/%s", #X, ret->X[i].desc);	\
 				exit(1);	\
 			}	\
-			strcpy(buf, ret->X[i].desc);	\
-			strcat(buf, ".so");	\
+			strcat(path, ".so");	\
 			ret->X[i].callback=NULL;	\
 			ret->X[i].cbinit=NULL;	\
 			ret->X[i].cbclear=NULL;	\
-			realpath(buf, path);	\
 			if((ret->X[i].dl=dlopen(path	, RTLD_LAZY))){	\
 				ret->X[i].callback=dlsym(ret->X[i].dl,"callback");	\
 				ret->X[i].cbinit=dlsym(ret->X[i].dl,"cbinit");	\

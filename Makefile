@@ -23,6 +23,7 @@ codecs: bsdconv_mktable
 	cd codecs && \
 	find */*.txt -type f | awk -F. '{cmd="../build/bin/bsdconv_mktable "$$1"."$$2" ../build/share/bsdconv/"$$1; system(cmd);}' && \
 	find */*.c -type f | awk -F. '{cmd="gcc -shared -o ../build/share/bsdconv/"$$1".so "$$1"."$$2; system(cmd);}'
+	cat codecs/aliases.map | awk '{cmd="ln -s ../"$$2" build/share/bsdconv/"$$1; system(cmd);}'
 
 clean:
 	rm -rf build
