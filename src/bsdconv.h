@@ -18,6 +18,11 @@ enum bsdconv_status{
 	NEXTPHASE,
 };
 
+enum bsdconv_mode{
+	BSDCONV_BB,
+	BSDCONV_BC,
+};
+
 struct data_s{
 	unsigned char *data;
 	size_t len;
