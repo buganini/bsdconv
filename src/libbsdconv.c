@@ -385,7 +385,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 
 					RESET(to);
 
-					goto phase_out;
+					goto end_of_to;
 				}else if(ins->to_index < cd->nto){
 					ins->to_index++;
 					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
@@ -410,7 +410,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				ins->pend_to=0;
 				ins->to_match=NULL;
 				RESET(to);
-				goto phase_out;
+				goto end_of_to;
 			case SUBMATCH:
 				ins->to_match=ins->to_state.data;
 				ins->to_bak=ins->to_data->next;
@@ -426,7 +426,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				RESET(to);
 				ins->to_bak=ins->to_data->next;
 				ins->pend_to=0;
-				goto phase_out;
+				goto end_of_to;
 				break;
 			case CONTINUE:
 				ins->pend_to=1;
@@ -435,6 +435,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 		memcpy(&ins->to_state, cd->to[ins->to_index].z + (unsigned int)ins->to_state.sub[256], sizeof(struct state_s));
 		if(ins->to_state.status==DEADEND){ goto pass_to_out;}
 	}
+	end_of_to:
 
 	//out
 	phase_out:
