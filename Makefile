@@ -1,5 +1,6 @@
 PREFIX?=/usr/local
 CFLAGS=-Wall -g -DPREFIX='"${PREFIX}"'
+SHLIBVER=1
 
 All: builddir libbsdconv bsdconv_mktable bsdconv codecs
 
@@ -11,7 +12,8 @@ builddir:
 	mkdir -p build/share/bsdconv/to
 
 libbsdconv:
-	$(CC) ${CFLAGS} src/libbsdconv.c -shared -o build/lib/libbsdconv.so
+	$(CC) ${CFLAGS} src/libbsdconv.c -shared -o build/lib/libbsdconv.so.${SHLIBVER}
+	ln -s libbsdconv.so.${SHLIBVER} build/lib/libbsdconv.so
 
 bsdconv:
 	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv.c -o build/bin/bsdconv
