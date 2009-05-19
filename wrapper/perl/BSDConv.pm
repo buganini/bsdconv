@@ -40,3 +40,4 @@ char* _conv(SV* cd, SV* s, int len) {
 void destroy(SV* cd){
 	return bsdconv_destroy(((struct bsdconv_t *)SvIV(SvRV(cd))));
 }
+
