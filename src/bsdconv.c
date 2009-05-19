@@ -49,6 +49,7 @@ int main(int argc, char *argv[]){
 	ins.in_len=IBUFLEN;
 	ins.out_buf=out;
 	ins.out_len=OBUFLEN;
+	ins.mode=BSDCONV_BB;
 	bsdconv_init(cd, &ins);
 	do{
 		if(ins.feed_len) ins.feed_len=fread(ins.feed, 1, ins.feed_len, inf);
