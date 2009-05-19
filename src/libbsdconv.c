@@ -77,19 +77,21 @@
 	memcpy(&ins->X##_state, cd->X[ins->X##_index].z, sizeof(struct state_s));	\
 }while(0);
 
-void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins, unsigned char *inbuf, size_t inlen, unsigned char *outbuf, size_t outlen){
+void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	int i;
-	
-	ins->in_buf=inbuf;
-	ins->in_len=inlen;
-	ins->out_buf=outbuf;	// *
-	ins->out_len=outlen;
-	ins->feed=inbuf;
-	ins->feed_len=inlen;
-	ins->back=outbuf;	// *
-	ins->back_len=0;
-	/* (*)never changed */
-	
+	switch(ins->mode){
+		case BSDCONV_BB:
+			ins->feed=ins->in_buf;
+			ins->feed_len=ins->in_len;
+			ins->back=ins->out_buf;	// *
+			/* (*)never changed */
+			break;
+		case BSDCONV_BC:
+			ins->feed=ins->in_buf;
+			ins->feed_len=ins->in_len;
+			break;
+	}
+
 	ins->fpriv=malloc((cd->nfrom+1) * sizeof(void *));
 	ins->ipriv=malloc((cd->ninter+1) * sizeof(void *));
 	ins->tpriv=malloc((cd->nto+1) * sizeof(void *));
@@ -181,18 +183,43 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	struct data_s *data_ptr;
 	unsigned char *ptr;
 
-	ins->back_len=0;
-
-	if(ins->out_data_head->next) goto phase_out;
-	if(ins->to_data_head->next) goto phase_to;
-	if(ins->inter_data_head->next) goto phase_inter;
-	if(ins->in_buf < ins->feed+ins->feed_len) goto phase_from;
-
-	if(ins->pend_from) goto pass_to_inter;
-	if(ins->pend_inter) goto pass_to_to;
-	if(ins->pend_to) goto pass_to_out;
-
-	return 0;
+	switch(ins->mode){
+		case BSDCONV_BB:
+			ins->back_len=0;
+			if(ins->out_data_head->next) goto phase_out;
+			if(ins->to_data_head->next) goto phase_to;
+			if(ins->inter_data_head->next) goto phase_inter;
+			if(ins->in_buf < ins->feed+ins->feed_len) goto phase_from;
+			if(ins->pend_from) goto pass_to_inter;
+			if(ins->pend_inter) goto pass_to_to;
+			if(ins->pend_to) goto pass_to_out;
+			return 0;
+			break;
+		case BSDCONV_BC:
+			if(ins->to_data_head->next) goto phase_to;
+			if(ins->inter_data_head->next) goto phase_inter;
+			if(ins->in_buf < ins->feed+ins->feed_len) goto phase_from;
+			if(ins->pend_from) goto pass_to_inter;
+			if(ins->pend_inter) goto pass_to_to;
+			if(ins->pend_to) goto pass_to_out;
+			i=0;
+			data_ptr=ins->out_data_head;
+			while(data_ptr){
+				i+=data_ptr->len;
+				data_ptr=data_ptr->next;
+			}
+			ptr=ins->out_buf=ins->back=malloc(i);
+			data_ptr=ins->out_data_head;
+			while(ins->out_data_head->next){
+				data_ptr=ins->out_data_head->next;
+				memcpy(ptr, data_ptr->data, data_ptr->len);
+				ptr+=data_ptr->len;
+				ins->out_data_head->next=ins->out_data_head->next->next;
+				free(data_ptr);
+			}
+			return 0;
+			break;
+		}
 
 #define FROM_NEXT() do{	\
 ++ins->from_data;	\
@@ -416,35 +443,51 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	}
 	end_of_to:
 
-	//out
-	phase_out:
-	while(ins->out_data_head->next){
-		i=ins->back_len + ins->out_data_head->next->len;
-		if(i > ins->out_len){
-			goto hibernate;
-		}else{
-			memcpy(ins->back + ins->back_len, ins->out_data_head->next->data, ins->out_data_head->next->len);
-			ins->back_len=i;
-		}
-		if(ins->out_data_tail==ins->out_data_head->next){
-			ins->out_data_tail=ins->out_data_head;
-		}
-		data_ptr=ins->out_data_head->next;
-		ins->out_data_head->next=ins->out_data_head->next->next;
-		free(data_ptr->data);
-		free(data_ptr);
+	switch(ins->mode){
+		case BSDCONV_BB:
+			//out
+			phase_out:
+			while(ins->out_data_head->next){
+				i=ins->back_len + ins->out_data_head->next->len;
+				if(i > ins->out_len){
+					goto bb_hibernate;
+				}else{
+					memcpy(ins->back + ins->back_len, ins->out_data_head->next->data, ins->out_data_head->next->len);
+					ins->back_len=i;
+				}
+				if(ins->out_data_tail==ins->out_data_head->next){
+					ins->out_data_tail=ins->out_data_head;
+				}
+				data_ptr=ins->out_data_head->next;
+				ins->out_data_head->next=ins->out_data_head->next->next;
+				free(data_ptr->data);
+				free(data_ptr);
+			}
+
+			if(ins->to_data->next) goto phase_to;
+			if(ins->inter_data->next) goto phase_inter;
+			if(ins->from_data < ins->feed+ins->feed_len) goto phase_from;
+			bb_hibernate:
+				ins->from_data-=(ins->from_bak - ins->in_buf);
+				i=(ins->feed+ins->feed_len)-ins->from_bak;
+				memmove(ins->in_buf, ins->from_bak, i);
+				ins->feed=ins->in_buf+i;
+				ins->feed_len=ins->in_len - i;
+				ins->from_bak=ins->in_buf;
+				return 1;
+		case BSDCONV_BC:
+			if(ins->to_data->next) goto phase_to;
+			if(ins->inter_data->next) goto phase_inter;
+			if(ins->from_data < ins->feed+ins->feed_len) goto phase_from;
+			//bc_hibernate:
+				ins->from_data-=(ins->from_bak - ins->in_buf);
+				i=(ins->feed+ins->feed_len)-ins->from_bak;
+				memmove(ins->in_buf, ins->from_bak, i);
+				ins->feed=ins->in_buf+i;
+				ins->feed_len=ins->in_len - i;
+				ins->from_bak=ins->in_buf;
+				return 1;
+			break;
 	}
-
-	if(ins->to_data->next) goto phase_to;
-	if(ins->inter_data->next) goto phase_inter;
-	if(ins->from_data < ins->feed+ins->feed_len) goto phase_from;
-
-	hibernate:
-		ins->from_data-=(ins->from_bak - ins->in_buf);
-		i=(ins->feed+ins->feed_len)-ins->from_bak;
-		memmove(ins->in_buf, ins->from_bak, i);
-		ins->feed=ins->in_buf+i;
-		ins->feed_len=ins->in_len - i;
-		ins->from_bak=ins->in_buf;
-		return 1;
+	return 1;
 }

@@ -36,6 +36,7 @@ struct state_s{
 };
 
 struct bsdconv_instruction{
+	int mode;
 	unsigned char *in_buf;
 	size_t in_len;
 	unsigned char *out_buf;
@@ -92,7 +93,7 @@ struct bsdconv_codec_t {
 	ins->X##_data_head->next=data_ptr;	\
 }
 
-void bsdconv_init(struct bsdconv_t *, struct bsdconv_instruction *, unsigned char *, size_t, unsigned char *, size_t);
+void bsdconv_init(struct bsdconv_t *, struct bsdconv_instruction *);
 struct bsdconv_t *bsdconv_create(const char *);
 void bsdconv_destroy(struct bsdconv_t *);
 int bsd_conv(struct bsdconv_t *, struct bsdconv_instruction *);

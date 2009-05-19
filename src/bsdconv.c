@@ -3,11 +3,14 @@
 #include <string.h>
 #include "bsdconv.h"
 
+#define IBUFLEN 1024
+#define OBUFLEN 1024
+
 int main(int argc, char *argv[]){
 	struct bsdconv_instruction ins;
 	struct bsdconv_t *cd;
 	FILE *inf, *otf;
-	unsigned char in[1024], out[1024];
+	unsigned char in[IBUFLEN], out[OBUFLEN];
 
 	int r;
 	if(argc<2){
@@ -42,7 +45,11 @@ int main(int argc, char *argv[]){
 	}
 
 	cd=bsdconv_create(argv[1]);
-	bsdconv_init(cd, &ins, in, 1024, out, 1024);
+	ins.in_buf=in;
+	ins.in_len=IBUFLEN;
+	ins.out_buf=out;
+	ins.out_len=OBUFLEN;
+	bsdconv_init(cd, &ins);
 	do{
 		if(ins.feed_len) ins.feed_len=fread(ins.feed, 1, ins.feed_len, inf);
 		r=bsd_conv(cd, &ins);
