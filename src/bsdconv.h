@@ -73,8 +73,28 @@ struct bsdconv_codec_t {
 	void (*cbclear)(void *);
 };
 
+#define listcpy(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
+	ins->X##_data_tail->next=malloc(sizeof(struct data_s));	\
+	ins->X##_data_tail=ins->X##_data_tail->next;	\
+	memcpy(ins->X##_data_tail, (unsigned char *)((Z)+(unsigned int)data_ptr), sizeof(struct data_s));	\
+	data_ptr=ins->X##_data_tail->next;	\
+	ins->X##_data_tail->next=NULL;	\
+	ptr=(unsigned char *)((Z)+(unsigned int)ins->X##_data_tail->data);	\
+	ins->X##_data_tail->data=malloc(ins->X##_data_tail->len);	\
+	memcpy(ins->X##_data_tail->data, ptr, ins->X##_data_tail->len);	\
+}
+
+#define listfree(X,Y)	while(ins->X##_data_head->next!=(struct data_s *)(Y)){	\
+	data_ptr=ins->X##_data_head->next->next;	\
+	free(ins->X##_data_head->next->data);	\
+	if(ins->X##_data_tail==ins->X##_data_head->next){	\
+		ins->X##_data_tail=ins->X##_data_head;	\
+	}	\
+	free(ins->X##_data_head->next);	\
+	ins->X##_data_head->next=data_ptr;	\
+}
+
 void bsdconv_init(struct bsdconv_t *, struct bsdconv_instruction *, unsigned char *, size_t, unsigned char *, size_t);
 struct bsdconv_t *bsdconv_create(const char *);
 void bsdconv_destroy(struct bsdconv_t *);
 int bsd_conv(struct bsdconv_t *, struct bsdconv_instruction *);
-

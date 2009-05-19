@@ -72,27 +72,6 @@
 	chdir("..");	\
 }while(0);
 
-#define listcpy(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
-	ins->X##_data_tail->next=malloc(sizeof(struct data_s));	\
-	ins->X##_data_tail=ins->X##_data_tail->next;	\
-	memcpy(ins->X##_data_tail, (unsigned char *)((Z)+(unsigned int)data_ptr), sizeof(struct data_s));	\
-	data_ptr=ins->X##_data_tail->next;	\
-	ins->X##_data_tail->next=NULL;	\
-	ptr=(unsigned char *)((Z)+(unsigned int)ins->X##_data_tail->data);	\
-	ins->X##_data_tail->data=malloc(ins->X##_data_tail->len);	\
-	memcpy(ins->X##_data_tail->data, ptr, ins->X##_data_tail->len);	\
-}
-
-#define listfree(X,Y)	while(ins->X##_data_head->next!=(struct data_s *)(Y)){	\
-	data_ptr=ins->X##_data_head->next->next;	\
-	free(ins->X##_data_head->next->data);	\
-	if(ins->X##_data_tail==ins->X##_data_head->next){	\
-		ins->X##_data_tail=ins->X##_data_head;	\
-	}	\
-	free(ins->X##_data_head->next);	\
-	ins->X##_data_head->next=data_ptr;	\
-}
-
 #define RESET(X) do{	\
 	ins->X##_index=0;	\
 	memcpy(&ins->X##_state, cd->X[ins->X##_index].z, sizeof(struct state_s));	\
