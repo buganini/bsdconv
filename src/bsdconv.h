@@ -1,10 +1,3 @@
-//define DEBUG
-#ifdef DEBUG
-#define DPRINTF(fmt, args...) printf("DEBUG: %d " fmt "\n", __LINE__, ## args); fflush(stdout);
-#else
-#define DPRINTF(fmt, args...)
-#endif
-
 #include <unistd.h>
 
 struct bsdconv_t {

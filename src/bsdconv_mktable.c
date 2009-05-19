@@ -81,10 +81,6 @@ int main(int argc, char *argv[]){
 	newtodo=malloc(sizeof(struct list));
 	newtodo_tail=newtodo;
 
-	DPRINTF("STATUS CONTINUE: %d", CONTINUE);
-	DPRINTF("STATUS DEADEND: %d", DEADEND);
-	DPRINTF("STATUS MATCH: %d", MATCH);
-	DPRINTF("STATUS SUBMATCH: %d", SUBMATCH);
 	state_t=state_r=(struct m_state_s *)malloc(sizeof(struct m_state_s));
 	state_t->status=DEADEND;
 	state_t->data=0;
@@ -237,7 +233,6 @@ int main(int argc, char *argv[]){
 					data_p->data=(unsigned char *)offset;
 					offset+=l;
 
-					DPRINTF("%u.data=(%d) %d", data_p->p, data_p->len, (int)data_p->data);
 					if(k){
 						k=0;
 						while(todo){
