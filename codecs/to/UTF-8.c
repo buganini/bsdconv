@@ -11,7 +11,7 @@
 #define bb00001111 0x0f
 #define bb00111100 0x3c
 
-void callback(struct bsdconv_instruction *ins){
+void callback(struct bsdconv_instance *ins){
 	unsigned char *data, *p;
 	unsigned int len;
 	data=ins->to_data->data;
