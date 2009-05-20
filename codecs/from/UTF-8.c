@@ -18,14 +18,15 @@ struct my_s{
 	unsigned char buf[16];
 };
 
-void *cbinit(void){
-	struct my_s *ret;
-	ret=malloc(sizeof(struct my_s));
-	ret->status=0;
-	return ret;
+void *cbcreate(void){
+	return  malloc(sizeof(struct my_s));
 }
 
-void cbclear(void *p){
+void cbinit(struct my_s *r){
+	r->status=0;
+}
+
+void cbdestroy(void *p){
 	free(p);
 }
 
@@ -55,7 +56,7 @@ void cbclear(void *p){
 	p[0]=0x01;	\
 }while(0);
 
-void callback(struct bsdconv_instruction *ins){
+void callback(struct bsdconv_instance *ins){
 	struct my_s *t=ins->fpriv[ins->from_index];
 	unsigned char d=*ins->from_data, *p;
 	switch(t->status){

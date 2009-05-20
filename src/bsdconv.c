@@ -7,8 +7,7 @@
 #define OBUFLEN 1024
 
 int main(int argc, char *argv[]){
-	struct bsdconv_instruction ins;
-	struct bsdconv_t *cd;
+	struct bsdconv_instance *ins;
 	FILE *inf, *otf;
 	unsigned char in[IBUFLEN], out[OBUFLEN];
 
@@ -44,23 +43,23 @@ int main(int argc, char *argv[]){
 		otf=stdout;
 	}
 
-	cd=bsdconv_create(argv[1]);
-	ins.in_buf=in;
-	ins.in_len=IBUFLEN;
-	ins.out_buf=out;
-	ins.out_len=OBUFLEN;
-	ins.mode=BSDCONV_BB;
-	bsdconv_init(cd, &ins);
+	ins=bsdconv_create(argv[1]);
+	ins->in_buf=in;
+	ins->in_len=IBUFLEN;
+	ins->out_buf=out;
+	ins->out_len=OBUFLEN;
+	ins->mode=BSDCONV_BB;
+	bsdconv_init(ins);
 	do{
-		if(ins.feed_len) ins.feed_len=fread(ins.feed, 1, ins.feed_len, inf);
-		r=bsd_conv(cd, &ins);
-		if(ins.back_len)fwrite(ins.back, 1, ins.back_len, otf);
+		if(ins->feed_len) ins->feed_len=fread(ins->feed, 1, ins->feed_len, inf);
+		r=bsd_conv(ins);
+		if(ins->back_len)fwrite(ins->back, 1, ins->back_len, otf);
 	}while(r);
 
-	fprintf(stderr, "Decoding failure: %u\n", ins.ierr);
-	fprintf(stderr, "Encoding failure: %u\n", ins.oerr);
+	fprintf(stderr, "Decoding failure: %u\n", ins->ierr);
+	fprintf(stderr, "Encoding failure: %u\n", ins->oerr);
 
-	bsdconv_destroy(cd);
+	bsdconv_destroy(ins);
 	if(inf!=stdin){
 		fclose(inf);
 	}
