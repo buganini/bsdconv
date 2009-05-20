@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "../../src/bsdconv.h"
 
-void callback(struct bsdconv_instruction *ins){
+void callback(struct bsdconv_instance *ins){
 	ins->out_data_tail->next=malloc(sizeof(struct data_s));
 	ins->out_data_tail=ins->out_data_tail->next;
 	ins->out_data_tail->next=NULL;
