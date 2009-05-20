@@ -1,14 +1,5 @@
 #include <unistd.h>
 
-struct bsdconv_t {
-	int nfrom;
-	int ninter;
-	int nto;
-	struct bsdconv_codec_t *from;
-	struct bsdconv_codec_t *inter;
-	struct bsdconv_codec_t *to;
-};
-
 enum bsdconv_status{
 	CONTINUE,
 	DEADEND,
@@ -35,7 +26,7 @@ struct state_s{
 	struct state_s *sub[257];
 };
 
-struct bsdconv_instruction{
+struct bsdconv_instance{
 	int mode;
 	unsigned char *in_buf;
 	size_t in_len;
@@ -47,6 +38,13 @@ struct bsdconv_instruction{
 	size_t back_len;
 	unsigned char *from_data;
 
+	int nfrom;
+	int ninter;
+	int nto;
+	struct bsdconv_codec_t *from;
+	struct bsdconv_codec_t *inter;
+	struct bsdconv_codec_t *to;
+
 	unsigned char pend_from, pend_inter, pend_to;
 
 	unsigned char ierr, oerr;
@@ -56,7 +54,6 @@ struct bsdconv_instruction{
 	struct data_s *from_match, *inter_match, *to_match;
 	unsigned char *from_bak;
 	struct data_s *inter_bak, *to_bak;
-	struct data_s inter_data_ent, to_data_ent, out_data_ent;
 	struct data_s *inter_data_head, *to_data_head, *out_data_head, *inter_data_tail, *to_data_tail, *out_data_tail;
 	struct data_s *inter_data, *to_data;
 	void **fpriv, **ipriv, **tpriv;
@@ -67,9 +64,10 @@ struct bsdconv_codec_t {
 	int fd;
 	unsigned char *z;
 	void *dl;
-	void (*callback)(struct bsdconv_instruction *);
-	void *(*cbinit)(void);
-	void (*cbclear)(void *);
+	void (*callback)(struct bsdconv_instance *);
+	void *(*cbcreate)(void);
+	void (*cbinit)(void *);
+	void (*cbdestroy)(void *);
 };
 
 #define listcpy(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
@@ -93,7 +91,7 @@ struct bsdconv_codec_t {
 	ins->X##_data_head->next=data_ptr;	\
 }
 
-void bsdconv_init(struct bsdconv_t *, struct bsdconv_instruction *);
-struct bsdconv_t *bsdconv_create(const char *);
-void bsdconv_destroy(struct bsdconv_t *);
-int bsd_conv(struct bsdconv_t *, struct bsdconv_instruction *);
+struct bsdconv_instance *bsdconv_create(const char *);
+void bsdconv_init(struct bsdconv_instance *);
+void bsdconv_destroy(struct bsdconv_instance *);
+int bsd_conv(struct bsdconv_instance *);

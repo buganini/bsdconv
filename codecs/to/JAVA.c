@@ -5,7 +5,7 @@
 
 #define TAILIZE(p) while(*p){ p++ ;}
 
-void callback(struct bsdconv_instruction *ins){
+void callback(struct bsdconv_instance *ins){
 	unsigned char *data, *p, buf[16]={0};
 	unsigned int len, i;
 	data=ins->to_data->data;

@@ -22,13 +22,13 @@
 	}else{	\
 		n##X=0;	\
 	}	\
-	ret->n##X=n##X;		\
+	ins->n##X=n##X;		\
 }while(0);
 
 #define GENLIST(X) do{	\
 	X=strdup(o##X);	\
-	ret->X=malloc(n##X * sizeof(struct bsdconv_codec_t));		\
-	ret->X[0].desc=X;	\
+	ins->X=malloc(n##X * sizeof(struct bsdconv_codec_t));		\
+	ins->X[0].desc=X;	\
 	chdir(#X);	\
 	brk=0;	\
 	for(i=0,t=X;;++t){	\
@@ -37,30 +37,32 @@
 				brk=1;	\
 			}	\
 			*t=0;	\
-			strcpy(buf, ret->X[i].desc);	\
+			strcpy(buf, ins->X[i].desc);	\
 			realpath(buf, path);	\
-			ret->X[i].fd=open(path, O_RDONLY);	\
-			if(!ret->X[i].fd){	\
-				fprintf(stderr, "No such codec %s/%s", #X, ret->X[i].desc);	\
+			ins->X[i].fd=open(path, O_RDONLY);	\
+			if(!ins->X[i].fd){	\
+				fprintf(stderr, "No such codec %s/%s", #X, ins->X[i].desc);	\
 				exit(1);	\
 			}	\
-			fstat(ret->X[i].fd, &stat);		\
-			ret->X[i].z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,ret->X[i].fd,0);	\
-			if(!ret->X[i].z){	\
-				fprintf(stderr, "Memory map failed for %s/%s", #X, ret->X[i].desc);	\
+			fstat(ins->X[i].fd, &stat);		\
+			ins->X[i].z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,ins->X[i].fd,0);	\
+			if(!ins->X[i].z){	\
+				fprintf(stderr, "Memory map failed for %s/%s", #X, ins->X[i].desc);	\
 				exit(1);	\
 			}	\
 			strcat(path, ".so");	\
-			ret->X[i].callback=NULL;	\
-			ret->X[i].cbinit=NULL;	\
-			ret->X[i].cbclear=NULL;	\
-			if((ret->X[i].dl=dlopen(path	, RTLD_LAZY))){	\
-				ret->X[i].callback=dlsym(ret->X[i].dl,"callback");	\
-				ret->X[i].cbinit=dlsym(ret->X[i].dl,"cbinit");	\
-				ret->X[i].cbclear=dlsym(ret->X[i].dl,"cbclear");	\
+			ins->X[i].cbcreate=NULL;	\
+			ins->X[i].cbinit=NULL;	\
+			ins->X[i].callback=NULL;	\
+			ins->X[i].cbdestroy=NULL;	\
+			if((ins->X[i].dl=dlopen(path	, RTLD_LAZY))){	\
+				ins->X[i].callback=dlsym(ins->X[i].dl,"callback");	\
+				ins->X[i].cbcreate=dlsym(ins->X[i].dl,"cbcreate");	\
+				ins->X[i].cbinit=dlsym(ins->X[i].dl,"cbinit");	\
+				ins->X[i].cbdestroy=dlsym(ins->X[i].dl,"cbdestroy");	\
 			}	\
 			if(i+1 < n##X){	\
-				ret->X[++i].desc=t+1;	\
+				ins->X[++i].desc=t+1;	\
 			}	\
 			if(brk){	\
 				break;	\
@@ -74,10 +76,10 @@
 
 #define RESET(X) do{	\
 	ins->X##_index=0;	\
-	memcpy(&ins->X##_state, cd->X[ins->X##_index].z, sizeof(struct state_s));	\
+	memcpy(&ins->X##_state, ins->X[ins->X##_index].z, sizeof(struct state_s));	\
 }while(0);
 
-void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
+void bsdconv_init(struct bsdconv_instance *ins){
 	int i;
 	switch(ins->mode){
 		case BSDCONV_BB:
@@ -92,29 +94,8 @@ void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 			break;
 	}
 
-	ins->fpriv=malloc((cd->nfrom+1) * sizeof(void *));
-	ins->ipriv=malloc((cd->ninter+1) * sizeof(void *));
-	ins->tpriv=malloc((cd->nto+1) * sizeof(void *));
-	for(i=0;i<=cd->nfrom;i++){
-		if(cd->from[i].cbinit){
-			ins->fpriv[i]=cd->from[i].cbinit();
-		}
-	}
-	for(i=0;i<=cd->ninter;i++){
-		if(cd->inter[i].cbinit)
-			ins->ipriv[i]=cd->inter[i].cbinit();
-	}
-	for(i=0;i<=cd->nto;i++){
-		if(cd->to[i].cbinit)
-			ins->tpriv[i]=cd->to[i].cbinit();
-	}
-
 	ins->ierr=0;
 	ins->oerr=0;
-
-	ins->inter_data_head=&ins->inter_data_ent;
-	ins->to_data_head=&ins->to_data_ent;
-	ins->out_data_head=&ins->out_data_ent;
 
 	ins->inter_data_head->next=
 	ins->to_data_head->next=
@@ -133,10 +114,24 @@ void bsdconv_init(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	RESET(from);
 	RESET(inter);
 	RESET(to);
+
+	for(i=0;i<=ins->nfrom;i++){
+		if(ins->from[i].cbinit){
+			ins->from[i].cbinit(ins->fpriv[i]);
+		}
+	}
+	for(i=0;i<=ins->ninter;i++){
+		if(ins->inter[i].cbinit)
+			ins->inter[i].cbinit(ins->ipriv[i]);
+	}
+	for(i=0;i<=ins->nto;i++){
+		if(ins->to[i].cbinit)
+			ins->to[i].cbinit(ins->tpriv[i]);
+	}
 }
 
-struct bsdconv_t *bsdconv_create(const char *conversion){
-	struct bsdconv_t *ret=malloc(sizeof(struct bsdconv_t));
+struct bsdconv_instance *bsdconv_create(const char *conversion){
+	struct bsdconv_instance *ins=malloc(sizeof(struct bsdconv_instance));
 	struct stat stat;
 	char *ofrom, *ointer, *oto;
 	char *t, *from, *inter, *to;
@@ -167,18 +162,41 @@ struct bsdconv_t *bsdconv_create(const char *conversion){
 	GENLIST(inter);
 	GENLIST(to);
 	
-	ret->nfrom--;
-	ret->nto--;
-	ret->ninter--;
-	return ret;
+	ins->nfrom--;
+	ins->nto--;
+	ins->ninter--;
+
+	ins->inter_data_head=malloc(sizeof(struct data_s));
+	ins->to_data_head=malloc(sizeof(struct data_s));
+	ins->out_data_head=malloc(sizeof(struct data_s));
+
+	ins->fpriv=malloc((ins->nfrom+1) * sizeof(void *));
+	ins->ipriv=malloc((ins->ninter+1) * sizeof(void *));
+	ins->tpriv=malloc((ins->nto+1) * sizeof(void *));
+
+	for(i=0;i<=ins->nfrom;i++){
+		if(ins->from[i].cbcreate){
+			ins->fpriv[i]=ins->from[i].cbcreate();
+		}
+	}
+	for(i=0;i<=ins->ninter;i++){
+		if(ins->inter[i].cbcreate)
+			ins->ipriv[i]=ins->inter[i].cbcreate();
+	}
+	for(i=0;i<=ins->nto;i++){
+		if(ins->to[i].cbcreate)
+			ins->tpriv[i]=ins->to[i].cbcreate();
+	}
+
+	return ins;
 }
 
-void bsdconv_destroy(struct bsdconv_t *cd){
-	free(cd->from[0].desc);
-	free(cd);
+void bsdconv_destroy(struct bsdconv_instance *ins){
+	free(ins->from[0].desc);
+	free(ins);
 }
 
-int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
+int bsd_conv(struct bsdconv_instance *ins){
 	unsigned int i;
 	struct data_s *data_ptr;
 	unsigned char *ptr;
@@ -227,22 +245,22 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	//from
 	phase_from:
 	while(ins->from_data < ins->feed+ins->feed_len){
-		memcpy(&ins->from_state, cd->from[ins->from_index].z + (unsigned int)ins->from_state.sub[*ins->from_data], sizeof(struct state_s));
+		memcpy(&ins->from_state, ins->from[ins->from_index].z + (unsigned int)ins->from_state.sub[*ins->from_data], sizeof(struct state_s));
 		from_x:
 		switch(ins->from_state.status){
 			case DEADEND:
 				pass_to_inter:
 				ins->pend_from=0;
 				if(ins->from_match){
-					listcpy(inter, ins->from_match, cd->from[ins->from_index].z);
+					listcpy(inter, ins->from_match, ins->from[ins->from_index].z);
 					ins->from_match=NULL;
 					RESET(from);
 
 					ins->from_data=ins->from_bak;
 					goto phase_inter;
-				}else if(ins->from_index < cd->nfrom){
+				}else if(ins->from_index < ins->nfrom){
 					ins->from_index++;
-					memcpy(&ins->from_state, cd->from[ins->from_index].z, sizeof(struct state_s));
+					memcpy(&ins->from_state, ins->from[ins->from_index].z, sizeof(struct state_s));
 
 					ins->from_data=ins->from_bak;
 					continue;
@@ -260,7 +278,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 			case MATCH:
 				FROM_NEXT();
 				ins->from_bak=ins->from_data;
-				listcpy(inter, ins->from_state.data, cd->from[ins->from_index].z);
+				listcpy(inter, ins->from_state.data, ins->from[ins->from_index].z);
 				ins->pend_from=0;
 				ins->from_match=NULL;
 				RESET(from);
@@ -272,7 +290,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				ins->pend_from=1;
 				break;
 			case CALLBACK:
-				cd->from[ins->from_index].callback(ins);
+				ins->from[ins->from_index].callback(ins);
 				goto from_x;
 			case NEXTPHASE:
 				RESET(from);
@@ -295,7 +313,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	while(ins->inter_data->next){
 		ins->inter_data=ins->inter_data->next;
 		for(i=0;i<ins->inter_data->len;i++){
-			memcpy(&ins->inter_state, cd->inter[ins->inter_index].z + (unsigned int)ins->inter_state.sub[*(ins->inter_data->data+i)], sizeof(struct state_s));
+			memcpy(&ins->inter_state, ins->inter[ins->inter_index].z + (unsigned int)ins->inter_state.sub[*(ins->inter_data->data+i)], sizeof(struct state_s));
 			if(ins->inter_state.status==DEADEND){
 				break;
 			}
@@ -305,7 +323,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				pass_to_to:
 				ins->pend_inter=0;
 				if(ins->inter_match){
-					listcpy(to, ins->inter_match, cd->inter[ins->inter_index].z);
+					listcpy(to, ins->inter_match, ins->inter[ins->inter_index].z);
 					ins->inter_match=NULL;
 					listfree(inter,ins->inter_bak);
 					ins->inter_data=ins->inter_bak;
@@ -314,9 +332,9 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 
 					ins->inter_data=ins->inter_data_head;
 					goto phase_to;
-				}else if(ins->inter_index < cd->ninter){
+				}else if(ins->inter_index < ins->ninter){
 					ins->inter_index++;
-					memcpy(&ins->inter_state, cd->inter[ins->inter_index].z, sizeof(struct state_s));
+					memcpy(&ins->inter_state, ins->inter[ins->inter_index].z, sizeof(struct state_s));
 					ins->inter_data=ins->inter_bak;
 					ins->inter_data=ins->inter_data_head;
 					continue;
@@ -338,7 +356,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				break;
 			case MATCH:
 				ins->inter_data=ins->inter_bak=ins->inter_data->next;
-				listcpy(to, ins->inter_state.data, cd->inter[ins->inter_index].z);
+				listcpy(to, ins->inter_state.data, ins->inter[ins->inter_index].z);
 				listfree(inter,ins->inter_bak);
 				ins->pend_inter=0;
 				ins->inter_match=NULL;
@@ -359,7 +377,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				ins->pend_inter=1;
 				break;
 		}
-		memcpy(&ins->inter_state, cd->inter[ins->inter_index].z + (unsigned int)ins->inter_state.sub[256], sizeof(struct state_s));
+		memcpy(&ins->inter_state, ins->inter[ins->inter_index].z + (unsigned int)ins->inter_state.sub[256], sizeof(struct state_s));
 		if(ins->inter_state.status==DEADEND){ goto pass_to_to;}
 	}
 
@@ -368,7 +386,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 	while(ins->to_data->next){
 		ins->to_data=ins->to_data->next;
 		for(i=0;i<ins->to_data->len;i++){
-			memcpy(&ins->to_state, cd->to[ins->to_index].z + (unsigned int)ins->to_state.sub[*(ins->to_data->data+i)], sizeof(struct state_s));
+			memcpy(&ins->to_state, ins->to[ins->to_index].z + (unsigned int)ins->to_state.sub[*(ins->to_data->data+i)], sizeof(struct state_s));
 			switch(ins->to_state.status){
 				case DEADEND:
 					goto pass_to_out;
@@ -384,7 +402,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				pass_to_out:
 				ins->pend_to=0;
 				if(ins->to_match){
-					listcpy(out, ins->to_match, cd->to[ins->to_index].z);
+					listcpy(out, ins->to_match, ins->to[ins->to_index].z);
 					ins->to_match=0;
 					listfree(to,ins->to_bak);
 					ins->to_data=ins->to_data_head;
@@ -392,9 +410,9 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 					RESET(to);
 
 					goto end_of_to;
-				}else if(ins->to_index < cd->nto){
+				}else if(ins->to_index < ins->nto){
 					ins->to_index++;
-					memcpy(&ins->to_state, cd->to[ins->to_index].z, sizeof(struct state_s));
+					memcpy(&ins->to_state, ins->to[ins->to_index].z, sizeof(struct state_s));
 					ins->to_data=ins->to_data_head;
 					continue;
 				}else{
@@ -410,7 +428,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				break;
 			case MATCH:
 				ins->to_bak=ins->to_data->next;
-				listcpy(out, ins->to_state.data, cd->to[ins->to_index].z);
+				listcpy(out, ins->to_state.data, ins->to[ins->to_index].z);
 				listfree(to, ins->to_bak);
 				ins->to_data=ins->to_data_head;
 				ins->pend_to=0;
@@ -424,7 +442,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				break;
 			case CALLBACK:
 				to_callback:
-				cd->to[ins->to_index].callback(ins);
+				ins->to[ins->to_index].callback(ins);
 				goto to_x;
 			case NEXTPHASE:
 				listfree(to,ins->to_data->next);
@@ -438,7 +456,7 @@ int bsd_conv(struct bsdconv_t *cd, struct bsdconv_instruction *ins){
 				ins->pend_to=1;
 				break;
 		}
-		memcpy(&ins->to_state, cd->to[ins->to_index].z + (unsigned int)ins->to_state.sub[256], sizeof(struct state_s));
+		memcpy(&ins->to_state, ins->to[ins->to_index].z + (unsigned int)ins->to_state.sub[256], sizeof(struct state_s));
 		if(ins->to_state.status==DEADEND){ goto pass_to_out;}
 	}
 	end_of_to:
