@@ -1,6 +1,5 @@
 #transposed from from/ASCII
 # add 0102DC record
-0100	00
 0101	01
 0102	02
 0103	03
