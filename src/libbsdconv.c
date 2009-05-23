@@ -45,6 +45,7 @@
 				exit(1);	\
 			}	\
 			fstat(ins->X[i].fd, &stat);		\
+			ins->X[i].maplen=stat.st_size;	\
 			ins->X[i].z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,ins->X[i].fd,0);	\
 			if(!ins->X[i].z){	\
 				fprintf(stderr, "Memory map failed for %s/%s", #X, ins->X[i].desc);	\
@@ -121,16 +122,16 @@ void bsdconv_init(struct bsdconv_instance *ins){
 
 	for(i=0;i<=ins->nfrom;i++){
 		if(ins->from[i].cbinit){
-			ins->from[i].cbinit(ins->fpriv[i]);
+			ins->from[i].cbinit(ins->from_priv[i]);
 		}
 	}
 	for(i=0;i<=ins->ninter;i++){
 		if(ins->inter[i].cbinit)
-			ins->inter[i].cbinit(ins->ipriv[i]);
+			ins->inter[i].cbinit(ins->inter_priv[i]);
 	}
 	for(i=0;i<=ins->nto;i++){
 		if(ins->to[i].cbinit)
-			ins->to[i].cbinit(ins->tpriv[i]);
+			ins->to[i].cbinit(ins->to_priv[i]);
 	}
 }
 
@@ -174,29 +175,69 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	ins->to_data_head=malloc(sizeof(struct data_s));
 	ins->out_data_head=malloc(sizeof(struct data_s));
 
-	ins->fpriv=malloc((ins->nfrom+1) * sizeof(void *));
-	ins->ipriv=malloc((ins->ninter+1) * sizeof(void *));
-	ins->tpriv=malloc((ins->nto+1) * sizeof(void *));
+	ins->from_priv=malloc((ins->nfrom+1) * sizeof(void *));
+	ins->inter_priv=malloc((ins->ninter+1) * sizeof(void *));
+	ins->to_priv=malloc((ins->nto+1) * sizeof(void *));
 
 	for(i=0;i<=ins->nfrom;i++){
 		if(ins->from[i].cbcreate){
-			ins->fpriv[i]=ins->from[i].cbcreate();
+			ins->from_priv[i]=ins->from[i].cbcreate();
 		}
 	}
 	for(i=0;i<=ins->ninter;i++){
 		if(ins->inter[i].cbcreate)
-			ins->ipriv[i]=ins->inter[i].cbcreate();
+			ins->inter_priv[i]=ins->inter[i].cbcreate();
 	}
 	for(i=0;i<=ins->nto;i++){
 		if(ins->to[i].cbcreate)
-			ins->tpriv[i]=ins->to[i].cbcreate();
+			ins->to_priv[i]=ins->to[i].cbcreate();
 	}
 
 	return ins;
 }
 
+#define DELLIST(X) do{	\
+	for(i=0;i<=ins->n##X;i++){	\
+		if(ins->X[i].cbdestroy){	\
+			ins->X[i].cbdestroy(ins->X##_priv[i]);	\
+		}	\
+		if(ins->X[i].dl){	\
+			dlclose(ins->X[i].dl);	\
+		}	\
+		munmap(ins->X[i].z, ins->X[i].maplen);	\
+		close(ins->X[i].fd);	\
+	}	\
+}while(0);
+
 void bsdconv_destroy(struct bsdconv_instance *ins){
+	int i;
+	struct data_s *data_ptr;
+
 	free(ins->from[0].desc);
+
+	DELLIST(from);
+	DELLIST(inter);
+	DELLIST(to);
+
+	free(ins->from_priv);
+	free(ins->inter_priv);
+	free(ins->to_priv);
+
+	while(ins->inter_data_head){
+		data_ptr=ins->inter_data_head;
+		ins->inter_data_head=ins->inter_data_head->next;
+		free(data_ptr);
+	}
+	while(ins->to_data_head){
+		data_ptr=ins->to_data_head;
+		ins->to_data_head=ins->to_data_head->next;
+		free(data_ptr);
+	}
+	while(ins->out_data_head){
+		data_ptr=ins->out_data_head;
+		ins->out_data_head=ins->out_data_head->next;
+		free(data_ptr);
+	}
 	free(ins);
 }
 

@@ -52,7 +52,7 @@ int hex[256]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 void callback(struct bsdconv_instance *ins){
 	unsigned char ob[8];
 	int i,j=0;
-	struct my_s *t=ins->fpriv[ins->from_index];
+	struct my_s *t=ins->from_priv[ins->from_index];
 	unsigned char d=*ins->from_data, *p;
 	if(d==';' && t->status){
 		//put data
