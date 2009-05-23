@@ -57,7 +57,7 @@ void cbdestroy(void *p){
 }while(0);
 
 void callback(struct bsdconv_instance *ins){
-	struct my_s *t=ins->fpriv[ins->from_index];
+	struct my_s *t=ins->from_priv[ins->from_index];
 	unsigned char d=*ins->from_data, *p;
 	switch(t->status){
 		case 0:

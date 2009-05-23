@@ -58,13 +58,14 @@ struct bsdconv_instance{
 	struct data_s *inter_bak, *to_bak;
 	struct data_s *inter_data_head, *to_data_head, *out_data_head, *inter_data_tail, *to_data_tail, *out_data_tail;
 	struct data_s *inter_data, *to_data;
-	void **fpriv, **ipriv, **tpriv;
+	void **from_priv, **inter_priv, **to_priv;
 };
 
 struct bsdconv_codec_t {
 	char *desc;
 	int fd;
 	unsigned char *z;
+	size_t maplen;
 	void *dl;
 	void (*callback)(struct bsdconv_instance *);
 	void *(*cbcreate)(void);
