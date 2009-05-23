@@ -241,7 +241,7 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 	free(ins);
 }
 
-int bsd_conv(struct bsdconv_instance *ins){
+int bsdconv(struct bsdconv_instance *ins){
 	unsigned int i;
 	struct data_s *data_ptr;
 	unsigned char *ptr;

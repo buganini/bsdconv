@@ -52,7 +52,7 @@ int main(int argc, char *argv[]){
 	bsdconv_init(ins);
 	do{
 		if(ins->feed_len) ins->feed_len=fread(ins->feed, 1, ins->feed_len, inf);
-		r=bsd_conv(ins);
+		r=bsdconv(ins);
 		if(ins->back_len)fwrite(ins->back, 1, ins->back_len, otf);
 	}while(r);
 
