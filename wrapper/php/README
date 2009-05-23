@@ -1,0 +1,10 @@
+resource bsdconv_create(string conversion)
+string bsdconv(resource handle, string data)
+bool bsdconv_destroy(resource handle)
+
+<?php
+$s=file_get_contents('in.txt');
+$h=bsdconv_create('big5,ascii:chs:cp950,htmlentity');
+echo bsdconv($h,$s);
+bsdconv_destroy($h);
+?>
