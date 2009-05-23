@@ -97,4 +97,4 @@ struct bsdconv_codec_t {
 struct bsdconv_instance *bsdconv_create(const char *);
 void bsdconv_init(struct bsdconv_instance *);
 void bsdconv_destroy(struct bsdconv_instance *);
-int bsd_conv(struct bsdconv_instance *);
+int bsdconv(struct bsdconv_instance *);
