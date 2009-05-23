@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <stdint.h>
 #include <string.h>
 #include "bsdconv.h"
 
@@ -13,7 +14,7 @@ struct m_data_s{
 	size_t len;
 	struct data_s *next;
 
-	unsigned int p;
+	uintptr_t p;
 	unsigned char *dp;
 	struct m_data_s *n;
 };
@@ -22,10 +23,10 @@ struct m_state_s{
 	char status;
 	struct state_s *sub[257];
 
-	unsigned int data;
+	uintptr_t data;
 
 	struct m_state_s *psub[257];
-	unsigned int p;
+	uintptr_t p;
 	struct m_state_s *n;
 	int child;
 };
@@ -38,7 +39,7 @@ struct list{
 
 unsigned char table[256]={};
 
-int offset=0;
+uintptr_t offset=0;
 
 int main(int argc, char *argv[]){
 	int i, j, k, l, c, cu, cl;

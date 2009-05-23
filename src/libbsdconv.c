@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <stdint.h>
 #include <string.h>
 #include <ctype.h>
 #include "bsdconv.h"
@@ -242,7 +243,7 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 }
 
 int bsdconv(struct bsdconv_instance *ins){
-	unsigned int i;
+	uintptr_t i;
 	struct data_s *data_ptr;
 	unsigned char *ptr;
 
@@ -271,7 +272,7 @@ int bsdconv(struct bsdconv_instance *ins){
 	//from
 	phase_from:
 	while(ins->from_data < ins->feed+ins->feed_len){
-		memcpy(&ins->from_state, ins->from[ins->from_index].z + (unsigned int)ins->from_state.sub[*ins->from_data], sizeof(struct state_s));
+		memcpy(&ins->from_state, ins->from[ins->from_index].z + (uintptr_t)ins->from_state.sub[*ins->from_data], sizeof(struct state_s));
 		from_x:
 		switch(ins->from_state.status){
 			case DEADEND:
@@ -339,7 +340,7 @@ int bsdconv(struct bsdconv_instance *ins){
 	while(ins->inter_data->next){
 		ins->inter_data=ins->inter_data->next;
 		for(i=0;i<ins->inter_data->len;i++){
-			memcpy(&ins->inter_state, ins->inter[ins->inter_index].z + (unsigned int)ins->inter_state.sub[*(ins->inter_data->data+i)], sizeof(struct state_s));
+			memcpy(&ins->inter_state, ins->inter[ins->inter_index].z + (uintptr_t)ins->inter_state.sub[*(ins->inter_data->data+i)], sizeof(struct state_s));
 			if(ins->inter_state.status==DEADEND){
 				break;
 			}
@@ -403,7 +404,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				ins->pend_inter=1;
 				break;
 		}
-		memcpy(&ins->inter_state, ins->inter[ins->inter_index].z + (unsigned int)ins->inter_state.sub[256], sizeof(struct state_s));
+		memcpy(&ins->inter_state, ins->inter[ins->inter_index].z + (uintptr_t)ins->inter_state.sub[256], sizeof(struct state_s));
 		if(ins->inter_state.status==DEADEND){ goto pass_to_to;}
 	}
 
@@ -412,7 +413,7 @@ int bsdconv(struct bsdconv_instance *ins){
 	while(ins->to_data->next){
 		ins->to_data=ins->to_data->next;
 		for(i=0;i<ins->to_data->len;i++){
-			memcpy(&ins->to_state, ins->to[ins->to_index].z + (unsigned int)ins->to_state.sub[*(ins->to_data->data+i)], sizeof(struct state_s));
+			memcpy(&ins->to_state, ins->to[ins->to_index].z + (uintptr_t)ins->to_state.sub[*(ins->to_data->data+i)], sizeof(struct state_s));
 			switch(ins->to_state.status){
 				case DEADEND:
 					goto pass_to_out;
@@ -482,7 +483,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				ins->pend_to=1;
 				break;
 		}
-		memcpy(&ins->to_state, ins->to[ins->to_index].z + (unsigned int)ins->to_state.sub[256], sizeof(struct state_s));
+		memcpy(&ins->to_state, ins->to[ins->to_index].z + (uintptr_t)ins->to_state.sub[256], sizeof(struct state_s));
 		if(ins->to_state.status==DEADEND){ goto pass_to_out;}
 	}
 
