@@ -1,5 +1,5 @@
 PREFIX?=/usr/local
-CFLAGS=-Wall -g -DPREFIX='"${PREFIX}"'
+CFLAGS+=-Wall -DPREFIX='"${PREFIX}"'
 SHLIBVER=1
 
 All: builddir libbsdconv bsdconv_mktable bsdconv codecs meta
@@ -24,7 +24,7 @@ bsdconv_mktable:
 codecs: bsdconv_mktable
 	cd codecs && \
 	find */*.txt -type f | awk -F. '{cmd="../build/bin/bsdconv_mktable "$$1"."$$2" ../build/share/bsdconv/"$$1; system(cmd);}' && \
-	find */*.c -type f | awk -F. '{cmd="gcc -fPIC -shared -o ../build/share/bsdconv/"$$1".so "$$1"."$$2; system(cmd);}'
+	find */*.c -type f | awk -F. '{cmd="gcc ${CFLAGS} -fPIC -shared -o ../build/share/bsdconv/"$$1".so "$$1"."$$2; system(cmd);}'
 
 meta:
 	ln -sf libbsdconv.so.${SHLIBVER} build/lib/libbsdconv.so
