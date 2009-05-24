@@ -15,10 +15,7 @@ void callback(struct bsdconv_instance *ins){
 	unsigned char *data, *p;
 	unsigned int len;
 	data=ins->to_data->data;
-	if(*data!=0x01){
-		ins->to_state.status=DEADEND;
-		return;
-	}
+
 	ins->to_state.status=NEXTPHASE;
 	data+=1;
 	len=ins->to_data->len-1;
