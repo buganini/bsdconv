@@ -42,7 +42,7 @@ unsigned char table[256]={};
 uintptr_t offset=0;
 
 int main(int argc, char *argv[]){
-	int i, j, k, l, c, cu, cl;
+	int i, j, k, l, c=0, cu, cl;
 	FILE *fp;
 	unsigned char inbuf[1024], *f, *t, dat[256], *tmp, *of, *ot;
 	struct m_data_s *data_r=NULL, *data_p=NULL, *data_t=NULL;
@@ -305,7 +305,7 @@ int main(int argc, char *argv[]){
 		ddata.len=data_t->len;
 		ddata.next=data_t->next;
 		memcpy(&tmp[data_t->p], &ddata, sizeof(struct data_s));
-		memcpy(&tmp[(int)ddata.data], data_t->dp, ddata.len);
+		memcpy(&tmp[(uintptr_t)ddata.data], data_t->dp, ddata.len);
 		tofree=data_t;
 		data_t=data_t->n;
 		free(data_t);
