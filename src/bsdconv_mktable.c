@@ -50,7 +50,7 @@ int main(int argc, char *argv[]){
 	struct list *todo=NULL, *newtodo, *newtodo_tail, *state_p;
 	struct state_s dstate;
 	struct data_s ddata;
-	int callback=0;
+	uintptr_t callback=0;
 	void *tofree;
 
 	printf("Making table %s\n", argv[1]);
