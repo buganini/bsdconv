@@ -13,7 +13,7 @@ builddir:
 	mkdir -p build/share/bsdconv/to
 
 libbsdconv:
-	$(CC) ${CFLAGS} src/libbsdconv.c -shared -fPIC -o build/lib/libbsdconv.so.${SHLIBVER}
+	$(CC) ${CFLAGS} src/libbsdconv.c -fPIC -shared -o build/lib/libbsdconv.so.${SHLIBVER}
 
 bsdconv:
 	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv.c -o build/bin/bsdconv
@@ -24,7 +24,7 @@ bsdconv_mktable:
 codecs: bsdconv_mktable
 	cd codecs && \
 	find */*.txt -type f | awk -F. '{cmd="../build/bin/bsdconv_mktable "$$1"."$$2" ../build/share/bsdconv/"$$1; system(cmd);}' && \
-	find */*.c -type f | awk -F. '{cmd="gcc -shared -o ../build/share/bsdconv/"$$1".so "$$1"."$$2; system(cmd);}'
+	find */*.c -type f | awk -F. '{cmd="gcc -fPIC -shared -o ../build/share/bsdconv/"$$1".so "$$1"."$$2; system(cmd);}'
 
 meta:
 	ln -sf libbsdconv.so.${SHLIBVER} build/lib/libbsdconv.so
