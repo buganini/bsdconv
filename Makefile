@@ -13,7 +13,7 @@ builddir:
 	mkdir -p build/share/bsdconv/to
 
 libbsdconv:
-	$(CC) ${CFLAGS} src/libbsdconv.c -shared -o build/lib/libbsdconv.so.${SHLIBVER}
+	$(CC) ${CFLAGS} src/libbsdconv.c -shared -fPIC -o build/lib/libbsdconv.so.${SHLIBVER}
 
 bsdconv:
 	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv.c -o build/bin/bsdconv
