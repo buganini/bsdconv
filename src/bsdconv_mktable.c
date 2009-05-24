@@ -285,7 +285,7 @@ int main(int argc, char *argv[]){
 	fclose(fp);
 	k=open(argv[2], O_RDWR|O_CREAT|O_TRUNC, 0644);
 	ftruncate(k,offset);
-	printf("Total size: %d\n", offset);
+	printf("Total size: %u\n", (unsigned int)offset);
 	tmp=mmap(0,offset,PROT_READ|PROT_WRITE,MAP_SHARED,k,0);
 	state_t=state_r;
 	while(state_t){
