@@ -76,10 +76,10 @@ struct bsdconv_codec_t {
 #define listcpy(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
 	ins->X##_data_tail->next=malloc(sizeof(struct data_s));	\
 	ins->X##_data_tail=ins->X##_data_tail->next;	\
-	memcpy(ins->X##_data_tail, (unsigned char *)((Z)+(unsigned int)data_ptr), sizeof(struct data_s));	\
+	memcpy(ins->X##_data_tail, (unsigned char *)((Z)+(uintptr_t)data_ptr), sizeof(struct data_s));	\
 	data_ptr=ins->X##_data_tail->next;	\
 	ins->X##_data_tail->next=NULL;	\
-	ptr=(unsigned char *)((Z)+(unsigned int)ins->X##_data_tail->data);	\
+	ptr=(unsigned char *)((Z)+(uintptr_t)ins->X##_data_tail->data);	\
 	ins->X##_data_tail->data=malloc(ins->X##_data_tail->len);	\
 	memcpy(ins->X##_data_tail->data, ptr, ins->X##_data_tail->len);	\
 }
