@@ -1,0 +1,7 @@
+bsdconv.xs
+Makefile.PL
+MANIFEST
+ppport.h
+README
+t/bsdconv.t
+lib/bsdconv.pm
