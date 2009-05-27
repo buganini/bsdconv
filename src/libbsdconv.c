@@ -596,7 +596,7 @@ int bsdconv(struct bsdconv_instance *ins){
 			if(ins->pend_inter) goto pass_to_to;
 			if(ins->pend_to) goto pass_to_out;
 			i=0;
-			data_ptr=ins->out_data_head;
+			data_ptr=ins->out_data_head->next;
 			while(data_ptr){
 				i+=data_ptr->len;
 				data_ptr=data_ptr->next;
