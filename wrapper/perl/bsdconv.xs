@@ -15,7 +15,6 @@ create(conversion)
 		struct bsdconv_instance *ins;
 	CODE:
 		ins=bsdconv_create(conversion);
-		printf("%p\n",ins);
 		RETVAL=PTR2IV(ins);
 	OUTPUT:
 		RETVAL
@@ -30,14 +29,12 @@ conv(p, str)
 		SSize_t l;
 	CODE:
 		ins=INT2PTR(struct bsdconv_instance *, p);
-		printf("%p\n",ins);
 		s=SvPV(str, l);
 		ins->mode=BSDCONV_CC;
 		ins->feed=s;
 		ins->feed_len=l;
 		bsdconv_init(ins);
 		bsdconv(ins);
-		printf("%u", (unsigned int)ins->back_len);
 		RETVAL=newSVpv(ins->back, (STRLEN)ins->back_len);
 		free(ins->back);
 	OUTPUT:
