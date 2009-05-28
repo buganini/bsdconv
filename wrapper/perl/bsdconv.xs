@@ -48,3 +48,17 @@ destroy(p)
 	CODE:
 		ins=INT2PTR(struct bsdconv_instance *,p);
 		bsdconv_destroy(ins);
+
+HV*
+info(p)
+	IV p
+	PREINIT:
+		struct bsdconv_instance *ins;
+	CODE:
+		ins=INT2PTR(struct bsdconv_instance *, p);
+		RETVAL=newHV();
+		sv_2mortal((SV*)RETVAL);
+		hv_store(RETVAL, "ierr", 4, newSVuv(ins->ierr), 0);
+		hv_store(RETVAL, "oerr", 4, newSVuv(ins->oerr), 0);
+	OUTPUT:
+		RETVAL
