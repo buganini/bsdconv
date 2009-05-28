@@ -73,7 +73,24 @@ PHP_FUNCTION(bsdconv){
 	p->feed_len=l;
 	bsdconv_init(p);
 	bsdconv(p);
-	RETURN_STRINGL(p->back, p->back_len, 0);
+	RETVAL_STRINGL(p->back, p->back_len, 1);
+	free(p->back);
+}
+/* }}} */
+
+/* {{{ proto array bsdconv_info(resource ins)
+  bsdconv conversion info function
+*/
+PHP_FUNCTION(bsdconv_info){
+	zend_rsrc_list_entry *r;
+	struct bsdconv_instance *ins;
+	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &r) == FAILURE){
+		RETURN_BOOL(0);
+	}
+	ins=r->ptr;
+	array_init(return_value);
+	add_assoc_long(return_value, "ierr", ins->ierr);
+	add_assoc_long(return_value, "oerr", ins->oerr);
 }
 /* }}} */
 
@@ -84,6 +101,7 @@ PHP_FUNCTION(bsdconv){
 zend_function_entry bsdconv_functions[] = {
 	PHP_FE(bsdconv_create,	NULL)
 	PHP_FE(bsdconv_destroy,	NULL)
+	PHP_FE(bsdconv_info,	NULL)
 	PHP_FE(bsdconv,	NULL)
 	{NULL, NULL, NULL}	/* Must be the last line in bsdconv_functions[] */
 };
