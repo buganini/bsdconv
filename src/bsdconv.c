@@ -44,6 +44,7 @@ int main(int argc, char *argv[]){
 	}
 
 	ins=bsdconv_create(argv[1]);
+	if(!ins) exit(1);
 	ins->in_buf=in;
 	ins->in_len=IBUFLEN;
 	ins->out_buf=out;

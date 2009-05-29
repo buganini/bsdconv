@@ -40,17 +40,15 @@
 			*t=0;	\
 			strcpy(buf, ins->X[i].desc);	\
 			realpath(buf, path);	\
-			ins->X[i].fd=open(path, O_RDONLY);	\
-			if(!ins->X[i].fd){	\
-				fprintf(stderr, "No such codec %s/%s", #X, ins->X[i].desc);	\
-				exit(1);	\
+			if((ins->X[i].fd=open(path, O_RDONLY))==-1){	\
+				fprintf(stderr, "No such codec %s/%s\n", #X, ins->X[i].desc);	\
+				return NULL;	\
 			}	\
 			fstat(ins->X[i].fd, &stat);		\
 			ins->X[i].maplen=stat.st_size;	\
-			ins->X[i].z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,ins->X[i].fd,0);	\
-			if(!ins->X[i].z){	\
-				fprintf(stderr, "Memory map failed for %s/%s", #X, ins->X[i].desc);	\
-				exit(1);	\
+			if((ins->X[i].z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,ins->X[i].fd,0))==MAP_FAILED){	\
+				fprintf(stderr, "Memory map failed for %s/%s\n", #X, ins->X[i].desc);	\
+				return NULL;	\
 			}	\
 			strcat(path, ".so");	\
 			ins->X[i].cbcreate=NULL;	\
@@ -143,6 +141,15 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	char *t, *from, *inter, *to;
 	int i,nfrom,nto,ninter, brk;
 	char buf[64], path[512];
+
+	i=0;
+	for(t=(char *)conversion;*t;t++){
+		if(*t==':')++i;
+	}
+	if(i!=3){
+		fprintf(stderr, "Conversion syntax error.\n");
+		return NULL;
+	}
 
 	t=strdup(conversion);
 	ofrom=(char *)strsep(&t, ":");
