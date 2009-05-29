@@ -37,10 +37,13 @@ static int le_bsdconv;
 PHP_FUNCTION(bsdconv_create){
 	char *c, *p;
 	int l;
+	struct bsdconv_instance *r;
 	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &c, &l) == FAILURE){
 		return;
 	}
-	RETURN_RESOURCE((long int)bsdconv_create(c));
+	r=bsdconv_create(c);
+	if(r==NULL) RETURN_BOOL(0);
+	RETURN_RESOURCE((long int)r);
 }
 /* }}} */
 

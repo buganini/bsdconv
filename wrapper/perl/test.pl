@@ -2,6 +2,7 @@
 use bsdconv;
 
 $cd=bsdconv::create($ARGV[0]);
+if(!defined($cd)){ exit; }
 while($str=<STDIN>){
 print bsdconv::conv($cd, $str);
 }

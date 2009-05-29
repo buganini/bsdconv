@@ -15,6 +15,7 @@ create(conversion)
 		struct bsdconv_instance *ins;
 	CODE:
 		ins=bsdconv_create(conversion);
+		if(ins==NULL) XSRETURN_UNDEF;
 		RETVAL=PTR2IV(ins);
 	OUTPUT:
 		RETVAL
