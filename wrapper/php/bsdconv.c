@@ -124,7 +124,7 @@ zend_module_entry bsdconv_module_entry = {
 	NULL,
 	PHP_MINFO(bsdconv),
 #if ZEND_MODULE_API_NO >= 20010901
-	"0.8", /* Replace with version number for your extension */
+	"1.10", /* Replace with version number for your extension */
 #endif
 	STANDARD_MODULE_PROPERTIES
 };
