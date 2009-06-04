@@ -146,7 +146,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	for(t=(char *)conversion;*t;t++){
 		if(*t==':')++i;
 	}
-	if(i!=3){
+	if(i!=2){
 		fprintf(stderr, "Conversion syntax error.\n");
 		return NULL;
 	}
