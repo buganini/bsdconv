@@ -80,6 +80,9 @@ int main(int argc, char *argv[]){
 	fp=fopen(argv[1], "r");
 
 	newtodo=malloc(sizeof(struct list));
+	newtodo->n=NULL;
+	newtodo->l=3;
+	newtodo->u=2;
 	newtodo_tail=newtodo;
 
 	state_t=state_r=(struct m_state_s *)malloc(sizeof(struct m_state_s));
@@ -139,7 +142,13 @@ int main(int argc, char *argv[]){
 						newtodo_tail->n=NULL;
 					}else{
 		//	printf("%u[%X]=%u\n", state_p->p, c, offset);
-						state_p->p->psub[c]=(struct m_state_s *)malloc(sizeof(struct m_state_s));
+						state_t->n=state_p->p->psub[c]=(struct m_state_s *)malloc(sizeof(struct m_state_s));
+						state_t=state_t->n;
+						for(i=0;i<256;i++){
+							state_t->sub[i]=0;
+							state_t->psub[i]=NULL;
+						}
+						state_t->n=NULL;
 						state_p->p->sub[c]=(struct state_s *)offset;
 						state_p->p->child++;
 						state_p->p->psub[c]->p=offset;
@@ -250,6 +259,11 @@ int main(int argc, char *argv[]){
 									state_p->p->psub[c]=state_t->n=malloc(sizeof(struct m_state_s));
 									state_p->p->sub[c]=(struct state_s *)offset;
 									state_t=state_t->n;
+									for(i=0;i<256;i++){
+										state_t->sub[i]=0;
+										state_t->psub[i]=NULL;
+									}
+									state_t->n=NULL;
 									state_t->p=offset;
 									state_t->status=MATCH;
 									state_t->data=data_p->p;
@@ -308,7 +322,7 @@ int main(int argc, char *argv[]){
 		memcpy(&tmp[(uintptr_t)ddata.data], data_t->dp, ddata.len);
 		tofree=data_t;
 		data_t=data_t->n;
-		free(data_t);
+		free(tofree);
 	}
 	munmap(tmp,offset);
 	close(k);
