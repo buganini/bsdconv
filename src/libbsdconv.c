@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
 #include "bsdconv.h"
 
 #define COUNT(X) do{	\
@@ -41,13 +42,15 @@
 			strcpy(buf, ins->X[i].desc);	\
 			realpath(buf, path);	\
 			if((ins->X[i].fd=open(path, O_RDONLY))==-1){	\
-				fprintf(stderr, "No such codec %s/%s\n", #X, ins->X[i].desc);	\
+				errno=EOPNOTSUPP;	\
+/*				fprintf(stderr, "No such codec %s/%s\n", #X, ins->X[i].desc);*/	\
 				return NULL;	\
 			}	\
 			fstat(ins->X[i].fd, &stat);		\
 			ins->X[i].maplen=stat.st_size;	\
 			if((ins->X[i].z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,ins->X[i].fd,0))==MAP_FAILED){	\
-				fprintf(stderr, "Memory map failed for %s/%s\n", #X, ins->X[i].desc);	\
+				errno=ENOMEM;	\
+/*				fprintf(stderr, "Memory map failed for %s/%s\n", #X, ins->X[i].desc);*/	\
 				return NULL;	\
 			}	\
 			strcat(path, ".so");	\
@@ -147,7 +150,8 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 		if(*t==':')++i;
 	}
 	if(i!=2){
-		fprintf(stderr, "Conversion syntax error.\n");
+		errno=EINVAL;
+//		fprintf(stderr, "Conversion syntax error.\n");
 		return NULL;
 	}
 
@@ -167,7 +171,8 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 
 	chdir(PREFIX "/share/bsdconv");
 	if(nfrom==0 || nto==0){
-		fprintf(stderr, "Need at least 1 from and to encoding.\n");
+		errno=EINVAL;
+//		fprintf(stderr, "Need at least 1 from and to encoding.\n");
 		fflush(stderr);
 		return NULL;
 	}
