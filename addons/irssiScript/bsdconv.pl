@@ -21,9 +21,11 @@ sub event_send_text () {
 	}
 	my ($line, $server_rec, $wi_item_rec) = @_;
 	my $conversion = Irssi::settings_get_str('bsdconv');
+	$conversion =~ s/^\s+|\s+$//g;
 	my $h = bsdconv::create($conversion);
-	if(!$h){
+	if(!defined($h)){
 		Irssi:print('bsdconv: invalid conversion.');
+		return;
 	}
 	my $line=bsdconv::conv($h,$line);
 	bsdconv::destroy($h);
