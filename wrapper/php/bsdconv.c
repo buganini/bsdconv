@@ -71,13 +71,14 @@ PHP_FUNCTION(bsdconv){
 		RETURN_BOOL(0);
 	}
 	p=r->ptr;
-	p->mode=BSDCONV_CC;
+	p->mode=BSDCONV_CM;
 	p->feed=c;
 	p->feed_len=l;
 	bsdconv_init(p);
 	bsdconv(p);
-	RETVAL_STRINGL(p->back, p->back_len, 1);
-	free(p->back);
+	p->back=emalloc(p->back_len);
+	bsdconv(p);
+	RETURN_STRINGL(p->back, p->back_len, 0);
 }
 /* }}} */
 
