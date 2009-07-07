@@ -14,6 +14,8 @@ enum bsdconv_mode{
 	BSDCONV_BC,
 	BSDCONV_CB,
 	BSDCONV_CC,
+	BSDCONV_BM,
+	BSDCONV_CM,
 };
 
 struct data_s{
