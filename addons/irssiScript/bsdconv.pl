@@ -24,7 +24,7 @@ sub event_send_text () {
 	$conversion =~ s/^\s+|\s+$//g;
 	my $h = bsdconv::create($conversion);
 	if(!defined($h)){
-		Irssi:print('bsdconv: invalid conversion.');
+		Irssi:print(bsdconv::error());
 		return;
 	}
 	my $line=bsdconv::conv($h,$line);
