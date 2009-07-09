@@ -98,6 +98,17 @@ PHP_FUNCTION(bsdconv_info){
 }
 /* }}} */
 
+/* {{{ proto string bsdconv(void)
+  bsdconv error message
+*/
+PHP_FUNCTION(bsdconv_error){
+	char *c;
+	c=bsdconv_error();
+	RETVAL_STRING(c, 1);
+	free(c);
+}
+/* }}} */
+
 /* {{{ bsdconv_functions[]
  *
  * Every user visible function must have an entry in bsdconv_functions[].
@@ -107,6 +118,7 @@ zend_function_entry bsdconv_functions[] = {
 	PHP_FE(bsdconv_destroy,	NULL)
 	PHP_FE(bsdconv_info,	NULL)
 	PHP_FE(bsdconv,	NULL)
+	PHP_FE(bsdconv_error,	NULL)
 	{NULL, NULL, NULL}	/* Must be the last line in bsdconv_functions[] */
 };
 /* }}} */
