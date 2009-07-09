@@ -717,5 +717,7 @@ char * bsdconv_error(void){
 				return strdup("Mmap failed");
 		case EINVAL:
 				return strdup("Conversion syntax error");
+		default:
+				return strdup("Unknown error");;
 	}
 }
