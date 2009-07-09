@@ -708,3 +708,14 @@ int bsdconv(struct bsdconv_instance *ins){
 	}
 	return 1;
 }
+
+char * bsdconv_error(void){
+	switch(errno){
+		case EOPNOTSUPP:
+				return strdup("Unsupported charset/encoding");
+		case ENOMEM:
+				return strdup("Mmap failed");
+		case EINVAL:
+				return strdup("Conversion syntax error");
+	}
+}
