@@ -5,6 +5,8 @@
 #include "ppport.h"
 
 #include <bsdconv.h>
+#include <errno.h>
+#include <string.h>
 
 MODULE = bsdconv		PACKAGE = bsdconv
 
@@ -61,5 +63,18 @@ info(p)
 		sv_2mortal((SV*)RETVAL);
 		hv_store(RETVAL, "ierr", 4, newSVuv(ins->ierr), 0);
 		hv_store(RETVAL, "oerr", 4, newSVuv(ins->oerr), 0);
+	OUTPUT:
+		RETVAL
+
+SV*
+error()
+	PREINIT:
+		struct bsdconv_instance *ins;
+		char *s;
+		SSize_t l;
+	CODE:
+		s=bsdconv_error();
+		RETVAL=newSVpv(s, (STRLEN)strlen(s));
+		free(s);
 	OUTPUT:
 		RETVAL
