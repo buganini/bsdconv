@@ -38,11 +38,12 @@ struct list{
 };
 
 unsigned char table[256]={};
+unsigned char ci_table[256]={0};
 
 uintptr_t offset=0;
 
 int main(int argc, char *argv[]){
-	int i, j, k, l, c=0, cu, cl;
+	int i, j, k, l, c=0, cu, cl, ci;
 	FILE *fp;
 	unsigned char inbuf[1024], *f, *t, dat[256], *tmp, *of, *ot;
 	struct m_data_s *data_r=NULL, *data_p=NULL, *data_t=NULL;
@@ -52,8 +53,6 @@ int main(int argc, char *argv[]){
 	struct data_s ddata;
 	uintptr_t callback=0;
 	void *tofree;
-
-	printf("Making table %s\n", argv[1]);
 
 	table['0']=0;
 	table['1']=1;
@@ -77,6 +76,61 @@ int main(int argc, char *argv[]){
 	table['E']=14;
 	table['f']=15;
 	table['F']=15;
+	ci_table['A']='a';
+	ci_table['B']='b';
+	ci_table['C']='c';
+	ci_table['D']='d';
+	ci_table['E']='e';
+	ci_table['F']='f';
+	ci_table['G']='g';
+	ci_table['H']='h';
+	ci_table['I']='i';
+	ci_table['J']='j';
+	ci_table['K']='k';
+	ci_table['L']='l';
+	ci_table['M']='m';
+	ci_table['N']='n';
+	ci_table['O']='o';
+	ci_table['P']='p';
+	ci_table['Q']='q';
+	ci_table['R']='r';
+	ci_table['S']='s';
+	ci_table['T']='t';
+	ci_table['U']='u';
+	ci_table['V']='v';
+	ci_table['W']='w';
+	ci_table['X']='x';
+	ci_table['Y']='y';
+	ci_table['Z']='z';
+	ci_table['a']='A';
+	ci_table['b']='B';
+	ci_table['c']='C';
+	ci_table['d']='D';
+	ci_table['e']='E';
+	ci_table['f']='F';
+	ci_table['g']='G';
+	ci_table['h']='H';
+	ci_table['i']='I';
+	ci_table['j']='J';
+	ci_table['k']='K';
+	ci_table['l']='L';
+	ci_table['m']='M';
+	ci_table['n']='N';
+	ci_table['o']='O';
+	ci_table['p']='P';
+	ci_table['q']='Q';
+	ci_table['r']='R';
+	ci_table['s']='S';
+	ci_table['t']='T';
+	ci_table['u']='U';
+	ci_table['v']='V';
+	ci_table['w']='W';
+	ci_table['x']='X';
+	ci_table['y']='Y';
+	ci_table['z']='Z';
+
+	printf("Making table %s\n", argv[1]);
+
 	fp=fopen(argv[1], "r");
 
 	newtodo=malloc(sizeof(struct list));
@@ -105,7 +159,11 @@ int main(int argc, char *argv[]){
 		while(index("\t ",*tmp)){
 			tmp++;
 		}
-		t=ot=(unsigned char *)strsep((char **)&tmp, "\t\r\n# ");
+		if(*tmp){
+			t=ot=(unsigned char *)strsep((char **)&tmp, "\t\r\n# ");
+		}else{
+			t=ot=NULL;
+		}
 
 		todo=malloc(sizeof(struct list));
 		todo->n=NULL;
@@ -113,6 +171,12 @@ int main(int argc, char *argv[]){
 		todo->u=0;
 		todo->l=0;
 
+		if(*f=='!'){
+			ci=1;
+			++f;
+		}else{
+			ci=0;
+		}
 		while(*f){
 			if(*f=='*'){
 				cl=0;
@@ -129,7 +193,10 @@ int main(int argc, char *argv[]){
 			state_p=todo;
 			while(todo){
 				state_p=todo;
-				for(c=state_p->l;c<=state_p->u;c++){
+				for(c=0;c<256;c++){
+					if(!((c>=state_p->l && c<=state_p->u) || (ci && ci_table[c] && (ci_table[c]>=state_p->l && ci_table[c]<=state_p->u)))){
+						continue;
+					}
 					if(state_p->p->psub[c]){
 						if(state_p->p->status==MATCH){
 							state_p->p->status=SUBMATCH;
