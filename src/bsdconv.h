@@ -100,3 +100,4 @@ struct bsdconv_instance *bsdconv_create(const char *);
 void bsdconv_init(struct bsdconv_instance *);
 void bsdconv_destroy(struct bsdconv_instance *);
 int bsdconv(struct bsdconv_instance *);
+char * bsdconv_error(void);
