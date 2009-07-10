@@ -194,7 +194,10 @@ int main(int argc, char *argv[]){
 			while(todo){
 				state_p=todo;
 				for(c=0;c<256;c++){
-					if(!((c>=state_p->l && c<=state_p->u) || (ci && ci_table[c] && (ci_table[c]>=state_p->l && ci_table[c]<=state_p->u)))){
+					if(!(
+						(c>=state_p->l && c<=state_p->u) ||
+						(ci && ci_table[c] && ci_table[c]>=state_p->l && ci_table[c]<=state_p->u)
+						)){
 						continue;
 					}
 					if(state_p->p->psub[c]){
@@ -271,7 +274,13 @@ int main(int argc, char *argv[]){
 			}
 			while(todo){
 				state_p=todo;
-				for(c=state_p->l;c<=state_p->u;c++){
+				for(c=0;c<256;c++){
+					if(!(
+						(c>=state_p->l && c<=state_p->u) ||
+						(ci && ci_table[c] && ci_table[c]>=state_p->l && ci_table[c]<=state_p->u)
+						)){
+						continue;
+					}
 					state_p->p->sub[c]=(struct state_s *)callback;
 				}
 				todo=todo->n;
@@ -314,7 +323,13 @@ int main(int argc, char *argv[]){
 						k=0;
 						while(todo){
 							state_p=todo;
-							for(c=state_p->l;c<=state_p->u;c++){
+							for(c=0;c<256;c++){
+								if(!(
+									(c>=state_p->l && c<=state_p->u) ||
+									(ci && ci_table[c] && ci_table[c]>=state_p->l && ci_table[c]<=state_p->u)
+									)){
+									continue;
+								}
 								if(state_p->p->psub[c]){
 									if(state_p->p->psub[c]->data){
 										printf("Duplicated key: %s dropping data: %s\n", of, ot);
