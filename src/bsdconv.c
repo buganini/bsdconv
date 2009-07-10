@@ -7,6 +7,7 @@
 #define OBUFLEN 1024
 
 int main(int argc, char *argv[]){
+	char *t;
 	struct bsdconv_instance *ins;
 	FILE *inf, *otf;
 	unsigned char in[IBUFLEN], out[OBUFLEN];
@@ -44,7 +45,12 @@ int main(int argc, char *argv[]){
 	}
 
 	ins=bsdconv_create(argv[1]);
-	if(!ins) exit(1);
+	if(!ins){
+		t=bsdconv_error();
+		printf("%s\n", t);
+		free(t);
+		exit(1);
+	}
 	ins->in_buf=in;
 	ins->in_len=IBUFLEN;
 	ins->out_buf=out;
