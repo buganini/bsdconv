@@ -25,6 +25,8 @@ struct m_state_s{
 
 	uintptr_t data;
 
+	int prio;
+
 	struct m_state_s *psub[257];
 	uintptr_t p;
 	struct m_state_s *n;
@@ -33,7 +35,7 @@ struct m_state_s{
 
 struct list{
 	struct m_state_s *p;
-	int u,l;
+	int u,l,pr;
 	struct list *n;
 };
 
@@ -43,7 +45,7 @@ unsigned char ci_table[256]={0};
 uintptr_t offset=0;
 
 int main(int argc, char *argv[]){
-	int i, j, k, l, c=0, cu, cl, ci;
+	int i, j, k, l, c=0, cu, cl, ci,pr;
 	FILE *fp;
 	unsigned char inbuf[1024], *f, *t, dat[256], *tmp, *of, *ot;
 	struct m_data_s *data_r=NULL, *data_p=NULL, *data_t=NULL;
@@ -144,6 +146,7 @@ int main(int argc, char *argv[]){
 	state_t->data=0;
 	state_t->p=offset;
 	state_t->n=NULL;
+	state_t->child=0;
 	offset+=sizeof(struct state_s);
 	for(i=0;i<257;i++){
 		state_r->sub[i]=0;
@@ -170,6 +173,7 @@ int main(int argc, char *argv[]){
 		todo->p=&holder;
 		todo->u=0;
 		todo->l=0;
+		todo->pr=0;
 
 		if(*f=='!'){
 			ci=1;
@@ -194,10 +198,11 @@ int main(int argc, char *argv[]){
 			while(todo){
 				state_p=todo;
 				for(c=0;c<256;c++){
-					if(!(
-						(c>=state_p->l && c<=state_p->u) ||
-						(ci && ci_table[c] && ci_table[c]>=state_p->l && ci_table[c]<=state_p->u)
-						)){
+					if(c>=state_p->l && c<=state_p->u){
+						pr=1;
+					}else if(ci && ci_table[c] && ci_table[c]>=state_p->l && ci_table[c]<=state_p->u){
+						pr=0;
+					}else{
 						continue;
 					}
 					if(state_p->p->psub[c]){
@@ -209,20 +214,26 @@ int main(int argc, char *argv[]){
 						newtodo_tail->p=state_p->p->psub[c];
 						newtodo_tail->l=cl;
 						newtodo_tail->u=cu;
+						newtodo_tail->pr=state_p->pr+pr;
 						newtodo_tail->n=NULL;
 					}else{
 		//	printf("%u[%X]=%u\n", state_p->p, c, offset);
 						state_t->n=state_p->p->psub[c]=(struct m_state_s *)malloc(sizeof(struct m_state_s));
 						state_t=state_t->n;
-						for(i=0;i<256;i++){
+						state_t->child=0;
+						state_t->n=NULL;
+						for(i=0;i<257;i++){
 							state_t->sub[i]=0;
 							state_t->psub[i]=NULL;
 						}
-						state_t->n=NULL;
 						state_p->p->sub[c]=(struct state_s *)offset;
 						state_p->p->child++;
 						state_p->p->psub[c]->p=offset;
 						offset+=sizeof(struct state_s);
+
+						state_t->n=state_p->p->psub[c];
+						state_t=state_t->n;
+						state_t->n=NULL;
 
 						newtodo_tail->n=malloc(sizeof(struct list));
 						newtodo_tail=newtodo_tail->n;
@@ -230,10 +241,7 @@ int main(int argc, char *argv[]){
 						newtodo_tail->p=state_p->p->psub[c];
 						newtodo_tail->l=cl;
 						newtodo_tail->u=cu;
-
-						state_t->n=state_p->p->psub[c];
-						state_t=state_t->n;
-						state_t->n=NULL;
+						newtodo_tail->pr=state_p->pr+pr;
 
 						newtodo_tail->p->status=CONTINUE;
 						newtodo_tail->p->data=0;
@@ -264,8 +272,9 @@ int main(int argc, char *argv[]){
 				state_t->data=0;
 				state_t->p=offset;
 				state_t->n=NULL;
+				state_t->child=0;
 				callback=offset;
-				for(i=0;i<256;i++){
+				for(i=0;i<257;i++){
 					state_t->sub[i]=(struct state_s *)callback;
 					state_t->psub[i]=NULL;
 				}
@@ -275,10 +284,11 @@ int main(int argc, char *argv[]){
 			while(todo){
 				state_p=todo;
 				for(c=0;c<256;c++){
-					if(!(
-						(c>=state_p->l && c<=state_p->u) ||
-						(ci && ci_table[c] && ci_table[c]>=state_p->l && ci_table[c]<=state_p->u)
-						)){
+					if(c>=state_p->l && c<=state_p->u){
+						pr=1;
+					}else if(ci && ci_table[c] && ci_table[c]>=state_p->l && ci_table[c]<=state_p->u){
+						pr=0;
+					}else{
 						continue;
 					}
 					state_p->p->sub[c]=(struct state_s *)callback;
@@ -324,14 +334,15 @@ int main(int argc, char *argv[]){
 						while(todo){
 							state_p=todo;
 							for(c=0;c<256;c++){
-								if(!(
-									(c>=state_p->l && c<=state_p->u) ||
-									(ci && ci_table[c] && ci_table[c]>=state_p->l && ci_table[c]<=state_p->u)
-									)){
+								if(c>=state_p->l && c<=state_p->u){
+									pr=1;
+								}else if(ci && ci_table[c] && ci_table[c]>=state_p->l && ci_table[c]<=state_p->u){
+									pr=0;
+								}else{
 									continue;
 								}
 								if(state_p->p->psub[c]){
-									if(state_p->p->psub[c]->data){
+									if(state_p->p->psub[c]->data && (pr+state_p->pr) <= state_p->p->psub[c]->prio){
 										printf("Duplicated key: %s dropping data: %s\n", of, ot);
 										continue;
 									}else{
@@ -346,11 +357,13 @@ int main(int argc, char *argv[]){
 										state_t->psub[i]=NULL;
 									}
 									state_t->n=NULL;
+									state_t->child=0;
 									state_t->p=offset;
 									state_t->status=MATCH;
-									state_t->data=data_p->p;
 									offset+=sizeof(struct state_s);
 								}
+								state_p->p->psub[c]->data=data_p->p;
+								state_p->p->psub[c]->prio=pr+state_p->pr;
 							}
 							todo=todo->n;
 							free(state_p);
