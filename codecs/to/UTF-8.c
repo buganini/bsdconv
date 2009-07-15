@@ -10,6 +10,9 @@
 #define bb11100000 0xe0
 #define bb00001111 0x0f
 #define bb00111100 0x3c
+#define bb11110000 0xf0
+#define bb00000111 0x07
+#define bb00110000 0x30
 
 void callback(struct bsdconv_instance *ins){
 	unsigned char *data, *p;
@@ -38,7 +41,7 @@ void callback(struct bsdconv_instance *ins){
 					p=ins->out_data_tail->data;
 					*p=bb11000000;
 					*p |= (*data >> 6) & bb00000011;
-					p++;
+					++p;
 					*p=bb10000000;
 					*p |= *data & bb00111111;
 					break;
@@ -52,9 +55,9 @@ void callback(struct bsdconv_instance *ins){
 					p=ins->out_data_tail->data;
 					*p=bb11000000;
 					*p |= (*data << 2) & bb00011100;;
-					data++;
+					++data;
 					*p |= (*data >> 6) & bb00000011;
-					p++;
+					++p;
 					*p=bb10000000;
 					*p |= *data & bb00111111;
 					break;
@@ -64,16 +67,44 @@ void callback(struct bsdconv_instance *ins){
 					p=ins->out_data_tail->data;
 					*p=bb11100000;
 					*p |= (*data >> 4) & bb00001111;
-					p++;
+					++p;
 					*p=bb10000000;
 					*p |= (*data << 2) & bb00111100;
-					data++;
+					++data;
 					*p |= (*data >> 6) & bb00000011;
-					p++;
+					++p;
 					*p=bb10000000;
 					*p |= *data & bb00111111;
 					break;
 			}
+			break;
+		case 3:
+			switch(*data & bb11100000){
+				case 0:
+					ins->out_data_tail->len=3;
+					ins->out_data_tail->data=malloc(3);
+					p=ins->out_data_tail->data;
+					*p=bb11110000;
+					*p |= (*data >> 2) & bb00000111;
+					++p;
+					*p=bb10000000;
+					*p |= (*data << 4) & bb00110000;
+					++data;
+					*p |= (*data >> 4) & bb00001111;
+					++p;
+					*p=bb10000000;
+					*p |= (*data << 2) & bb00111100;
+					++data;
+					*p |= (*data >> 6) & bb00000011;
+					++p;
+					*p=bb10000000;
+					*p |= *data & bb00111111;
+					break;
+				default:
+					break;
+			}
+			break;
+		default:
 			break;
 	}
 }
