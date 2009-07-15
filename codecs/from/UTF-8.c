@@ -113,8 +113,37 @@ void callback(struct bsdconv_instance *ins){
 			}
 			break;
 		case 41:
+			if((d & bb11000000) == bb10000000){
+				t->status=42;
+				t->buf[0] |= (d >> 4) & bb00000011;
+				t->buf[1]=(d << 4) & bb11110000;
+				CONTINUE();
+			}else{
+				DEADEND();
+			}
+			break;
 		case 42:
+			if((d & bb11000000) == bb10000000){
+				t->status=43;
+				t->buf[1] |= (d >> 2) & bb00001111;
+				t->buf[2]=(d << 6) & bb11000000;
+				CONTINUE();
+			}else{
+				DEADEND();
+			}
+			break;
 		case 43:
+			if((d & bb11000000) == bb10000000){
+				t->buf[2] |= d & bb00111111;
+				APPEND(4);
+				p[1]=t->buf[0];
+				p[2]=t->buf[1];
+				p[3]=t->buf[2];
+				PASS();
+			}else{
+				DEADEND();
+			}
+			break;
 		default:
 			DEADEND();
 	}
