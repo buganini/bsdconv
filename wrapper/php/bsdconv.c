@@ -32,10 +32,33 @@ static int le_bsdconv;
 
 #include <bsdconv.h>
 
+/* {{{ proto string bsdconv_once(string conversion, string str)
+  short circuit for create-conv-destroy */
+PHP_FUNCTION(bsdconv_once){
+	char *c1, *c2;
+	int l1, l2;
+	struct bsdconv_instance *p;
+	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &c1, &l1, &c2, &l2) == FAILURE){
+		return;
+	}
+	p=bsdconv_create(c1);
+	if(p==NULL) RETURN_BOOL(0);
+	p->mode=BSDCONV_CM;
+	p->feed=c1;
+	p->feed_len=l1;
+	bsdconv_init(p);
+	bsdconv(p);
+	p->back=emalloc(p->back_len);
+	bsdconv(p);
+	RETVAL_STRINGL(p->back, p->back_len, 0);
+	bsdconv_destroy(p);
+}
+/* }}} */
+
 /* {{{ proto resource bsdconv_create(string conversion)
   create bsdconv instance */
 PHP_FUNCTION(bsdconv_create){
-	char *c, *p;
+	char *c;
 	int l;
 	struct bsdconv_instance *r;
 	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &c, &l) == FAILURE){
