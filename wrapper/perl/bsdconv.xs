@@ -10,6 +10,29 @@
 
 MODULE = bsdconv		PACKAGE = bsdconv
 
+SV*
+conv_once(c,str)
+	char *c
+	SV* str
+	PREINIT:
+		struct bsdconv_instance *ins;
+		char *s;
+		SSize_t l;
+	CODE:
+		ins=bsdconv_create(c);
+		if(ins==NULL) XSRETURN_UNDEF;
+		s=SvPV(str, l);
+		ins->mode=BSDCONV_CC;
+		ins->feed=s;
+		ins->feed_len=l;
+		bsdconv_init(ins);
+		bsdconv(ins);
+		RETVAL=newSVpv(ins->back, (STRLEN)ins->back_len);
+		free(ins->back);
+		bsdconv_destroy(ins);
+	OUTPUT:
+		RETVAL
+
 IV
 create(conversion)
 	char* conversion
