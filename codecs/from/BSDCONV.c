@@ -13,13 +13,13 @@ void *cbcreate(void){
 	return malloc(sizeof(struct my_s));
 }
 
-void cbinit(struct bsdconv_codec_t *cdc, struct data_s *r){
+void cbinit(struct bsdconv_codec_t *cdc, struct my_s *t){
 	cdc->data_z=0;
-	r->data.size=0;
-	r->data.data=NULL;
-	r->data.next=0;
-	r->len=0;
-	r->flag=0;
+	t->data.len=0;
+	t->data.data=NULL;
+	t->data.next=0;
+	t->size=0;
+	t->flag=0;
 
 }
 
@@ -30,25 +30,23 @@ void cbclear(void *p){
 int hex[256]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,1,2,3,4,5,6,7,8,9,-1,-1,-1,-1,-1,-1,-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 
 void callback(struct bsdconv_instance *ins){
-	unsigned char ob[8];
-	int i,j=0;
 	struct my_s *t=ins->from_priv[ins->from_index];
-	unsigned char d=*ins->from_data, *p;
+	unsigned char d=*ins->from_data;
 	if(hex[d]==-1){
 		ins->from_state.status=DEADEND;
 		t->flag=1;
 	}else{
-		it(t->flag){
+		if(t->flag){
 			t->flag=0;
-			t->len=0;
+			t->data.len=0;
 		}
 		ins->from_state.status=SUBMATCH;
 		ins->from_state.data=&(t->data);
-		if(t->len >= t->size){
+		if(t->data.len >= t->size){
 			t->size+=8;
-			t->data=realloc(t->data,t->size);
+			t->data.data=realloc(t->data.data,t->size);
 		}
-		t->data[t->len]=d;
-		t->len+=1;
+		t->data.data[t->data.len]=d;
+		t->data.len+=1;
 	}
 }
