@@ -10,7 +10,6 @@ struct my_s {
 };
 
 void *cbcreate(void){
-	ins->from[ins->from_index].data_z=0;
 	return malloc(sizeof(struct my_s));
 }
 
