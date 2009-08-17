@@ -72,7 +72,7 @@ struct bsdconv_codec_t {
 	void *dl;
 	void (*callback)(struct bsdconv_instance *);
 	void *(*cbcreate)(void);
-	void (*cbinit)(void *);
+	void (*cbinit)(struct bsdconv_codec_t *, void *);
 	void (*cbdestroy)(void *);
 };
 
