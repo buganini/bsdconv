@@ -48,7 +48,7 @@
 			}	\
 			fstat(ins->X[i].fd, &stat);		\
 			ins->X[i].maplen=stat.st_size;	\
-			if((ins->X[i].z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,ins->X[i].fd,0))==MAP_FAILED){	\
+			if((ins->X[i].data_z=ins->X[i].z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,ins->X[i].fd,0))==MAP_FAILED){	\
 				errno=ENOMEM;	\
 /*				fprintf(stderr, "Memory map failed for %s/%s\n", #X, ins->X[i].desc);*/	\
 				return NULL;	\
@@ -330,7 +330,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				pass_to_inter:
 				ins->pend_from=0;
 				if(ins->from_match){
-					listcpy(inter, ins->from_match, ins->from[ins->from_index].z);
+					listcpy(inter, ins->from_match, ins->from[ins->from_index].data_z);
 					ins->from_match=NULL;
 					RESET(from);
 
@@ -356,7 +356,7 @@ int bsdconv(struct bsdconv_instance *ins){
 			case MATCH:
 				FROM_NEXT();
 				ins->from_bak=ins->from_data;
-				listcpy(inter, ins->from_state.data, ins->from[ins->from_index].z);
+				listcpy(inter, ins->from_state.data, ins->from[ins->from_index].data_z);
 				ins->pend_from=0;
 				ins->from_match=NULL;
 				RESET(from);
@@ -401,7 +401,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				pass_to_to:
 				ins->pend_inter=0;
 				if(ins->inter_match){
-					listcpy(to, ins->inter_match, ins->inter[ins->inter_index].z);
+					listcpy(to, ins->inter_match, ins->inter[ins->inter_index].data_z);
 					ins->inter_match=NULL;
 					listfree(inter,ins->inter_bak);
 					ins->inter_data=ins->inter_bak;
@@ -434,7 +434,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				break;
 			case MATCH:
 				ins->inter_data=ins->inter_bak=ins->inter_data->next;
-				listcpy(to, ins->inter_state.data, ins->inter[ins->inter_index].z);
+				listcpy(to, ins->inter_state.data, ins->inter[ins->inter_index].data_z);
 				listfree(inter,ins->inter_bak);
 				ins->pend_inter=0;
 				ins->inter_match=NULL;
@@ -480,7 +480,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				pass_to_out:
 				ins->pend_to=0;
 				if(ins->to_match){
-					listcpy(out, ins->to_match, ins->to[ins->to_index].z);
+					listcpy(out, ins->to_match, ins->to[ins->to_index].data_z);
 					ins->to_match=0;
 					listfree(to,ins->to_bak);
 					ins->to_data=ins->to_data_head;
@@ -506,7 +506,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				break;
 			case MATCH:
 				ins->to_bak=ins->to_data->next;
-				listcpy(out, ins->to_state.data, ins->to[ins->to_index].z);
+				listcpy(out, ins->to_state.data, ins->to[ins->to_index].data_z);
 				listfree(to, ins->to_bak);
 				ins->to_data=ins->to_data_head;
 				ins->pend_to=0;
