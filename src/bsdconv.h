@@ -67,6 +67,7 @@ struct bsdconv_codec_t {
 	char *desc;
 	int fd;
 	unsigned char *z;
+	unsigned char *data_z;
 	size_t maplen;
 	void *dl;
 	void (*callback)(struct bsdconv_instance *);
