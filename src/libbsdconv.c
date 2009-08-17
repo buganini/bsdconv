@@ -132,16 +132,16 @@ void bsdconv_init(struct bsdconv_instance *ins){
 
 	for(i=0;i<=ins->nfrom;i++){
 		if(ins->from[i].cbinit){
-			ins->from[i].cbinit(ins->from_priv[i]);
+			ins->from[i].cbinit(&(ins->from[i]),ins->from_priv[i]);
 		}
 	}
 	for(i=0;i<=ins->ninter;i++){
 		if(ins->inter[i].cbinit)
-			ins->inter[i].cbinit(ins->inter_priv[i]);
+			ins->inter[i].cbinit(&(ins->inter[i]),ins->inter_priv[i]);
 	}
 	for(i=0;i<=ins->nto;i++){
 		if(ins->to[i].cbinit)
-			ins->to[i].cbinit(ins->to_priv[i]);
+			ins->to[i].cbinit(&(ins->to[i]),ins->to_priv[i]);
 	}
 }
 
