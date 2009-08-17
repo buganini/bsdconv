@@ -22,7 +22,7 @@ void *cbcreate(void){
 	return  malloc(sizeof(struct my_s));
 }
 
-void cbinit(struct my_s *r){
+void cbinit(struct bsdconv_codec_t *cdc, struct my_s *r){
 	r->status=0;
 }
 
