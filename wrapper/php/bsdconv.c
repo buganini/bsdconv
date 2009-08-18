@@ -140,6 +140,7 @@ zend_function_entry bsdconv_functions[] = {
 	PHP_FE(bsdconv_create,	NULL)
 	PHP_FE(bsdconv_destroy,	NULL)
 	PHP_FE(bsdconv_info,	NULL)
+	PHP_FE(bsdconv_once,	NULL)
 	PHP_FE(bsdconv,	NULL)
 	PHP_FE(bsdconv_error,	NULL)
 	{NULL, NULL, NULL}	/* Must be the last line in bsdconv_functions[] */
