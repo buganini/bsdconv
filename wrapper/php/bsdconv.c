@@ -44,8 +44,8 @@ PHP_FUNCTION(bsdconv_once){
 	p=bsdconv_create(c1);
 	if(p==NULL) RETURN_BOOL(0);
 	p->mode=BSDCONV_CM;
-	p->feed=c1;
-	p->feed_len=l1;
+	p->feed=c2;
+	p->feed_len=l2;
 	bsdconv_init(p);
 	bsdconv(p);
 	p->back=emalloc(p->back_len);
