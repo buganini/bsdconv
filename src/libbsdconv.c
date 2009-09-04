@@ -375,6 +375,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				++ins->from_data;
 		}
 	}
+	phase_index=1;
 
 	//inter
 	phase_inter:
@@ -452,6 +453,8 @@ int bsdconv(struct bsdconv_instance *ins){
 		memcpy(&ins->phase[phase_index].state, ins->phase[phase_index].codec[ins->phase[phase_index].index].z + (uintptr_t)ins->phase[phase_index].state.sub[256], sizeof(struct state_s));
 		if(ins->phase[phase_index].state.status==DEADEND){ goto pass_to_to;}
 	}
+	++phase_index;
+	goto phase_inter;
 
 	//to
 	phase_to:
