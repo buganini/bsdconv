@@ -36,4 +36,4 @@ sub event_send_text () {
 }
 
 Irssi::signal_add_first('send text', "event_send_text");
-Irssi::settings_add_str("misc", "bsdconv", "utf-8::utf-8");
+Irssi::settings_add_str("misc", "bsdconv", "utf-8:utf-8");
