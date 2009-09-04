@@ -26,6 +26,6 @@ More example:
 > ./build/bin/bsdconv big5,ascii:nl2br:ascii,image in.txt out.htm
 
 Maintain inter map:
-> bsdconv bsdconv_keyword,bsdconv::bsdconv_keyword,utf-8 MAP.txt edit.tmp
+> bsdconv bsdconv_keyword,bsdconv:bsdconv_keyword,utf-8 MAP.txt edit.tmp
 > vi edit.tmp
-> bsdconv bsdconv_keyword,utf-8::bsdconv_keyword,bsdconv edit.tmp MAP.txt
+> bsdconv bsdconv_keyword,utf-8:bsdconv_keyword,bsdconv edit.tmp MAP.txt
