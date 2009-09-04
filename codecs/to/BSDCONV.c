@@ -7,16 +7,16 @@
 void callback(struct bsdconv_instance *ins){
 	int i;
 	char *p;
-	ins->to_state.status=NEXTPHASE;
+	ins->phase[ins->phasen].state.status=NEXTPHASE;
 
-	ins->out_data_tail->next=malloc(sizeof(struct data_s));
-	ins->out_data_tail=ins->out_data_tail->next;
-	ins->out_data_tail->next=NULL;
+	ins->phase[ins->phasen-1].data_tail->next=malloc(sizeof(struct data_s));
+	ins->phase[ins->phasen-1].data_tail=ins->phase[ins->phasen-1].data_tail->next;
+	ins->phase[ins->phasen-1].data_tail->next=NULL;
 
-	ins->out_data_tail->len=ins->to_data->len*2;;
-	p=ins->out_data_tail->data=malloc(ins->out_data_tail->len);
-	for(i=0;i<ins->out_data_tail->len;++i){
-		sprintf(p,"%02X",ins->to_data->data[i]);
+	ins->phase[ins->phasen-1].data_tail->len=ins->phase[ins->phasen].data->len*2;;
+	p=ins->phase[ins->phasen-1].data_tail->data=malloc(ins->phase[ins->phasen-1].data_tail->len);
+	for(i=0;i<ins->phase[ins->phasen-1].data_tail->len;++i){
+		sprintf(p,"%02X",ins->phase[ins->phasen].data->data[i]);
 		TAILIZE(p);
 	}
 }

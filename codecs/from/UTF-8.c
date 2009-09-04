@@ -31,33 +31,33 @@ void cbdestroy(void *p){
 }
 
 #define CONTINUE() do{	\
-	ins->from_state.status=CONTINUE;	\
+	ins->phase[0].state.status=CONTINUE;	\
 	return;	\
 }while(0);
 
 #define DEADEND() do{	\
-	ins->from_state.status=DEADEND;	\
+	ins->phase[0].state.status=DEADEND;	\
 	t->status=0;	\
 	return;	\
 }while(0);
 
 #define PASS() do{	\
-	ins->from_state.status=NEXTPHASE;	\
+	ins->phase[0].state.status=NEXTPHASE;	\
 	t->status=0;	\
 	return;	\
 }while(0);
 
 #define APPEND(n) do{	\
-	ins->inter_data_tail->next=malloc(sizeof(struct data_s));	\
-	ins->inter_data_tail=ins->inter_data_tail->next;	\
-	ins->inter_data_tail->next=NULL;	\
-	ins->inter_data_tail->len=n;	\
-	p=ins->inter_data_tail->data=malloc(n);	\
+	ins->phase[0].data_tail->next=malloc(sizeof(struct data_s));	\
+	ins->phase[0].data_tail=ins->phase[0].data_tail->next;	\
+	ins->phase[0].data_tail->next=NULL;	\
+	ins->phase[0].data_tail->len=n;	\
+	p=ins->phase[0].data_tail->data=malloc(n);	\
 	p[0]=0x01;	\
 }while(0);
 
 void callback(struct bsdconv_instance *ins){
-	struct my_s *t=ins->from_priv[ins->from_index];
+	struct my_s *t=ins->phase[0].codec[ins->phase[0].index].priv;
 	unsigned char d=*ins->from_data, *p;
 	switch(t->status){
 		case 0:

@@ -13,77 +13,13 @@
 #include <errno.h>
 #include "bsdconv.h"
 
-#define COUNT(X) do{	\
-	if(*o##X){	\
-		n##X=1;	\
-		for(t=(char *)o##X;*t;t++){	\
-			if(*t==','){	\
-				n##X++;	\
-			}	\
-		}	\
-	}else{	\
-		n##X=0;	\
-	}	\
-	ins->n##X=n##X;		\
-}while(0);
-
-#define GENLIST(X) do{	\
-	X=strdup(o##X);	\
-	ins->X=malloc(n##X * sizeof(struct bsdconv_codec_t));		\
-	ins->X[0].desc=X;	\
-	chdir(#X);	\
-	brk=0;	\
-	for(i=0,t=X;;++t){	\
-		if(*t==',' || *t==0){	\
-			if(*t==0){	\
-				brk=1;	\
-			}	\
-			*t=0;	\
-			strcpy(buf, ins->X[i].desc);	\
-			realpath(buf, path);	\
-			if((ins->X[i].fd=open(path, O_RDONLY))==-1){	\
-				errno=EOPNOTSUPP;	\
-/*				fprintf(stderr, "No such codec %s/%s\n", #X, ins->X[i].desc);*/	\
-				return NULL;	\
-			}	\
-			fstat(ins->X[i].fd, &stat);		\
-			ins->X[i].maplen=stat.st_size;	\
-			if((ins->X[i].data_z=ins->X[i].z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,ins->X[i].fd,0))==MAP_FAILED){	\
-				errno=ENOMEM;	\
-/*				fprintf(stderr, "Memory map failed for %s/%s\n", #X, ins->X[i].desc);*/	\
-				return NULL;	\
-			}	\
-			strcat(path, ".so");	\
-			ins->X[i].cbcreate=NULL;	\
-			ins->X[i].cbinit=NULL;	\
-			ins->X[i].callback=NULL;	\
-			ins->X[i].cbdestroy=NULL;	\
-			if((ins->X[i].dl=dlopen(path	, RTLD_LAZY))){	\
-				ins->X[i].callback=dlsym(ins->X[i].dl,"callback");	\
-				ins->X[i].cbcreate=dlsym(ins->X[i].dl,"cbcreate");	\
-				ins->X[i].cbinit=dlsym(ins->X[i].dl,"cbinit");	\
-				ins->X[i].cbdestroy=dlsym(ins->X[i].dl,"cbdestroy");	\
-			}	\
-			if(i+1 < n##X){	\
-				ins->X[++i].desc=t+1;	\
-			}	\
-			if(brk){	\
-				break;	\
-			}	\
-		}else{	\
-			*t=toupper(*t); 	\
-		}	\
-	}	\
-	chdir("..");	\
-}while(0);
-
 #define RESET(X) do{	\
-	ins->X##_index=0;	\
-	memcpy(&ins->X##_state, ins->X[ins->X##_index].z, sizeof(struct state_s));	\
+	ins->phase[X].index=0;	\
+	memcpy(&ins->phase[X].state, ins->phase[X].codec[ins->phase[X].index].z, sizeof(struct state_s));	\
 }while(0);
 
 void bsdconv_init(struct bsdconv_instance *ins){
-	int i;
+	int i, j;
 	switch(ins->mode){
 		case BSDCONV_BB:
 			ins->feed=ins->in_buf;
@@ -112,204 +48,258 @@ void bsdconv_init(struct bsdconv_instance *ins){
 	ins->ierr=0;
 	ins->oerr=0;
 
-	ins->inter_data_head->next=
-	ins->to_data_head->next=
-	ins->out_data_head->next=
-	NULL;
-
 	ins->from_bak=ins->from_data=ins->feed;
-	ins->inter_bak=ins->inter_data=ins->inter_data_tail=ins->inter_data_head;
-	ins->to_bak=ins->to_data=ins->to_data_tail=ins->to_data_head;
-	ins->out_data_tail=ins->out_data_head;
-
-	ins->from_match=NULL;
-	ins->inter_match=NULL;
-	ins->to_match=NULL;
-
-	RESET(from);
-	RESET(inter);
-	RESET(to);
-
-	for(i=0;i<=ins->nfrom;i++){
-		if(ins->from[i].cbinit){
-			ins->from[i].cbinit(&(ins->from[i]),ins->from_priv[i]);
+	
+	for(i=0;i<=ins->phasen;i++){
+		RESET(i)
+		ins->phase[i].data_head->next=NULL;
+		ins->phase[i].bak=ins->phase[i].data=ins->phase[i].data_tail=ins->phase[i].data_head;
+		ins->phase[i].match=NULL;
+		for(j=0;j<=ins->phase[i].codecn;j++){
+			if(ins->phase[i].codec[j].cbinit)
+				ins->phase[i].codec[j].cbinit(&(ins->phase[i].codec[j]),ins->phase[i].codec[j].priv);
 		}
-	}
-	for(i=0;i<=ins->ninter;i++){
-		if(ins->inter[i].cbinit)
-			ins->inter[i].cbinit(&(ins->inter[i]),ins->inter_priv[i]);
-	}
-	for(i=0;i<=ins->nto;i++){
-		if(ins->to[i].cbinit)
-			ins->to[i].cbinit(&(ins->to[i]),ins->to_priv[i]);
 	}
 }
 
 struct bsdconv_instance *bsdconv_create(const char *conversion){
 	struct bsdconv_instance *ins=malloc(sizeof(struct bsdconv_instance));
 	struct stat stat;
-	char *ofrom, *ointer, *oto;
-	char *t, *from, *inter, *to;
-	int i,nfrom,nto,ninter, brk;
+	char *t;
+	int i, j, brk;
 	char buf[64], path[512];
 
-	i=0;
+	i=1;
 	for(t=(char *)conversion;*t;t++){
 		if(*t==':')++i;
 	}
-	if(i!=2){
+	if(i<2){
 		errno=EINVAL;
-//		fprintf(stderr, "Conversion syntax error.\n");
 		return NULL;
 	}
 
+	ins->phasen=i-1; //i is real length, but we use i-1 for a convient to use array boundary here
+	ins->phase=malloc(sizeof(struct bsdconv_phase) * i);
+	char *opipe[i];
+	char *pipe[i];
+	int npipe[i];
+
 	t=strdup(conversion);
-	ofrom=(char *)strsep(&t, ":");
-	ointer=(char *)strsep(&t, ":");
-	oto=(char *)strsep(&t, ":");
 
-	COUNT(from);
-	COUNT(inter);
-	COUNT(to);
-
-	if(ninter==0){
-		ninter=2;
-		ointer="DUMMY";
+	for(i=0;i<=ins->phasen;++i){
+		opipe[i]=(char *)strsep(&t, ":");
+	}
+	for(i=0;i<=ins->phasen;++i){
+		if(*opipe[i]){
+			npipe[i]=1;
+			for(t=(char *)opipe[i];*t;t++){
+				if(*t==','){
+					npipe[i]++;
+				}
+			}
+		}else{
+			npipe[i]=0;
+		}
+		ins->phase[i].codecn=npipe[i];
+		if(npipe[i]==0){
+			errno=EINVAL;
+			return NULL;
+		}
 	}
 
 	chdir(PREFIX "/share/bsdconv");
-	if(nfrom==0 || nto==0){
-		errno=EINVAL;
-//		fprintf(stderr, "Need at least 1 from and to encoding.\n");
-		fflush(stderr);
-		return NULL;
-	}
-	GENLIST(from);
-	GENLIST(inter);
-	GENLIST(to);
-	
-	ins->nfrom--;
-	ins->nto--;
-	ins->ninter--;
 
-	ins->inter_data_head=malloc(sizeof(struct data_s));
-	ins->to_data_head=malloc(sizeof(struct data_s));
-	ins->out_data_head=malloc(sizeof(struct data_s));
-
-	ins->from_priv=malloc((ins->nfrom+1) * sizeof(void *));
-	ins->inter_priv=malloc((ins->ninter+1) * sizeof(void *));
-	ins->to_priv=malloc((ins->nto+1) * sizeof(void *));
-
-	for(i=0;i<=ins->nfrom;i++){
-		if(ins->from[i].cbcreate){
-			ins->from_priv[i]=ins->from[i].cbcreate();
+	for(i=0;i<=ins->phasen;++i){
+		pipe[i]=strdup(opipe[i]);
+		ins->phase[i].codec=malloc(npipe[i] * sizeof(struct bsdconv_codec_t));
+		ins->phase[i].codec[0].desc=pipe[i];
+		if(i==0){
+			chdir("from");
+		}else if(i==ins->phasen){
+			chdir("to");
+		}else{
+			chdir("inter");
 		}
-	}
-	for(i=0;i<=ins->ninter;i++){
-		if(ins->inter[i].cbcreate)
-			ins->inter_priv[i]=ins->inter[i].cbcreate();
-	}
-	for(i=0;i<=ins->nto;i++){
-		if(ins->to[i].cbcreate)
-			ins->to_priv[i]=ins->to[i].cbcreate();
+		brk=0;
+		for(j=0,t=pipe[i];;++t){
+			if(*t==',' || *t==0){
+				if(*t==0){
+					brk=1;
+				}
+				*t=0;
+				strcpy(buf, ins->phase[i].codec[j].desc);
+				realpath(buf, path);
+				if((ins->phase[i].codec[j].fd=open(path, O_RDONLY))==-1){
+					errno=EOPNOTSUPP;
+					return NULL;
+				}
+				fstat(ins->phase[i].codec[j].fd, &stat);
+				ins->phase[i].codec[j].maplen=stat.st_size;
+				if((ins->phase[i].codec[j].data_z=ins->phase[i].codec[j].z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,ins->phase[i].codec[j].fd,0))==MAP_FAILED){
+					errno=ENOMEM;
+					return NULL;
+				}
+				strcat(path, ".so");
+				ins->phase[i].codec[j].cbcreate=NULL;
+				ins->phase[i].codec[j].cbinit=NULL;
+				ins->phase[i].codec[j].callback=NULL;
+				ins->phase[i].codec[j].cbdestroy=NULL;
+				if((ins->phase[i].codec[j].dl=dlopen(path, RTLD_LAZY))){
+					ins->phase[i].codec[j].callback=dlsym(ins->phase[i].codec[j].dl,"callback");
+					ins->phase[i].codec[j].cbcreate=dlsym(ins->phase[i].codec[j].dl,"cbcreate");
+					ins->phase[i].codec[j].cbinit=dlsym(ins->phase[i].codec[j].dl,"cbinit");
+					ins->phase[i].codec[j].cbdestroy=dlsym(ins->phase[i].codec[j].dl,"cbdestroy");
+				}
+				if(j+1 < ins->phase[i].codecn){
+					ins->phase[i].codec[++j].desc=t+1;
+				}
+				if(brk){
+					break;
+				}
+			}else{
+				*t=toupper(*t);
+			}
+		}
+		chdir("..");
+
+		ins->phase[i].codecn--;
+		ins->phase[i].data_head=malloc(sizeof(struct data_s));
+		for(j=0;j<=ins->phase[i].codecn;j++){
+			if(ins->phase[i].codec[j].cbcreate){
+				ins->phase[i].codec[j].priv=ins->phase[i].codec[j].cbcreate();
+			}
+		}
 	}
 
 	return ins;
 }
 
-#define DELLIST(X) do{	\
-	for(i=0;i<=ins->n##X;i++){	\
-		if(ins->X[i].cbdestroy){	\
-			ins->X[i].cbdestroy(ins->X##_priv[i]);	\
-		}	\
-		if(ins->X[i].dl){	\
-			dlclose(ins->X[i].dl);	\
-		}	\
-		munmap(ins->X[i].z, ins->X[i].maplen);	\
-		close(ins->X[i].fd);	\
-	}	\
-}while(0);
-
 void bsdconv_destroy(struct bsdconv_instance *ins){
-	int i;
+	int i,j;
 	struct data_s *data_ptr;
 
-	free(ins->from[0].desc);
-
-	DELLIST(from);
-	DELLIST(inter);
-	DELLIST(to);
-
-	free(ins->from_priv);
-	free(ins->inter_priv);
-	free(ins->to_priv);
-
-	while(ins->inter_data_head){
-		data_ptr=ins->inter_data_head;
-		ins->inter_data_head=ins->inter_data_head->next;
-		free(data_ptr);
-	}
-	while(ins->to_data_head){
-		data_ptr=ins->to_data_head;
-		ins->to_data_head=ins->to_data_head->next;
-		free(data_ptr);
-	}
-	while(ins->out_data_head){
-		data_ptr=ins->out_data_head;
-		ins->out_data_head=ins->out_data_head->next;
-		free(data_ptr);
+	for(i=0;i<=ins->phasen;i++){
+		free(ins->phase[i].codec[0].desc);
+		for(j=0;j<=ins->phase[i].codecn;j++){
+			if(ins->phase[i].codec[j].cbdestroy){
+				ins->phase[i].codec[j].cbdestroy(ins->phase[i].codec[j].priv);
+			}
+			if(ins->phase[i].codec[j].dl){
+				dlclose(ins->phase[i].codec[j].dl);
+			}
+			munmap(ins->phase[i].codec[j].z, ins->phase[i].codec[j].maplen);
+			close(ins->phase[i].codec[j].fd);
+		}
+		while(ins->phase[i].data_head){
+			data_ptr=ins->phase[i].data_head;
+			ins->phase[i].data_head=ins->phase[i].data_head->next;
+			free(data_ptr);
+		}
 	}
 	free(ins);
 }
 
+#define check_leftovers() do{	\
+	for(phase_index=ins->phasen-1;phase_index>=0;--phase_index){	\
+		if(ins->phase[phase_index].data->next){	\
+			if(phase_index==ins->phasen-1){	\
+				goto phase_to;	\
+			}else{	\
+				phase_index++;	\
+				goto phase_inter;	\
+			}	\
+		}	\
+	}	\
+	if(ins->from_data < ins->feed+ins->feed_len) goto phase_from;	\
+}while(0);
+
+#define check_pending() do{	\
+	for(phase_index=0;phase_index<=ins->phasen;++phase_index){	\
+		if(ins->phase[phase_index].pend){	\
+			if(phase_index==0){	\
+				goto pass_to_inter;	\
+			}else if(phase_index==ins->phasen){	\
+				goto pass_to_to;	\
+			}else{	\
+				goto pass_to_out;	\
+			}	\
+		}	\
+	}	\
+}while(0);
+
 int bsdconv(struct bsdconv_instance *ins){
 	uintptr_t i;
+	int phase_index=0;
 	struct data_s *data_ptr;
 	unsigned char *ptr;
 
 	switch(ins->mode){
 		case BSDCONV_BB:
 			ins->back_len=0;
-			if(ins->out_data_head->next) goto bb_out;
-			if(ins->to_data_head->next) goto phase_to;
-			if(ins->inter_data_head->next) goto phase_inter;
+			if(ins->phase[ins->phasen].data_head->next) goto bb_out;
+			for(phase_index=ins->phasen-1;phase_index>=0;--phase_index){
+				if(ins->phase[phase_index].data->next){
+					if(phase_index==ins->phasen-1){
+						goto phase_to;
+					}else{
+						phase_index++;
+						goto phase_inter;
+					}
+				}
+			}
 			break;
 		case BSDCONV_BC:
-			if(ins->to_data_head->next) goto phase_to;
-			if(ins->inter_data_head->next) goto phase_inter;
+			for(phase_index=ins->phasen-1;phase_index>=0;--phase_index){
+				if(ins->phase[phase_index].data->next){
+					if(phase_index==ins->phasen-1){
+						goto phase_to;
+					}else{
+						phase_index++;
+						goto phase_inter;
+					}
+				}
+			}
 			break;
 		case BSDCONV_CB:
 			ins->back_len=0;
-			if(ins->out_data_head->next) goto cb_out;
+			if(ins->phase[ins->phasen].data_head->next) goto cb_out;
 			break;
 		case BSDCONV_CC:
 			break;
 		case BSDCONV_BM:
 			if(ins->back){
 				ptr=ins->back;
-				data_ptr=ins->out_data_head;
-				while(ins->out_data_head->next){
-					data_ptr=ins->out_data_head->next;
+				data_ptr=ins->phase[ins->phasen].data_head;
+				while(ins->phase[ins->phasen].data_head->next){
+					data_ptr=ins->phase[ins->phasen].data_head->next;
 					memcpy(ptr, data_ptr->data, data_ptr->len);
 					ptr+=data_ptr->len;
-					ins->out_data_head->next=ins->out_data_head->next->next;
+					ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
 					free(data_ptr);
 				}
 				return 0;
 			}else{
-				if(ins->to_data_head->next) goto phase_to;
-				if(ins->inter_data_head->next) goto phase_inter;
+				for(phase_index=ins->phasen-1;phase_index>=0;--phase_index){
+					if(ins->phase[phase_index].data->next){
+						if(phase_index==ins->phasen-1){
+							goto phase_to;
+						}else{
+							phase_index++;
+							goto phase_inter;
+						}
+					}
+				}
 			}
 			break;
 		case BSDCONV_CM:
 			if(ins->back){
 				ptr=ins->back;
-				data_ptr=ins->out_data_head;
-				while(ins->out_data_head->next){
-					data_ptr=ins->out_data_head->next;
+				data_ptr=ins->phase[ins->phasen].data_head;
+				while(ins->phase[ins->phasen].data_head->next){
+					data_ptr=ins->phase[ins->phasen].data_head->next;
 					memcpy(ptr, data_ptr->data, data_ptr->len);
 					ptr+=data_ptr->len;
-					ins->out_data_head->next=ins->out_data_head->next->next;
+					ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
 					free(data_ptr);
 				}
 				return 0;
@@ -317,155 +307,159 @@ int bsdconv(struct bsdconv_instance *ins){
 			break;
 		}
 
-#define FROM_NEXT() do{	\
-++ins->from_data;	\
-}while(0);	\
 	//from
 	phase_from:
 	while(ins->from_data < ins->feed+ins->feed_len){
-		memcpy(&ins->from_state, ins->from[ins->from_index].z + (uintptr_t)ins->from_state.sub[*ins->from_data], sizeof(struct state_s));
+		memcpy(&ins->phase[0].state, ins->phase[0].codec[ins->phase[0].index].z + (uintptr_t)ins->phase[0].state.sub[*ins->from_data], sizeof(struct state_s));
 		from_x:
-		switch(ins->from_state.status){
+		switch(ins->phase[0].state.status){
 			case DEADEND:
 				pass_to_inter:
-				ins->pend_from=0;
-				if(ins->from_match){
-					listcpy(inter, ins->from_match, ins->from[ins->from_index].data_z);
-					ins->from_match=NULL;
-					RESET(from);
+				ins->phase[0].pend=0;
+				if(ins->phase[0].match){
+					listcpy(0, ins->phase[0].match, ins->phase[0].codec[ins->phase[0].index].data_z);
+					ins->phase[0].match=NULL;
+					RESET(0);
 
 					ins->from_data=ins->from_bak;
+					phase_index=1;
 					goto phase_inter;
-				}else if(ins->from_index < ins->nfrom){
-					ins->from_index++;
-					memcpy(&ins->from_state, ins->from[ins->from_index].z, sizeof(struct state_s));
+				}else if(ins->phase[0].index < ins->phase[0].codecn){
+					ins->phase[0].index++;
+					memcpy(&ins->phase[0].state, ins->phase[0].codec[ins->phase[0].index].z, sizeof(struct state_s));
 
 					ins->from_data=ins->from_bak;
 					continue;
 				}else{
 					ins->ierr++;
 
-					RESET(from);
+					RESET(0);
 
 					ins->from_data=ins->from_bak;
-					FROM_NEXT();
+					++ins->from_data;
 					ins->from_bak=ins->from_data;
 					continue;
 				}
 				break;
 			case MATCH:
-				FROM_NEXT();
+				++ins->from_data;
 				ins->from_bak=ins->from_data;
-				listcpy(inter, ins->from_state.data, ins->from[ins->from_index].data_z);
-				ins->pend_from=0;
-				ins->from_match=NULL;
-				RESET(from);
+				listcpy(0, ins->phase[0].state.data, ins->phase[0].codec[ins->phase[0].index].data_z);
+				ins->phase[0].pend=0;
+				ins->phase[0].match=NULL;
+				RESET(0);
+				phase_index=1;
 				goto phase_inter;
 			case SUBMATCH:
-				ins->from_match=ins->from_state.data;
-				FROM_NEXT();
+				ins->phase[0].match=ins->phase[0].state.data;
+				++ins->from_data;
 				ins->from_bak=ins->from_data;
-				ins->pend_from=1;
+				ins->phase[0].pend=1;
 				break;
 			case CALLBACK:
-				ins->from[ins->from_index].callback(ins);
+				ins->phase[0].codec[ins->phase[0].index].callback(ins);
 				goto from_x;
 			case NEXTPHASE:
-				RESET(from);
-				FROM_NEXT();
+				RESET(0);
+				++ins->from_data;
 				ins->from_bak=ins->from_data;
-				ins->pend_from=0;
+				ins->phase[0].pend=0;
+				phase_index=1;
 				goto phase_inter;
 				break;
 			case CONTINUE:
-				ins->pend_from=1;
-				FROM_NEXT();
+				ins->phase[0].pend=1;
+				++ins->from_data;
 				break;
 			default:
-				FROM_NEXT();
+				++ins->from_data;
 		}
 	}
 
 	//inter
 	phase_inter:
-	while(ins->inter_data->next){
-		ins->inter_data=ins->inter_data->next;
-		for(i=0;i<ins->inter_data->len;i++){
-			memcpy(&ins->inter_state, ins->inter[ins->inter_index].z + (uintptr_t)ins->inter_state.sub[*(ins->inter_data->data+i)], sizeof(struct state_s));
-			if(ins->inter_state.status==DEADEND){
+	if(phase_index==ins->phasen){
+		goto phase_to;
+	}
+	while(ins->phase[phase_index-1].data->next){
+		ins->phase[phase_index-1].data=ins->phase[phase_index-1].data->next;
+		for(i=0;i<ins->phase[phase_index-1].data->len;i++){
+			memcpy(&ins->phase[phase_index].state, ins->phase[phase_index].codec[ins->phase[phase_index].index].z + (uintptr_t)ins->phase[phase_index].state.sub[*(ins->phase[phase_index-1].data->data+i)], sizeof(struct state_s));
+			if(ins->phase[phase_index].state.status==DEADEND){
 				break;
 			}
 		}
-		switch(ins->inter_state.status){
+		switch(ins->phase[phase_index].state.status){
 			case DEADEND:
 				pass_to_to:
-				ins->pend_inter=0;
-				if(ins->inter_match){
-					listcpy(to, ins->inter_match, ins->inter[ins->inter_index].data_z);
-					ins->inter_match=NULL;
-					listfree(inter,ins->inter_bak);
-					ins->inter_data=ins->inter_bak;
+				ins->phase[phase_index].pend=0;
+				if(ins->phase[phase_index].match){
+					listcpy(phase_index, ins->phase[phase_index].match, ins->phase[phase_index].codec[ins->phase[phase_index].index].data_z);
+					ins->phase[phase_index].match=NULL;
+					listfree(phase_index-1,ins->phase[phase_index].bak);
+					ins->phase[phase_index-1].data=ins->phase[phase_index-1].data_head;
 
-					RESET(inter);
-
-					ins->inter_data=ins->inter_data_head;
-					goto phase_to;
-				}else if(ins->inter_index < ins->ninter){
-					ins->inter_index++;
-					memcpy(&ins->inter_state, ins->inter[ins->inter_index].z, sizeof(struct state_s));
-					ins->inter_data=ins->inter_bak;
-					ins->inter_data=ins->inter_data_head;
+					RESET(phase_index);
+					goto phase_inter;
+				}else if(ins->phase[phase_index].index < ins->phase[phase_index].codecn){
+					ins->phase[phase_index].index++;
+					memcpy(&ins->phase[phase_index].state, ins->phase[phase_index].codec[ins->phase[phase_index].index].z, sizeof(struct state_s));
+					ins->phase[phase_index-1].data=ins->phase[phase_index-1].data_head;
 					continue;
 				}else{
-					data_ptr=ins->inter_data_head->next;
-					ins->inter_data_head->next=ins->inter_data_head->next->next;
-					ins->inter_data=ins->inter_data_head;
+					data_ptr=ins->phase[phase_index-1].data_head->next;
+					ins->phase[phase_index-1].data_head->next=ins->phase[phase_index-1].data_head->next->next;
+					ins->phase[phase_index-1].data=ins->phase[phase_index-1].data_head;
 					data_ptr->next=NULL;
-					ins->to_data_tail->next=data_ptr;
-					if(ins->inter_data_tail==data_ptr){
-						ins->inter_data_tail=ins->inter_data_head;
+					ins->phase[phase_index].data_tail->next=data_ptr;
+					if(ins->phase[phase_index-1].data_tail==data_ptr){
+						ins->phase[phase_index-1].data_tail=ins->phase[phase_index-1].data_head;
 					}
-					ins->inter_bak=ins->inter_data=ins->inter_data_head;
+					ins->phase[phase_index].bak=ins->phase[phase_index-1].data=ins->phase[phase_index-1].data_head;
 
-					RESET(inter);
+					RESET(phase_index);
 
-					goto phase_to;
+					++phase_index;
+					goto phase_inter;
 				}
 				break;
 			case MATCH:
-				ins->inter_data=ins->inter_bak=ins->inter_data->next;
-				listcpy(to, ins->inter_state.data, ins->inter[ins->inter_index].data_z);
-				listfree(inter,ins->inter_bak);
-				ins->pend_inter=0;
-				ins->inter_match=NULL;
+				ins->phase[phase_index-1].data=ins->phase[phase_index].bak=ins->phase[phase_index-1].data->next;
+				listcpy(phase_index, ins->phase[phase_index].state.data, ins->phase[phase_index].codec[ins->phase[phase_index].index].data_z);
+				listfree(phase_index-1,ins->phase[phase_index].bak);
+				ins->phase[phase_index].pend=0;
+				ins->phase[phase_index].match=NULL;
 
-				RESET(inter);
+				RESET(phase_index);
 
-				ins->inter_data=ins->inter_data_head;
-				goto phase_to;
+				ins->phase[phase_index-1].data=ins->phase[phase_index-1].data_head;
+
+				++phase_index;
+				goto phase_inter;
 			case SUBMATCH:
-				ins->inter_match=ins->inter_state.data;
-				ins->inter_bak=ins->inter_data->next;
-				ins->pend_inter=1;
+				ins->phase[phase_index].match=ins->phase[phase_index].state.data;
+				ins->phase[phase_index].bak=ins->phase[phase_index-1].data->next;
+				ins->phase[phase_index].pend=1;
 				break;
 			case NEXTPHASE:
-				goto phase_to;
+				++phase_index;
+				goto phase_inter;
 				break;
 			case CONTINUE:
-				ins->pend_inter=1;
+				ins->phase[phase_index].pend=1;
 				break;
 		}
-		memcpy(&ins->inter_state, ins->inter[ins->inter_index].z + (uintptr_t)ins->inter_state.sub[256], sizeof(struct state_s));
-		if(ins->inter_state.status==DEADEND){ goto pass_to_to;}
+		memcpy(&ins->phase[phase_index].state, ins->phase[phase_index].codec[ins->phase[phase_index].index].z + (uintptr_t)ins->phase[phase_index].state.sub[256], sizeof(struct state_s));
+		if(ins->phase[phase_index].state.status==DEADEND){ goto pass_to_to;}
 	}
 
 	//to
 	phase_to:
-	while(ins->to_data->next){
-		ins->to_data=ins->to_data->next;
-		for(i=0;i<ins->to_data->len;i++){
-			memcpy(&ins->to_state, ins->to[ins->to_index].z + (uintptr_t)ins->to_state.sub[*(ins->to_data->data+i)], sizeof(struct state_s));
-			switch(ins->to_state.status){
+	while(ins->phase[ins->phasen-1].data->next){
+		ins->phase[ins->phasen-1].data=ins->phase[ins->phasen-1].data->next;
+		for(i=0;i<ins->phase[ins->phasen-1].data->len;i++){
+			memcpy(&ins->phase[ins->phasen].state, ins->phase[ins->phasen].codec[ins->phase[ins->phasen].index].z + (uintptr_t)ins->phase[ins->phasen].state.sub[*(ins->phase[ins->phasen-1].data->data+i)], sizeof(struct state_s));
+			switch(ins->phase[ins->phasen].state.status){
 				case DEADEND:
 					goto pass_to_out;
 					break;
@@ -475,96 +469,92 @@ int bsdconv(struct bsdconv_instance *ins){
 			}
 		}
 		to_x:
-		switch(ins->to_state.status){
+		switch(ins->phase[ins->phasen].state.status){
 			case DEADEND:
 				pass_to_out:
-				ins->pend_to=0;
-				if(ins->to_match){
-					listcpy(out, ins->to_match, ins->to[ins->to_index].data_z);
-					ins->to_match=0;
-					listfree(to,ins->to_bak);
-					ins->to_data=ins->to_data_head;
+				ins->phase[ins->phasen].pend=0;
+				if(ins->phase[ins->phasen].match){
+					listcpy(ins->phasen, ins->phase[ins->phasen].match, ins->phase[ins->phasen].codec[ins->phase[ins->phasen].index].data_z);
+					ins->phase[ins->phasen].match=0;
+					listfree(ins->phasen-1,ins->phase[ins->phasen].bak);
+					ins->phase[ins->phasen-1].data=ins->phase[ins->phasen-1].data_head;
 
-					RESET(to);
+					RESET(ins->phasen);
 
 					goto phase_out;
-				}else if(ins->to_index < ins->nto){
-					ins->to_index++;
-					memcpy(&ins->to_state, ins->to[ins->to_index].z, sizeof(struct state_s));
-					ins->to_data=ins->to_data_head;
+				}else if(ins->phase[ins->phasen].index < ins->phase[ins->phasen].codecn){
+					ins->phase[ins->phasen].index++;
+					memcpy(&ins->phase[ins->phasen].state, ins->phase[ins->phasen].codec[ins->phase[ins->phasen].index].z, sizeof(struct state_s));
+					ins->phase[ins->phasen-1].data=ins->phase[ins->phasen-1].data_head;
 					continue;
 				}else{
 					ins->oerr++;
 
-					RESET(to);
+					RESET(ins->phasen);
 
-					listfree(to,ins->to_data->next);
-					ins->to_bak=ins->to_data=ins->to_data_head;
+					listfree(ins->phasen-1,ins->phase[ins->phasen-1].data->next);
+					ins->phase[ins->phasen].bak=ins->phase[ins->phasen-1].data=ins->phase[ins->phasen-1].data_head;
 
 					continue;
 				}
 				break;
 			case MATCH:
-				ins->to_bak=ins->to_data->next;
-				listcpy(out, ins->to_state.data, ins->to[ins->to_index].data_z);
-				listfree(to, ins->to_bak);
-				ins->to_data=ins->to_data_head;
-				ins->pend_to=0;
-				ins->to_match=NULL;
-				RESET(to);
+				ins->phase[ins->phasen].bak=ins->phase[ins->phasen-1].data->next;
+				listcpy(ins->phasen, ins->phase[ins->phasen].state.data, ins->phase[ins->phasen].codec[ins->phase[ins->phasen].index].data_z);
+				listfree(ins->phasen-1, ins->phase[ins->phasen].bak);
+				ins->phase[ins->phasen-1].data=ins->phase[ins->phasen-1].data_head;
+				ins->phase[ins->phasen].pend=0;
+				ins->phase[ins->phasen].match=NULL;
+				RESET(ins->phasen);
 				goto phase_out;
 			case SUBMATCH:
-				ins->to_match=ins->to_state.data;
-				ins->to_bak=ins->to_data->next;
-				ins->pend_to=1;
+				ins->phase[ins->phasen].match=ins->phase[ins->phasen].state.data;
+				ins->phase[ins->phasen].bak=ins->phase[ins->phasen-1].data->next;
+				ins->phase[ins->phasen].pend=1;
 				break;
 			case CALLBACK:
 				to_callback:
-				ins->to[ins->to_index].callback(ins);
+				ins->phase[ins->phasen].codec[ins->phase[ins->phasen].index].callback(ins);
 				goto to_x;
 			case NEXTPHASE:
-				listfree(to,ins->to_data->next);
-				ins->to_data=ins->to_data_head;
-				RESET(to);
-				ins->to_bak=ins->to_data->next;
-				ins->pend_to=0;
+				listfree(ins->phasen-1,ins->phase[ins->phasen-1].data->next);
+				ins->phase[ins->phasen-1].data=ins->phase[ins->phasen-1].data_head;
+				RESET(ins->phasen);
+				ins->phase[ins->phasen].bak=ins->phase[ins->phasen-1].data->next;
+				ins->phase[ins->phasen].pend=0;
 				goto phase_out;
 				break;
 			case CONTINUE:
-				ins->pend_to=1;
+				ins->phase[ins->phasen].pend=1;
 				break;
 		}
-		memcpy(&ins->to_state, ins->to[ins->to_index].z + (uintptr_t)ins->to_state.sub[256], sizeof(struct state_s));
-		if(ins->to_state.status==DEADEND){ goto pass_to_out;}
+		memcpy(&ins->phase[ins->phasen].state, ins->phase[ins->phasen].codec[ins->phase[ins->phasen].index].z + (uintptr_t)ins->phase[ins->phasen].state.sub[256], sizeof(struct state_s));
+		if(ins->phase[ins->phasen].state.status==DEADEND){ goto pass_to_out;}
 	}
 
 	phase_out:
 	switch(ins->mode){
 		case BSDCONV_BB:
 			bb_out:
-			while(ins->out_data_head->next){
-				i=ins->back_len + ins->out_data_head->next->len;
+			while(ins->phase[ins->phasen].data_head->next){
+				i=ins->back_len + ins->phase[ins->phasen].data_head->next->len;
 				if(i > ins->out_len){
 					goto bb_hibernate;
 				}else{
-					memcpy(ins->back + ins->back_len, ins->out_data_head->next->data, ins->out_data_head->next->len);
+					memcpy(ins->back + ins->back_len, ins->phase[ins->phasen].data_head->next->data, ins->phase[ins->phasen].data_head->next->len);
 					ins->back_len=i;
 				}
-				if(ins->out_data_tail==ins->out_data_head->next){
-					ins->out_data_tail=ins->out_data_head;
+				if(ins->phase[ins->phasen].data_tail==ins->phase[ins->phasen].data_head->next){
+					ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_head;
 				}
-				data_ptr=ins->out_data_head->next;
-				ins->out_data_head->next=ins->out_data_head->next->next;
+				data_ptr=ins->phase[ins->phasen].data_head->next;
+				ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
 				free(data_ptr->data);
 				free(data_ptr);
 			}
-			if(ins->to_data->next) goto phase_to;
-			if(ins->inter_data->next) goto phase_inter;
-			if(ins->from_data < ins->feed+ins->feed_len) goto phase_from;
+			check_leftovers();
 			if(ins->feed+ins->feed_len<ins->in_buf+ins->in_len){
-				if(ins->pend_from) goto pass_to_inter;
-				if(ins->pend_inter) goto pass_to_to;
-				if(ins->pend_to) goto pass_to_out;
+				check_pending();
 				return 0;
 			}else{
 			bb_hibernate:
@@ -578,26 +568,22 @@ int bsdconv(struct bsdconv_instance *ins){
 			}
 			break;
 		case BSDCONV_BC:
-			if(ins->to_data->next) goto phase_to;
-			if(ins->inter_data->next) goto phase_inter;
-			if(ins->from_data < ins->feed+ins->feed_len) goto phase_from;
+			check_leftovers();
 			if(ins->feed+ins->feed_len<ins->in_buf+ins->in_len){
-				if(ins->pend_from) goto pass_to_inter;
-				if(ins->pend_inter) goto pass_to_to;
-				if(ins->pend_to) goto pass_to_out;
+				check_pending();
 				i=0;
-				data_ptr=ins->out_data_head;
+				data_ptr=ins->phase[ins->phasen].data_head;
 				while(data_ptr){
 					i+=data_ptr->len;
 					data_ptr=data_ptr->next;
 				}
 				ptr=ins->out_buf=ins->back=malloc(i);
-				data_ptr=ins->out_data_head;
-				while(ins->out_data_head->next){
-					data_ptr=ins->out_data_head->next;
+				data_ptr=ins->phase[ins->phasen].data_head;
+				while(ins->phase[ins->phasen].data_head->next){
+					data_ptr=ins->phase[ins->phasen].data_head->next;
 					memcpy(ptr, data_ptr->data, data_ptr->len);
 					ptr+=data_ptr->len;
-					ins->out_data_head->next=ins->out_data_head->next->next;
+					ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
 					free(data_ptr);
 				}
 				return 0;
@@ -614,65 +600,69 @@ int bsdconv(struct bsdconv_instance *ins){
 			break;
 		case BSDCONV_CB:
 			cb_out:
-			while(ins->out_data_head->next){
-				i=ins->back_len + ins->out_data_head->next->len;
+			while(ins->phase[ins->phasen].data_head->next){
+				i=ins->back_len + ins->phase[ins->phasen].data_head->next->len;
 				if(i > ins->out_len){
 					return 1;
 				}else{
-					memcpy(ins->back + ins->back_len, ins->out_data_head->next->data, ins->out_data_head->next->len);
+					memcpy(ins->back + ins->back_len, ins->phase[ins->phasen].data_head->next->data, ins->phase[ins->phasen].data_head->next->len);
 					ins->back_len=i;
 				}
-				if(ins->out_data_tail==ins->out_data_head->next){
-					ins->out_data_tail=ins->out_data_head;
+				if(ins->phase[ins->phasen].data_tail==ins->phase[ins->phasen].data_head->next){
+					ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_head;
 				}
-				data_ptr=ins->out_data_head->next;
-				ins->out_data_head->next=ins->out_data_head->next->next;
+				data_ptr=ins->phase[ins->phasen].data_head->next;
+				ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
 				free(data_ptr->data);
 				free(data_ptr);
 			}
-			if(ins->to_data->next) goto phase_to;
-			if(ins->inter_data->next) goto phase_inter;
-			if(ins->from_data < ins->feed+ins->feed_len) goto phase_from;
-			if(ins->pend_from) goto pass_to_inter;
-			if(ins->pend_inter) goto pass_to_to;
-			if(ins->pend_to) goto pass_to_out;
+
+			
+			check_leftovers();
+
+			check_pending();
 			return 0;
 			break;
 		case BSDCONV_CC:
-			if(ins->to_data->next) goto phase_to;
-			if(ins->inter_data->next) goto phase_inter;
-			if(ins->from_data < ins->feed+ins->feed_len) goto phase_from;
-			if(ins->pend_from) goto pass_to_inter;
-			if(ins->pend_inter) goto pass_to_to;
-			if(ins->pend_to) goto pass_to_out;
+			check_leftovers();
+
+			check_pending();
+
+			for(phase_index=0;phase_index<=ins->phasen;++phase_index){
+				if(ins->phase[phase_index].pend){
+					if(phase_index==0){
+						goto pass_to_inter;
+					}else if(phase_index==ins->phasen){
+						goto pass_to_to;
+					}else{
+						goto pass_to_out;
+					}
+				}
+			}
 			i=0;
-			data_ptr=ins->out_data_head->next;
+			data_ptr=ins->phase[ins->phasen].data_head->next;
 			while(data_ptr){
 				i+=data_ptr->len;
 				data_ptr=data_ptr->next;
 			}
 			ins->back_len=ins->out_len=i;
 			ptr=ins->back=ins->out_buf=ins->back=malloc(i);
-			data_ptr=ins->out_data_head;
-			while(ins->out_data_head->next){
-				data_ptr=ins->out_data_head->next;
+			data_ptr=ins->phase[ins->phasen].data_head;
+			while(ins->phase[ins->phasen].data_head->next){
+				data_ptr=ins->phase[ins->phasen].data_head->next;
 				memcpy(ptr, data_ptr->data, data_ptr->len);
 				ptr+=data_ptr->len;
-				ins->out_data_head->next=ins->out_data_head->next->next;
+				ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
 				free(data_ptr);
 			}
 			return 0;
 			break;
 		case BSDCONV_BM:
-			if(ins->to_data->next) goto phase_to;
-			if(ins->inter_data->next) goto phase_inter;
-			if(ins->from_data < ins->feed+ins->feed_len) goto phase_from;
+			check_leftovers();
 			if(ins->feed+ins->feed_len<ins->in_buf+ins->in_len){
-				if(ins->pend_from) goto pass_to_inter;
-				if(ins->pend_inter) goto pass_to_to;
-				if(ins->pend_to) goto pass_to_out;
+				check_pending();
 				i=0;
-				data_ptr=ins->out_data_head;
+				data_ptr=ins->phase[ins->phasen].data_head;
 				while(data_ptr){
 					i+=data_ptr->len;
 					data_ptr=data_ptr->next;
@@ -690,14 +680,10 @@ int bsdconv(struct bsdconv_instance *ins){
 			}
 			break;
 		case BSDCONV_CM:
-			if(ins->to_data->next) goto phase_to;
-			if(ins->inter_data->next) goto phase_inter;
-			if(ins->from_data < ins->feed+ins->feed_len) goto phase_from;
-			if(ins->pend_from) goto pass_to_inter;
-			if(ins->pend_inter) goto pass_to_to;
-			if(ins->pend_to) goto pass_to_out;
+			check_leftovers();
+			check_pending();
 			i=0;
-			data_ptr=ins->out_data_head->next;
+			data_ptr=ins->phase[ins->phasen].data_head->next;
 			while(data_ptr){
 				i+=data_ptr->len;
 				data_ptr=data_ptr->next;
