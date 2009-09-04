@@ -42,25 +42,20 @@ struct bsdconv_instance{
 	size_t back_len;
 	unsigned char *from_data;
 
-	int nfrom;
-	int ninter;
-	int nto;
-	struct bsdconv_codec_t *from;
-	struct bsdconv_codec_t *inter;
-	struct bsdconv_codec_t *to;
-
-	unsigned char pend_from, pend_inter, pend_to;
-
+	struct bsdconv_phase *phase;
+	int phasen, phase_index;
 	unsigned char ierr, oerr;
-
-	struct state_s from_state, inter_state, to_state;
-	int from_index, inter_index, to_index;
-	struct data_s *from_match, *inter_match, *to_match;
 	unsigned char *from_bak;
-	struct data_s *inter_bak, *to_bak;
-	struct data_s *inter_data_head, *to_data_head, *out_data_head, *inter_data_tail, *to_data_tail, *out_data_tail;
-	struct data_s *inter_data, *to_data;
-	void **from_priv, **inter_priv, **to_priv;
+
+};
+
+struct bsdconv_phase{
+	struct data_s *bak, *match, *data_head, *data_tail, *data;
+	struct state_s state;
+	int index;
+	unsigned char pend;
+	struct bsdconv_codec_t *codec;
+	int codecn;
 };
 
 struct bsdconv_codec_t {
@@ -74,27 +69,28 @@ struct bsdconv_codec_t {
 	void *(*cbcreate)(void);
 	void (*cbinit)(struct bsdconv_codec_t *, void *);
 	void (*cbdestroy)(void *);
+	void *priv;
 };
 
 #define listcpy(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
-	ins->X##_data_tail->next=malloc(sizeof(struct data_s));	\
-	ins->X##_data_tail=ins->X##_data_tail->next;	\
-	memcpy(ins->X##_data_tail, (unsigned char *)((Z)+(uintptr_t)data_ptr), sizeof(struct data_s));	\
-	data_ptr=ins->X##_data_tail->next;	\
-	ins->X##_data_tail->next=NULL;	\
-	ptr=(unsigned char *)((Z)+(uintptr_t)ins->X##_data_tail->data);	\
-	ins->X##_data_tail->data=malloc(ins->X##_data_tail->len);	\
-	memcpy(ins->X##_data_tail->data, ptr, ins->X##_data_tail->len);	\
+	ins->phase[X].data_tail->next=malloc(sizeof(struct data_s));	\
+	ins->phase[X].data_tail=ins->phase[X].data_tail->next;	\
+	memcpy(ins->phase[X].data_tail, (unsigned char *)((Z)+(uintptr_t)data_ptr), sizeof(struct data_s));	\
+	data_ptr=ins->phase[X].data_tail->next;	\
+	ins->phase[X].data_tail->next=NULL;	\
+	ptr=(unsigned char *)((Z)+(uintptr_t)ins->phase[X].data_tail->data);	\
+	ins->phase[X].data_tail->data=malloc(ins->phase[X].data_tail->len);	\
+	memcpy(ins->phase[X].data_tail->data, ptr, ins->phase[X].data_tail->len);	\
 }
 
-#define listfree(X,Y)	while(ins->X##_data_head->next!=(struct data_s *)(Y)){	\
-	data_ptr=ins->X##_data_head->next->next;	\
-	free(ins->X##_data_head->next->data);	\
-	if(ins->X##_data_tail==ins->X##_data_head->next){	\
-		ins->X##_data_tail=ins->X##_data_head;	\
+#define listfree(X,Y)	while(ins->phase[X].data_head->next!=(struct data_s *)(Y)){	\
+	data_ptr=ins->phase[X].data_head->next->next;	\
+	free(ins->phase[X].data_head->next->data);	\
+	if(ins->phase[X].data_tail==ins->phase[X].data_head->next){	\
+		ins->phase[X].data_tail=ins->phase[X].data_head;	\
 	}	\
-	free(ins->X##_data_head->next);	\
-	ins->X##_data_head->next=data_ptr;	\
+	free(ins->phase[X].data_head->next);	\
+	ins->phase[X].data_head->next=data_ptr;	\
 }
 
 struct bsdconv_instance *bsdconv_create(const char *);

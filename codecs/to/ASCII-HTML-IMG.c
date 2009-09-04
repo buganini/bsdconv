@@ -8,23 +8,23 @@
 void callback(struct bsdconv_instance *ins){
 	unsigned char *data, *p, buf[128]={0};
 	unsigned int len, i;
-	data=ins->to_data->data;
+	data=ins->phase[ins->phasen-1].data->data;
 	switch(*data){
 		case 0x01:
 		case 0x02:
 			break;
 		default:
-			ins->to_state.status=DEADEND;
+			ins->phase[ins->phasen].state.status=DEADEND;
 			return;
 	}
-	ins->to_state.status=NEXTPHASE;
+	ins->phase[ins->phasen].state.status=NEXTPHASE;
 	p=buf;
 	i=*data;
 	data+=1;
-	len=ins->to_data->len-1;
-	ins->out_data_tail->next=malloc(sizeof(struct data_s));
-	ins->out_data_tail=ins->out_data_tail->next;
-	ins->out_data_tail->next=NULL;
+	len=ins->phase[ins->phasen-1].data->len-1;
+	ins->phase[ins->phasen].data_tail->next=malloc(sizeof(struct data_s));
+	ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_tail->next;
+	ins->phase[ins->phasen].data_tail->next=NULL;
 	switch(i){
 		case 0x01:
 			sprintf(p,"<img class=\"unicode_img\" src=\"http://www.unicode.org/cgi-bin/refglyph?24-");
@@ -36,9 +36,9 @@ void callback(struct bsdconv_instance *ins){
 			sprintf(p, "\" />");
 			TAILIZE(p);
 			len=p-buf;
-			ins->out_data_tail->len=len;
-			ins->out_data_tail->data=malloc(len);
-			memcpy(ins->out_data_tail->data, buf, len);
+			ins->phase[ins->phasen].data_tail->len=len;
+			ins->phase[ins->phasen].data_tail->data=malloc(len);
+			memcpy(ins->phase[ins->phasen].data_tail->data, buf, len);
 			break;
 	}
 	return;
