@@ -8,18 +8,20 @@
 void callback(struct bsdconv_instance *ins){
 	unsigned char *data, *p, buf[16]={0};
 	unsigned int len, i;
-	data=ins->phase[ins->phasen-1].data->data;
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phasen];
+	struct bsdconv_phase *prev_phase=&ins->phase[ins->phasen-1];
+	data=prev_phase->data->data;
 	if(*data!=0x01){
-		ins->phase[ins->phasen].state.status=DEADEND;
+		this_phase->state.status=DEADEND;
 		return;
 	}
-	ins->phase[ins->phasen].state.status=NEXTPHASE;
+	this_phase->state.status=NEXTPHASE;
 	data+=1;
-	len=ins->phase[ins->phasen-1].data->len-1;
+	len=prev_phase->data->len-1;
 
-	ins->phase[ins->phasen].data_tail->next=malloc(sizeof(struct data_s));
-	ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_tail->next;
-	ins->phase[ins->phasen].data_tail->next=NULL;
+	this_phase->data_tail->next=malloc(sizeof(struct data_s));
+	this_phase->data_tail=this_phase->data_tail->next;
+	this_phase->data_tail->next=NULL;
 
 	p=buf;
 	sprintf(p,"&#x%X",data[0]);
@@ -30,7 +32,7 @@ void callback(struct bsdconv_instance *ins){
 	TAILIZE(p);
 	*p=';';
 	len=strlen(buf);
-	ins->phase[ins->phasen].data_tail->len=len;
-	ins->phase[ins->phasen].data_tail->data=malloc(len);
-	memcpy(ins->phase[ins->phasen].data_tail->data, buf, len);
+	this_phase->data_tail->len=len;
+	this_phase->data_tail->data=malloc(len);
+	memcpy(this_phase->data_tail->data, buf, len);
 }

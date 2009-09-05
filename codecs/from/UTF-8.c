@@ -31,33 +31,34 @@ void cbdestroy(void *p){
 }
 
 #define CONTINUE() do{	\
-	ins->phase[0].state.status=CONTINUE;	\
+	this_phase->state.status=CONTINUE;	\
 	return;	\
 }while(0);
 
 #define DEADEND() do{	\
-	ins->phase[0].state.status=DEADEND;	\
+	this_phase->state.status=DEADEND;	\
 	t->status=0;	\
 	return;	\
 }while(0);
 
 #define PASS() do{	\
-	ins->phase[0].state.status=NEXTPHASE;	\
+	this_phase->state.status=NEXTPHASE;	\
 	t->status=0;	\
 	return;	\
 }while(0);
 
 #define APPEND(n) do{	\
-	ins->phase[0].data_tail->next=malloc(sizeof(struct data_s));	\
-	ins->phase[0].data_tail=ins->phase[0].data_tail->next;	\
-	ins->phase[0].data_tail->next=NULL;	\
-	ins->phase[0].data_tail->len=n;	\
-	p=ins->phase[0].data_tail->data=malloc(n);	\
+	this_phase->data_tail->next=malloc(sizeof(struct data_s));	\
+	this_phase->data_tail=this_phase->data_tail->next;	\
+	this_phase->data_tail->next=NULL;	\
+	this_phase->data_tail->len=n;	\
+	p=this_phase->data_tail->data=malloc(n);	\
 	p[0]=0x01;	\
 }while(0);
 
 void callback(struct bsdconv_instance *ins){
-	struct my_s *t=ins->phase[0].codec[ins->phase[0].index].priv;
+	struct bsdconv_phase *this_phase=&ins->phase[0];
+	struct my_s *t=this_phase->codec[this_phase->index].priv;
 	unsigned char d=*ins->from_data, *p;
 	switch(t->status){
 		case 0:
