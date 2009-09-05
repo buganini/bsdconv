@@ -229,7 +229,7 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 
 int bsdconv(struct bsdconv_instance *ins){
 	uintptr_t i;
-	int phase_index=0;
+	int phase_index;
 	struct data_s *data_ptr;
 	unsigned char *ptr;
 
