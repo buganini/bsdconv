@@ -30,7 +30,11 @@ void callback(struct bsdconv_instance *ins){
 	switch(i){
 		case 0x01:
 			sprintf(p,"<img class=\"unicode_img\" src=\"http://www.unicode.org/cgi-bin/refglyph?24-");
-			for(i=0;i<len;i++){
+			TAILIZE(p);
+			if(0<len){
+				sprintf(p,"%X", data[0]);
+			}
+			for(i=1;i<len;i++){
 				TAILIZE(p);
 				sprintf(p,"%02X", data[i]);
 			}
