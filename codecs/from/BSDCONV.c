@@ -34,18 +34,19 @@ void cbclear(void *p){
 int hex[256]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,1,2,3,4,5,6,7,8,9,-1,-1,-1,-1,-1,-1,-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 
 void callback(struct bsdconv_instance *ins){
-	struct my_s *t=ins->phase[0].codec[ins->phase[0].index].priv;
+	struct bsdconv_phase this_phase=&ins->phase[0];
+	struct my_s *t=this_phase->codec[this_phase->index].priv;
 	unsigned char d=*ins->from_data;
 	if(hex[d]==-1){
-		ins->phase[0].state.status=DEADEND;
+		this_phase->state.status=DEADEND;
 		t->flag=F_CLEAR;
 	}else{
 		if(t->flag==F_CLEAR){
 			t->flag=F_A;
 			t->data.len=0;
 		}
-		ins->phase[0].state.status=SUBMATCH;
-		ins->phase[0].state.data=&(t->data);
+		this_phase->state.status=SUBMATCH;
+		this_phase->state.data=&(t->data);
 		switch(t->flag){
 			case F_A:
 				if(t->data.len >= t->size){
