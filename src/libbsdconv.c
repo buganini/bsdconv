@@ -237,28 +237,10 @@ int bsdconv(struct bsdconv_instance *ins){
 		case BSDCONV_BB:
 			ins->back_len=0;
 			if(ins->phase[ins->phasen].data_head->next) goto bb_out;
-			for(phase_index=ins->phasen-1;phase_index>=0;--phase_index){
-				if(ins->phase[phase_index].data->next){
-					if(phase_index==ins->phasen-1){
-						goto phase_to;
-					}else{
-						phase_index++;
-						goto phase_inter;
-					}
-				}
-			}
+			check_leftovers();
 			break;
 		case BSDCONV_BC:
-			for(phase_index=ins->phasen-1;phase_index>=0;--phase_index){
-				if(ins->phase[phase_index].data->next){
-					if(phase_index==ins->phasen-1){
-						goto phase_to;
-					}else{
-						phase_index++;
-						goto phase_inter;
-					}
-				}
-			}
+			check_leftovers();
 			break;
 		case BSDCONV_CB:
 			ins->back_len=0;
