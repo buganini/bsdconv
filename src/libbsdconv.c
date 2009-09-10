@@ -399,7 +399,7 @@ int bsdconv(struct bsdconv_instance *ins){
 					if(ins->phase[phase_index-1].data_tail==data_ptr){
 						ins->phase[phase_index-1].data_tail=ins->phase[phase_index-1].data_head;
 					}
-					ins->phase[phase_index].bak=ins->phase[phase_index-1].data=ins->phase[phase_index-1].data_head;
+					ins->phase[phase_index-1].data=ins->phase[phase_index-1].data_head;
 
 					RESET(phase_index);
 
@@ -408,9 +408,9 @@ int bsdconv(struct bsdconv_instance *ins){
 				}
 				break;
 			case MATCH:
-				ins->phase[phase_index-1].data=ins->phase[phase_index].bak=ins->phase[phase_index-1].data->next;
+				ins->phase[phase_index-1].data=ins->phase[phase_index-1].data->next;
 				listcpy(phase_index, ins->phase[phase_index].state.data, ins->phase[phase_index].codec[ins->phase[phase_index].index].data_z);
-				listfree(phase_index-1,ins->phase[phase_index].bak);
+				listfree(phase_index-1,ins->phase[phase_index-1].data);
 				ins->phase[phase_index].pend=0;
 				ins->phase[phase_index].match=NULL;
 
