@@ -219,9 +219,9 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 			if(phase_index==0){	\
 				goto pass_to_inter;	\
 			}else if(phase_index==ins->phasen){	\
-				goto pass_to_to;	\
-			}else{	\
 				goto pass_to_out;	\
+			}else{	\
+				goto pass_to_to;	\
 			}	\
 		}	\
 	}	\
@@ -396,6 +396,7 @@ int bsdconv(struct bsdconv_instance *ins){
 					ins->phase[phase_index-1].data=ins->phase[phase_index-1].data_head;
 					data_ptr->next=NULL;
 					ins->phase[phase_index].data_tail->next=data_ptr;
+					ins->phase[phase_index].data_tail=data_ptr;
 					if(ins->phase[phase_index-1].data_tail==data_ptr){
 						ins->phase[phase_index-1].data_tail=ins->phase[phase_index-1].data_head;
 					}
@@ -426,6 +427,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				ins->phase[phase_index].pend=1;
 				break;
 			case NEXTPHASE:
+				RESET(phase_index);
 				++phase_index;
 				goto phase_inter;
 				break;
