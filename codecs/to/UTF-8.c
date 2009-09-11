@@ -81,8 +81,8 @@ void callback(struct bsdconv_instance *ins){
 		case 3:
 			switch(*data & bb11100000){
 				case 0:
-					ins->phase[ins->phasen].data_tail->len=3;
-					ins->phase[ins->phasen].data_tail->data=malloc(3);
+					ins->phase[ins->phasen].data_tail->len=4;
+					ins->phase[ins->phasen].data_tail->data=malloc(4);
 					p=ins->phase[ins->phasen].data_tail->data;
 					*p=bb11110000;
 					*p |= (*data >> 2) & bb00000111;
