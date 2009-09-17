@@ -12,3 +12,6 @@ to/UCS-4LE	to/UTF-32LE
 to/UTF-32	to/UTF-32LE
 to/UTF-16	to/UTF-16LE
 to/UCS-2	to/UCS-2LE
+from/UCS-2	from/UTF-16LE
+from/UCS-2BE	from/UTF-16BE
+from/UCS-2LE	from/UTF-16LE
