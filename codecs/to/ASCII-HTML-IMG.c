@@ -46,6 +46,24 @@ void callback(struct bsdconv_instance *ins){
 			this_phase->data_tail->data=malloc(len);
 			memcpy(this_phase->data_tail->data, buf, len);
 			break;
+		case 0x02:
+			sprintf(p,"<img class=\"cns11643_img\" src=\"http://www.cns11643.gov.tw/AIDB/png.do?page=");
+			TAILIZE(p);
+			sprintf(p,"%X", data[0]);
+			TAILIZE(p);
+			sprintf(p,"&code=");
+			for(i=1;i<len;i++){
+				TAILIZE(p);
+				sprintf(p,"%02X", data[i]);
+			}
+			TAILIZE(p);
+			sprintf(p, "\" />");
+			TAILIZE(p);
+			len=p-buf;
+			this_phase->data_tail->len=len;
+			this_phase->data_tail->data=malloc(len);
+			memcpy(this_phase->data_tail->data, buf, len);
+			break;
 	}
 	return;
 }
