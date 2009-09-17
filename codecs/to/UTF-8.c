@@ -18,6 +18,10 @@ void callback(struct bsdconv_instance *ins){
 	unsigned char *data, *p;
 	unsigned int len;
 	data=ins->phase[ins->phasen-1].data->data;
+	if(*data!=0x01){
+		ins->phase[ins->phasen].state.status=DEADEND;
+		return;
+	}
 
 	ins->phase[ins->phasen].state.status=NEXTPHASE;
 	data+=1;
