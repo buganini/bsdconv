@@ -21,10 +21,15 @@ bsdconv:
 bsdconv_mktable:
 	$(CC) ${CFLAGS} src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
 
-codecs: bsdconv_mktable
+codecs_table: bsdconv_mktable
 	cd codecs && \
-	find */*.txt -type f | awk -F. '{cmd="../build/bin/bsdconv_mktable "$$1"."$$2" ../build/share/bsdconv/"$$1; system(cmd);}' && \
+	find */*.txt -type f | awk -F. '{cmd="../build/bin/bsdconv_mktable "$$1"."$$2" ../build/share/bsdconv/"$$1; system(cmd);}'
+
+codecs_callback:
+	cd codecs && \
 	find */*.c -type f | awk -F. '{cmd="gcc ${CFLAGS} -fPIC -shared -o ../build/share/bsdconv/"$$1".so "$$1"."$$2; system(cmd);}'
+
+codecs: codecs_table codecs_callback
 
 meta:
 	ln -sf libbsdconv.so.${SHLIBVER} build/lib/libbsdconv.so
