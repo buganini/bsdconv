@@ -63,9 +63,7 @@ void callback(struct bsdconv_instance *ins){
 	switch(t->status){
 		case 0:
 			if((d & bb10000000) == 0){
-				APPEND(2);
-				p[1]=d;
-				PASS();
+				DEADEND();
 			}else if((d & bb11100000) == bb11000000){
 				t->status=21;
 				t->buf[0]=(d >> 2) & bb00000111;

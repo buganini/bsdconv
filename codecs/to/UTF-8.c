@@ -27,29 +27,25 @@ void callback(struct bsdconv_instance *ins){
 	data+=1;
 	len=ins->phase[ins->phasen-1].data->len-1;
 
+	if(len==1 && (*data & bb10000000)==0){
+		ins->phase[ins->phasen].state.status=DEADEND;
+		return;
+	}
+
 	ins->phase[ins->phasen].data_tail->next=malloc(sizeof(struct data_s));
 	ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_tail->next;
 	ins->phase[ins->phasen].data_tail->next=NULL;
 
 	switch(len){
 		case 1:
-			switch(*data & bb10000000){
-				case 0:
-					ins->phase[ins->phasen].data_tail->len=1;
-					ins->phase[ins->phasen].data_tail->data=malloc(1);
-					*(ins->phase[ins->phasen].data_tail->data)=*data;
-					break;
-				default:
-					ins->phase[ins->phasen].data_tail->len=2;
-					ins->phase[ins->phasen].data_tail->data=malloc(2);
-					p=ins->phase[ins->phasen].data_tail->data;
-					*p=bb11000000;
-					*p |= (*data >> 6) & bb00000011;
-					++p;
-					*p=bb10000000;
-					*p |= *data & bb00111111;
-					break;
-			}
+			ins->phase[ins->phasen].data_tail->len=2;
+			ins->phase[ins->phasen].data_tail->data=malloc(2);
+			p=ins->phase[ins->phasen].data_tail->data;
+			*p=bb11000000;
+			*p |= (*data >> 6) & bb00000011;
+			++p;
+			*p=bb10000000;
+			*p |= *data & bb00111111;
 			break;
 		case 2:
 			switch(*data & bb11111000){
