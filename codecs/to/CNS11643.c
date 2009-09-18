@@ -29,6 +29,8 @@ void cbdestroy(void *p){
 	free(p);
 }
 
+#define bb10000000 0x80
+
 void callback(struct bsdconv_instance *ins){
 	unsigned char *data;
 	unsigned int len;
@@ -40,6 +42,10 @@ void callback(struct bsdconv_instance *ins){
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
 	data=ins->phase[ins->phasen-1].data->data;
 
+	if(ins->phase[ins->phasen-1].data->len==2 && (data[1] & bb10000000)==0){
+		this_phase->state.status=DEADEND;
+		return;
+	}
 	switch(*data){
 		case 0x01:
 			memcpy(&state, t->z, sizeof(struct state_s));
