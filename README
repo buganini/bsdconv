@@ -7,6 +7,10 @@ Internal encoding:
 * UNICODE is prefixed with 01
 * CNS11643 is prefixed with 02
 
+NOTICE:
+Though many charset encoding is ascii-compatible,
+ ascii is excluded from their codecs to provide flexibility.
+
 --
 Compiling & Installation (FreeBSD):
 make
