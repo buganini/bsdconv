@@ -43,7 +43,7 @@ void callback(struct bsdconv_instance *ins){
 	switch(*data){
 		case 0x01:
 			memcpy(&state, t->z, sizeof(struct state_s));
-			for(i=0;i<4;++i){
+			for(i=0;i<ins->phase[ins->phasen-1].data->len;++i){
 				memcpy(&state, t->z + (uintptr_t)state.sub[data[i]], sizeof(struct state_s));
 				if(state.status==DEADEND){
 					break;
