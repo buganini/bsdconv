@@ -21,6 +21,8 @@ Convert big5 data, traditional chinese to simplified chinese,
 CRLF/CR/LF to CRLF, to big5 data, translate simplified chinese words, which are
 not in big5, to HTML entities
 > bsdconv big5,ascii:chs,win:cp950,ascii,iso-8859-1,htmlentity in.txt out.txt
+If you prefer to use glyph image from CNS11643, use inter map "CNS11643" the
+ transform interencoding to CNS11643 (prefixed with 02).
 
 More example:
 > ./build/bin/bsdconv big5,ascii:nl2br:ascii,image in.txt out.htm
