@@ -19,7 +19,7 @@ sudo make install
 --
 Run:
 Convert traditional chinese big5 to simplified chinese utf-8
-> bsdconv big5,ascii:chs:utf-8 in.txt out.txt
+> bsdconv big5,ascii:chs:utf-8,ascii in.txt out.txt
 
 Convert big5 data, traditional chinese to simplified chinese, 
 CRLF/CR/LF to CRLF, to big5 data, translate simplified chinese words, which are
@@ -30,12 +30,12 @@ More example:
 > bsdconv big5,ascii:nl2br:ascii,html-img in.txt out.htm
 #html-img is actually ASCII-HTML-UNICODE-IMG
 
-> bsdconv utf-8:ascii,ascii-html-cns11643-img in.txt out.htm
+> bsdconv ascii,utf-8:ascii,ascii-html-cns11643-img in.txt out.htm
 #if you prefer to use glyph image from http://www.cns11643.gov.tw
 
 Maintain inter map:
-> bsdconv bsdconv_keyword,bsdconv:bsdconv_keyword,utf-8 MAP.txt edit.tmp
+> bsdconv bsdconv_keyword,bsdconv:bsdconv_keyword,utf-8,ascii MAP.txt edit.tmp
 > vi edit.tmp
-> bsdconv bsdconv_keyword,utf-8:bsdconv_keyword,bsdconv edit.tmp MAP.txt
+> bsdconv bsdconv_keyword,ascii,utf-8:bsdconv_keyword,bsdconv edit.tmp MAP.txt
 
 
