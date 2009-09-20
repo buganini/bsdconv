@@ -12,8 +12,7 @@
 
 int loadcodec(struct bsdconv_codec_t *cd, char *path, int maponly){
 #ifdef WIN32
-	cd->fd=CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (!cd->fd){
+	if ((cd->fd=CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL))==INVALID_HANDLE_VALUE){
 		SetLastError(EOPNOTSUPP);
 		return 0;
 	}
