@@ -1,11 +1,17 @@
+#ifndef BSDCONV_H
+#define BSDCONV_H
+
 #include <unistd.h>
+#ifdef WIN32
+#include <windows.h>
+#endif
 
 enum bsdconv_status{
 	CONTINUE,
 	DEADEND,
 	MATCH,
 	SUBMATCH,
-	CALLBACK,
+	SUBROUTINE,
 	NEXTPHASE,
 };
 
@@ -59,18 +65,33 @@ struct bsdconv_phase{
 };
 
 struct bsdconv_codec_t {
-	char *desc;
+#ifdef WIN32
+	HANDLE fd;
+	HANDLE md;
+	HMODULE dl;
+#else
 	int fd;
-	unsigned char *z;
-	unsigned char *data_z;
 	size_t maplen;
 	void *dl;
+#endif
+	unsigned char *z;
+	unsigned char *data_z;
+	char *desc;
 	void (*callback)(struct bsdconv_instance *);
 	void *(*cbcreate)(void);
 	void (*cbinit)(struct bsdconv_codec_t *, void *);
 	void (*cbdestroy)(void *);
 	void *priv;
 };
+
+#ifdef WIN32
+#define EOPNOTSUPP ERROR_NOT_SUPPORTED
+#define SHLIBEXT "dll"
+#else
+#define SetLastError(n) errno=n
+#define GetLastError() errno
+#define SHLIBEXT "so"
+#endif
 
 #define listcpy(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
 	ins->phase[X].data_tail->next=malloc(sizeof(struct data_s));	\
@@ -98,3 +119,8 @@ void bsdconv_init(struct bsdconv_instance *);
 void bsdconv_destroy(struct bsdconv_instance *);
 int bsdconv(struct bsdconv_instance *);
 char * bsdconv_error(void);
+
+int loadcodec(struct bsdconv_codec_t *, char *);
+void unloadcodec(struct bsdconv_codec_t *);
+
+#endif
