@@ -84,13 +84,21 @@ struct bsdconv_codec_t {
 	void *priv;
 };
 
+#define PATH_BUF_SIZE 512
+
 #ifdef WIN32
 #define EOPNOTSUPP ERROR_NOT_SUPPORTED
+#define ENOMEM ERROR_NOT_ENOUGH_MEMORY
+#define EINVAL ERROR_BAD_COMMAND
 #define SHLIBEXT "dll"
+#define REALPATH(buf, path) GetFullPathName(buf, PATH_BUF_SIZE, path, NULL)
+char * strsep(char **, const char *);
+char * index(const char *, int);
 #else
 #define SetLastError(n) errno=n
 #define GetLastError() errno
 #define SHLIBEXT "so"
+#define REALPATH(buf, path) realpath(buf, path)
 #endif
 
 #define listcpy(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
