@@ -1,0 +1,36 @@
+PREFIX?=C:/bsdconv
+CFLAGS+=-Wall -DPREFIX='"${PREFIX}"'
+SHLIBVER=3
+CC=mingw32-gcc
+
+all: builddir libbsdconv bsdconv_mktable bsdconv codecs
+
+builddir:
+	mkdir -p build/bin
+	mkdir -p build/lib
+	mkdir -p build/include
+	mkdir -p build/share/bsdconv/from
+	mkdir -p build/share/bsdconv/inter
+	mkdir -p build/share/bsdconv/to
+
+libbsdconv:
+	$(CC) ${CFLAGS} src/libbsdconv.c -fPIC -shared -o build/lib/libbsdconv.${SHLIBVER}.dll
+
+bsdconv:
+	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv.c -o build/bin/bsdconv
+
+bsdconv_mktable:
+	$(CC) ${CFLAGS} src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
+
+codecs_table: bsdconv_mktable
+	cd codecs && \
+	find */*.txt -type f | awk -F. '{cmd="bsdconv_mktable "$$1"."$$2" build/share/bsdconv/"$$1; print(cmd);}' > ../mk_table.bat
+
+codecs_callback:
+	cd codecs && \
+	find */*.c -type f | awk -F. '{cmd="$(CC) ${CFLAGS} -fPIC -shared -o ../build/share/bsdconv/"$$1".dll "$$1"."$$2; system(cmd);}'
+
+codecs: codecs_table codecs_callback
+
+clean:
+	rm -rf build

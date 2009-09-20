@@ -1,12 +1,8 @@
-#include <dlfcn.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <fcntl.h>
 #include <sys/param.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
 #include <stdint.h>
 #include <string.h>
 #include <ctype.h>
@@ -64,7 +60,6 @@ void bsdconv_init(struct bsdconv_instance *ins){
 
 struct bsdconv_instance *bsdconv_create(const char *conversion){
 	struct bsdconv_instance *ins=malloc(sizeof(struct bsdconv_instance));
-	struct stat stat;
 	char *t;
 	int i, j, brk;
 	char buf[64], path[512];
@@ -74,7 +69,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 		if(*t==':')++i;
 	}
 	if(i<2){
-		errno=EINVAL;
+		SetLastError(EINVAL);
 		return NULL;
 	}
 
@@ -102,7 +97,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 		}
 		ins->phase[i].codecn=npipe[i];
 		if(npipe[i]==0){
-			errno=EINVAL;
+			SetLastError(EINVAL);
 			return NULL;
 		}
 	}
@@ -129,26 +124,8 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 				*t=0;
 				strcpy(buf, ins->phase[i].codec[j].desc);
 				realpath(buf, path);
-				if((ins->phase[i].codec[j].fd=open(path, O_RDONLY))==-1){
-					errno=EOPNOTSUPP;
+				if(!loadcodec(&ins->phase[i].codec[j], path)){
 					return NULL;
-				}
-				fstat(ins->phase[i].codec[j].fd, &stat);
-				ins->phase[i].codec[j].maplen=stat.st_size;
-				if((ins->phase[i].codec[j].data_z=ins->phase[i].codec[j].z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,ins->phase[i].codec[j].fd,0))==MAP_FAILED){
-					errno=ENOMEM;
-					return NULL;
-				}
-				strcat(path, ".so");
-				ins->phase[i].codec[j].cbcreate=NULL;
-				ins->phase[i].codec[j].cbinit=NULL;
-				ins->phase[i].codec[j].callback=NULL;
-				ins->phase[i].codec[j].cbdestroy=NULL;
-				if((ins->phase[i].codec[j].dl=dlopen(path, RTLD_LAZY))){
-					ins->phase[i].codec[j].callback=dlsym(ins->phase[i].codec[j].dl,"callback");
-					ins->phase[i].codec[j].cbcreate=dlsym(ins->phase[i].codec[j].dl,"cbcreate");
-					ins->phase[i].codec[j].cbinit=dlsym(ins->phase[i].codec[j].dl,"cbinit");
-					ins->phase[i].codec[j].cbdestroy=dlsym(ins->phase[i].codec[j].dl,"cbdestroy");
 				}
 				if(j+1 < ins->phase[i].codecn){
 					ins->phase[i].codec[++j].desc=t+1;
@@ -184,11 +161,7 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 			if(ins->phase[i].codec[j].cbdestroy){
 				ins->phase[i].codec[j].cbdestroy(ins->phase[i].codec[j].priv);
 			}
-			if(ins->phase[i].codec[j].dl){
-				dlclose(ins->phase[i].codec[j].dl);
-			}
-			munmap(ins->phase[i].codec[j].z, ins->phase[i].codec[j].maplen);
-			close(ins->phase[i].codec[j].fd);
+			unloadcodec(&ins->phase[i].codec[j]);
 		}
 		while(ins->phase[i].data_head){
 			data_ptr=ins->phase[i].data_head;
@@ -338,7 +311,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				ins->from_bak=ins->from_data;
 				ins->phase[0].pend=1;
 				break;
-			case CALLBACK:
+			case SUBROUTINE:
 				ins->phase[0].codec[ins->phase[0].index].callback(ins);
 				goto from_x;
 			case NEXTPHASE:
@@ -451,7 +424,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				case DEADEND:
 					goto pass_to_out;
 					break;
-				case CALLBACK:
+				case SUBROUTINE:
 					goto to_callback;
 					break;
 			}
@@ -500,7 +473,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				ins->phase[ins->phasen].bak=ins->phase[ins->phasen-1].data->next;
 				ins->phase[ins->phasen].pend=1;
 				break;
-			case CALLBACK:
+			case SUBROUTINE:
 				to_callback:
 				ins->phase[ins->phasen].codec[ins->phase[ins->phasen].index].callback(ins);
 				goto to_x;
@@ -684,7 +657,7 @@ int bsdconv(struct bsdconv_instance *ins){
 }
 
 char * bsdconv_error(void){
-	switch(errno){
+	switch(GetLastError()){
 		case EOPNOTSUPP:
 				return strdup("Unsupported charset/encoding");
 		case ENOMEM:

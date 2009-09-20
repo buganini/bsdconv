@@ -268,7 +268,7 @@ int main(int argc, char *argv[]){
 			if(!callback){
 				state_t->n=(struct m_state_s *)malloc(sizeof(struct m_state_s));
 				state_t=state_t->n;
-				state_t->status=CALLBACK;
+				state_t->status=SUBROUTINE;
 				state_t->data=0;
 				state_t->p=offset;
 				state_t->n=NULL;
