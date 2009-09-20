@@ -124,7 +124,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 				*t=0;
 				strcpy(buf, ins->phase[i].codec[j].desc);
 				realpath(buf, path);
-				if(!loadcodec(&ins->phase[i].codec[j], path)){
+				if(!loadcodec(&ins->phase[i].codec[j], path, 0)){
 					return NULL;
 				}
 				if(j+1 < ins->phase[i].codecn){

@@ -9,26 +9,18 @@
 
 #define TAILIZE(p) while(*p){ p++ ;}
 
-struct my_s{
-	int fd;
-	unsigned char *z;
-	size_t maplen;
-};
-
 void *cbcreate(void){
-	struct stat stat;
-	struct my_s *r=malloc(sizeof(struct my_s));
-	r->fd=open("inter/CNS11643", O_RDONLY);
-	fstat(r->fd, &stat);
-	r->maplen=stat.st_size;
-	r->z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,r->fd,0);
-	return r;
+	struct bsdconv_codec_t *cd=malloc(sizeof(struct bsdconv_codec_t));
+	if(!loadcodec(cd, "inter/CNS11643", 1)){
+		free(cd);
+		return NULL;
+	}
+	return cd;
 }
 
 void cbdestroy(void *p){
-	struct my_s *r=p;
-	munmap(r->z, r->maplen);
-	close(r->fd);
+	struct bsdconv_codec_t *cd=p;
+	unloadcodec(cd);
 	free(p);
 }
 
@@ -41,7 +33,7 @@ void callback(struct bsdconv_instance *ins){
 	struct state_s state;
 	struct data_s *data_ptr, *orig_next, *my_tail;
 	unsigned char *ptr;
-	struct my_s *t=this_phase->codec[this_phase->index].priv;
+	struct bsdconv_codec_t *t=this_phase->codec[this_phase->index].priv;
 	switch(*data){
 		case 0x01:
 			memcpy(&state, t->z, sizeof(struct state_s));
