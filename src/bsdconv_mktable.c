@@ -1,10 +1,14 @@
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <sys/stat.h>
+#include <sys/mman.h>
+#endif
+#include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/mman.h>
 #include <stdint.h>
 #include <string.h>
 #include "bsdconv.h"
@@ -55,6 +59,10 @@ int main(int argc, char *argv[]){
 	struct data_s ddata;
 	uintptr_t callback=0;
 	void *tofree;
+#ifdef WIN32
+	HANDLE fd;
+	HANDLE md;
+#endif
 
 	table['0']=0;
 	table['1']=1;
@@ -394,8 +402,15 @@ int main(int argc, char *argv[]){
 	fclose(fp);
 	k=open(argv[2], O_RDWR|O_CREAT|O_TRUNC, 0644);
 	ftruncate(k,offset);
-	printf("Total size: %u\n", (unsigned int)offset);
+#ifdef WIN32
+	close(k);
+	fd=CreateFile(argv[2], GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	md=CreateFileMapping(fd, NULL, PAGE_READWRITE, 0,0, NULL);
+	tmp=MapViewOfFile(md, FILE_MAP_READ|FILE_MAP_WRITE, 0,0,0);
+#else
 	tmp=mmap(0,offset,PROT_READ|PROT_WRITE,MAP_SHARED,k,0);
+#endif
+	printf("Total size: %u\n", (unsigned int)offset);
 	state_t=state_r;
 	while(state_t){
 		dstate.status=state_t->status;
@@ -419,7 +434,13 @@ int main(int argc, char *argv[]){
 		data_t=data_t->n;
 		free(tofree);
 	}
+#ifdef WIN32
+	UnmapViewOfFile(tmp);
+	CloseHandle(md);
+	CloseHandle(fd);
+#else
 	munmap(tmp,offset);
 	close(k);
+#endif
 	return 0;
 }

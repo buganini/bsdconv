@@ -14,21 +14,21 @@ builddir:
 	mkdir -p build/share/bsdconv/to
 
 libbsdconv:
-	$(CC) ${CFLAGS} src/bsdconv_func.c src/libbsdconv.c -fPIC -shared -o build/lib/libbsdconv.${SHLIBVER}.dll
+	$(CC) ${CFLAGS} src/bsdconv_func.c src/libbsdconv.c -shared -o build/lib/libbsdconv.${SHLIBVER}.dll
 
 bsdconv:
-	$(CC) ${CFLAGS} src/bsdconv_func.c src/libbsdconv.c src/bsdconv.c -o build/bin/bsdconv
+	$(CC) ${CFLAGS} src/bsdconv_func.c src/libbsdconv.c src/bsdconv.c -o build/bin/bsdconv.exe
 
 bsdconv_mktable:
-	$(CC) ${CFLAGS} src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
+	$(CC) ${CFLAGS} src/bsdconv_func.c src/bsdconv_mktable.c -o build/bin/bsdconv_mktable.exe
 
 codecs_table: bsdconv_mktable
 	cd codecs && \
-	find */*.txt -type f | awk -F. '{cmd="bsdconv_mktable "$$1"."$$2" build/share/bsdconv/"$$1; print(cmd);}' > ../mk_table.bat
+	find */*.txt -type f | awk -F. '{cmd="bin\\bsdconv_mktable ../codecs/"$$1"."$$2" share/bsdconv/"$$1; print(cmd);}' > ../build/mk_table.bat
 
 codecs_callback:
 	cd codecs && \
-	find */*.c -type f | awk -F. '{cmd="$(CC) ${CFLAGS} -fPIC -shared -o ../build/share/bsdconv/"$$1".dll ../src/bsdconv_func.c "$$1"."$$2; system(cmd);}'
+	find */*.c -type f | awk -F. '{cmd="$(CC) ${CFLAGS} -shared -o ../build/share/bsdconv/"$$1".dll ../src/bsdconv_func.c "$$1"."$$2; system(cmd);}'
 
 codecs: codecs_table codecs_callback
 

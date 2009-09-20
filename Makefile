@@ -19,7 +19,7 @@ bsdconv:
 	$(CC) ${CFLAGS} src/bsdconv_func.c src/libbsdconv.c src/bsdconv.c -o build/bin/bsdconv
 
 bsdconv_mktable:
-	$(CC) ${CFLAGS} src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
+	$(CC) ${CFLAGS} src/bsdconv_func.c src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
 
 codecs_table: bsdconv_mktable
 	cd codecs && \
