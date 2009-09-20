@@ -6,8 +6,10 @@
 #include <stdint.h>
 #include <string.h>
 #include <ctype.h>
-#include <errno.h>
 #include "bsdconv.h"
+#ifndef WIN32
+#include <errno.h>
+#endif
 
 #define RESET(X) do{	\
 	ins->phase[X].index=0;	\
@@ -62,7 +64,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	struct bsdconv_instance *ins=malloc(sizeof(struct bsdconv_instance));
 	char *t;
 	int i, j, brk;
-	char buf[64], path[512];
+	char buf[64], path[PATH_BUF_SIZE];
 
 	i=1;
 	for(t=(char *)conversion;*t;t++){
@@ -123,7 +125,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 				}
 				*t=0;
 				strcpy(buf, ins->phase[i].codec[j].desc);
-				realpath(buf, path);
+				REALPATH(buf, path);
 				if(!loadcodec(&ins->phase[i].codec[j], path, 0)){
 					return NULL;
 				}

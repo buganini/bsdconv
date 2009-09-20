@@ -87,3 +87,19 @@ void unloadcodec(struct bsdconv_codec_t *cd){
 	close(cd->fd);
 #endif
 }
+
+#ifdef WIN32
+char * strsep(char **stringp, const char *delim){
+	char *r=*stringp;
+	while(!index(delim, **stringp)){
+		(*stringp)++;
+	}
+	**stringp=0x0;
+	(*stringp)++;
+	return r;
+}
+char * index(const char *s, int c){
+	for(;*s && *s!=c;s++);
+	return s;
+}
+#endif
