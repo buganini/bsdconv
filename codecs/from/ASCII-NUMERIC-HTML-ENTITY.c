@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include "../../src/bsdconv.h"
 #ifdef WIN32
-#include <Winsock2.h>
+#include <winsock2.h>
 #else
 #include <netinet/in.h>
 #endif
