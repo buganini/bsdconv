@@ -3,7 +3,7 @@ CFLAGS+=-Wall -DPREFIX='"${PREFIX}"'
 SHLIBVER=3
 CC=mingw32-gcc
 
-all: builddir libbsdconv bsdconv_mktable bsdconv codecs
+all: builddir libbsdconv bsdconv_mktable bsdconv codecs meta
 
 builddir:
 	mkdir -p build/bin
@@ -31,6 +31,9 @@ codecs_callback:
 	find */*.c -type f | awk -F. '{cmd="$(CC) ${CFLAGS} -shared -o ../build/share/bsdconv/"$$1".dll ../src/bsdconv_func.c "$$1"."$$2" -lwsock32"; system(cmd);}'
 
 codecs: codecs_table codecs_callback
+
+meta:
+	cp src/bsdconv.h build/include
 
 clean:
 	rm -rf build
