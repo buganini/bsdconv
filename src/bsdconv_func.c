@@ -12,7 +12,7 @@
 
 int loadcodec(struct bsdconv_codec_t *cd, char *path, int maponly){
 #ifdef WIN32
-	cd->fd=CreateFile(path, GENERIC_READ, FILE_SHARE_READ,  NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	cd->fd=CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (!cd->fd){
 		SetLastError(EOPNOTSUPP);
 		return 0;
@@ -91,15 +91,15 @@ void unloadcodec(struct bsdconv_codec_t *cd){
 #ifdef WIN32
 char * strsep(char **stringp, const char *delim){
 	char *r=*stringp;
-	while(!index(delim, **stringp)){
-		(*stringp)++;
-	}
+	if(!**stringp) return NULL;
+	for(;**stringp && !index(delim, **stringp);++(*stringp));
 	**stringp=0x0;
 	(*stringp)++;
 	return r;
 }
 char * index(const char *s, int c){
-	for(;*s && *s!=c;s++);
-	return s;
+	for(;*s && *s!=c;++s);
+	if(*s) return s;
+	return NULL;
 }
 #endif
