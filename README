@@ -38,4 +38,8 @@ Maintain inter map:
 > vi edit.tmp
 > bsdconv bsdconv_keyword,ascii,utf-8:bsdconv_keyword,bsdconv edit.tmp MAP.txt
 
-
+--
+WINDOWS:
+Latest build could be found at http://security-hole.info/distfile/win32/bsdconv.tar.gz
+Download and extract it, then goto build/ and run mk_table.bat
+then copy everythings in build/ to c:\bsdconv\
