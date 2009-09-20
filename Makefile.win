@@ -28,7 +28,7 @@ codecs_table: bsdconv_mktable
 
 codecs_callback:
 	cd codecs && \
-	find */*.c -type f | awk -F. '{cmd="$(CC) ${CFLAGS} -shared -o ../build/share/bsdconv/"$$1".dll ../src/bsdconv_func.c "$$1"."$$2; system(cmd);}'
+	find */*.c -type f | awk -F. '{cmd="$(CC) ${CFLAGS} -shared -o ../build/share/bsdconv/"$$1".dll ../src/bsdconv_func.c "$$1"."$$2" -lwsock32"; system(cmd);}'
 
 codecs: codecs_table codecs_callback
 
