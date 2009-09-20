@@ -120,7 +120,7 @@ void bsdconv_destroy(struct bsdconv_instance *);
 int bsdconv(struct bsdconv_instance *);
 char * bsdconv_error(void);
 
-int loadcodec(struct bsdconv_codec_t *, char *);
+int loadcodec(struct bsdconv_codec_t *, char *, int);
 void unloadcodec(struct bsdconv_codec_t *);
 
 #endif

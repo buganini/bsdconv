@@ -10,7 +10,7 @@
 #include <string.h>
 #include "bsdconv.h"
 
-int loadcodec(struct bsdconv_codec_t *cd, char *path){
+int loadcodec(struct bsdconv_codec_t *cd, char *path, int maponly){
 #ifdef WIN32
 	cd->fd=CreateFile(path, GENERIC_READ, FILE_SHARE_READ,  NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (!cd->fd){
@@ -44,11 +44,14 @@ int loadcodec(struct bsdconv_codec_t *cd, char *path){
 		return 0;
 	}
 #endif
-	strcat(path, "." SHLIBEXT);
+
+	cd->dl=NULL;
 	cd->cbcreate=NULL;
 	cd->cbinit=NULL;
 	cd->callback=NULL;
 	cd->cbdestroy=NULL;
+	if(maponly) return 1;
+	strcat(path, "." SHLIBEXT);
 
 #ifdef WIN32
 	if((cd->dl=LoadLibrary(path))){

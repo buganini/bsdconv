@@ -10,18 +10,15 @@
 struct my_s{
 	int status;
 	unsigned char plane, buf[4];
-	int fd;
-	unsigned char *z;
-	size_t maplen;
+	struct bsdconv_codec_t cd;
 };
 
 void *cbcreate(void){
-	struct stat stat;
 	struct my_s *r=malloc(sizeof(struct my_s));
-	r->fd=open("inter/UNICODE", O_RDONLY);
-	fstat(r->fd, &stat);
-	r->maplen=stat.st_size;
-	r->z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,r->fd,0);
+	if(!loadcodec(&r->cd, "inter/UNICODE", 1)){
+		free(r);
+		return NULL;
+	}
 	return r;
 }
 
@@ -32,8 +29,7 @@ void cbinit(struct bsdconv_codec_t *cdc, struct my_s *r){
 
 void cbdestroy(void *p){
 	struct my_s *r=p;
-	munmap(r->z, r->maplen);
-	close(r->fd);
+	unloadcodec(&r->cd);
 	free(p);
 }
 
@@ -66,9 +62,9 @@ void callback(struct bsdconv_instance *ins){
 		case 1:
 			t->status=0;
 			t->buf[3]=d;
-			memcpy(&state, t->z, sizeof(struct state_s));
+			memcpy(&state, t->cd.z, sizeof(struct state_s));
 			for(i=0;i<4;++i){
-				memcpy(&state, t->z + (uintptr_t)state.sub[t->buf[i]], sizeof(struct state_s));
+				memcpy(&state, t->cd.z + (uintptr_t)state.sub[t->buf[i]], sizeof(struct state_s));
 				if(state.status==DEADEND){
 					break;
 				}
@@ -77,7 +73,7 @@ void callback(struct bsdconv_instance *ins){
 			switch(state.status){
 				case MATCH:
 				case SUBMATCH:
-					listcpy(0, state.data, t->z);
+					listcpy(0, state.data, t->cd.z);
 					return;
 				default:
 					this_phase->data_tail->next=malloc(sizeof(struct data_s));
