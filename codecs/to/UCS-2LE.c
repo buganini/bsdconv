@@ -11,7 +11,7 @@ void callback(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phasen];
 	struct bsdconv_phase *prev_phase=&ins->phase[ins->phasen-1];
 	data=prev_phase->data->data;
-	if(*data!=0x01 || prev_phase->data->len > 3){
+	if(prev_phase->data->len > 3){
 		this_phase->state.status=DEADEND;
 		return;
 	}
