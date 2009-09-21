@@ -63,6 +63,9 @@ void callback(struct bsdconv_instance *ins){
 						my_tail->data=malloc(my_tail->len);
 						memcpy(my_tail->data, ptr, my_tail->len);
 					}
+					if(orig_next==NULL){
+						prev_phase->data_tail=my_tail;
+					}
 					data=prev_phase->data->data;
 					break;
 			}
