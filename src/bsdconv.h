@@ -52,7 +52,6 @@ struct bsdconv_instance{
 	int phasen, phase_index;
 	unsigned int ierr, oerr;
 	unsigned char *from_bak;
-
 };
 
 struct bsdconv_phase{
