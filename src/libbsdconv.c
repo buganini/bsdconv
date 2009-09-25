@@ -175,12 +175,12 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 }
 
 #define check_leftovers() do{	\
-	for(phase_index=ins->phasen-1;phase_index>=0;--phase_index){	\
-		if(ins->phase[phase_index].data->next){	\
-			if(phase_index==ins->phasen-1){	\
+	for(ins->phase_index=ins->phasen-1;ins->phase_index>=0;--ins->phase_index){	\
+		if(ins->phase[ins->phase_index].data->next){	\
+			if(ins->phase_index==ins->phasen-1){	\
 				goto phase_to;	\
 			}else{	\
-				phase_index++;	\
+				ins->phase_index++;	\
 				goto phase_inter;	\
 			}	\
 		}	\
@@ -189,11 +189,11 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 }while(0);
 
 #define check_pending() do{	\
-	for(phase_index=0;phase_index<=ins->phasen;++phase_index){	\
-		if(ins->phase[phase_index].pend){	\
-			if(phase_index==0){	\
+	for(ins->phase_index=0;ins->phase_index<=ins->phasen;++ins->phase_index){	\
+		if(ins->phase[ins->phase_index].pend){	\
+			if(ins->phase_index==0){	\
 				goto pass_to_inter;	\
-			}else if(phase_index==ins->phasen){	\
+			}else if(ins->phase_index==ins->phasen){	\
 				goto pass_to_out;	\
 			}else{	\
 				goto pass_to_to;	\
@@ -204,7 +204,6 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 
 int bsdconv(struct bsdconv_instance *ins){
 	uintptr_t i;
-	int phase_index;
 	struct data_s *data_ptr;
 	unsigned char *ptr;
 
@@ -236,12 +235,12 @@ int bsdconv(struct bsdconv_instance *ins){
 				}
 				return 0;
 			}else{
-				for(phase_index=ins->phasen-1;phase_index>=0;--phase_index){
-					if(ins->phase[phase_index].data->next){
-						if(phase_index==ins->phasen-1){
+				for(ins->phase_index=ins->phasen-1;ins->phase_index>=0;--ins->phase_index){
+					if(ins->phase[ins->phase_index].data->next){
+						if(ins->phase_index==ins->phasen-1){
 							goto phase_to;
 						}else{
-							phase_index++;
+							ins->phase_index++;
 							goto phase_inter;
 						}
 					}
@@ -279,7 +278,7 @@ int bsdconv(struct bsdconv_instance *ins){
 					RESET(0);
 
 					ins->from_data=ins->from_bak;
-					phase_index=1;
+					ins->phase_index=1;
 					goto phase_inter;
 				}else if(ins->phase[0].index < ins->phase[0].codecn){
 					ins->phase[0].index++;
@@ -305,7 +304,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				ins->phase[0].pend=0;
 				ins->phase[0].match=NULL;
 				RESET(0);
-				phase_index=1;
+				ins->phase_index=1;
 				goto phase_inter;
 			case SUBMATCH:
 				ins->phase[0].match=ins->phase[0].state.data;
@@ -321,7 +320,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				++ins->from_data;
 				ins->from_bak=ins->from_data;
 				ins->phase[0].pend=0;
-				phase_index=1;
+				ins->phase_index=1;
 				goto phase_inter;
 				break;
 			case CONTINUE:
@@ -332,88 +331,98 @@ int bsdconv(struct bsdconv_instance *ins){
 				++ins->from_data;
 		}
 	}
-	phase_index=1;
+	ins->phase_index=1;
 
 	//inter
 	phase_inter:
-	if(phase_index==ins->phasen){
+	if(ins->phase_index==ins->phasen){
 		goto phase_to;
 	}
-	while(ins->phase[phase_index-1].data->next){
-		ins->phase[phase_index-1].data=ins->phase[phase_index-1].data->next;
-		for(i=0;i<ins->phase[phase_index-1].data->len;i++){
-			memcpy(&ins->phase[phase_index].state, ins->phase[phase_index].codec[ins->phase[phase_index].index].z + (uintptr_t)ins->phase[phase_index].state.sub[*(ins->phase[phase_index-1].data->data+i)], sizeof(struct state_s));
-			if(ins->phase[phase_index].state.status==DEADEND){
-				break;
+	while(ins->phase[ins->phase_index-1].data->next){
+		ins->phase[ins->phase_index-1].data=ins->phase[ins->phase_index-1].data->next;
+		for(i=0;i<ins->phase[ins->phase_index-1].data->len;i++){
+			memcpy(&ins->phase[ins->phase_index].state, ins->phase[ins->phase_index].codec[ins->phase[ins->phase_index].index].z + (uintptr_t)ins->phase[ins->phase_index].state.sub[*(ins->phase[ins->phase_index-1].data->data+i)], sizeof(struct state_s));
+			switch(ins->phase[ins->phase_index].state.status){
+				case DEADEND:
+					goto pass_to_to;
+					break;
+				case SUBROUTINE:
+					goto to_callback;
+					break;
 			}
 		}
-		switch(ins->phase[phase_index].state.status){
+		inter_x:
+		switch(ins->phase[ins->phase_index].state.status){
 			case DEADEND:
 				pass_to_to:
-				ins->phase[phase_index].pend=0;
-				if(ins->phase[phase_index].match){
-					listcpy(phase_index, ins->phase[phase_index].match, ins->phase[phase_index].codec[ins->phase[phase_index].index].data_z);
-					ins->phase[phase_index].match=NULL;
-					ins->phase[phase_index].bak=ins->phase[phase_index].bak->next;
-					listfree(phase_index-1,ins->phase[phase_index].bak);
-					ins->phase[phase_index-1].data=ins->phase[phase_index-1].data_head;
+				ins->phase[ins->phase_index].pend=0;
+				if(ins->phase[ins->phase_index].match){
+					listcpy(ins->phase_index, ins->phase[ins->phase_index].match, ins->phase[ins->phase_index].codec[ins->phase[ins->phase_index].index].data_z);
+					ins->phase[ins->phase_index].match=NULL;
+					ins->phase[ins->phase_index].bak=ins->phase[ins->phase_index].bak->next;
+					listfree(ins->phase_index-1,ins->phase[ins->phase_index].bak);
+					ins->phase[ins->phase_index-1].data=ins->phase[ins->phase_index-1].data_head;
 
-					RESET(phase_index);
+					RESET(ins->phase_index);
 					goto phase_inter;
-				}else if(ins->phase[phase_index].index < ins->phase[phase_index].codecn){
-					ins->phase[phase_index].index++;
-					memcpy(&ins->phase[phase_index].state, ins->phase[phase_index].codec[ins->phase[phase_index].index].z, sizeof(struct state_s));
-					ins->phase[phase_index-1].data=ins->phase[phase_index-1].data_head;
+				}else if(ins->phase[ins->phase_index].index < ins->phase[ins->phase_index].codecn){
+					ins->phase[ins->phase_index].index++;
+					memcpy(&ins->phase[ins->phase_index].state, ins->phase[ins->phase_index].codec[ins->phase[ins->phase_index].index].z, sizeof(struct state_s));
+					ins->phase[ins->phase_index-1].data=ins->phase[ins->phase_index-1].data_head;
 					continue;
 				}else{
-					data_ptr=ins->phase[phase_index-1].data_head->next;
-					ins->phase[phase_index-1].data_head->next=ins->phase[phase_index-1].data_head->next->next;
-					ins->phase[phase_index-1].data=ins->phase[phase_index-1].data_head;
+					data_ptr=ins->phase[ins->phase_index-1].data_head->next;
+					ins->phase[ins->phase_index-1].data_head->next=ins->phase[ins->phase_index-1].data_head->next->next;
+					ins->phase[ins->phase_index-1].data=ins->phase[ins->phase_index-1].data_head;
 					data_ptr->next=NULL;
-					ins->phase[phase_index].data_tail->next=data_ptr;
-					ins->phase[phase_index].data_tail=data_ptr;
-					if(ins->phase[phase_index-1].data_tail==data_ptr){
-						ins->phase[phase_index-1].data_tail=ins->phase[phase_index-1].data_head;
+					ins->phase[ins->phase_index].data_tail->next=data_ptr;
+					ins->phase[ins->phase_index].data_tail=data_ptr;
+					if(ins->phase[ins->phase_index-1].data_tail==data_ptr){
+						ins->phase[ins->phase_index-1].data_tail=ins->phase[ins->phase_index-1].data_head;
 					}
-					ins->phase[phase_index-1].data=ins->phase[phase_index-1].data_head;
+					ins->phase[ins->phase_index-1].data=ins->phase[ins->phase_index-1].data_head;
 
-					RESET(phase_index);
+					RESET(ins->phase_index);
 
-					++phase_index;
+					++ins->phase_index;
 					goto phase_inter;
 				}
 				break;
 			case MATCH:
-				ins->phase[phase_index-1].data=ins->phase[phase_index-1].data->next;
-				listcpy(phase_index, ins->phase[phase_index].state.data, ins->phase[phase_index].codec[ins->phase[phase_index].index].data_z);
-				listfree(phase_index-1,ins->phase[phase_index-1].data);
-				ins->phase[phase_index].pend=0;
-				ins->phase[phase_index].match=NULL;
+				ins->phase[ins->phase_index-1].data=ins->phase[ins->phase_index-1].data->next;
+				listcpy(ins->phase_index, ins->phase[ins->phase_index].state.data, ins->phase[ins->phase_index].codec[ins->phase[ins->phase_index].index].data_z);
+				listfree(ins->phase_index-1,ins->phase[ins->phase_index-1].data);
+				ins->phase[ins->phase_index].pend=0;
+				ins->phase[ins->phase_index].match=NULL;
 
-				RESET(phase_index);
+				RESET(ins->phase_index);
 
-				ins->phase[phase_index-1].data=ins->phase[phase_index-1].data_head;
+				ins->phase[ins->phase_index-1].data=ins->phase[ins->phase_index-1].data_head;
 
-				++phase_index;
+				++ins->phase_index;
 				goto phase_inter;
 			case SUBMATCH:
-				ins->phase[phase_index].match=ins->phase[phase_index].state.data;
-				ins->phase[phase_index].bak=ins->phase[phase_index-1].data;
-				ins->phase[phase_index].pend=1;
+				ins->phase[ins->phase_index].match=ins->phase[ins->phase_index].state.data;
+				ins->phase[ins->phase_index].bak=ins->phase[ins->phase_index-1].data;
+				ins->phase[ins->phase_index].pend=1;
 				break;
 			case NEXTPHASE:
-				RESET(phase_index);
-				++phase_index;
+				RESET(ins->phase_index);
+				++ins->phase_index;
 				goto phase_inter;
 				break;
+			case SUBROUTINE:
+				//inter_callback:
+				ins->phase[ins->phase_index].codec[ins->phase[ins->phase_index].index].callback(ins);
+				goto inter_x;
 			case CONTINUE:
-				ins->phase[phase_index].pend=1;
+				ins->phase[ins->phase_index].pend=1;
 				break;
 		}
-		memcpy(&ins->phase[phase_index].state, ins->phase[phase_index].codec[ins->phase[phase_index].index].z + (uintptr_t)ins->phase[phase_index].state.sub[256], sizeof(struct state_s));
-		if(ins->phase[phase_index].state.status==DEADEND){ goto pass_to_to;}
+		memcpy(&ins->phase[ins->phase_index].state, ins->phase[ins->phase_index].codec[ins->phase[ins->phase_index].index].z + (uintptr_t)ins->phase[ins->phase_index].state.sub[256], sizeof(struct state_s));
+		if(ins->phase[ins->phase_index].state.status==DEADEND){ goto pass_to_to;}
 	}
-	++phase_index;
+	++ins->phase_index;
 	goto phase_inter;
 
 	//to
@@ -591,11 +600,11 @@ int bsdconv(struct bsdconv_instance *ins){
 
 			check_pending();
 
-			for(phase_index=0;phase_index<=ins->phasen;++phase_index){
-				if(ins->phase[phase_index].pend){
-					if(phase_index==0){
+			for(ins->phase_index=0;ins->phase_index<=ins->phasen;++ins->phase_index){
+				if(ins->phase[ins->phase_index].pend){
+					if(ins->phase_index==0){
 						goto pass_to_inter;
-					}else if(phase_index==ins->phasen){
+					}else if(ins->phase_index==ins->phasen){
 						goto pass_to_to;
 					}else{
 						goto pass_to_out;
