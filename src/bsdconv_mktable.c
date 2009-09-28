@@ -215,7 +215,7 @@ int main(int argc, char *argv[]){
 					}
 					if(state_p->p->psub[c]){
 						if(state_p->p->psub[c]->status==MATCH){
-							state_p->p->status=SUBMATCH;
+							state_p->p->psub[c]->status=SUBMATCH;
 						}
 						newtodo_tail->n=malloc(sizeof(struct list));
 						newtodo_tail=newtodo_tail->n;
