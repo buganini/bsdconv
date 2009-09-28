@@ -101,24 +101,24 @@ char * index(const char *, int);
 #endif
 
 #define listcpy(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
-	ins->phase[X].data_tail->next=malloc(sizeof(struct data_s));	\
-	ins->phase[X].data_tail=ins->phase[X].data_tail->next;	\
-	memcpy(ins->phase[X].data_tail, (unsigned char *)((Z)+(uintptr_t)data_ptr), sizeof(struct data_s));	\
-	data_ptr=ins->phase[X].data_tail->next;	\
-	ins->phase[X].data_tail->next=NULL;	\
-	ptr=(unsigned char *)((Z)+(uintptr_t)ins->phase[X].data_tail->data);	\
-	ins->phase[X].data_tail->data=malloc(ins->phase[X].data_tail->len);	\
-	memcpy(ins->phase[X].data_tail->data, ptr, ins->phase[X].data_tail->len);	\
+	(X)->next=malloc(sizeof(struct data_s));	\
+	(X)=(X)->next;	\
+	memcpy((X), (unsigned char *)((Z)+(uintptr_t)data_ptr), sizeof(struct data_s));	\
+	data_ptr=(X)->next;	\
+	(X)->next=NULL;	\
+	ptr=(unsigned char *)((Z)+(uintptr_t)(X)->data);	\
+	(X)->data=malloc((X)->len);	\
+	memcpy((X)->data, ptr, (X)->len);	\
 }
 
-#define listfree(X,Y)	while(ins->phase[X].data_head->next!=(struct data_s *)(Y)){	\
-	data_ptr=ins->phase[X].data_head->next->next;	\
-	free(ins->phase[X].data_head->next->data);	\
-	if(ins->phase[X].data_tail==ins->phase[X].data_head->next){	\
-		ins->phase[X].data_tail=ins->phase[X].data_head;	\
+#define listfree(X,Y,Z)	while((X)->next!=(struct data_s *)(Y)){	\
+	data_ptr=(X)->next->next;	\
+	free((X)->next->data);	\
+	if((Z)==(X)->next){	\
+		(Z)=(X);	\
 	}	\
-	free(ins->phase[X].data_head->next);	\
-	ins->phase[X].data_head->next=data_ptr;	\
+	free((X)->next);	\
+	(X)->next=data_ptr;	\
 }
 
 struct bsdconv_instance *bsdconv_create(const char *);

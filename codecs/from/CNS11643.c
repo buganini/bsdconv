@@ -70,7 +70,7 @@ void callback(struct bsdconv_instance *ins){
 			switch(state.status){
 				case MATCH:
 				case SUBMATCH:
-					listcpy(0, state.data, t->cd.z);
+					listcpy(ins->phase[0].data_tail, state.data, t->cd.z);
 					return;
 				default:
 					this_phase->data_tail->next=malloc(sizeof(struct data_s));
