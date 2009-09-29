@@ -78,7 +78,6 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	ins->phasen=i-1; //i is real length, but we use i-1 for a convient to use array boundary here
 	ins->phase=malloc(sizeof(struct bsdconv_phase) * i);
 	char *opipe[i];
-	char *pipe[i];
 	int npipe[i];
 
 	t2=t=strdup(conversion);
@@ -134,7 +133,6 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	chdir(PREFIX "/share/bsdconv");
 
 	for(i=0;i<=ins->phasen;++i){
-		pipe[i]=opipe[i];
 		ins->phase[i].codec=malloc(npipe[i] * sizeof(struct bsdconv_codec_t));
 		if(i==0){
 			chdir("from");
@@ -144,7 +142,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 			chdir("inter");
 		}
 		brk=0;
-		t=pipe[i];
+		t=opipe[i];
 		for(j=0;j<ins->phase[i].codecn;++j){
 			ins->phase[i].codec[j].desc=strdup(strsep(&t, ","));
 			strcpy(buf, ins->phase[i].codec[j].desc);
