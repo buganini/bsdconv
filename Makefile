@@ -33,7 +33,6 @@ codecs: codecs_table codecs_callback
 
 meta:
 	ln -sf libbsdconv.so.${SHLIBVER} build/lib/libbsdconv.so
-	cat codecs/aliases.map | awk '{cmd="ln -sf ../"$$2" build/share/bsdconv/"$$1; system(cmd);}'
 	cp src/bsdconv.h build/include
 
 clean:
