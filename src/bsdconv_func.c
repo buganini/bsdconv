@@ -101,4 +101,14 @@ char * index(const char *s, int c){
 	if(*s) return s;
 	return NULL;
 }
+
+char * strndup(const char *str, size_t len){
+	char *r;
+	size_t l=strlen(str);
+	if(len<l)l=len;
+	r=malloc(l+1);
+	memcpy(r,str,l);
+	r[l]=0;
+	return r;
+}
 #endif
