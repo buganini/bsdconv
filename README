@@ -43,4 +43,7 @@ WINDOWS:
 Latest build could be found at http://security-hole.info/distfile/win32/bsdconv.tar.gz
 Download and extract it, then goto build/ and run mk_table.bat
 then copy everythings in build/ to c:\bsdconv\
-NOTICE: alias is not yet supported for windows
+
+--
+If you want to install to directory other than default path
+set BSDCONV_PATH environment variable to your path
