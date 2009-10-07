@@ -62,7 +62,7 @@ void bsdconv_init(struct bsdconv_instance *ins){
 
 struct bsdconv_instance *bsdconv_create(const char *conversion){
 	struct bsdconv_instance *ins=malloc(sizeof(struct bsdconv_instance));
-	char *t, *t2;
+	char *t, *t2, *p;
 	int i, j, brk;
 	char buf[64], path[PATH_BUF_SIZE];
 
@@ -130,7 +130,12 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	}
 	free(t2);
 
-	chdir(PREFIX "/share/bsdconv");
+	if((p=getenv("BSDCONV_PATH"))){
+		chdir(p);
+	}else{
+		chdir(PREFIX);
+	}
+	chdir("share/bsdconv");
 
 	for(i=0;i<=ins->phasen;++i){
 		ins->phase[i].codec=malloc(npipe[i] * sizeof(struct bsdconv_codec_t));
