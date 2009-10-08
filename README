@@ -24,7 +24,7 @@ Convert traditional chinese big5 to simplified chinese utf-8
 Convert big5 data, traditional chinese to simplified chinese, 
 CRLF/CR/LF to CRLF, to big5 data, translate simplified chinese words, which are
 not in big5, to HTML entities
-> bsdconv big5,ascii:chs,win:cp950,ascii,iso-8859-1,htmlentity in.txt out.txt
+> bsdconv big5,ascii:chs,win:cp950,ascii,htmlentity in.txt out.txt
 
 More example:
 > bsdconv big5,ascii:nl2br:ascii,html-img in.txt out.htm
