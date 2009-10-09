@@ -59,7 +59,6 @@ py_bsdconv_conv(PyObject *self, PyObject *args)
 	p->feed_len=l;
 	bsdconv_init(p);
 	bsdconv(p);
-	printf("%d %s\n",p->back_len,p->back);
 	r=Py_BuildValue("s#",p->back, p->back_len);
 	free(p->back);
 	return r;
