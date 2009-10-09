@@ -29,6 +29,9 @@ CRLF/CR/LF to CRLF, to big5 data, translate simplified chinese words, which are
 not in big5, to HTML entities
 > bsdconv big5,ascii:chs,win:cp950,ascii,htmlentity in.txt out.txt
 
+Very useful for migrating MySQL DB from Big5 to UTF-8
+> bsdconv htmlentity,big5-5c,big5,ascii::utf-8 in.sql out.sql
+
 More example:
 > bsdconv big5,ascii:nl2br:ascii,html-img in.txt out.htm
 #html-img is actually ASCII-HTML-UNICODE-IMG
