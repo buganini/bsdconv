@@ -64,6 +64,30 @@ py_bsdconv_conv(PyObject *self, PyObject *args)
 	return r;
 }
 
+static PyObject *
+py_bsdconv_info(PyObject *self, PyObject *args)
+{
+	unsigned long k;
+	static PyObject *r;
+	struct bsdconv_instance *p;
+	if (!PyArg_ParseTuple(args, "k", &k))
+		return NULL;
+	p=(struct bsdconv_instance *) k;
+	r=Py_BuildValue("{sisi}","ierr",p->ierr,"oerr",p->oerr);
+	return r;
+}
+
+static PyObject *
+py_bsdconv_error(PyObject *self, PyObject *args)
+{
+	static PyObject *r;
+	char *s;
+	s=bsdconv_error();
+	r=Py_BuildValue("s",s);
+	free(s);
+	return r;
+}
+
 static PyMethodDef bsdconv_methods[] = {
 	{"create",	py_bsdconv_create,	METH_VARARGS,
 		PyDoc_STR("create() -> Create bsdconv instance")},
@@ -71,6 +95,10 @@ static PyMethodDef bsdconv_methods[] = {
 		PyDoc_STR("destroy() -> Destroy bsdconv instance")},
 	{"conv",	py_bsdconv_conv,	METH_VARARGS,
 		PyDoc_STR("conv() -> Perform conversion")},
+	{"info",	py_bsdconv_info,	METH_VARARGS,
+		PyDoc_STR("conv() -> Return conversion info")},
+	{"error",	py_bsdconv_error,	METH_VARARGS,
+		PyDoc_STR("conv() -> Return error message")},
 	{NULL,		NULL}		/* sentinel */
 };
 
