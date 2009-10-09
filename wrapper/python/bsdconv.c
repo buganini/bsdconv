@@ -19,7 +19,7 @@ py_bsdconv_create(PyObject *self, PyObject *args)
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
-	return (PyObject*)r;
+	return Py_BuildValue("k",r);
 }
 
 PyDoc_STRVAR(bsdconv_destroy_doc,
@@ -30,11 +30,12 @@ Destroy bsdconv instance.");
 static PyObject *
 py_bsdconv_destroy(PyObject *self, PyObject *args)
 {
+	unsigned long k;
 	struct bsdconv_instance *r;
-	if (!PyArg_ParseTuple(args, "o", &r))
+	if (!PyArg_ParseTuple(args, "k", &k))
 		return NULL;
+	r=(struct bsdconv_instance *) k;
 	bsdconv_destroy(r);
-	return NULL;
 }
 
 PyDoc_STRVAR(bsdconv_conv_doc,
@@ -45,18 +46,21 @@ Perform conversion.");
 static PyObject *
 py_bsdconv_conv(PyObject *self, PyObject *args)
 {
+	unsigned long k;
 	static PyObject *r;
 	struct bsdconv_instance *p;
 	char *s;
 	int l;
-	if (!PyArg_ParseTuple(args, "oz#", &p,&s,&l))
+	if (!PyArg_ParseTuple(args, "kz#", &k,&s,&l))
 		return NULL;
+	p=(struct bsdconv_instance *) k;
 	p->mode=BSDCONV_CC;
 	p->feed=s;
 	p->feed_len=l;
 	bsdconv_init(p);
 	bsdconv(p);
-	r=Py_BuildValue("z#",p->back, p->back_len);
+	printf("%d %s\n",p->back_len,p->back);
+	r=Py_BuildValue("s#",p->back, p->back_len);
 	free(p->back);
 	return r;
 }

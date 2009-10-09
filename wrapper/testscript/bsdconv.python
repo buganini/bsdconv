@@ -2,8 +2,7 @@ import sys
 import bsdconv
 
 p=bsdconv.create(sys.argv[1])
-print p
 s=sys.stdin.read()
-s=bsdconv.conv(p,s)
+#print s
+print bsdconv.conv(p,s)
 bsdconv.destroy(p)
-print s
