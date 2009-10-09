@@ -8,6 +8,9 @@ setup(name='bsdconv',
       author='Buganini',
       author_email='buganini@gmail.com',
       url='http://github.com/buganini/bsdconv',
-      ext_modules=[Extension('bsdconv', ['bsdconv.c'],include_dirs=['/usr/local/include'],libraries=['bsdconv'],library_dirs=['/usr/local/lib'])],
+      ext_modules=[Extension('bsdconv', ['bsdconv.c'],
+              include_dirs=['/usr/local/include'],
+              libraries=['bsdconv'],
+              library_dirs=['/usr/local/lib'])],
      )
 
