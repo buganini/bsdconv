@@ -45,7 +45,11 @@ void callback(struct bsdconv_instance *ins){
 			t->flag=F_A;
 			t->data.len=0;
 		}
-		this_phase->state.status=SUBMATCH;
+
+		if(t->data.len)
+			this_phase->state.status=SUBMATCH;
+		else
+			this_phase->state.status=CONTINUE;
 		this_phase->state.data=&(t->data);
 		switch(t->flag){
 			case F_A:
