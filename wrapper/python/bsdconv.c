@@ -1,6 +1,9 @@
 #include <Python.h>
 #include <bsdconv.h>
 
+#define IBUFLEN 1024
+#define OBUFLEN 1024
+
 PyDoc_STRVAR(bsdconv_create_doc,
 "create(c)\n\
 \n\
@@ -36,6 +39,9 @@ py_bsdconv_destroy(PyObject *self, PyObject *args)
 		return NULL;
 	r=(struct bsdconv_instance *) k;
 	bsdconv_destroy(r);
+
+	Py_INCREF(Py_True);
+	return Py_True;
 }
 
 PyDoc_STRVAR(bsdconv_conv_doc,
@@ -62,6 +68,53 @@ py_bsdconv_conv(PyObject *self, PyObject *args)
 	r=Py_BuildValue("s#",p->back, p->back_len);
 	free(p->back);
 	return r;
+}
+
+PyDoc_STRVAR(bsdconv_conv_file_doc,
+"conv_file(p,s,s)\n\
+\n\
+Perform conversion with given filename.");
+
+static PyObject *
+py_bsdconv_conv_file(PyObject *self, PyObject *args)
+{
+	unsigned long k;
+	struct bsdconv_instance *p;
+	char *s1, *s2;
+	FILE *inf, *otf;
+	unsigned char in[IBUFLEN], out[OBUFLEN];
+	int r;
+
+	if (!PyArg_ParseTuple(args, "kss", &k,&s1,&s2))
+		return NULL;
+	p=(struct bsdconv_instance *) k;
+	inf=fopen(s1,"r");
+	if(!inf){
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+	otf=fopen(s2,"w");
+	if(!otf){
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+	p->in_buf=in;
+	p->in_len=IBUFLEN;
+	p->out_buf=out;
+	p->out_len=OBUFLEN;
+	p->mode=BSDCONV_BB;
+	bsdconv_init(p);
+	do{
+		if(p->feed_len) p->feed_len=fread(p->feed, 1, p->feed_len, inf);
+		r=bsdconv(p);
+		if(p->back_len)fwrite(p->back, 1, p->back_len, otf);
+	}while(r);
+
+	fclose(inf);
+	fclose(otf);
+
+	Py_INCREF(Py_True);
+	return Py_True;
 }
 
 static PyObject *
@@ -95,6 +148,8 @@ static PyMethodDef bsdconv_methods[] = {
 		PyDoc_STR("destroy() -> Destroy bsdconv instance")},
 	{"conv",	py_bsdconv_conv,	METH_VARARGS,
 		PyDoc_STR("conv() -> Perform conversion")},
+	{"conv_file",	py_bsdconv_conv_file,	METH_VARARGS,
+		PyDoc_STR("conv_file() -> Perform conversion with given filename")},
 	{"info",	py_bsdconv_info,	METH_VARARGS,
 		PyDoc_STR("info() -> Return conversion info")},
 	{"error",	py_bsdconv_error,	METH_VARARGS,
