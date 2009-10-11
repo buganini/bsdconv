@@ -111,4 +111,14 @@ char * strndup(const char *str, size_t len){
 	r[l]=0;
 	return r;
 }
+
+char *getwd(char *buf){
+	char b[512], *r;
+	int l;
+	getcwd(b,512);
+	l=strlen(b);
+	r=malloc(l);
+	memcpy(r,b,l);
+	return r;
+}
 #endif
