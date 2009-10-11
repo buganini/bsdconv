@@ -62,7 +62,7 @@ void bsdconv_init(struct bsdconv_instance *ins){
 
 struct bsdconv_instance *bsdconv_create(const char *conversion){
 	struct bsdconv_instance *ins=malloc(sizeof(struct bsdconv_instance));
-	char *t, *t2, *p;
+	char *t, *t2, *p, *cwd;
 	int i, j, brk;
 	char buf[64], path[PATH_BUF_SIZE];
 
@@ -130,6 +130,8 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	}
 	free(t2);
 
+	cwd=getcwd(NULL);
+
 	if((p=getenv("BSDCONV_PATH"))){
 		chdir(p);
 	}else{
@@ -167,6 +169,9 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 		}
 		free(opipe[i]);
 	}
+
+	chdir(cwd);
+	free(cwd);
 
 	return ins;
 }
