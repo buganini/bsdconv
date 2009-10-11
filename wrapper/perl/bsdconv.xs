@@ -8,6 +8,9 @@
 #include <errno.h>
 #include <string.h>
 
+#define IBUFLEN 1024
+#define OBUFLEN 1024
+
 MODULE = bsdconv		PACKAGE = bsdconv
 
 SV*
@@ -63,6 +66,43 @@ conv(p, str)
 		bsdconv(ins);
 		RETVAL=newSVpv(ins->back, (STRLEN)ins->back_len);
 		free(ins->back);
+	OUTPUT:
+		RETVAL
+
+SV*
+conv_file(i, f1, f2)
+	IV i
+	SV* f1
+	SV* f2
+	PREINIT:
+		struct bsdconv_instance *p;
+		char *s1, *s2;
+		SSize_t l;
+		int r;
+		FILE *inf, *otf;
+		unsigned char in[IBUFLEN], out[OBUFLEN];
+	CODE:
+		p=INT2PTR(struct bsdconv_instance *, i);
+		s1=SvPV(f1, l);
+		s2=SvPV(f2, l);
+		inf=fopen(s1,"r");
+		if(!inf) XSRETURN_UNDEF;
+		otf=fopen(s2,"w");
+		if(!otf) XSRETURN_UNDEF;
+		p->in_buf=in;
+		p->in_len=IBUFLEN;
+		p->out_buf=out;
+		p->out_len=OBUFLEN;
+		p->mode=BSDCONV_BB;
+		bsdconv_init(p);
+		do{
+			if(p->feed_len) p->feed_len=fread(p->feed, 1, p->feed_len, inf);
+			r=bsdconv(p);
+			if(p->back_len)fwrite(p->back, 1, p->back_len, otf);
+		}while(r);
+		fclose(inf);
+		fclose(otf);
+		XSRETURN_YES;
 	OUTPUT:
 		RETVAL
 
