@@ -96,9 +96,9 @@ static PyMethodDef bsdconv_methods[] = {
 	{"conv",	py_bsdconv_conv,	METH_VARARGS,
 		PyDoc_STR("conv() -> Perform conversion")},
 	{"info",	py_bsdconv_info,	METH_VARARGS,
-		PyDoc_STR("conv() -> Return conversion info")},
+		PyDoc_STR("info() -> Return conversion info")},
 	{"error",	py_bsdconv_error,	METH_VARARGS,
-		PyDoc_STR("conv() -> Return error message")},
+		PyDoc_STR("error() -> Return error message")},
 	{NULL,		NULL}		/* sentinel */
 };
 
