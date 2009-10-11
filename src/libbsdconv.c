@@ -130,7 +130,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	}
 	free(t2);
 
-	cwd=getcwd(NULL);
+	cwd=getwd(NULL);
 
 	if((p=getenv("BSDCONV_PATH"))){
 		chdir(p);
