@@ -47,7 +47,7 @@ Maintain inter map:
 
 --
 WINDOWS:
-Latest build could be found at http://security-hole.info/distfile/win32/bsdconv.tar.gz
+http://github.com/buganini/bsdconv/downloads
 Download and extract it, then goto build/ and run mk_table.bat
 then copy everythings in build/ to c:\bsdconv\
 
