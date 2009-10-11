@@ -32,6 +32,9 @@ static int le_bsdconv;
 
 #include <bsdconv.h>
 
+#define IBUFLEN 1024
+#define OBUFLEN 1024
+
 /* {{{ proto string bsdconv_once(string conversion, string str)
   short circuit for create-conv-destroy */
 PHP_FUNCTION(bsdconv_once){
@@ -105,6 +108,45 @@ PHP_FUNCTION(bsdconv){
 }
 /* }}} */
 
+/* {{{ proto mixed bsdconv_file(resource ins, string infile, string outfile)
+  bsdconv_file function
+*/
+PHP_FUNCTION(bsdconv_file){
+	zend_rsrc_list_entry *r;
+	struct bsdconv_instance *p;
+	char *s1, *s2;
+	int l,t;
+	FILE *inf, *otf;
+	unsigned char in[IBUFLEN], out[OBUFLEN];
+
+	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &r, &s1, &l, &s2, &l) == FAILURE){
+		RETURN_BOOL(0);
+	}
+	p=r->ptr;
+
+	inf=fopen(s1,"r");
+	if(!inf) RETURN_BOOL(0);
+	otf=fopen(s2,"w");
+	if(!otf) RETURN_BOOL(0);
+	p->in_buf=in;
+	p->in_len=IBUFLEN;
+	p->out_buf=out;
+	p->out_len=OBUFLEN;
+	p->mode=BSDCONV_BB;
+	bsdconv_init(p);
+	do{
+		if(p->feed_len) p->feed_len=fread(p->feed, 1, p->feed_len, inf);
+		r=bsdconv(p);
+		if(p->back_len)fwrite(p->back, 1, p->back_len, otf);
+	}while(r);
+
+	fclose(inf);
+	fclose(otf);
+
+	RETURN_BOOL(1);
+}
+/* }}} */
+
 /* {{{ proto array bsdconv_info(resource ins)
   bsdconv conversion info function
 */
@@ -142,6 +184,7 @@ zend_function_entry bsdconv_functions[] = {
 	PHP_FE(bsdconv_info,	NULL)
 	PHP_FE(bsdconv_once,	NULL)
 	PHP_FE(bsdconv,	NULL)
+	PHP_FE(bsdconv_file,	NULL)
 	PHP_FE(bsdconv_error,	NULL)
 	{NULL, NULL, NULL}	/* Must be the last line in bsdconv_functions[] */
 };
