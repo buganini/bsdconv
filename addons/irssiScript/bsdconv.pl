@@ -23,7 +23,7 @@ sub on_recv () {
 	my $conversion = Irssi::settings_get_str('bsdconv_in');
 	$conversion =~ s/^\s+|\s+$//g;
 	my $h = bsdconv::create($conversion);
-	if($conversion=='') return;
+	if($conversion eq ''){return;}
 	if(!defined($h)){
 		Irssi:print(bsdconv::error());
 		return;
@@ -43,7 +43,7 @@ sub on_topic () {
 	my ($server_rec) = @_;
 	my $conversion = Irssi::settings_get_str('bsdconv_in');
 	$conversion =~ s/^\s+|\s+$//g;
-	if($conversion=='') return;
+	if($conversion eq ''){return;}
 	my $h = bsdconv::create($conversion);
 	if(!defined($h)){
 		Irssi:print(bsdconv::error());
@@ -65,7 +65,7 @@ sub bsdconv_out () {
 	my ($line, $server_rec, $wi_item_rec) = @_;
 	my $conversion = Irssi::settings_get_str('bsdconv_out');
 	$conversion =~ s/^\s+|\s+$//g;
-	if($conversion=='') return;
+	if($conversion eq ''){return;}
 	my $h = bsdconv::create($conversion);
 	if(!defined($h)){
 		Irssi:print(bsdconv::error());
