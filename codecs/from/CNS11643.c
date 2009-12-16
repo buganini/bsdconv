@@ -61,10 +61,10 @@ void callback(struct bsdconv_instance *ins){
 	int i;
 	switch(t->status){
 		case 0:
-			if(d==0x0){
+			if(d==0x0){ //plane switch sequence
 				t->status=10;
 				CONTINUE();
-			}else{
+			}else{ //data sequence
 				t->status=1;
 				t->buf[0]=0x02;
 				t->buf[1]=t->plane;
