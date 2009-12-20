@@ -28,10 +28,14 @@ sub on_recv () {
 		Irssi:print(bsdconv::error());
 		return;
 	}
-	my $line=bsdconv::conv($h,$line);
+	my $nline=bsdconv::conv($h,$line);
+	my $info=bsdconv::info($h);
+	if($info->{'ierr'}){
+		$nline=$line;
+	}
 	bsdconv::destroy($h);
 	$bsdconv_ignore = 1;
-	Irssi::signal_emit('event privmsg', ($server, $line, $nick, $address));
+	Irssi::signal_emit('event privmsg', ($server, $nline, $nick, $address));
 	$bsdconv_ignore = 0;
 	Irssi::signal_stop();
 }
@@ -49,9 +53,13 @@ sub on_topic () {
 		Irssi:print(bsdconv::error());
 		return;
 	}
-	my $line=bsdconv::conv($h,$server_rec->{topic});
-	$server_rec->{topic}=$line;
+	my $nline=bsdconv::conv($h,$server_rec->{topic});
+	my $info=bsdconv::info($h);
+	if($info->{'ierr'}){
+		$nline=$server_rec->{topic};
+	}
 	bsdconv::destroy($h);
+	$server_rec->{topic}=$nline;
 	$bsdconv_ignore = 1;
 	Irssi::signal_emit('channel topic changed', $server_rec);
 	$bsdconv_ignore = 0;
@@ -71,10 +79,14 @@ sub bsdconv_out () {
 		Irssi:print(bsdconv::error());
 		return;
 	}
-	my $line=bsdconv::conv($h,$line);
+	my $nline=bsdconv::conv($h,$line);
+	my $info=bsdconv::info($h);
+	if($info->{'ierr'}){
+		$nline=$line;
+	}
 	bsdconv::destroy($h);
 	$bsdconv_ignore = 1;
-	Irssi::signal_emit('send text', $line,  $server_rec, $wi_item_rec);
+	Irssi::signal_emit('send text', $nline,  $server_rec, $wi_item_rec);
 	$bsdconv_ignore = 0;
 	Irssi::signal_stop();
 }
