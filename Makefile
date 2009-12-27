@@ -2,6 +2,16 @@ PREFIX?=/usr/local
 CFLAGS+=-Wall -DPREFIX='"${PREFIX}"'
 SHLIBVER=3
 
+alias:
+.for t in from inter to
+	cd codecs/$t/ && \
+	cp alias alias.tmp && \
+	find *.txt |awk 'BEGIN{FS=".txt"}; {print $$1"\t"$$1}' >> alias.tmp
+	python tools/mkalias.py codecs/$t/alias.tmp codecs/inter/${t:U}_ALIAS.txt
+	rm codecs/$t/alias.tmp
+.endfor
+
+
 all: builddir libbsdconv bsdconv_mktable bsdconv codecs meta
 
 builddir:
