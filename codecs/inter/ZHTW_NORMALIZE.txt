@@ -1,3 +1,4 @@
+#data source: http://unicode.ncl.edu.tw
 01020003	014E14
 0102000B	014E08
 01020019	019E97
