@@ -66,6 +66,7 @@ void bsdconv_init(struct bsdconv_instance *ins){
 	
 	for(i=0;i<=ins->phasen;i++){
 		RESET(i)
+		ins->phase[i].pend=0;
 		ins->phase[i].data_head->next=NULL;
 		ins->phase[i].bak=ins->phase[i].data=ins->phase[i].data_tail=ins->phase[i].data_head;
 		ins->phase[i].match=NULL;
