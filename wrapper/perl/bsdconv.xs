@@ -130,7 +130,7 @@ error()
 		SSize_t l;
 	CODE:
 		s=bsdconv_error();
-		RETVAL=newSVpv(s, (STRLEN)strlen(s));
+		RETVAL=newSVpv(s, 0);
 		free(s);
 	OUTPUT:
 		RETVAL
