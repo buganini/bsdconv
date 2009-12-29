@@ -4,9 +4,9 @@ from<tab>to
 Internal encoding:
 * Should be as unicoded as possible
 * BSDCONV special chars are prefixed with 00
-  * 0000 is used by RAW
 * UNICODE is prefixed with 01
 * CNS11643 is prefixed with 02
+* RAW is prefixed with 03
 * Chinese components is prefixed with 04
 
 NOTICE:
