@@ -7,6 +7,7 @@ Internal encoding:
   * 0000 is used by RAW
 * UNICODE is prefixed with 01
 * CNS11643 is prefixed with 02
+* Chinese components is prefixed with 04
 
 NOTICE:
 Though many charset encoding is ascii-compatible,
