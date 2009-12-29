@@ -640,17 +640,6 @@ int bsdconv(struct bsdconv_instance *ins){
 
 			check_pending();
 
-			for(ins->phase_index=0;ins->phase_index<=ins->phasen;++ins->phase_index){
-				if(ins->phase[ins->phase_index].pend){
-					if(ins->phase_index==0){
-						goto pass_to_inter;
-					}else if(ins->phase_index==ins->phasen){
-						goto pass_to_to;
-					}else{
-						goto pass_to_out;
-					}
-				}
-			}
 			i=0;
 			data_ptr=ins->phase[ins->phasen].data_head->next;
 			while(data_ptr){
