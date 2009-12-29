@@ -57,7 +57,7 @@ conv(p, str)
 		ins->feed_len=l;
 		bsdconv_init(ins);
 		bsdconv(ins);
-		RETVAL=newSVpv(ins->back, (STRLEN)ins->back_len);
+		RETVAL=newSVpvn(ins->back, (STRLEN)ins->back_len);
 		free(ins->back);
 	OUTPUT:
 		RETVAL
