@@ -34,6 +34,8 @@
 
 void bsdconv_init(struct bsdconv_instance *ins){
 	int i, j;
+	struct data_s *data_ptr;
+
 	switch(ins->mode){
 		case BSDCONV_BB:
 			ins->feed=ins->in_buf;
@@ -67,7 +69,11 @@ void bsdconv_init(struct bsdconv_instance *ins){
 	for(i=0;i<=ins->phasen;i++){
 		RESET(i)
 		ins->phase[i].pend=0;
-		ins->phase[i].data_head->next=NULL;
+		while(ins->phase[i].data_head->next){
+			data_ptr=ins->phase[i].data_head->next;
+			ins->phase[i].data_head->next=ins->phase[i].data_head->next->next;
+			free(data_ptr);
+		}
 		ins->phase[i].bak=ins->phase[i].data=ins->phase[i].data_tail=ins->phase[i].data_head;
 		ins->phase[i].match=NULL;
 		for(j=0;j<=ins->phase[i].codecn;j++){
@@ -179,6 +185,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 
 		ins->phase[i].codecn--;
 		ins->phase[i].data_head=malloc(sizeof(struct data_s));
+		ins->phase[i].data_head->next=NULL;
 		for(j=0;j<=ins->phase[i].codecn;j++){
 			if(ins->phase[i].codec[j].cbcreate){
 				ins->phase[i].codec[j].priv=ins->phase[i].codec[j].cbcreate();
