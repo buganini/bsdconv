@@ -374,8 +374,6 @@ int bsdconv(struct bsdconv_instance *ins){
 				ins->phase[0].pend=1;
 				++ins->from_data;
 				break;
-			default:
-				++ins->from_data;
 		}
 	}
 	ins->phase_index=1;
