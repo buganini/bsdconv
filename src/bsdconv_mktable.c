@@ -356,52 +356,56 @@ int main(int argc, char *argv[]){
 					data_p->len=l;
 					data_p->data=(unsigned char *)offset;
 					offset+=l;
+				}
 
-					if(k){
-						k=0;
-						while(todo){
-							state_p=todo;
-							for(c=0;c<256;c++){
-								if(c>=state_p->l && c<=state_p->u){
-									pr=1;
-								}else if(ci && ci_table[c] && ci_table[c]>=state_p->l && ci_table[c]<=state_p->u){
-									pr=0;
-								}else{
-									continue;
-								}
-								if(state_p->p->psub[c]){
-									if(state_p->p->psub[c]->data && (pr+state_p->pr) <= state_p->p->psub[c]->prio){
-//										printf("Duplicated key: %s dropping data: %s\n", of, ot);
-										continue;
-									}else{
-										state_p->p->psub[c]->status=SUBMATCH;
-									}
-								}else{
-									state_p->p->psub[c]=state_t->n=malloc(sizeof(struct m_state_s));
-									state_p->p->sub[c]=(struct state_s *)offset;
-									state_t=state_t->n;
-									for(i=0;i<=256;i++){
-										state_t->sub[i]=0;
-										state_t->psub[i]=NULL;
-									}
-									state_t->n=NULL;
-									state_t->child=0;
-									state_t->p=offset;
-									state_t->status=MATCH;
-									offset+=sizeof(struct state_s);
-								}
-								state_p->p->psub[c]->data=data_p->p;
-								state_p->p->psub[c]->prio=pr+state_p->pr;
+				if(k){
+					k=0;
+					while(todo){
+						state_p=todo;
+						for(c=0;c<256;c++){
+							if(c>=state_p->l && c<=state_p->u){
+								pr=1;
+							}else if(ci && ci_table[c] && ci_table[c]>=state_p->l && ci_table[c]<=state_p->u){
+								pr=0;
+							}else{
+								continue;
 							}
-							todo=todo->n;
-							free(state_p);
+							if(state_p->p->psub[c]){
+								if(state_p->p->psub[c]->data && (pr+state_p->pr) <= state_p->p->psub[c]->prio){
+//									printf("Duplicated key: %s dropping data: %s\n", of, ot);
+									continue;
+								}else{
+									state_p->p->psub[c]->status=SUBMATCH;
+								}
+							}else{
+								state_p->p->psub[c]=state_t->n=malloc(sizeof(struct m_state_s));
+								state_p->p->sub[c]=(struct state_s *)offset;
+								state_t=state_t->n;
+								for(i=0;i<=256;i++){
+									state_t->sub[i]=0;
+									state_t->psub[i]=NULL;
+								}
+								state_t->n=NULL;
+								state_t->child=0;
+								state_t->p=offset;
+								state_t->status=MATCH;
+								offset+=sizeof(struct state_s);
+							}
+							if(l){
+								state_p->p->psub[c]->data=data_p->p;
+							}else{
+								state_p->p->psub[c]->data=0;
+							}
+							state_p->p->psub[c]->prio=pr+state_p->pr;
 						}
+						todo=todo->n;
+						free(state_p);
 					}
-					if(*t==0){
-						data_p=NULL;
-						break;
-					}
-					l=0;
+				}
+				l=0;
+				if(*t==0){
+					data_p=NULL;
+					break;
 				}
 			}else{
 				if(j==0){
