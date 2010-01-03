@@ -28,6 +28,10 @@
 #include <stdint.h>
 #include <string.h>
 #include "bsdconv.h"
+#ifndef WIN32
+#include <errno.h>
+#endif
+
 
 struct m_data_s{
 	unsigned char *data;
@@ -416,8 +420,12 @@ int main(int argc, char *argv[]){
 		todo=NULL;
 	}
 	fclose(fp);
-	k=open(argv[2], O_RDWR|O_CREAT|O_TRUNC, 0644);
-	ftruncate(k,offset);
+	if((k=open(argv[2], O_RDWR|O_CREAT|O_TRUNC, 0644))<0){
+		fprintf(stderr, "Failed open output file (%d).\n", GetLastError());
+	}
+	if(ftruncate(k,offset)<0){
+		fprintf(stderr, "Failed ftruncating (%d).\n", GetLastError());
+	}
 #ifdef WIN32
 	close(k);
 	fd=CreateFile(argv[2], GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
