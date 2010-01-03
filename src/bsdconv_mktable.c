@@ -432,7 +432,9 @@ int main(int argc, char *argv[]){
 	md=CreateFileMapping(fd, NULL, PAGE_READWRITE, 0,0, NULL);
 	tmp=MapViewOfFile(md, FILE_MAP_READ|FILE_MAP_WRITE, 0,0,0);
 #else
-	tmp=mmap(0,offset,PROT_READ|PROT_WRITE,MAP_SHARED,k,0);
+	if((tmp=mmap(0,offset,PROT_READ|PROT_WRITE,MAP_SHARED,k,0))==MAP_FAILED){
+		fprintf(stderr, "Failed memory mapping (%d).\n", GetLastError());
+	}
 #endif
 	printf("Total size: %u\n", (unsigned int)offset);
 	state_t=state_r;
