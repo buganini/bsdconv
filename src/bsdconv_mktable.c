@@ -371,7 +371,7 @@ int main(int argc, char *argv[]){
 								}
 								if(state_p->p->psub[c]){
 									if(state_p->p->psub[c]->data && (pr+state_p->pr) <= state_p->p->psub[c]->prio){
-										printf("Duplicated key: %s dropping data: %s\n", of, ot);
+//										printf("Duplicated key: %s dropping data: %s\n", of, ot);
 										continue;
 									}else{
 										state_p->p->psub[c]->status=SUBMATCH;
