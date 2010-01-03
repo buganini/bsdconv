@@ -422,9 +422,11 @@ int main(int argc, char *argv[]){
 	fclose(fp);
 	if((k=open(argv[2], O_RDWR|O_CREAT|O_TRUNC, 0644))<0){
 		fprintf(stderr, "Failed open output file (%d).\n", GetLastError());
+		exit(EXIT_FAILURE);
 	}
 	if(ftruncate(k,offset)<0){
 		fprintf(stderr, "Failed ftruncating (%d).\n", GetLastError());
+		exit(EXIT_FAILURE);
 	}
 #ifdef WIN32
 	close(k);
@@ -434,6 +436,7 @@ int main(int argc, char *argv[]){
 #else
 	if((tmp=mmap(0,offset,PROT_READ|PROT_WRITE,MAP_SHARED,k,0))==MAP_FAILED){
 		fprintf(stderr, "Failed memory mapping (%d).\n", GetLastError());
+		exit(EXIT_FAILURE);
 	}
 #endif
 	printf("Total size: %u\n", (unsigned int)offset);
