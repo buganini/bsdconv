@@ -42,7 +42,7 @@ void cbinit(struct bsdconv_codec_t *cdc, struct my_s *r){
 	r->status=0;
 }
 
-void cbclear(void *p){
+void cbdestroy(void *p){
 	free(p);
 }
 

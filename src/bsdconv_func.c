@@ -14,6 +14,7 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <stdio.h>
 #ifdef WIN32
 #include <windows.h>
 #else
@@ -81,6 +82,9 @@ int loadcodec(struct bsdconv_codec_t *cd, char *path, int maponly){
 		cd->cbcreate=dlsym(cd->dl,"cbcreate");
 		cd->cbinit=dlsym(cd->dl,"cbinit");
 		cd->cbdestroy=dlsym(cd->dl,"cbdestroy");
+		if(cd->cbcreate && cd->cbdestroy==NULL){
+			fprintf(stderr,"Possible memory leak in %s\n", path);
+		}
 	}
 #endif
 	return 1;

@@ -130,6 +130,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 			bsdconv(alias_ins);
 			free(opipe[i]);
 			opipe[i]=strndup(alias_ins->back,alias_ins->back_len);
+			free(alias_ins->back);
 			bsdconv_destroy(alias_ins);
 		}
 	}
@@ -212,12 +213,14 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 			}
 			unloadcodec(&ins->phase[i].codec[j]);
 		}
+		free(ins->phase[i].codec);
 		while(ins->phase[i].data_head){
 			data_ptr=ins->phase[i].data_head;
 			ins->phase[i].data_head=ins->phase[i].data_head->next;
 			free(data_ptr);
 		}
 	}
+	free(ins->phase);
 	free(ins);
 }
 
@@ -659,6 +662,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				memcpy(ptr, data_ptr->data, data_ptr->len);
 				ptr+=data_ptr->len;
 				ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
+				free(data_ptr->data);
 				free(data_ptr);
 			}
 			return 0;
