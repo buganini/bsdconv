@@ -123,7 +123,7 @@ char * index(const char *, int);
 	data_ptr=(X)->next;	\
 	(X)->next=NULL;	\
 	ptr=(unsigned char *)((Z)+(uintptr_t)(X)->data);	\
-	(X)->data=malloc((X)->len);	\
+	(X)->data=malloc((X)->len + 1);	\
 	memcpy((X)->data, ptr, (X)->len);	\
 }
 
