@@ -44,6 +44,16 @@ void callback(struct bsdconv_instance *ins){
 		return;
 	}
 
+	switch(len){
+		case 1:
+		case 2:
+		case 3:
+			break;
+		default:
+			ins->phase[ins->phasen].state.status=DEADEND;
+			return;
+	}
+
 	ins->phase[ins->phasen].data_tail->next=malloc(sizeof(struct data_s));
 	ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_tail->next;
 	ins->phase[ins->phasen].data_tail->next=NULL;
@@ -115,8 +125,6 @@ void callback(struct bsdconv_instance *ins){
 				default:
 					break;
 			}
-			break;
-		default:
 			break;
 	}
 }
