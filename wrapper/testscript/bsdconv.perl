@@ -6,9 +6,11 @@ if(!defined($cd)){
 	print bsdconv::error()."\n";
 	exit; 
 }
-while($str=<STDIN>){
-print bsdconv::conv($cd, $str);
+$str='';
+while($s=<STDIN>){
+	$str.=$s;
 }
+print bsdconv::conv($cd, $str);
 $i=bsdconv::info($cd);
 bsdconv::destroy($cd);
 print "\n=======Conversion Info=======\n";
