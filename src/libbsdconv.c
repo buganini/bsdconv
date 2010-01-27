@@ -449,7 +449,6 @@ int bsdconv(struct bsdconv_instance *ins){
 
 				RESET(ins->phase_index);
 
-
 				++ins->phase_index;
 				goto phase_inter;
 			case SUBMATCH:
