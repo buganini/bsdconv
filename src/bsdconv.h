@@ -116,7 +116,7 @@ char * index(const char *, int);
 #define REALPATH(buf, path) realpath(buf, path)
 #endif
 
-#define listcpy(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
+#define LISTCPY(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
 	(X)->next=malloc(sizeof(struct data_s));	\
 	(X)=(X)->next;	\
 	memcpy((X), (unsigned char *)((Z)+(uintptr_t)data_ptr), sizeof(struct data_s));	\
@@ -127,7 +127,7 @@ char * index(const char *, int);
 	memcpy((X)->data, ptr, (X)->len);	\
 }
 
-#define listfree(X,Y,Z)	while((X)->next!=(struct data_s *)(Y)){	\
+#define LISTFREE(X,Y,Z)	while((X)->next!=(struct data_s *)(Y)){	\
 	data_ptr=(X)->next->next;	\
 	free((X)->next->data);	\
 	if((Z)==(X)->next){	\
