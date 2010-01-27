@@ -391,6 +391,7 @@ int bsdconv(struct bsdconv_instance *ins){
 	}
 	while(ins->phase[ins->phase_index-1].data->next){
 		ins->phase[ins->phase_index-1].data=ins->phase[ins->phase_index-1].data->next;
+		ins->phase[ins->phase_index].state.status=DUMMY;
 		for(i=0;i<ins->phase[ins->phase_index-1].data->len;i++){
 			memcpy(&ins->phase[ins->phase_index].state, ins->phase[ins->phase_index].codec[ins->phase[ins->phase_index].index].z + (uintptr_t)ins->phase[ins->phase_index].state.sub[*(ins->phase[ins->phase_index-1].data->data+i)], sizeof(struct state_s));
 			switch(ins->phase[ins->phase_index].state.status){
@@ -404,6 +405,8 @@ int bsdconv(struct bsdconv_instance *ins){
 		}
 		inter_x:
 		switch(ins->phase[ins->phase_index].state.status){
+			case DUMMY:
+				continue;
 			case DEADEND:
 				pass_to_to:
 				ins->phase[ins->phase_index].pend=0;
@@ -455,7 +458,17 @@ int bsdconv(struct bsdconv_instance *ins){
 				goto phase_inter;
 			case SUBMATCH:
 				ins->phase[ins->phase_index].match=ins->phase[ins->phase_index].state.data;
-				ins->phase[ins->phase_index].bak=ins->phase[ins->phase_index-1].data->next;
+
+				if(ins->phase[ins->phase_index-1].data->next){
+					ins->phase[ins->phase_index].bak=ins->phase[ins->phase_index-1].data->next;
+				}else{
+					ins->phase[ins->phase_index].bak=ins->phase[ins->phase_index-1].data_tail->next=malloc(sizeof(struct data_s));
+					ins->phase[ins->phase_index-1].data_tail=ins->phase[ins->phase_index-1].data_tail->next;
+					ins->phase[ins->phase_index-1].data_tail->next=NULL;
+					ins->phase[ins->phase_index-1].data_tail->len=0;
+					ins->phase[ins->phase_index-1].data_tail->data=malloc(1);
+				}
+
 				ins->phase[ins->phase_index].pend=1;
 				break;
 			case NEXTPHASE:
@@ -483,6 +496,7 @@ int bsdconv(struct bsdconv_instance *ins){
 	phase_to:
 	while(ins->phase[ins->phasen-1].data->next){
 		ins->phase[ins->phasen-1].data=ins->phase[ins->phasen-1].data->next;
+		ins->phase[ins->phasen].state.status=DUMMY;
 		for(i=0;i<ins->phase[ins->phasen-1].data->len;i++){
 			memcpy(&ins->phase[ins->phasen].state, ins->phase[ins->phasen].codec[ins->phase[ins->phasen].index].z + (uintptr_t)ins->phase[ins->phasen].state.sub[*(ins->phase[ins->phasen-1].data->data+i)], sizeof(struct state_s));
 			switch(ins->phase[ins->phasen].state.status){
@@ -496,6 +510,8 @@ int bsdconv(struct bsdconv_instance *ins){
 		}
 		to_x:
 		switch(ins->phase[ins->phasen].state.status){
+			case DUMMY:
+				continue;
 			case DEADEND:
 				pass_to_out:
 				ins->phase[ins->phasen].pend=0;
@@ -539,7 +555,16 @@ int bsdconv(struct bsdconv_instance *ins){
 				goto phase_out;
 			case SUBMATCH:
 				ins->phase[ins->phasen].match=ins->phase[ins->phasen].state.data;
-				ins->phase[ins->phasen].bak=ins->phase[ins->phasen-1].data->next;
+				if(ins->phase[ins->phasen-1].data->next){
+					ins->phase[ins->phasen].bak=ins->phase[ins->phasen-1].data->next;
+				}else{
+					ins->phase[ins->phasen].bak=ins->phase[ins->phasen-1].data_tail->next=malloc(sizeof(struct data_s));
+					ins->phase[ins->phasen-1].data_tail=ins->phase[ins->phasen-1].data_tail->next;
+					ins->phase[ins->phasen-1].data_tail->next=NULL;
+					ins->phase[ins->phasen-1].data_tail->len=0;
+					ins->phase[ins->phasen-1].data_tail->data=malloc(1);
+				}
+
 				ins->phase[ins->phasen].pend=1;
 				break;
 			case SUBROUTINE:
