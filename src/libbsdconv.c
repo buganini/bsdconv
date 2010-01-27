@@ -281,6 +281,7 @@ int bsdconv(struct bsdconv_instance *ins){
 					memcpy(ptr, data_ptr->data, data_ptr->len);
 					ptr+=data_ptr->len;
 					ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
+					free(data_ptr->data);
 					free(data_ptr);
 				}
 				return 0;
@@ -306,6 +307,7 @@ int bsdconv(struct bsdconv_instance *ins){
 					memcpy(ptr, data_ptr->data, data_ptr->len);
 					ptr+=data_ptr->len;
 					ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
+					free(data_ptr->data);
 					free(data_ptr);
 				}
 				return 0;
@@ -615,6 +617,7 @@ int bsdconv(struct bsdconv_instance *ins){
 					memcpy(ptr, data_ptr->data, data_ptr->len);
 					ptr+=data_ptr->len;
 					ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
+					free(data_ptr->data);
 					free(data_ptr);
 				}
 				return 0;
