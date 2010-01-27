@@ -29,6 +29,7 @@ enum bsdconv_status{
 	SUBMATCH,
 	SUBROUTINE,
 	NEXTPHASE,
+	DUMMY,
 };
 
 enum bsdconv_mode{
