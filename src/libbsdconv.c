@@ -407,7 +407,6 @@ int bsdconv(struct bsdconv_instance *ins){
 				if(ins->phase[ins->phase_index].match){
 					listcpy(ins->phase[ins->phase_index].data_tail, ins->phase[ins->phase_index].match, ins->phase[ins->phase_index].codec[ins->phase[ins->phase_index].index].data_z);
 					ins->phase[ins->phase_index].match=NULL;
-					ins->phase[ins->phase_index].bak=ins->phase[ins->phase_index].bak->next;
 					listfree(ins->phase[ins->phase_index-1].data_head,ins->phase[ins->phase_index].bak,ins->phase[ins->phase_index-1].data_tail);
 					ins->phase[ins->phase_index-1].data=ins->phase[ins->phase_index-1].data_head;
 
@@ -437,9 +436,9 @@ int bsdconv(struct bsdconv_instance *ins){
 				}
 				break;
 			case MATCH:
-				ins->phase[ins->phase_index-1].data=ins->phase[ins->phase_index-1].data->next;
 				listcpy(ins->phase[ins->phase_index].data_tail, ins->phase[ins->phase_index].state.data, ins->phase[ins->phase_index].codec[ins->phase[ins->phase_index].index].data_z);
-				listfree(ins->phase[ins->phase_index-1].data_head,ins->phase[ins->phase_index-1].data,ins->phase[ins->phase_index-1].data_tail);
+				ins->phase[ins->phase_index].bak=ins->phase[ins->phase_index-1].data->next;
+				listfree(ins->phase[ins->phase_index-1].data_head,ins->phase[ins->phase_index].bak,ins->phase[ins->phase_index-1].data_tail);
 				ins->phase[ins->phase_index].pend=0;
 				ins->phase[ins->phase_index].match=NULL;
 
@@ -451,7 +450,7 @@ int bsdconv(struct bsdconv_instance *ins){
 				goto phase_inter;
 			case SUBMATCH:
 				ins->phase[ins->phase_index].match=ins->phase[ins->phase_index].state.data;
-				ins->phase[ins->phase_index].bak=ins->phase[ins->phase_index-1].data;
+				ins->phase[ins->phase_index].bak=ins->phase[ins->phase_index-1].data->next;
 				ins->phase[ins->phase_index].pend=1;
 				break;
 			case NEXTPHASE:
@@ -512,15 +511,16 @@ int bsdconv(struct bsdconv_instance *ins){
 
 					RESET(ins->phasen);
 
-					listfree(ins->phase[ins->phasen-1].data_head,ins->phase[ins->phasen-1].data->next,ins->phase[ins->phasen-1].data_tail);
+					ins->phase[ins->phasen].bak=ins->phase[ins->phasen-1].data->next;
+					listfree(ins->phase[ins->phasen-1].data_head,ins->phase[ins->phasen].bak,ins->phase[ins->phasen-1].data_tail);
 					ins->phase[ins->phasen].bak=ins->phase[ins->phasen-1].data=ins->phase[ins->phasen-1].data_head;
 
 					continue;
 				}
 				break;
 			case MATCH:
-				ins->phase[ins->phasen].bak=ins->phase[ins->phasen-1].data->next;
 				listcpy(ins->phase[ins->phasen].data_tail, ins->phase[ins->phasen].state.data, ins->phase[ins->phasen].codec[ins->phase[ins->phasen].index].data_z);
+				ins->phase[ins->phasen].bak=ins->phase[ins->phasen-1].data->next;
 				listfree(ins->phase[ins->phasen-1].data_head, ins->phase[ins->phasen].bak,ins->phase[ins->phasen-1].data_tail);
 				ins->phase[ins->phasen-1].data=ins->phase[ins->phasen-1].data_head;
 				ins->phase[ins->phasen].pend=0;
@@ -537,10 +537,10 @@ int bsdconv(struct bsdconv_instance *ins){
 				ins->phase[ins->phasen].codec[ins->phase[ins->phasen].index].callback(ins);
 				goto to_x;
 			case NEXTPHASE:
-				listfree(ins->phase[ins->phasen-1].data_head,ins->phase[ins->phasen-1].data->next,ins->phase[ins->phasen-1].data_tail);
+				ins->phase[ins->phasen].bak=ins->phase[ins->phasen-1].data->next;
+				listfree(ins->phase[ins->phasen-1].data_head,ins->phase[ins->phasen].bak,ins->phase[ins->phasen-1].data_tail);
 				ins->phase[ins->phasen-1].data=ins->phase[ins->phasen-1].data_head;
 				RESET(ins->phasen);
-				ins->phase[ins->phasen].bak=ins->phase[ins->phasen-1].data->next;
 				ins->phase[ins->phasen].pend=0;
 				goto phase_out;
 				break;
