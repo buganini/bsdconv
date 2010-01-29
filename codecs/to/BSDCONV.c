@@ -32,8 +32,8 @@ void callback(struct bsdconv_instance *ins){
 	this_phase->data_tail=this_phase->data_tail->next;
 	this_phase->data_tail->next=NULL;
 
-	this_phase->data_tail->len=prev_phase->data->len*2+1;
-	p=this_phase->data_tail->data=malloc(this_phase->data_tail->len);
+	this_phase->data_tail->len=prev_phase->data->len*2;
+	p=this_phase->data_tail->data=malloc(this_phase->data_tail->len+1);
 	for(i=0;i<prev_phase->data->len;++i){
 		sprintf(p,"%02X",prev_phase->data->data[i]);
 		TAILIZE(p);
