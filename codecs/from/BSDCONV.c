@@ -30,7 +30,9 @@ struct my_s {
 };
 
 void *cbcreate(void){
-	return malloc(sizeof(struct my_s));
+	struct my_s *r=malloc(sizeof(struct my_s));
+	r->data.data=NULL;
+	return r;
 }
 
 void cbinit(struct bsdconv_codec_t *cdc, struct my_s *t){
@@ -40,7 +42,6 @@ void cbinit(struct bsdconv_codec_t *cdc, struct my_s *t){
 	t->data.next=0;
 	t->size=0;
 	t->flag=F_A;
-
 }
 
 void cbdestroy(void *p){
