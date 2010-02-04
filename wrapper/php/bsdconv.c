@@ -31,6 +31,10 @@ static int le_bsdconv;
 #define IBUFLEN 1024
 #define OBUFLEN 1024
 
+static void bsdconv_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC){
+	bsdconv_destroy((struct bsdconv_instance *) rsrc->ptr);
+}
+
 /* {{{ proto resource bsdconv_create(string conversion)
   create bsdconv instance */
 PHP_FUNCTION(bsdconv_create){
@@ -42,18 +46,20 @@ PHP_FUNCTION(bsdconv_create){
 	}
 	r=bsdconv_create(c);
 	if(r==NULL) RETURN_BOOL(0);
-	RETURN_RESOURCE((long int)r);
+	ZEND_REGISTER_RESOURCE(return_value, r, le_bsdconv);
 }
 /* }}} */
 
 /* {{{ proto bool bsdconv_destroy(resource ins)
   destroy bsdconv instance */
 PHP_FUNCTION(bsdconv_destroy){
-	zend_rsrc_list_entry *p;
+	zval *p=NULL;
 	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &p) == FAILURE){
 		RETURN_BOOL(0);
 	}
-	bsdconv_destroy(p->ptr);
+	if(zend_list_delete(Z_RESVAL_P(p)) == FAILURE){
+		RETURN_BOOL(0);
+	}
 	RETURN_BOOL(1);
 }
 /* }}} */
@@ -62,14 +68,20 @@ PHP_FUNCTION(bsdconv_destroy){
   bsdconv main function
 */
 PHP_FUNCTION(bsdconv){
-	zend_rsrc_list_entry *r;
+	zval *r=NULL;
 	struct bsdconv_instance *p;
 	char *c;
 	int l;
 	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &r, &c, &l) == FAILURE){
 		RETURN_BOOL(0);
 	}
-	p=r->ptr;
+
+	ZEND_FETCH_RESOURCE(p, struct bsdconv_instance *, &r, -1, "bsdconv conversion instance", le_bsdconv);
+
+	if(p==NULL){
+		RETURN_BOOL(0);
+	}
+
 	p->mode=BSDCONV_CM;
 	p->feed=c;
 	p->feed_len=l;
@@ -77,6 +89,7 @@ PHP_FUNCTION(bsdconv){
 	bsdconv(p);
 	p->back=emalloc(p->back_len);
 	bsdconv(p);
+
 	RETURN_STRINGL(p->back, p->back_len, 0);
 }
 /* }}} */
@@ -85,7 +98,7 @@ PHP_FUNCTION(bsdconv){
   bsdconv_file function
 */
 PHP_FUNCTION(bsdconv_file){
-	zend_rsrc_list_entry *r;
+	zval *r=NULL;
 	struct bsdconv_instance *p;
 	char *s1, *s2;
 	int l,t;
@@ -95,7 +108,12 @@ PHP_FUNCTION(bsdconv_file){
 	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &r, &s1, &l, &s2, &l) == FAILURE){
 		RETURN_BOOL(0);
 	}
-	p=r->ptr;
+
+	ZEND_FETCH_RESOURCE(p, struct bsdconv_instance *, &r, -1, "bsdconv conversion instance", le_bsdconv);
+
+	if(p==NULL){
+		RETURN_BOOL(0);
+	}
 
 	inf=fopen(s1,"r");
 	if(!inf) RETURN_BOOL(0);
@@ -124,15 +142,17 @@ PHP_FUNCTION(bsdconv_file){
   bsdconv conversion info function
 */
 PHP_FUNCTION(bsdconv_info){
-	zend_rsrc_list_entry *r;
-	struct bsdconv_instance *ins;
+	zval *r=NULL;
+	struct bsdconv_instance *p;
 	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &r) == FAILURE){
 		RETURN_BOOL(0);
 	}
-	ins=r->ptr;
+
+	ZEND_FETCH_RESOURCE(p, struct bsdconv_instance *, &r, -1, "bsdconv conversion instance", le_bsdconv);
+
 	array_init(return_value);
-	add_assoc_long(return_value, "ierr", ins->ierr);
-	add_assoc_long(return_value, "oerr", ins->oerr);
+	add_assoc_long(return_value, "ierr", p->ierr);
+	add_assoc_long(return_value, "oerr", p->oerr);
 }
 /* }}} */
 
@@ -190,6 +210,7 @@ ZEND_GET_MODULE(bsdconv)
  */
 PHP_MINIT_FUNCTION(bsdconv)
 {
+	le_bsdconv = zend_register_list_destructors_ex(bsdconv_dtor, NULL, "bsdconv conversion instance", module_number);
 	return SUCCESS;
 }
 /* }}} */
