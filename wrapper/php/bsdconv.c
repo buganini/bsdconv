@@ -28,6 +28,8 @@ static int le_bsdconv;
 
 #include <bsdconv.h>
 
+#define LE_BSDCONV_DESC "bsdconv instance"
+
 #define IBUFLEN 1024
 #define OBUFLEN 1024
 
@@ -76,7 +78,7 @@ PHP_FUNCTION(bsdconv){
 		RETURN_BOOL(0);
 	}
 
-	ZEND_FETCH_RESOURCE(p, struct bsdconv_instance *, &r, -1, "bsdconv conversion instance", le_bsdconv);
+	ZEND_FETCH_RESOURCE(p, struct bsdconv_instance *, &r, -1, LE_BSDCONV_DESC, le_bsdconv);
 
 	if(p==NULL){
 		RETURN_BOOL(0);
@@ -109,7 +111,7 @@ PHP_FUNCTION(bsdconv_file){
 		RETURN_BOOL(0);
 	}
 
-	ZEND_FETCH_RESOURCE(p, struct bsdconv_instance *, &r, -1, "bsdconv conversion instance", le_bsdconv);
+	ZEND_FETCH_RESOURCE(p, struct bsdconv_instance *, &r, -1, LE_BSDCONV_DESC, le_bsdconv);
 
 	if(p==NULL){
 		RETURN_BOOL(0);
@@ -148,7 +150,7 @@ PHP_FUNCTION(bsdconv_info){
 		RETURN_BOOL(0);
 	}
 
-	ZEND_FETCH_RESOURCE(p, struct bsdconv_instance *, &r, -1, "bsdconv conversion instance", le_bsdconv);
+	ZEND_FETCH_RESOURCE(p, struct bsdconv_instance *, &r, -1, LE_BSDCONV_DESC, le_bsdconv);
 
 	array_init(return_value);
 	add_assoc_long(return_value, "ierr", p->ierr);
@@ -210,7 +212,7 @@ ZEND_GET_MODULE(bsdconv)
  */
 PHP_MINIT_FUNCTION(bsdconv)
 {
-	le_bsdconv = zend_register_list_destructors_ex(bsdconv_dtor, NULL, "bsdconv conversion instance", module_number);
+	le_bsdconv = zend_register_list_destructors_ex(bsdconv_dtor, NULL, LE_BSDCONV_DESC, module_number);
 	return SUCCESS;
 }
 /* }}} */
