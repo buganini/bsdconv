@@ -22,7 +22,7 @@
 #define TAILIZE(p) while(*p){ p++ ;}
 
 void callback(struct bsdconv_instance *ins){
-	unsigned char *data, *p, buf[16]={0};
+	char *data, *p, buf[16]={0};
 	unsigned int len, i;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phasen];
 	struct bsdconv_phase *prev_phase=&ins->phase[ins->phasen-1];
@@ -40,10 +40,10 @@ void callback(struct bsdconv_instance *ins){
 	this_phase->data_tail->next=NULL;
 
 	p=buf;
-	sprintf(p,"\\u%x",data[0]);
+	sprintf(p,"\\u%x",(unsigned char)data[0]);
 	for(i=1;i<len;i++){
 		TAILIZE(p);
-		sprintf(p,"%02x", data[i]);
+		sprintf(p,"%02x", (unsigned char)data[i]);
 	}
 	len=strlen(buf);
 	this_phase->data_tail->len=len;

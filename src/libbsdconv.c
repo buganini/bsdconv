@@ -255,7 +255,7 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 int bsdconv(struct bsdconv_instance *ins){
 	uintptr_t i;
 	struct data_s *data_ptr;
-	unsigned char *ptr;
+	char *ptr;
 
 	switch(ins->mode){
 		case BSDCONV_BB:
@@ -318,7 +318,7 @@ int bsdconv(struct bsdconv_instance *ins){
 	//from
 	phase_from:
 	while(ins->from_data < ins->feed+ins->feed_len){
-		memcpy(&ins->phase[0].state, ins->phase[0].codec[ins->phase[0].index].z + (uintptr_t)ins->phase[0].state.sub[*ins->from_data], sizeof(struct state_s));
+		memcpy(&ins->phase[0].state, ins->phase[0].codec[ins->phase[0].index].z + (uintptr_t)ins->phase[0].state.sub[(unsigned char)*ins->from_data], sizeof(struct state_s));
 		from_x:
 		switch(ins->phase[0].state.status){
 			case DEADEND:
@@ -393,7 +393,7 @@ int bsdconv(struct bsdconv_instance *ins){
 		ins->phase[ins->phase_index-1].data=ins->phase[ins->phase_index-1].data->next;
 		ins->phase[ins->phase_index].state.status=DUMMY;
 		for(i=0;i<ins->phase[ins->phase_index-1].data->len;i++){
-			memcpy(&ins->phase[ins->phase_index].state, ins->phase[ins->phase_index].codec[ins->phase[ins->phase_index].index].z + (uintptr_t)ins->phase[ins->phase_index].state.sub[*(ins->phase[ins->phase_index-1].data->data+i)], sizeof(struct state_s));
+			memcpy(&ins->phase[ins->phase_index].state, ins->phase[ins->phase_index].codec[ins->phase[ins->phase_index].index].z + (uintptr_t)ins->phase[ins->phase_index].state.sub[(unsigned char)*(ins->phase[ins->phase_index-1].data->data+i)], sizeof(struct state_s));
 			switch(ins->phase[ins->phase_index].state.status){
 				case DEADEND:
 					goto pass_to_to;
@@ -498,7 +498,7 @@ int bsdconv(struct bsdconv_instance *ins){
 		ins->phase[ins->phasen-1].data=ins->phase[ins->phasen-1].data->next;
 		ins->phase[ins->phasen].state.status=DUMMY;
 		for(i=0;i<ins->phase[ins->phasen-1].data->len;i++){
-			memcpy(&ins->phase[ins->phasen].state, ins->phase[ins->phasen].codec[ins->phase[ins->phasen].index].z + (uintptr_t)ins->phase[ins->phasen].state.sub[*(ins->phase[ins->phasen-1].data->data+i)], sizeof(struct state_s));
+			memcpy(&ins->phase[ins->phasen].state, ins->phase[ins->phasen].codec[ins->phase[ins->phasen].index].z + (uintptr_t)ins->phase[ins->phasen].state.sub[(unsigned char)*(ins->phase[ins->phasen-1].data->data+i)], sizeof(struct state_s));
 			switch(ins->phase[ins->phasen].state.status){
 				case DEADEND:
 					goto pass_to_out;

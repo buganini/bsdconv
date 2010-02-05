@@ -42,7 +42,7 @@ enum bsdconv_mode{
 };
 
 struct data_s{
-	unsigned char *data;
+	char *data;
 	size_t len;
 	struct data_s *next;
 };
@@ -55,27 +55,27 @@ struct state_s{
 
 struct bsdconv_instance{
 	int mode;
-	unsigned char *in_buf;
+	char *in_buf;
 	size_t in_len;
-	unsigned char *out_buf;
+	char *out_buf;
 	size_t out_len;
-	unsigned char *feed;
+	char *feed;
 	size_t feed_len;
-	unsigned char *back;
+	char *back;
 	size_t back_len;
-	unsigned char *from_data;
+	char *from_data;
 
 	struct bsdconv_phase *phase;
 	int phasen, phase_index;
 	unsigned int ierr, oerr;
-	unsigned char *from_bak;
+	char *from_bak;
 };
 
 struct bsdconv_phase{
 	struct data_s *bak, *match, *data_head, *data_tail, *data;
 	struct state_s state;
 	int index;
-	unsigned char pend;
+	char pend;
 	struct bsdconv_codec_t *codec;
 	int codecn;
 };
@@ -90,8 +90,8 @@ struct bsdconv_codec_t {
 	size_t maplen;
 	void *dl;
 #endif
-	unsigned char *z;
-	unsigned char *data_z;
+	char *z;
+	char *data_z;
 	char *desc;
 	void (*callback)(struct bsdconv_instance *);
 	void *(*cbcreate)(void);
@@ -120,10 +120,10 @@ char * index(const char *, int);
 #define LISTCPY(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
 	(X)->next=malloc(sizeof(struct data_s));	\
 	(X)=(X)->next;	\
-	memcpy((X), (unsigned char *)((Z)+(uintptr_t)data_ptr), sizeof(struct data_s));	\
+	memcpy((X), (char *)((Z)+(uintptr_t)data_ptr), sizeof(struct data_s));	\
 	data_ptr=(X)->next;	\
 	(X)->next=NULL;	\
-	ptr=(unsigned char *)((Z)+(uintptr_t)(X)->data);	\
+	ptr=(char *)((Z)+(uintptr_t)(X)->data);	\
 	(X)->data=malloc((X)->len + 1);	\
 	memcpy((X)->data, ptr, (X)->len);	\
 }

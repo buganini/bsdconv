@@ -26,7 +26,7 @@ int main(int argc, char *argv[]){
 	char *t;
 	struct bsdconv_instance *ins;
 	FILE *inf, *otf;
-	unsigned char in[IBUFLEN], out[OBUFLEN];
+	char in[IBUFLEN], out[OBUFLEN];
 
 	int r;
 	if(argc<2){
