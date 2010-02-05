@@ -21,7 +21,7 @@
 
 struct my_s{
 	int status;
-	unsigned char buf[4];
+	char buf[4];
 };
 
 void *cbcreate(void){
@@ -44,7 +44,7 @@ void cbdestroy(void *p){
 void callback(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=&ins->phase[0];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	unsigned char d=*ins->from_data;
+	char d=*ins->from_data;
 	int i;
 	size_t l;
 	switch(t->status){

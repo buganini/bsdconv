@@ -26,7 +26,7 @@
 #define bb11011100 0xDC
 
 void callback(struct bsdconv_instance *ins){
-	unsigned char *data, *p, c;
+	char *data, *p, c;
 	unsigned int len, i;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phasen];
 	struct bsdconv_phase *prev_phase=&ins->phase[ins->phasen-1];

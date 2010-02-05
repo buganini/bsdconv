@@ -26,7 +26,7 @@ struct my_s {
 	struct data_s data;
 	/* extend struct data_s */
 	size_t size;
-	unsigned char flag;
+	char flag;
 };
 
 void *cbcreate(void){
@@ -58,8 +58,8 @@ void callback(struct bsdconv_instance *ins){
 	void *p;
 	struct bsdconv_phase *this_phase=&ins->phase[0];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	unsigned char d=*ins->from_data;
-	if(hex[d]==-1){
+	char d=*ins->from_data;
+	if(hex[(unsigned char)d]==-1){
 		this_phase->state.status=DEADEND;
 		t->flag=F_CLEAR;
 	}else{
@@ -83,13 +83,13 @@ void callback(struct bsdconv_instance *ins){
 						free(p);
 					}
 				}
-				t->data.data[t->data.len]=hex[d];
+				t->data.data[t->data.len]=hex[(unsigned char)d];
 				t->data.len+=1;
 				t->flag=F_B;
 				break;
 			case F_B:
 				t->data.data[t->data.len-1]<<=4;
-				t->data.data[t->data.len-1]|=hex[d];
+				t->data.data[t->data.len-1]|=hex[(unsigned char)d];
 				t->flag=F_A;
 				break;
 		}

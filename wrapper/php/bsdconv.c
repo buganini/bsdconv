@@ -105,7 +105,7 @@ PHP_FUNCTION(bsdconv_file){
 	char *s1, *s2;
 	int l,t;
 	FILE *inf, *otf;
-	unsigned char in[IBUFLEN], out[OBUFLEN];
+	char in[IBUFLEN], out[OBUFLEN];
 
 	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &r, &s1, &l, &s2, &l) == FAILURE){
 		RETURN_BOOL(0);

@@ -98,7 +98,7 @@ py_bsdconv_conv_file(PyObject *self, PyObject *args)
 	struct bsdconv_instance *p;
 	char *s1, *s2;
 	FILE *inf, *otf;
-	unsigned char in[IBUFLEN], out[OBUFLEN];
+	char in[IBUFLEN], out[OBUFLEN];
 	int r;
 
 	if (!PyArg_ParseTuple(args, "kss", &k,&s1,&s2))

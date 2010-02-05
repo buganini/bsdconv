@@ -39,20 +39,20 @@ void cbdestroy(void *p){
 }
 
 void callback(struct bsdconv_instance *ins){
-	unsigned char *data, *p, buf[128]={0};
+	char *data, *p, buf[128]={0};
 	unsigned int len, i;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phasen];
 	struct bsdconv_phase *prev_phase=&ins->phase[ins->phasen-1];
 	data=prev_phase->data->data;
 	struct state_s state;
 	struct data_s *data_ptr, *orig_next, *my_tail;
-	unsigned char *ptr;
+	char *ptr;
 	struct bsdconv_codec_t *t=this_phase->codec[this_phase->index].priv;
 	switch(*data){
 		case 0x01:
 			memcpy(&state, t->z, sizeof(struct state_s));
 			for(i=0;i<prev_phase->data->len;++i){
-				memcpy(&state, t->z + (uintptr_t)state.sub[data[i]], sizeof(struct state_s));
+				memcpy(&state, t->z + (uintptr_t)state.sub[(unsigned char)data[i]], sizeof(struct state_s));
 				if(state.status==DEADEND){
 					break;
 				}
@@ -63,8 +63,8 @@ void callback(struct bsdconv_instance *ins){
 					orig_next=prev_phase->data->next;
 					free(data);
 					my_tail=prev_phase->data;
-					memcpy(my_tail, (unsigned char *)(t->z+(uintptr_t)state.data), sizeof(struct data_s));
-					ptr=(unsigned char *)(t->z+(uintptr_t)my_tail->data);
+					memcpy(my_tail, t->z+(uintptr_t)state.data, sizeof(struct data_s));
+					ptr=t->z+(uintptr_t)my_tail->data;
 					my_tail->data=malloc(my_tail->len);
 					memcpy(my_tail->data, ptr, my_tail->len);
 					data_ptr=my_tail->next;
@@ -72,10 +72,10 @@ void callback(struct bsdconv_instance *ins){
 					while(data_ptr){
 						my_tail->next=malloc(sizeof(struct data_s));
 						my_tail=my_tail->next;
-						memcpy(my_tail, (unsigned char *)(t->z+(uintptr_t)data_ptr), sizeof(struct data_s));
+						memcpy(my_tail, t->z+(uintptr_t)data_ptr, sizeof(struct data_s));
 						data_ptr=my_tail->next;
 						my_tail->next=orig_next;
-						ptr=(unsigned char *)(t->z+(uintptr_t)my_tail->data);
+						ptr=t->z+(uintptr_t)my_tail->data;
 						my_tail->data=malloc(my_tail->len);
 						memcpy(my_tail->data, ptr, my_tail->len);
 					}
@@ -102,12 +102,12 @@ void callback(struct bsdconv_instance *ins){
 
 	sprintf(p,"<img class=\"cns11643_img\" src=\"http://www.cns11643.gov.tw/AIDB/png.do?page=");
 	TAILIZE(p);
-	sprintf(p,"%X", data[0]);
+	sprintf(p,"%X", (unsigned char)data[0]);
 	TAILIZE(p);
 	sprintf(p,"&code=");
 	for(i=1;i<len;i++){
 		TAILIZE(p);
-		sprintf(p,"%02X", data[i]);
+		sprintf(p,"%02X", (unsigned char)data[i]);
 	}
 	TAILIZE(p);
 	sprintf(p, "\" />");

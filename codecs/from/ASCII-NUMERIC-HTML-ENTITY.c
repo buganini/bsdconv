@@ -29,7 +29,7 @@ struct my_s{
 	int *tbl;
 	int b;
 	union {
-		unsigned char c[4];
+		char c[4];
 		uint32_t i;
 	} buf;
 };
@@ -70,11 +70,11 @@ int dec[256]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 int hex[256]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,1,2,3,4,5,6,7,8,9,-1,-1,-1,-1,-1,-1,-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 
 void callback(struct bsdconv_instance *ins){
-	unsigned char ob[8];
+	char ob[8], *p;
 	int i,j=0;
 	struct bsdconv_phase *this_phase=&ins->phase[0];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	unsigned char d=*ins->from_data, *p;
+	char d=*ins->from_data;
 	if(d==';' && t->status){
 		//put data
 		t->buf.i=htonl(t->buf.i);
@@ -95,9 +95,9 @@ void callback(struct bsdconv_instance *ins){
 	}
 	if(t->status){
 		++t->status;
-		if(t->tbl[d]==-1) DEADEND();
+		if(t->tbl[(unsigned char)d]==-1) DEADEND();
 		t->buf.i*=t->b;
-		t->buf.i+=t->tbl[d];
+		t->buf.i+=t->tbl[(unsigned char)d];
 	}else{
 		if(d=='x'){
 			t->status=1000;
@@ -108,8 +108,8 @@ void callback(struct bsdconv_instance *ins){
 		}
 		t->b=10;
 		t->tbl=dec;
-		if(t->tbl[d]==-1) DEADEND();
-		t->buf.i=t->tbl[d];
+		if(t->tbl[(unsigned char)d]==-1) DEADEND();
+		t->buf.i=t->tbl[(unsigned char)d];
 		t->status=1;
 	}
 	CONTINUE();

@@ -73,7 +73,7 @@ conv_file(i, f1, f2)
 		SSize_t l;
 		int r;
 		FILE *inf, *otf;
-		unsigned char in[IBUFLEN], out[OBUFLEN];
+		char in[IBUFLEN], out[OBUFLEN];
 	CODE:
 		p=INT2PTR(struct bsdconv_instance *, i);
 		s1=SvPV(f1, l);

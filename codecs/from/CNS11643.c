@@ -22,7 +22,7 @@
 
 struct my_s{
 	int status;
-	unsigned char plane, buf[4];
+	char plane, buf[4];
 	struct bsdconv_codec_t cd;
 };
 
@@ -54,10 +54,10 @@ void cbdestroy(void *p){
 void callback(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=&ins->phase[0];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	unsigned char d=*ins->from_data, *p;
+	char d=*ins->from_data, *p;
 	struct state_s state;
 	struct data_s *data_ptr;
-	unsigned char *ptr;
+	char *ptr;
 	int i;
 	switch(t->status){
 		case 0:
@@ -77,7 +77,7 @@ void callback(struct bsdconv_instance *ins){
 			t->buf[3]=d;
 			memcpy(&state, t->cd.z, sizeof(struct state_s));
 			for(i=0;i<4;++i){
-				memcpy(&state, t->cd.z + (uintptr_t)state.sub[t->buf[i]], sizeof(struct state_s));
+				memcpy(&state, t->cd.z + (uintptr_t)state.sub[(unsigned char)t->buf[i]], sizeof(struct state_s));
 				if(state.status==DEADEND){
 					break;
 				}

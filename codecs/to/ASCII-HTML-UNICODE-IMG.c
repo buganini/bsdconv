@@ -22,7 +22,7 @@
 #define TAILIZE(p) while(*p){ p++ ;}
 
 void callback(struct bsdconv_instance *ins){
-	unsigned char *data, *p, buf[128]={0};
+	char *data, *p, buf[128]={0};
 	unsigned int len, i;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phasen];
 	struct bsdconv_phase *prev_phase=&ins->phase[ins->phasen-1];
@@ -43,11 +43,11 @@ void callback(struct bsdconv_instance *ins){
 	sprintf(p,"<img class=\"unicode_img\" src=\"http://www.unicode.org/cgi-bin/refglyph?24-");
 	TAILIZE(p);
 	if(0<len){
-		sprintf(p,"%X", data[0]);
+		sprintf(p,"%X", (unsigned char)data[0]);
 	}
 	for(i=1;i<len;i++){
 		TAILIZE(p);
-		sprintf(p,"%02X", data[i]);
+		sprintf(p,"%02X", (unsigned char)data[i]);
 	}
 	TAILIZE(p);
 	sprintf(p, "\" />");

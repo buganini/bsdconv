@@ -34,12 +34,12 @@
 
 
 struct m_data_s{
-	unsigned char *data;
+	char *data;
 	size_t len;
 	struct data_s *next;
 
 	uintptr_t p;
-	unsigned char *dp;
+	char *dp;
 	struct m_data_s *n;
 };
 
@@ -63,15 +63,15 @@ struct list{
 	struct list *n;
 };
 
-unsigned char table[256]={};
-unsigned char ci_table[256]={0};
+char table[256]={};
+char ci_table[256]={0};
 
 uintptr_t offset=0;
 
 int main(int argc, char *argv[]){
 	int i, j, k, l, c=0, cu, cl, ci,pr;
 	FILE *fp;
-	unsigned char inbuf[1024], *f, *t, dat[256], *tmp, *of, *ot;
+	char inbuf[1024], *f, *t, dat[256], *tmp, *of, *ot;
 	struct m_data_s *data_r=NULL, *data_p=NULL, *data_t=NULL;
 	struct m_state_s *state_r, *state_t, holder;
 	struct list *todo=NULL, *newtodo, *newtodo_tail, *state_p;
@@ -186,12 +186,12 @@ int main(int argc, char *argv[]){
 	while(fgets((char *)inbuf, 1024, fp)){
 		if(inbuf[0]=='#') continue;
 		tmp=inbuf;
-		f=of=(unsigned char *)strsep((char **)&tmp, "\t ");
+		f=of=strsep((char **)&tmp, "\t ");
 		while(index("\t ",*tmp)){
 			tmp++;
 		}
 		if(*tmp){
-			t=ot=(unsigned char *)strsep((char **)&tmp, "\t\r\n# ");
+			t=ot=strsep((char **)&tmp, "\t\r\n# ");
 		}else{
 			t=ot=NULL;
 		}
@@ -216,10 +216,10 @@ int main(int argc, char *argv[]){
 			}else if(*f==','){
 				cu=cl=256;
 			}else{
-				cl=table[*f];
+				cl=table[(unsigned char)*f];
 				++f;
 				cl*=16;
-				cl+=table[*f];
+				cl+=table[(unsigned char)*f];
 				cu=cl;
 			}
 			state_p=todo;
@@ -351,10 +351,10 @@ int main(int argc, char *argv[]){
 					offset+=sizeof(struct data_s);
 
 					//put data
-					data_p->dp=(unsigned char *)malloc(l);
+					data_p->dp=malloc(l);
 					memcpy(data_p->dp, dat, l);
 					data_p->len=l;
-					data_p->data=(unsigned char *)offset;
+					data_p->data=(char *)offset;
 					offset+=l;
 				}
 
@@ -409,11 +409,11 @@ int main(int argc, char *argv[]){
 				}
 			}else{
 				if(j==0){
-					c=table[(int)*t];
+					c=table[(unsigned char)*t];
 					j=1;
 				}else{
 					c*=16;
-					c+=table[(int)*t];
+					c+=table[(unsigned char)*t];
 					j=0;
 					dat[l]=c;
 					++l;

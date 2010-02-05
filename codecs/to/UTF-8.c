@@ -31,7 +31,7 @@
 #define bb00110000 0x30
 
 void callback(struct bsdconv_instance *ins){
-	unsigned char *data, *p;
+	char *data, *p;
 	unsigned int len;
 	data=ins->phase[ins->phasen-1].data->data;
 
