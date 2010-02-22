@@ -1,4 +1,4 @@
-# transpose from from/cp950
+# transpose from from/cp936
 014E02	8140
 014E04	8141
 014E05	8142
