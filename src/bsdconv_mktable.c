@@ -424,25 +424,7 @@ int main(int argc, char *argv[]){
 		todo=NULL;
 	}
 	fclose(fp);
-	if((k=open(argv[2], O_RDWR|O_CREAT|O_TRUNC, 0644))<0){
-		fprintf(stderr, "Failed open output file (%d).\n", GetLastError());
-		exit(EXIT_FAILURE);
-	}
-	if(ftruncate(k,offset)<0){
-		fprintf(stderr, "Failed ftruncating (%d).\n", GetLastError());
-		exit(EXIT_FAILURE);
-	}
-#ifdef WIN32
-	close(k);
-	fd=CreateFile(argv[2], GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	md=CreateFileMapping(fd, NULL, PAGE_READWRITE, 0,0, NULL);
-	tmp=MapViewOfFile(md, FILE_MAP_READ|FILE_MAP_WRITE, 0,0,0);
-#else
-	if((tmp=mmap(0,offset,PROT_READ|PROT_WRITE,MAP_SHARED,k,0))==MAP_FAILED){
-		fprintf(stderr, "Failed memory mapping (%d).\n", GetLastError());
-		exit(EXIT_FAILURE);
-	}
-#endif
+	fopen(argv[2], "wb+");
 	printf("Total size: %u\n", (unsigned int)offset);
 	state_t=state_r;
 	while(state_t){
@@ -451,7 +433,8 @@ int main(int argc, char *argv[]){
 		for(i=0;i<257;i++){
 			dstate.sub[i]=state_t->sub[i];
 		}
-		memcpy(&tmp[state_t->p], &dstate, sizeof(struct state_s));
+		fseek(fp, state_t->p, SEEK_SET);
+		fwrite((void *)&dstate, sizeof(struct state_s), 1, fp);
 		tofree=state_t;
 		state_t=state_t->n;
 		free(tofree);
@@ -461,19 +444,14 @@ int main(int argc, char *argv[]){
 		ddata.data=data_t->data;
 		ddata.len=data_t->len;
 		ddata.next=data_t->next;
-		memcpy(&tmp[data_t->p], &ddata, sizeof(struct data_s));
-		memcpy(&tmp[(uintptr_t)ddata.data], data_t->dp, ddata.len);
+		fseek(fp, data_t->p, SEEK_SET);
+		fwrite((void *)&ddata, sizeof(struct data_s), 1, fp);
+		fseek(fp, (uintptr_t)ddata.data, SEEK_SET);
+		fwrite((void *)data_t->dp, ddata.len, 1, fp);
 		tofree=data_t;
 		data_t=data_t->n;
 		free(tofree);
 	}
-#ifdef WIN32
-	UnmapViewOfFile(tmp);
-	CloseHandle(md);
-	CloseHandle(fd);
-#else
-	munmap(tmp,offset);
-	close(k);
-#endif
+	fclose(fp);
 	return 0;
 }
