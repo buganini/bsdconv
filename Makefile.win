@@ -33,7 +33,8 @@ codecs_callback:
 codecs: codecs_table codecs_callback
 
 meta:
-	cp src/bsdconv.h build/include
+	cp src/bsdconv.h build/include/
+	cp tools/setEnvVar.bat build/
 
 clean:
 	rm -rf build
