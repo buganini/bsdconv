@@ -94,5 +94,5 @@ sub bsdconv_out () {
 Irssi::signal_add('event privmsg', "on_recv");
 #Irssi::signal_add('channel topic changed', "on_topic");
 Irssi::signal_add_first('send text', "bsdconv_out");
-Irssi::settings_add_str("misc", "bsdconv_in", "raw:raw");
-Irssi::settings_add_str("misc", "bsdconv_out", "raw:raw");
+Irssi::settings_add_str("misc", "bsdconv_in", "byte:byte");
+Irssi::settings_add_str("misc", "bsdconv_out", "byte:byte");

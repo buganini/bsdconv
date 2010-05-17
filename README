@@ -7,7 +7,7 @@ Internal encoding:
   * BOM is 0000
 * UNICODE is prefixed with 01
 * CNS11643 is prefixed with 02
-* RAW is prefixed with 03
+* BYTE is prefixed with 03
 * Chinese components is prefixed with 04
 
 NOTICE:
