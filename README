@@ -22,15 +22,15 @@ sudo make install
 --
 Run:
 Convert traditional chinese big5 to simplified chinese utf-8
-> bsdconv big5,ascii:chs:utf-8,ascii in.txt out.txt
+> bsdconv big5,ascii:zhcn:utf-8,ascii in.txt out.txt
 
-Convert traditional chinese utf-8 to simplified chinese utf-8
-> bsdconv utf-8,ascii:zhtw_normalize:cht:utf-8,ascii in.txt out.txt
+Convert traditional chinese utf-8 to simplified chinese GB2312 with transliteration
+> bsdconv utf-8,ascii:zhcn:cp936,cp936_trans,ascii in.txt out.txt
 
 Convert big5 data, traditional chinese to simplified chinese, 
 CRLF/CR/LF to CRLF, to big5 data, translate simplified chinese words, which are
-not in big5, to HTML entities
-> bsdconv big5,ascii:chs,win:cp950,ascii,htmlentity in.txt out.txt
+not in big5, to HTML entities, and uppercase the ascii characters.
+> bsdconv big5,ascii:zhcn:win:upper:cp950,ascii,htmlentity in.txt out.txt
 
 Very useful for migrating MySQL DB from Big5 to UTF-8
 > bsdconv htmlentity,big5-5c,big5,ascii:utf-8,ascii in.sql out.sql
