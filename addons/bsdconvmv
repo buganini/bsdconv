@@ -1,0 +1,48 @@
+#!/bin/local/bin/python
+import os
+import sys
+import bsdconv
+
+def usage():
+	print sys.argv[0], "conversion [arguments] files..."
+	print "Arguments:"
+	print "--no-test: actually rename the files"
+
+def proc(d):
+	if(os.path.isdir(d)):
+		for i in os.listdir(d):
+			proc(os.path.join(d,i))
+	if(os.path.isfile(d)):
+		path=os.path.dirname(d)
+		name=os.path.basename(d)
+		newname=bsdconv.conv(p,name)
+		if newname!=name:
+			os.chdir(path)
+			print path, name, "=>", newname
+			if(test==False):
+				os.rename(name,newname)
+
+
+if len(sys.argv)<3:
+	usage()
+	sys.exit()
+
+p=bsdconv.create(sys.argv[1])
+if p==None:
+        print bsdconv.error()
+        sys.exit()
+
+arg=1
+test=True
+for item in sys.argv[2:]:
+	if(arg==1):
+		if item=='--':
+			arg=0
+		elif item=='--no-test':
+			test=False
+		else:
+			arg=0
+	if(arg==0):
+		proc(os.path.realpath(item))
+
+bsdconv.destroy(p)
