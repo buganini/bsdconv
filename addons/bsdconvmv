@@ -12,15 +12,14 @@ def proc(d):
 	if(os.path.isdir(d)):
 		for i in os.listdir(d):
 			proc(os.path.join(d,i))
-	if(os.path.isfile(d)):
-		path=os.path.dirname(d)
-		name=os.path.basename(d)
-		newname=bsdconv.conv(p,name)
-		if newname!=name:
-			os.chdir(path)
-			print "%s| %s => %s" % (path, name, newname)
-			if(test==False):
-				os.rename(name,newname)
+	path=os.path.dirname(d)
+	name=os.path.basename(d)
+	newname=bsdconv.conv(p,name)
+	if newname!=name:
+		os.chdir(path)
+		print "%s| %s => %s" % (path, name, newname)
+		if(test==False):
+			os.rename(name,newname)
 
 
 if len(sys.argv)<3:
