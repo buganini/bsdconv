@@ -24,7 +24,7 @@
 
 int main(int argc, char *argv[]){
 	char *t;
-	char *tmp;
+	char *tmp=NULL;
 	struct bsdconv_instance *ins;
 	FILE *inf, *otf;
 	char in[IBUFLEN], out[OBUFLEN];
