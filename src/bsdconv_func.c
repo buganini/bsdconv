@@ -27,6 +27,10 @@
 #include <string.h>
 #include "bsdconv.h"
 
+#ifndef MAP_PREFAULT_READ
+#define MAP_PREFAULT_READ 0
+#endif
+
 int loadcodec(struct bsdconv_codec_t *cd, char *path, int maponly){
 #ifdef WIN32
 	if ((cd->fd=CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL))==INVALID_HANDLE_VALUE){
@@ -54,7 +58,7 @@ int loadcodec(struct bsdconv_codec_t *cd, char *path, int maponly){
 	}
 	fstat(cd->fd, &stat);
 	cd->maplen=stat.st_size;
-	if((cd->data_z=cd->z=mmap(0,stat.st_size,PROT_READ, MAP_PRIVATE,cd->fd,0))==MAP_FAILED){
+	if((cd->data_z=cd->z=mmap(0, stat.st_size, PROT_READ, MAP_PRIVATE | MAP_PREFAULT_READ, cd->fd, 0))==MAP_FAILED){
 		close(cd->fd);
 		SetLastError(ENOMEM);
 		return 0;
