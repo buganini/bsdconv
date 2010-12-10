@@ -18,7 +18,7 @@ def proc(d):
 		newname=bsdconv.conv(p,name)
 		if newname!=name:
 			os.chdir(path)
-			print path, name, "=>", newname
+			print "%s| %s => %s" % (path, name, newname)
 			if(test==False):
 				os.rename(name,newname)
 
@@ -32,6 +32,7 @@ if p==None:
         print bsdconv.error()
         sys.exit()
 
+cwd=os.getcwd()
 arg=1
 test=True
 for item in sys.argv[2:]:
@@ -44,5 +45,8 @@ for item in sys.argv[2:]:
 			arg=0
 	if(arg==0):
 		proc(os.path.realpath(item))
+		os.chdir(cwd)
 
+if test:
+	print "\nUse --no-test to actually rename the files"
 bsdconv.destroy(p)
