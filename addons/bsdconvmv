@@ -22,6 +22,7 @@ import re
 import bsdconv
 
 def absrealpath(p):
+	p=os.path.abspath(p)
 	return os.path.join(os.path.realpath(os.path.dirname(p)), os.path.basename(p))
 
 def pathsplit(p):
