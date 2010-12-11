@@ -101,7 +101,7 @@ for item in sys.argv[2:]:
 			test=False
 		else:
 			arg=0
-	if(arg==0):
+	if arg==0 and os.path.lexists(item):
 		zone.append(absrealpath(item))
 
 for item in zone:
