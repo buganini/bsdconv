@@ -18,12 +18,34 @@
 
 import os
 import sys
+import re
 import bsdconv
+
+def absrealpath(p):
+	return os.path.join(os.path.realpath(os.path.dirname(p)), os.path.basename(p))
+
+def pathsplit(p):
+	d,p=os.path.splitdrive(p)
+	r=re.findall("([^/]+|[\\/]+)",p)
+	if(d):
+		r.insert(0,d)
+	return r
 
 def usage():
 	print sys.argv[0], "conversion [arguments] files..."
 	print "Arguments:"
 	print "--no-test: actually rename the files"
+
+def inzone(d):
+	d=os.path.realpath(d)
+	for item in zone:
+		if os.path.commonprefix([d,item])==item:
+			return True
+	return False
+
+def pathmeaningful(s):
+	if re.match('^([\\/]+|\\.\\.|\\.)$',s): return True
+	return True
 
 def proc(d):
 	if(os.path.isdir(d)):
@@ -32,12 +54,30 @@ def proc(d):
 	path=os.path.dirname(d)
 	name=os.path.basename(d)
 	newname=bsdconv.conv(p,name)
-	if newname!=name:
-		os.chdir(path)
-		print "%s| %s => %s" % (path, name, newname)
-		if(test==False):
-			os.rename(name,newname)
-
+	os.chdir(path)
+	if os.path.islink(name):
+		src=pathsplit(os.readlink(name))
+		newsrc=[]
+		last=None
+		for i in xrange(1,len(src)+1):
+			j=''.join(src[0:i])
+			if pathmeaningful(src[i-1]) and inzone(j):
+				last=j
+				newsrc.append(bsdconv.conv(p, src[i-1]))
+			else:
+				newsrc.append(src[i-1])
+		src=''.join(src)
+		newsrc=''.join(newsrc)
+		if newname!=name or newsrc!=src:
+			print "%s| %s => %s >> %s => %s" % (path, name, src, newname, newsrc)
+			if(test==False):
+				os.unlink(name)
+				os.symlink(newsrc, newname)
+	else:
+		if newname!=name:
+			print "%s| %s >> %s" % (path, name, newname)
+			if(test==False):
+				os.rename(name,newname)
 
 if len(sys.argv)<3:
 	usage()
@@ -51,6 +91,7 @@ if p==None:
 cwd=os.getcwd()
 arg=1
 test=True
+zone=[]
 for item in sys.argv[2:]:
 	if(arg==1):
 		if item=='--':
@@ -60,8 +101,11 @@ for item in sys.argv[2:]:
 		else:
 			arg=0
 	if(arg==0):
-		proc(os.path.realpath(item))
-		os.chdir(cwd)
+		zone.append(absrealpath(item))
+
+for item in zone:
+	proc(item)
+	os.chdir(cwd)
 
 if test:
 	print "\nUse --no-test to actually rename the files"
