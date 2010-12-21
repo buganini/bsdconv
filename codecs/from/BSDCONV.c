@@ -23,8 +23,8 @@
 #define F_B 2
 
 struct my_s {
-	struct data_s data;
-	/* extend struct data_s */
+	struct data_rt data;
+	/* extend struct data_rt */
 	size_t size;
 	char flag;
 };
@@ -38,6 +38,8 @@ void *cbcreate(void){
 void cbinit(struct bsdconv_codec_t *cdc, struct my_s *t){
 	cdc->data_z=0;
 	t->data.len=0;
+	if(t->data.data)
+		free(t->data.data);
 	t->data.data=NULL;
 	t->data.next=0;
 	t->size=0;
@@ -56,9 +58,9 @@ int hex[256]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 
 void callback(struct bsdconv_instance *ins){
 	void *p;
-	struct bsdconv_phase *this_phase=&ins->phase[0];
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	char d=*ins->from_data;
+	char d=this_phase->data->data[this_phase->i];
 	if(hex[(unsigned char)d]==-1){
 		this_phase->state.status=DEADEND;
 		t->flag=F_CLEAR;

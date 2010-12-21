@@ -44,23 +44,23 @@ void cbdestroy(void *p){
 void callback(struct bsdconv_instance *ins){
 	char *data;
 	unsigned int len;
-	struct state_s state;
-	struct data_s *data_ptr;
+	struct state_rt state;
+	struct data_rt *data_ptr;
 	char *ptr;
 	int i;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phasen];
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	data=ins->phase[ins->phasen-1].data->data;
+	data=ins->phase[ins->phase_index].data->data;
 
-	if(ins->phase[ins->phasen-1].data->len==2 && (data[1] & bb10000000)==0){
+	if(ins->phase[ins->phase_index].data->len==2 && (data[1] & bb10000000)==0){
 		this_phase->state.status=DEADEND;
 		return;
 	}
 	switch(*data){
 		case 0x01:
-			memcpy(&state, t->cd.z, sizeof(struct state_s));
-			for(i=0;i<ins->phase[ins->phasen-1].data->len;++i){
-				memcpy(&state, t->cd.z + (uintptr_t)state.sub[(unsigned char)data[i]], sizeof(struct state_s));
+			memcpy(&state, t->cd.z, sizeof(struct state_st));
+			for(i=0;i<ins->phase[ins->phase_index].data->len;++i){
+				memcpy(&state, t->cd.z + (uintptr_t)state.sub[(unsigned char)data[i]], sizeof(struct state_st));
 				if(state.status==DEADEND){
 					break;
 				}
@@ -70,11 +70,12 @@ void callback(struct bsdconv_instance *ins){
 				case SUBMATCH:
 					this_phase->state.status=NEXTPHASE;
 					for(data_ptr=state.data;data_ptr;){
-						this_phase->data_tail->next=malloc(sizeof(struct data_s));
+						this_phase->data_tail->next=malloc(sizeof(struct data_rt));
 						this_phase->data_tail=this_phase->data_tail->next;
-						memcpy(this_phase->data_tail, t->cd.z+(uintptr_t)data_ptr, sizeof(struct data_s));
+						memcpy(this_phase->data_tail, t->cd.z+(uintptr_t)data_ptr, sizeof(struct data_st));
 						data_ptr=this_phase->data_tail->next;
 						this_phase->data_tail->next=NULL;
+						this_phase->data_tail->setmefree=1;
 						ptr=t->cd.z+(uintptr_t)this_phase->data_tail->data;
 						this_phase->data_tail->data=malloc(this_phase->data_tail->len);
 						memcpy(this_phase->data_tail->data, ptr, this_phase->data_tail->len);
@@ -86,12 +87,13 @@ void callback(struct bsdconv_instance *ins){
 					return;
 			}
 		case 0x02:
-			len=ins->phase[ins->phasen-1].data->len-1;
+			len=ins->phase[ins->phase_index].data->len-1;
 
-			this_phase->data_tail->next=malloc(sizeof(struct data_s));
+			this_phase->data_tail->next=malloc(sizeof(struct data_st));
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
-			
+
+			this_phase->data_tail->setmefree=1;
 			this_phase->data_tail->len=4;
 			this_phase->data_tail->data=malloc(4);
 			memcpy(this_phase->data_tail->data, data, this_phase->data_tail->len);

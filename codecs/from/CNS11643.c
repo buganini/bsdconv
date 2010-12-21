@@ -52,12 +52,12 @@ void cbdestroy(void *p){
 }while(0);
 
 void callback(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[0];
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	char d=*ins->from_data, *p;
-	struct state_s state;
-	struct data_s *data_ptr;
-	char *ptr;
+	char d=this_phase->data->data[this_phase->i], *p;
+	struct state_rt state;
+	struct data_rt *data_ptr;
+
 	int i;
 	switch(t->status){
 		case 0:
@@ -75,9 +75,9 @@ void callback(struct bsdconv_instance *ins){
 		case 1:
 			t->status=0;
 			t->buf[3]=d;
-			memcpy(&state, t->cd.z, sizeof(struct state_s));
+			memcpy(&state, t->cd.z, sizeof(struct state_st));
 			for(i=0;i<4;++i){
-				memcpy(&state, t->cd.z + (uintptr_t)state.sub[(unsigned char)t->buf[i]], sizeof(struct state_s));
+				memcpy(&state, t->cd.z + (uintptr_t)state.sub[(unsigned char)t->buf[i]], sizeof(struct state_st));
 				if(state.status==DEADEND){
 					break;
 				}
@@ -86,13 +86,14 @@ void callback(struct bsdconv_instance *ins){
 			switch(state.status){
 				case MATCH:
 				case SUBMATCH:
-					LISTCPY(ins->phase[0].data_tail, state.data, t->cd.z);
+					LISTCPY(this_phase->data_tail, state.data, t->cd.z);
 					return;
 				default:
-					this_phase->data_tail->next=malloc(sizeof(struct data_s));
+					this_phase->data_tail->next=malloc(sizeof(struct data_st));
 					this_phase->data_tail=this_phase->data_tail->next;
 					this_phase->data_tail->next=NULL;
 					this_phase->data_tail->len=4;
+					this_phase->data_tail->setmefree=1;
 					p=this_phase->data_tail->data=malloc(4);
 					memcpy(p,t->buf,4);
 					return;

@@ -41,18 +41,16 @@ void cbdestroy(void *p){
 void callback(struct bsdconv_instance *ins){
 	char *data, *p, buf[128]={0};
 	unsigned int len, i;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phasen];
-	struct bsdconv_phase *prev_phase=&ins->phase[ins->phasen-1];
-	data=prev_phase->data->data;
-	struct state_s state;
-	struct data_s *data_ptr, *orig_next, *my_tail;
-	char *ptr;
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	data=this_phase->data->data;
+	struct state_st state;
+	struct data_rt *data_ptr, *orig_next, *my_tail;
 	struct bsdconv_codec_t *t=this_phase->codec[this_phase->index].priv;
 	switch(*data){
 		case 0x01:
-			memcpy(&state, t->z, sizeof(struct state_s));
-			for(i=0;i<prev_phase->data->len;++i){
-				memcpy(&state, t->z + (uintptr_t)state.sub[(unsigned char)data[i]], sizeof(struct state_s));
+			memcpy(&state, t->z, sizeof(struct state_st));
+			for(i=0;i<this_phase->data->len;++i){
+				memcpy(&state, t->z + (uintptr_t)state.sub[(unsigned char)data[i]], sizeof(struct state_st));
 				if(state.status==DEADEND){
 					break;
 				}
@@ -60,29 +58,27 @@ void callback(struct bsdconv_instance *ins){
 			switch(state.status){
 				case MATCH:
 				case SUBMATCH:
-					orig_next=prev_phase->data->next;
+					orig_next=this_phase->data->next;
 					free(data);
-					my_tail=prev_phase->data;
-					memcpy(my_tail, t->z+(uintptr_t)state.data, sizeof(struct data_s));
-					ptr=t->z+(uintptr_t)my_tail->data;
-					my_tail->data=malloc(my_tail->len);
-					memcpy(my_tail->data, ptr, my_tail->len);
+					my_tail=this_phase->data;
+					memcpy(my_tail, t->z+(uintptr_t)state.data, sizeof(struct data_st));
+					my_tail->data=t->z+(uintptr_t)my_tail->data;
+					my_tail->setmefree=0;
 					data_ptr=my_tail->next;
 					my_tail->next=NULL;
 					while(data_ptr){
-						my_tail->next=malloc(sizeof(struct data_s));
+						my_tail->next=malloc(sizeof(struct data_st));
 						my_tail=my_tail->next;
-						memcpy(my_tail, t->z+(uintptr_t)data_ptr, sizeof(struct data_s));
+						memcpy(my_tail, t->z+(uintptr_t)data_ptr, sizeof(struct data_st));
 						data_ptr=my_tail->next;
 						my_tail->next=orig_next;
-						ptr=t->z+(uintptr_t)my_tail->data;
-						my_tail->data=malloc(my_tail->len);
-						memcpy(my_tail->data, ptr, my_tail->len);
+						my_tail->data=t->z+(uintptr_t)my_tail->data;
+						my_tail->setmefree=0;
 					}
 					if(orig_next==NULL){
-						prev_phase->data_tail=my_tail;
+						this_phase->data_tail=my_tail;
 					}
-					data=prev_phase->data->data;
+					data=this_phase->data->data;
 					break;
 			}
 			break;
@@ -95,8 +91,8 @@ void callback(struct bsdconv_instance *ins){
 	p=buf;
 	i=*data;
 	data+=1;
-	len=prev_phase->data->len-1;
-	this_phase->data_tail->next=malloc(sizeof(struct data_s));
+	len=this_phase->data->len-1;
+	this_phase->data_tail->next=malloc(sizeof(struct data_rt));
 	this_phase->data_tail=this_phase->data_tail->next;
 	this_phase->data_tail->next=NULL;
 
@@ -114,6 +110,7 @@ void callback(struct bsdconv_instance *ins){
 	TAILIZE(p);
 	len=p-buf;
 	this_phase->data_tail->len=len;
+	this_phase->data_tail->setmefree=1;
 	this_phase->data_tail->data=malloc(len);
 	memcpy(this_phase->data_tail->data, buf, len);
 

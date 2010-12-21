@@ -1,6 +1,6 @@
 PREFIX?=/usr/local
 CFLAGS+=-Wall -DPREFIX='"${PREFIX}"'
-SHLIBVER=3
+SHLIBVER=4
 
 all: builddir libbsdconv bsdconv_mktable bsdconv codecs meta
 

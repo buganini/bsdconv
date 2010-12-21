@@ -23,19 +23,19 @@
 void callback(struct bsdconv_instance *ins){
 	int i;
 	char *p;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phasen];
-	struct bsdconv_phase *prev_phase=&ins->phase[ins->phasen-1];
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 
 	this_phase->state.status=NEXTPHASE;
 
-	this_phase->data_tail->next=malloc(sizeof(struct data_s));
+	this_phase->data_tail->next=malloc(sizeof(struct data_rt));
 	this_phase->data_tail=this_phase->data_tail->next;
 	this_phase->data_tail->next=NULL;
+	this_phase->data_tail->setmefree=1;
 
-	this_phase->data_tail->len=prev_phase->data->len*2;
+	this_phase->data_tail->len=this_phase->data->len*2;
 	p=this_phase->data_tail->data=malloc(this_phase->data_tail->len+1);
-	for(i=0;i<prev_phase->data->len;++i){
-		sprintf(p,"%02X", (unsigned char)prev_phase->data->data[i]);
+	for(i=0;i<this_phase->data->len;++i){
+		sprintf(p,"%02X", (unsigned char)this_phase->data->data[i]);
 		TAILIZE(p);
 	}
 }

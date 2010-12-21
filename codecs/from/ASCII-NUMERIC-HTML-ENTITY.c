@@ -58,8 +58,9 @@ void cbdestroy(void *p){
 }while(0);
 
 #define APPEND(n) do{	\
-	this_phase->data_tail->next=malloc(sizeof(struct data_s));	\
+	this_phase->data_tail->next=malloc(sizeof(struct data_rt));	\
 	this_phase->data_tail=this_phase->data_tail->next;	\
+	this_phase->data_tail->setmefree=1	\
 	this_phase->data_tail->next=NULL;	\
 	this_phase->data_tail->len=n;	\
 	p=this_phase->data_tail->data=malloc(n);	\
@@ -72,9 +73,9 @@ int hex[256]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 void callback(struct bsdconv_instance *ins){
 	char ob[8], *p;
 	int i,j=0;
-	struct bsdconv_phase *this_phase=&ins->phase[0];
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	char d=*ins->from_data;
+	char d=this_phase->data->data[this_phase->i];
 	if(d==';' && t->status){
 		//put data
 		t->buf.i=htonl(t->buf.i);
@@ -82,9 +83,10 @@ void callback(struct bsdconv_instance *ins){
 			if(t->buf.c[i] || j)
 				ob[j++]=t->buf.c[i];
 		}
-		this_phase->data_tail->next=malloc(sizeof(struct data_s));
+		this_phase->data_tail->next=malloc(sizeof(struct data_st));
 		this_phase->data_tail=this_phase->data_tail->next;
 		this_phase->data_tail->next=NULL;
+		this_phase->data_tail->setmefree=1;
 		this_phase->data_tail->len=j+1;
 		p=this_phase->data_tail->data=malloc(j+1);
 		p[0]=0x01;
