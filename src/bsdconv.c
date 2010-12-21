@@ -93,6 +93,7 @@ int main(int argc, char *argv[]){
 	fprintf(stderr, "Encoding failure: %u\n", ins->oerr);
 
 	bsdconv_destroy(ins);
+
 	if(inf!=stdin){
 		fclose(inf);
 	}
