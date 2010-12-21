@@ -619,7 +619,7 @@ void bsdconv(struct bsdconv_instance *ins){
 				ptr[0]=ptr[1]=ptr[2]=ptr[3]=0;
 			}
 			break;
-		case BSDCONV_PREMALLOC:
+		case BSDCONV_PREMALLOCED:
 			ins->output.setmefree=0;
 			if(ins->output.data!=NULL && ins->output.len){
 				i=0;

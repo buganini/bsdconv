@@ -42,7 +42,7 @@ enum bsdconv_status{
 enum bsdconv_output_mode{
 	BSDCONV_HOLD,
 	BSDCONV_AUTOMALLOC,
-	BSDCONV_PREMALLOC,
+	BSDCONV_PREMALLOCED,
 	BSDCONV_FILE,
 	BSDCONV_FD,
 };
