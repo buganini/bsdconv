@@ -22,10 +22,10 @@
 
 void callback(struct bsdconv_instance *ins){
 	int i;
-	ins->phase[ins->phasen].state.status=NEXTPHASE;
+	ins->phase[ins->phase_index].state.status=NEXTPHASE;
 
-	for(i=0;i<ins->phase[ins->phasen-1].data->len;++i){
-		printf("%02X",(unsigned char)ins->phase[ins->phasen-1].data->data[i]);
+	for(i=0;i<ins->phase[ins->phase_index].data->len;++i){
+		printf("%02X",(unsigned char)ins->phase[ins->phase_index].data->data[i]);
 	}
 	printf("\n");
 }

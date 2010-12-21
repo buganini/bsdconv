@@ -33,14 +33,14 @@
 void callback(struct bsdconv_instance *ins){
 	char *data, *p;
 	unsigned int len;
-	data=ins->phase[ins->phasen-1].data->data;
+	data=ins->phase[ins->phase_index].data->data;
 
-	ins->phase[ins->phasen].state.status=NEXTPHASE;
+	ins->phase[ins->phase_index].state.status=NEXTPHASE;
 	data+=1;
-	len=ins->phase[ins->phasen-1].data->len-1;
+	len=ins->phase[ins->phase_index].data->len-1;
 
 	if(len==1 && (*data & bb10000000)==0){
-		ins->phase[ins->phasen].state.status=DEADEND;
+		ins->phase[ins->phase_index].state.status=DEADEND;
 		return;
 	}
 
@@ -50,19 +50,20 @@ void callback(struct bsdconv_instance *ins){
 		case 3:
 			break;
 		default:
-			ins->phase[ins->phasen].state.status=DEADEND;
+			ins->phase[ins->phase_index].state.status=DEADEND;
 			return;
 	}
 
-	ins->phase[ins->phasen].data_tail->next=malloc(sizeof(struct data_s));
-	ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_tail->next;
-	ins->phase[ins->phasen].data_tail->next=NULL;
+	ins->phase[ins->phase_index].data_tail->next=malloc(sizeof(struct data_rt));
+	ins->phase[ins->phase_index].data_tail=ins->phase[ins->phase_index].data_tail->next;
+	ins->phase[ins->phase_index].data_tail->next=NULL;
+	ins->phase[ins->phase_index].data_tail->setmefree=1;
 
 	switch(len){
 		case 1:
-			ins->phase[ins->phasen].data_tail->len=2;
-			ins->phase[ins->phasen].data_tail->data=malloc(2);
-			p=ins->phase[ins->phasen].data_tail->data;
+			ins->phase[ins->phase_index].data_tail->len=2;
+			ins->phase[ins->phase_index].data_tail->data=malloc(2);
+			p=ins->phase[ins->phase_index].data_tail->data;
 			*p=bb11000000;
 			*p |= (*data >> 6) & bb00000011;
 			++p;
@@ -72,9 +73,9 @@ void callback(struct bsdconv_instance *ins){
 		case 2:
 			switch(*data & bb11111000){
 				case 0:
-					ins->phase[ins->phasen].data_tail->len=2;
-					ins->phase[ins->phasen].data_tail->data=malloc(2);
-					p=ins->phase[ins->phasen].data_tail->data;
+					ins->phase[ins->phase_index].data_tail->len=2;
+					ins->phase[ins->phase_index].data_tail->data=malloc(2);
+					p=ins->phase[ins->phase_index].data_tail->data;
 					*p=bb11000000;
 					*p |= (*data << 2) & bb00011100;;
 					++data;
@@ -84,9 +85,9 @@ void callback(struct bsdconv_instance *ins){
 					*p |= *data & bb00111111;
 					break;
 				default:
-					ins->phase[ins->phasen].data_tail->len=3;
-					ins->phase[ins->phasen].data_tail->data=malloc(3);
-					p=ins->phase[ins->phasen].data_tail->data;
+					ins->phase[ins->phase_index].data_tail->len=3;
+					ins->phase[ins->phase_index].data_tail->data=malloc(3);
+					p=ins->phase[ins->phase_index].data_tail->data;
 					*p=bb11100000;
 					*p |= (*data >> 4) & bb00001111;
 					++p;
@@ -103,9 +104,9 @@ void callback(struct bsdconv_instance *ins){
 		case 3:
 			switch(*data & bb11100000){
 				case 0:
-					ins->phase[ins->phasen].data_tail->len=4;
-					ins->phase[ins->phasen].data_tail->data=malloc(4);
-					p=ins->phase[ins->phasen].data_tail->data;
+					ins->phase[ins->phase_index].data_tail->len=4;
+					ins->phase[ins->phase_index].data_tail->data=malloc(4);
+					p=ins->phase[ins->phase_index].data_tail->data;
 					*p=bb11110000;
 					*p |= (*data >> 2) & bb00000111;
 					++p;

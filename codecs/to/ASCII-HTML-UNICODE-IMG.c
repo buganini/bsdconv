@@ -24,9 +24,8 @@
 void callback(struct bsdconv_instance *ins){
 	char *data, *p, buf[128]={0};
 	unsigned int len, i;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phasen];
-	struct bsdconv_phase *prev_phase=&ins->phase[ins->phasen-1];
-	data=prev_phase->data->data;
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	data=this_phase->data->data;
 	if(*data!=0x01){
 		this_phase->state.status=DEADEND;
 		return;
@@ -35,8 +34,8 @@ void callback(struct bsdconv_instance *ins){
 	p=buf;
 	i=*data;
 	data+=1;
-	len=prev_phase->data->len-1;
-	this_phase->data_tail->next=malloc(sizeof(struct data_s));
+	len=this_phase->data->len-1;
+	this_phase->data_tail->next=malloc(sizeof(struct data_rt));
 	this_phase->data_tail=this_phase->data_tail->next;
 	this_phase->data_tail->next=NULL;
 
@@ -54,6 +53,7 @@ void callback(struct bsdconv_instance *ins){
 	TAILIZE(p);
 	len=p-buf;
 	this_phase->data_tail->len=len;
+	this_phase->data_tail->setmefree=1;
 	this_phase->data_tail->data=malloc(len);
 	memcpy(this_phase->data_tail->data, buf, len);
 

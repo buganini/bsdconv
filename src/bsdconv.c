@@ -27,9 +27,8 @@ int main(int argc, char *argv[]){
 	char *tmp=NULL;
 	struct bsdconv_instance *ins;
 	FILE *inf, *otf;
-	char in[IBUFLEN], out[OBUFLEN];
+	char *in, out[OBUFLEN];
 
-	int r;
 	if(argc<2){
 		fprintf(stderr, "Usage:\n\t %s from:[inter:..]to [input|- [output|-]]\nfrom,inter,to in form of codec[,codec2..]\n", argv[0]);
 		exit(1);
@@ -76,17 +75,21 @@ int main(int argc, char *argv[]){
 		free(t);
 		exit(1);
 	}
-	ins->in_buf=in;
-	ins->in_len=IBUFLEN;
-	ins->out_buf=out;
-	ins->out_len=OBUFLEN;
-	ins->mode=BSDCONV_BB;
 	bsdconv_init(ins);
 	do{
-		if(ins->feed_len) ins->feed_len=fread(ins->feed, 1, ins->feed_len, inf);
-		r=bsdconv(ins);
-		if(ins->back_len)fwrite(ins->back, 1, ins->back_len, otf);
-	}while(r);
+		in=malloc(IBUFLEN);
+		ins->input.data=in;
+		ins->input.len=fread(in, 1, IBUFLEN, inf);
+		if(ins->input.len==0){
+			free(in);
+			ins->flush=1;
+		}
+		ins->output_mode=BSDCONV_PREMALLOC;
+		ins->output.data=out;
+		ins->output.len=OBUFLEN;
+		bsdconv(ins);
+		fwrite(out, 1, ins->output.len, otf);
+	}while(ins->flush==0);
 
 	fprintf(stderr, "Decoding failure: %u\n", ins->ierr);
 	fprintf(stderr, "Encoding failure: %u\n", ins->oerr);

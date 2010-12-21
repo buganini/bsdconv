@@ -64,18 +64,19 @@ void cbdestroy(void *p){
 }while(0);
 
 #define APPEND(n) do{	\
-	this_phase->data_tail->next=malloc(sizeof(struct data_s));	\
+	this_phase->data_tail->next=malloc(sizeof(struct data_rt));	\
 	this_phase->data_tail=this_phase->data_tail->next;	\
 	this_phase->data_tail->next=NULL;	\
 	this_phase->data_tail->len=n;	\
+	this_phase->data_tail->setmefree=1;	\
 	p=this_phase->data_tail->data=malloc(n);	\
 	p[0]=0x01;	\
 }while(0);
 
 void callback(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[0];
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	char d=*ins->from_data, *p;
+	char d=this_phase->data->data[this_phase->i], *p;
 	switch(t->status){
 		case 0:
 			if((d & bb10000000) == 0){

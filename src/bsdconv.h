@@ -22,6 +22,13 @@
 #include <windows.h>
 #endif
 
+enum bsdconv_phase_type {
+	INPUT,
+	FROM,
+	INTER,
+	TO
+};
+
 enum bsdconv_status{
 	CONTINUE,
 	DEADEND,
@@ -32,50 +39,56 @@ enum bsdconv_status{
 	DUMMY,
 };
 
-enum bsdconv_mode{
-	BSDCONV_BB,
-	BSDCONV_BC,
-	BSDCONV_CB,
-	BSDCONV_CC,
-	BSDCONV_BM,
-	BSDCONV_CM,
+enum bsdconv_output_mode{
+	BSDCONV_HOLD,
+	BSDCONV_AUTOMALLOC,
+	BSDCONV_PREMALLOC,
 };
 
-struct data_s{
+struct data_st{
 	char *data;
 	size_t len;
-	struct data_s *next;
+	struct data_st *next;
 };
 
-struct state_s{
+struct data_rt{
+	char *data;
+	size_t len;
+	struct data_rt *next;
+	char setmefree;
+};
+
+struct state_st{
 	char status;
-	struct data_s *data;
-	struct state_s *sub[257];
+	struct data_st *data;
+	struct state_st *sub[257];
+};
+
+struct state_rt{
+	char status;
+	struct data_rt *data;
+	struct state_st *sub[257];
 };
 
 struct bsdconv_instance{
-	int mode;
-	char *in_buf;
-	size_t in_len;
-	char *out_buf;
-	size_t out_len;
-	char *feed;
-	size_t feed_len;
-	char *back;
-	size_t back_len;
-	char *from_data;
+	int output_mode;
+	
+	struct data_rt input, output;
+
+	char flush;
 
 	struct bsdconv_phase *phase;
 	int phasen, phase_index;
 	unsigned int ierr, oerr;
-	char *from_bak;
 };
 
 struct bsdconv_phase{
-	struct data_s *bak, *match, *data_head, *data_tail, *data;
-	struct state_s state;
+	struct data_rt *bak, *match, *data_head, *data_tail, *data;
+	struct state_rt state;
 	int index;
+	int i;
 	char pend;
+	char type;
 	struct bsdconv_codec_t *codec;
 	int codecn;
 };
@@ -118,19 +131,19 @@ char * index(const char *, int);
 #endif
 
 #define LISTCPY(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
-	(X)->next=malloc(sizeof(struct data_s));	\
+	(X)->next=malloc(sizeof(struct data_rt));	\
 	(X)=(X)->next;	\
-	memcpy((X), (char *)((Z)+(uintptr_t)data_ptr), sizeof(struct data_s));	\
+	memcpy((X), (char *)((Z)+(uintptr_t)data_ptr), sizeof(struct data_st));	\
 	data_ptr=(X)->next;	\
 	(X)->next=NULL;	\
-	ptr=(char *)((Z)+(uintptr_t)(X)->data);	\
-	(X)->data=malloc((X)->len + 1);	\
-	memcpy((X)->data, ptr, (X)->len);	\
+	(X)->data=((Z)+(uintptr_t)(X)->data);	\
+	(X)->setmefree=0; \
 }
 
-#define LISTFREE(X,Y,Z)	while((X)->next!=(struct data_s *)(Y)){	\
+#define LISTFREE(X,Y,Z)	while((X)->next!=(Y)){	\
 	data_ptr=(X)->next->next;	\
-	free((X)->next->data);	\
+	if((X)->next->setmefree)	\
+		free((X)->next->data);	\
 	if((Z)==(X)->next){	\
 		(Z)=(X);	\
 	}	\
@@ -141,7 +154,7 @@ char * index(const char *, int);
 struct bsdconv_instance *bsdconv_create(const char *);
 void bsdconv_init(struct bsdconv_instance *);
 void bsdconv_destroy(struct bsdconv_instance *);
-int bsdconv(struct bsdconv_instance *);
+void bsdconv(struct bsdconv_instance *);
 char * bsdconv_error(void);
 
 int loadcodec(struct bsdconv_codec_t *, char *, int);

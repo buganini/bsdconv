@@ -30,18 +30,18 @@
 void callback(struct bsdconv_instance *ins){
 	char *data, *p, c;
 	unsigned int len, i;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phasen];
-	struct bsdconv_phase *prev_phase=&ins->phase[ins->phasen-1];
-	data=prev_phase->data->data;
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	data=this_phase->data->data;
 
 	data+=1;
-	if(prev_phase->data->len > 3){
+	if(this_phase->data->len > 3){
 		this_phase->state.status=NEXTPHASE;
 
-		this_phase->data_tail->next=malloc(sizeof(struct data_s));
+		this_phase->data_tail->next=malloc(sizeof(struct data_rt));
 		this_phase->data_tail=this_phase->data_tail->next;
 		this_phase->data_tail->next=NULL;
 		this_phase->data_tail->len=4;
+		this_phase->data_tail->setmefree=1;
 		p=this_phase->data_tail->data=malloc(4);
 
 		c=*data-1;
@@ -64,12 +64,13 @@ void callback(struct bsdconv_instance *ins){
 		SWAP(data[2],data[3],i);
 	}else{
 		this_phase->state.status=NEXTPHASE;
-		len=prev_phase->data->len-1;
+		len=this_phase->data->len-1;
 
-		this_phase->data_tail->next=malloc(sizeof(struct data_s));
+		this_phase->data_tail->next=malloc(sizeof(struct data_rt));
 		this_phase->data_tail=this_phase->data_tail->next;
 		this_phase->data_tail->next=NULL;
 		this_phase->data_tail->len=2;
+		this_phase->data_tail->setmefree=1;
 		this_phase->data_tail->data=malloc(2);
 		for(i=0;i<2-len;++i){
 			this_phase->data_tail->data[i]=0x0;

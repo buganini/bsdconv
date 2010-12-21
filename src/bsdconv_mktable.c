@@ -33,32 +33,32 @@
 #endif
 
 
-struct m_data_s{
+struct m_data_st{
 	char *data;
 	size_t len;
-	struct data_s *next;
+	struct data_st *next;
 
 	uintptr_t p;
 	char *dp;
-	struct m_data_s *n;
+	struct m_data_st *n;
 };
 
-struct m_state_s{
+struct m_state_st{
 	char status;
-	struct state_s *sub[257];
+	struct state_st *sub[257];
 
 	uintptr_t data;
 
 	int prio;
 
-	struct m_state_s *psub[257];
+	struct m_state_st *psub[257];
 	uintptr_t p;
-	struct m_state_s *n;
+	struct m_state_st *n;
 	int child;
 };
 
 struct list{
-	struct m_state_s *p;
+	struct m_state_st *p;
 	int u,l,pr;
 	struct list *n;
 };
@@ -72,11 +72,11 @@ int main(int argc, char *argv[]){
 	int i, j, k, l, c=0, cu, cl, ci,pr;
 	FILE *fp;
 	char inbuf[1024], *f, *t, dat[256], *tmp, *of, *ot;
-	struct m_data_s *data_r=NULL, *data_p=NULL, *data_t=NULL;
-	struct m_state_s *state_r, *state_t, holder;
+	struct m_data_st *data_r=NULL, *data_p=NULL, *data_t=NULL;
+	struct m_state_st *state_r, *state_t, holder;
 	struct list *todo=NULL, *newtodo, *newtodo_tail, *state_p;
-	struct state_s dstate;
-	struct data_s ddata;
+	struct state_st dstate;
+	struct data_st ddata;
 	uintptr_t callback=0;
 	void *tofree;
 #ifdef WIN32
@@ -169,13 +169,13 @@ int main(int argc, char *argv[]){
 	newtodo->u=2;
 	newtodo_tail=newtodo;
 
-	state_t=state_r=(struct m_state_s *)malloc(sizeof(struct m_state_s));
+	state_t=state_r=(struct m_state_st *)malloc(sizeof(struct m_state_st));
 	state_t->status=DEADEND;
 	state_t->data=0;
 	state_t->p=offset;
 	state_t->n=NULL;
 	state_t->child=0;
-	offset+=sizeof(struct state_s);
+	offset+=sizeof(struct state_st);
 	for(i=0;i<257;i++){
 		state_r->sub[i]=0;
 		state_r->psub[i]=NULL;
@@ -246,7 +246,7 @@ int main(int argc, char *argv[]){
 						newtodo_tail->n=NULL;
 					}else{
 		//	printf("%u[%X]=%u\n", state_p->p, c, offset);
-						state_t->n=state_p->p->psub[c]=(struct m_state_s *)malloc(sizeof(struct m_state_s));
+						state_t->n=state_p->p->psub[c]=(struct m_state_st *)malloc(sizeof(struct m_state_st));
 						state_t=state_t->n;
 						state_t->child=0;
 						state_t->n=NULL;
@@ -254,10 +254,10 @@ int main(int argc, char *argv[]){
 							state_t->sub[i]=0;
 							state_t->psub[i]=NULL;
 						}
-						state_p->p->sub[c]=(struct state_s *)offset;
+						state_p->p->sub[c]=(struct state_st *)offset;
 						state_p->p->child++;
 						state_p->p->psub[c]->p=offset;
-						offset+=sizeof(struct state_s);
+						offset+=sizeof(struct state_st);
 
 						state_t->n=state_p->p->psub[c];
 						state_t=state_t->n;
@@ -294,7 +294,7 @@ int main(int argc, char *argv[]){
 		k=1;
 		if(*t=='?'){
 			if(!callback){
-				state_t->n=(struct m_state_s *)malloc(sizeof(struct m_state_s));
+				state_t->n=(struct m_state_st *)malloc(sizeof(struct m_state_st));
 				state_t=state_t->n;
 				state_t->status=SUBROUTINE;
 				state_t->data=0;
@@ -303,11 +303,11 @@ int main(int argc, char *argv[]){
 				state_t->child=0;
 				callback=offset;
 				for(i=0;i<257;i++){
-					state_t->sub[i]=(struct state_s *)callback;
+					state_t->sub[i]=(struct state_st *)callback;
 					state_t->psub[i]=NULL;
 				}
 				state_t->sub[256]=0;
-				offset+=sizeof(struct state_s);
+				offset+=sizeof(struct state_st);
 			}
 			while(todo){
 				state_p=todo;
@@ -319,7 +319,7 @@ int main(int argc, char *argv[]){
 					}else{
 						continue;
 					}
-					state_p->p->sub[c]=(struct state_s *)callback;
+					state_p->p->sub[c]=(struct state_st *)callback;
 				}
 				todo=todo->n;
 				free(state_p);
@@ -330,25 +330,25 @@ int main(int argc, char *argv[]){
 					if(data_p){
 						//data after head
 						//make new cell
-						data_t->n=(struct m_data_s *)malloc(sizeof(struct m_data_s));
-						data_p->next=(struct data_s *)offset;
+						data_t->n=(struct m_data_st *)malloc(sizeof(struct m_data_st));
+						data_p->next=(struct data_st *)offset;
 						data_p=data_t=data_t->n;
 					}else if(data_t){
 						//data head
 						//make new cell
-						data_t->n=(struct m_data_s *)malloc(sizeof(struct m_data_s));
+						data_t->n=(struct m_data_st *)malloc(sizeof(struct m_data_st));
 						data_p=data_t=data_t->n;
 					}else{
 						//frist
 						//make new cell
-						data_t=data_p=data_r=(struct m_data_s *)malloc(sizeof(struct m_data_s));
+						data_t=data_p=data_r=(struct m_data_st *)malloc(sizeof(struct m_data_st));
 					}
 
 					//init new cell
 					data_p->p=offset;
 					data_p->next=0;
 					data_p->n=NULL;
-					offset+=sizeof(struct data_s);
+					offset+=sizeof(struct data_st);
 
 					//put data
 					data_p->dp=malloc(l);
@@ -378,8 +378,8 @@ int main(int argc, char *argv[]){
 									state_p->p->psub[c]->status=SUBMATCH;
 								}
 							}else{
-								state_p->p->psub[c]=state_t->n=malloc(sizeof(struct m_state_s));
-								state_p->p->sub[c]=(struct state_s *)offset;
+								state_p->p->psub[c]=state_t->n=malloc(sizeof(struct m_state_st));
+								state_p->p->sub[c]=(struct state_st *)offset;
 								state_t=state_t->n;
 								for(i=0;i<=256;i++){
 									state_t->sub[i]=0;
@@ -389,7 +389,7 @@ int main(int argc, char *argv[]){
 								state_t->child=0;
 								state_t->p=offset;
 								state_t->status=MATCH;
-								offset+=sizeof(struct state_s);
+								offset+=sizeof(struct state_st);
 							}
 							if(l){
 								state_p->p->psub[c]->data=data_p->p;
@@ -429,12 +429,12 @@ int main(int argc, char *argv[]){
 	state_t=state_r;
 	while(state_t){
 		dstate.status=state_t->status;
-		dstate.data=(struct data_s *)state_t->data;
+		dstate.data=(struct data_st *)state_t->data;
 		for(i=0;i<257;i++){
 			dstate.sub[i]=state_t->sub[i];
 		}
 		fseek(fp, state_t->p, SEEK_SET);
-		fwrite((void *)&dstate, sizeof(struct state_s), 1, fp);
+		fwrite((void *)&dstate, sizeof(struct state_st), 1, fp);
 		tofree=state_t;
 		state_t=state_t->n;
 		free(tofree);
@@ -445,7 +445,7 @@ int main(int argc, char *argv[]){
 		ddata.len=data_t->len;
 		ddata.next=data_t->next;
 		fseek(fp, data_t->p, SEEK_SET);
-		fwrite((void *)&ddata, sizeof(struct data_s), 1, fp);
+		fwrite((void *)&ddata, sizeof(struct data_st), 1, fp);
 		fseek(fp, (uintptr_t)ddata.data, SEEK_SET);
 		fwrite((void *)data_t->dp, ddata.len, 1, fp);
 		tofree=data_t;
