@@ -59,7 +59,6 @@ conv(p, str)
 		ins->input.len=l;
 		ins->input.setmefree=0;
 		ins->flush=1;
-		printf("lala\n");
 		bsdconv(ins);
 
 		RETVAL=newSVpvn(ins->output.data, (STRLEN)ins->output.len);
