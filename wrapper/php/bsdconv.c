@@ -84,7 +84,7 @@ PHP_FUNCTION(bsdconv){
 		RETURN_BOOL(0);
 	}
 	bsdconv_init(ins);
-	ins->output_mode=BSDCONV_PREMALLOC;
+	ins->output_mode=BSDCONV_PREMALLOCED;
 	ins->input.data=c;
 	ins->input.len=l;
 	ins->input.setmefree=0;
