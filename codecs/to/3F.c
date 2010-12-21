@@ -25,7 +25,7 @@ void callback(struct bsdconv_instance *ins){
 	this_phase->data_tail->len=1;
 	this_phase->data_tail->setmefree=1;
 	this_phase->data_tail->data=malloc(1);
-	*this_phase->data_tail->data='?';
+	*CP(this_phase->data_tail->data)='?';
 
 	this_phase->state.status=NEXTPHASE;
 	return;

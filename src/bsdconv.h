@@ -43,6 +43,8 @@ enum bsdconv_output_mode{
 	BSDCONV_HOLD,
 	BSDCONV_AUTOMALLOC,
 	BSDCONV_PREMALLOC,
+	BSDCONV_FILE,
+	BSDCONV_FD,
 };
 
 struct data_st{
@@ -52,7 +54,7 @@ struct data_st{
 };
 
 struct data_rt{
-	char *data;
+	void *data;
 	size_t len;
 	struct data_rt *next;
 	char setmefree;
@@ -150,6 +152,9 @@ char * index(const char *, int);
 	free((X)->next);	\
 	(X)->next=data_ptr;	\
 }
+
+#define CP(X)((char *)(X)) 
+#define UCP(X)((unsigned char *)(X)) 
 
 struct bsdconv_instance *bsdconv_create(const char *);
 void bsdconv_init(struct bsdconv_instance *);

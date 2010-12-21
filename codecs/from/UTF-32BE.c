@@ -44,7 +44,7 @@ void cbdestroy(void *p){
 void callback(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	char d=this_phase->data->data[this_phase->i];
+	char d=CP(this_phase->data->data)[this_phase->i];
 	int i;
 	size_t l;
 	switch(t->status){
@@ -76,8 +76,8 @@ void callback(struct bsdconv_instance *ins){
 			this_phase->data_tail->len=l;
 			this_phase->data_tail->setmefree=1;
 			this_phase->data_tail->data=malloc(l);
-			this_phase->data_tail->data[0]=0x01;
-			memcpy(&this_phase->data_tail->data[1], &t->buf[i], l-1);
+			CP(this_phase->data_tail->data)[0]=0x01;
+			memcpy(CP(this_phase->data_tail->data)+1, &t->buf[i], l-1);
 			this_phase->state.status=NEXTPHASE;
 			return;
 			break;

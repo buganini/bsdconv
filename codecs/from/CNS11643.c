@@ -54,7 +54,7 @@ void cbdestroy(void *p){
 void callback(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	char d=this_phase->data->data[this_phase->i], *p;
+	char d=CP(this_phase->data->data)[this_phase->i], *p;
 	struct state_rt state;
 	struct data_rt *data_ptr;
 

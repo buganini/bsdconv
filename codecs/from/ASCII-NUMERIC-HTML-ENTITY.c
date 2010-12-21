@@ -75,7 +75,7 @@ void callback(struct bsdconv_instance *ins){
 	int i,j=0;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	char d=this_phase->data->data[this_phase->i];
+	char d=CP(this_phase->data->data)[this_phase->i];
 	if(d==';' && t->status){
 		//put data
 		t->buf.i=htonl(t->buf.i);

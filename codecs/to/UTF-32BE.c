@@ -36,7 +36,7 @@ void callback(struct bsdconv_instance *ins){
 	this_phase->data_tail->setmefree=1;
 	this_phase->data_tail->data=malloc(4);
 	for(i=0;i<4-len;++i){
-		this_phase->data_tail->data[i]=0x0;
+		CP(this_phase->data_tail->data)[i]=0x0;
 	}
-	memcpy(&this_phase->data_tail->data[i], data, len);
+	memcpy(CP(this_phase->data_tail->data)+i, data, len);
 }

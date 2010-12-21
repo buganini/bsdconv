@@ -261,7 +261,7 @@ void bsdconv(struct bsdconv_instance *ins){
 					else i=0;
 					this_phase->data=this_phase->data->next;
 					while(i<this_phase->data->len){
-						memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.sub[(unsigned char)*(this_phase->data->data+i)], sizeof(struct state_st));
+						memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.sub[UCP(this_phase->data->data)[i]], sizeof(struct state_st));
 						from_x:
 						switch(this_phase->state.status){
 							case DEADEND:
@@ -350,7 +350,7 @@ void bsdconv(struct bsdconv_instance *ins){
 				this_phase->data=this_phase->data->next;
 				this_phase->state.status=DUMMY;
 				for(i=0;i<this_phase->data->len;i++){
-					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.sub[(unsigned char)*(this_phase->data->data+i)], sizeof(struct state_st));
+					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.sub[UCP(this_phase->data->data)[i]], sizeof(struct state_st));
 					switch(this_phase->state.status){
 						case DEADEND:
 							goto inter_deadend;
@@ -458,7 +458,7 @@ void bsdconv(struct bsdconv_instance *ins){
 				this_phase->data=this_phase->data->next;
 				this_phase->state.status=DUMMY;
 				for(i=0;i<this_phase->data->len;i++){
-					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.sub[(unsigned char)*(this_phase->data->data+i)], sizeof(struct state_st));
+					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.sub[UCP(this_phase->data->data)[i]], sizeof(struct state_st));
 					switch(this_phase->state.status){
 						case DEADEND:
 							goto to_deadend;
@@ -624,6 +624,12 @@ void bsdconv(struct bsdconv_instance *ins){
 				free(data_ptr);
 			}
 			ins->output.len=i;
+			break;
+		case BSDCONV_FILE:
+			
+			break;
+		case BSDCONV_FD:
+
 			break;
 	}
 	return;

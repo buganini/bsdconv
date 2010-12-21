@@ -76,7 +76,7 @@ void cbdestroy(void *p){
 void callback(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	char d=this_phase->data->data[this_phase->i], *p;
+	char d=CP(this_phase->data->data)[this_phase->i], *p;
 	switch(t->status){
 		case 0:
 			if((d & bb10000000) == 0){
