@@ -237,6 +237,8 @@ void bsdconv(struct bsdconv_instance *ins){
 	uintptr_t i=0;
 	struct data_rt *data_ptr;
 	char *ptr;
+	FILE *fp;
+	int fd;
 	struct bsdconv_phase *this_phase;
 	struct bsdconv_phase *prev_phase;
 
@@ -627,7 +629,7 @@ void bsdconv(struct bsdconv_instance *ins){
 			ins->output.len=i;
 			break;
 		case BSDCONV_FILE:
-			FILE *fp=ins->output.data;
+			fp=ins->output.data;
 			while(ins->phase[ins->phasen].data_head->next){
 				data_ptr=ins->phase[ins->phasen].data_head->next;
 				fwrite(data_ptr->data, data_ptr->len, 1, fp);
@@ -638,7 +640,7 @@ void bsdconv(struct bsdconv_instance *ins){
 			}
 			break;
 		case BSDCONV_FD:
-			int fd=(int)ins->output.data;
+			fd=(intptr_t)ins->output.data;
 			while(ins->phase[ins->phasen].data_head->next){
 				data_ptr=ins->phase[ins->phasen].data_head->next;
 				write(fd, data_ptr->data, data_ptr->len);
