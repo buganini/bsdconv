@@ -257,8 +257,9 @@ void bsdconv(struct bsdconv_instance *ins){
 		switch(this_phase->type){
 			case FROM:
 				while(this_phase->data->next){
+					if(this_phase->data == prev_phase->data_head) i=this_phase->data_head->len;
+					else i=0;
 					this_phase->data=this_phase->data->next;
-					i=this_phase->data_head->len;
 					while(i<this_phase->data->len){
 						memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.sub[(unsigned char)*(this_phase->data->data+i)], sizeof(struct state_st));
 						from_x:
@@ -291,7 +292,7 @@ void bsdconv(struct bsdconv_instance *ins){
 									LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
 									this_phase->bak=this_phase->data=prev_phase->data_head;
 									this_phase->data_head->len=i+1;
-							continue;
+									continue;
 								}
 								break;
 							case MATCH:
@@ -556,12 +557,14 @@ void bsdconv(struct bsdconv_instance *ins){
 		ins->phase_index+=1;
 	}
 
+	//check back (phase-loop)
 	for(ins->phase_index=ins->phasen;ins->phase_index>0;ins->phase_index-=1){
 		if(ins->phase[ins->phase_index].data->next){
 			goto phase_begin;
 		}
 	}
 
+	//flush
 	if(ins->flush){
 		for(ins->phase_index=1;ins->phase_index<=ins->phasen;++(ins->phase_index)){
 			if(ins->phase[ins->phase_index].pend){
@@ -576,6 +579,7 @@ void bsdconv(struct bsdconv_instance *ins){
 		}
 	}
 
+	//output
 	switch(ins->output_mode){
 		case BSDCONV_HOLD:
 			ins->output.len=0;
