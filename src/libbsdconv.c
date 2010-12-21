@@ -594,6 +594,7 @@ void bsdconv(struct bsdconv_instance *ins){
 				i+=data_ptr->len;
 				data_ptr=data_ptr->next;
 			}
+			ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_head;
 			if(i>4){
 				ins->output.setmefree=1;
 				ptr=ins->output.data=malloc(i);
@@ -638,6 +639,7 @@ void bsdconv(struct bsdconv_instance *ins){
 					free(data_ptr->data);
 				free(data_ptr);
 			}
+			ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_head;
 			break;
 		case BSDCONV_FD:
 			fd=(intptr_t)ins->output.data;
@@ -649,6 +651,7 @@ void bsdconv(struct bsdconv_instance *ins){
 					free(data_ptr->data);
 				free(data_ptr);
 			}
+			ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_head;
 			break;
 	}
 	return;

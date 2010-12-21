@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
 	char *tmp=NULL;
 	struct bsdconv_instance *ins;
 	FILE *inf, *otf;
-	char *in, out[OBUFLEN];
+	char *in;
 
 	if(argc<2){
 		fprintf(stderr, "Usage:\n\t %s from:[inter:..]to [input|- [output|-]]\nfrom,inter,to in form of codec[,codec2..]\n", argv[0]);
@@ -84,11 +84,9 @@ int main(int argc, char *argv[]){
 			free(in);
 			ins->flush=1;
 		}
-		ins->output_mode=BSDCONV_PREMALLOC;
-		ins->output.data=out;
-		ins->output.len=OBUFLEN;
+		ins->output_mode=BSDCONV_FILE;
+		ins->output.data=otf;
 		bsdconv(ins);
-		fwrite(out, 1, ins->output.len, otf);
 	}while(ins->flush==0);
 
 	fprintf(stderr, "Decoding failure: %u\n", ins->ierr);
