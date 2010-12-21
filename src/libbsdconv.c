@@ -583,6 +583,7 @@ void bsdconv(struct bsdconv_instance *ins){
 	switch(ins->output_mode){
 		case BSDCONV_HOLD:
 			ins->output.len=0;
+			ins->output.setmefree=0;
 			break;
 		case BSDCONV_AUTOMALLOC:
 			i=4;
@@ -626,10 +627,26 @@ void bsdconv(struct bsdconv_instance *ins){
 			ins->output.len=i;
 			break;
 		case BSDCONV_FILE:
-			
+			FILE *fp=ins->output.data;
+			while(ins->phase[ins->phasen].data_head->next){
+				data_ptr=ins->phase[ins->phasen].data_head->next;
+				fwrite(data_ptr->data, data_ptr->len, 1, fp);
+				ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
+				if(data_ptr->setmefree)
+					free(data_ptr->data);
+				free(data_ptr);
+			}
 			break;
 		case BSDCONV_FD:
-
+			int fd=(int)ins->output.data;
+			while(ins->phase[ins->phasen].data_head->next){
+				data_ptr=ins->phase[ins->phasen].data_head->next;
+				write(fd, data_ptr->data, data_ptr->len);
+				ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
+				if(data_ptr->setmefree)
+					free(data_ptr->data);
+				free(data_ptr);
+			}
 			break;
 	}
 	return;
