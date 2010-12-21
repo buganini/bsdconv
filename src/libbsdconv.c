@@ -115,7 +115,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 		brk=0;
 	}
 	for(i=1;i<=ins->phasen;++i){
-		if(brk==0 && 0){
+		if(brk==0){
 			struct bsdconv_instance *alias_ins;
 			switch(ins->phase[i].type){
 				case FROM:
