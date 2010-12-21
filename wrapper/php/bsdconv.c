@@ -71,28 +71,31 @@ PHP_FUNCTION(bsdconv_destroy){
 */
 PHP_FUNCTION(bsdconv){
 	zval *r=NULL;
-	struct bsdconv_instance *p;
+	struct bsdconv_instance *ins;
 	char *c;
 	int l;
 	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &r, &c, &l) == FAILURE){
 		RETURN_BOOL(0);
 	}
 
-	ZEND_FETCH_RESOURCE(p, struct bsdconv_instance *, &r, -1, LE_BSDCONV_DESC, le_bsdconv);
+	ZEND_FETCH_RESOURCE(ins, struct bsdconv_instance *, &r, -1, LE_BSDCONV_DESC, le_bsdconv);
 
-	if(p==NULL){
+	if(ins==NULL){
 		RETURN_BOOL(0);
 	}
+	bsdconv_init(ins);
+	ins->output_mode=BSDCONV_PREMALLOC;
+	ins->input.data=c;
+	ins->input.len=l;
+	ins->input.setmefree=0;
+	ins->output.data=NULL;
+	ins->flush=1;
+	bsdconv(ins);
 
-	p->mode=BSDCONV_CM;
-	p->feed=c;
-	p->feed_len=l;
-	bsdconv_init(p);
-	bsdconv(p);
-	p->back=emalloc(p->back_len);
-	bsdconv(p);
+	ins->output.data=emalloc(ins->output.len);
+	bsdconv(ins);
 
-	RETURN_STRINGL(p->back, p->back_len, 0);
+	RETURN_STRINGL(ins->output.data, ins->output.len, 0);
 }
 /* }}} */
 
@@ -101,19 +104,19 @@ PHP_FUNCTION(bsdconv){
 */
 PHP_FUNCTION(bsdconv_file){
 	zval *r=NULL;
-	struct bsdconv_instance *p;
+	struct bsdconv_instance *ins;
 	char *s1, *s2;
-	int l,t;
+	int l;
 	FILE *inf, *otf;
-	char in[IBUFLEN], out[OBUFLEN];
+	char *in;
 
 	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &r, &s1, &l, &s2, &l) == FAILURE){
 		RETURN_BOOL(0);
 	}
 
-	ZEND_FETCH_RESOURCE(p, struct bsdconv_instance *, &r, -1, LE_BSDCONV_DESC, le_bsdconv);
+	ZEND_FETCH_RESOURCE(ins, struct bsdconv_instance *, &r, -1, LE_BSDCONV_DESC, le_bsdconv);
 
-	if(p==NULL){
+	if(ins==NULL){
 		RETURN_BOOL(0);
 	}
 
@@ -121,17 +124,20 @@ PHP_FUNCTION(bsdconv_file){
 	if(!inf) RETURN_BOOL(0);
 	otf=fopen(s2,"w");
 	if(!otf) RETURN_BOOL(0);
-	p->in_buf=in;
-	p->in_len=IBUFLEN;
-	p->out_buf=out;
-	p->out_len=OBUFLEN;
-	p->mode=BSDCONV_BB;
-	bsdconv_init(p);
+
+	bsdconv_init(ins);
 	do{
-		if(p->feed_len) p->feed_len=fread(p->feed, 1, p->feed_len, inf);
-		r=bsdconv(p);
-		if(p->back_len)fwrite(p->back, 1, p->back_len, otf);
-	}while(r);
+		in=malloc(IBUFLEN);
+		ins->input.data=in;
+		ins->input.len=fread(in, 1, IBUFLEN, inf);
+		if(ins->input.len==0){
+			free(in);
+			ins->flush=1;
+		}
+		ins->output_mode=BSDCONV_FILE;
+		ins->output.data=otf;
+		bsdconv(ins);
+	}while(ins->flush==0);
 
 	fclose(inf);
 	fclose(otf);

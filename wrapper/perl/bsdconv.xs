@@ -52,13 +52,18 @@ conv(p, str)
 	CODE:
 		ins=INT2PTR(struct bsdconv_instance *, p);
 		s=SvPV(str, l);
-		ins->mode=BSDCONV_CC;
-		ins->feed=s;
-		ins->feed_len=l;
+
 		bsdconv_init(ins);
+		ins->output_mode=BSDCONV_AUTOMALLOC;
+		ins->input.data=s;
+		ins->input.len=l;
+		ins->input.setmefree=0;
+		ins->flush=1;
+		printf("lala\n");
 		bsdconv(ins);
-		RETVAL=newSVpvn(ins->back, (STRLEN)ins->back_len);
-		free(ins->back);
+
+		RETVAL=newSVpvn(ins->output.data, (STRLEN)ins->output.len);
+		free(ins->output.data);
 	OUTPUT:
 		RETVAL
 
@@ -68,33 +73,37 @@ conv_file(i, f1, f2)
 	SV* f1
 	SV* f2
 	PREINIT:
-		struct bsdconv_instance *p;
+		struct bsdconv_instance *ins;
 		char *s1, *s2;
 		SSize_t l;
-		int r;
 		FILE *inf, *otf;
-		char in[IBUFLEN], out[OBUFLEN];
+		char *in;
 	CODE:
-		p=INT2PTR(struct bsdconv_instance *, i);
+		ins=INT2PTR(struct bsdconv_instance *, i);
 		s1=SvPV(f1, l);
 		s2=SvPV(f2, l);
 		inf=fopen(s1,"r");
 		if(!inf) XSRETURN_UNDEF;
 		otf=fopen(s2,"w");
 		if(!otf) XSRETURN_UNDEF;
-		p->in_buf=in;
-		p->in_len=IBUFLEN;
-		p->out_buf=out;
-		p->out_len=OBUFLEN;
-		p->mode=BSDCONV_BB;
-		bsdconv_init(p);
+
+		bsdconv_init(ins);
 		do{
-			if(p->feed_len) p->feed_len=fread(p->feed, 1, p->feed_len, inf);
-			r=bsdconv(p);
-			if(p->back_len)fwrite(p->back, 1, p->back_len, otf);
-		}while(r);
+			in=malloc(IBUFLEN);
+			ins->input.data=in;
+			ins->input.len=fread(in, 1, IBUFLEN, inf);
+			if(ins->input.len==0){
+				free(in);
+				ins->flush=1;
+			}
+			ins->output_mode=BSDCONV_FILE;
+			ins->output.data=otf;
+			bsdconv(ins);
+		}while(ins->flush==0);
+
 		fclose(inf);
 		fclose(otf);
+
 		XSRETURN_YES;
 	OUTPUT:
 		RETVAL
@@ -125,9 +134,7 @@ info(p)
 SV*
 error()
 	PREINIT:
-		struct bsdconv_instance *ins;
 		char *s;
-		SSize_t l;
 	CODE:
 		s=bsdconv_error();
 		RETVAL=newSVpv(s, 0);

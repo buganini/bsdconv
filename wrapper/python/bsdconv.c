@@ -70,19 +70,23 @@ py_bsdconv_conv(PyObject *self, PyObject *args)
 {
 	unsigned long k;
 	static PyObject *r;
-	struct bsdconv_instance *p;
+	struct bsdconv_instance *ins;
 	char *s;
 	int l;
 	if (!PyArg_ParseTuple(args, "kz#", &k,&s,&l))
 		return NULL;
-	p=(struct bsdconv_instance *) k;
-	p->mode=BSDCONV_CC;
-	p->feed=s;
-	p->feed_len=l;
-	bsdconv_init(p);
-	bsdconv(p);
-	r=Py_BuildValue("s#",p->back, p->back_len);
-	free(p->back);
+	ins=(struct bsdconv_instance *) k;
+
+	bsdconv_init(ins);
+	ins->output_mode=BSDCONV_AUTOMALLOC;
+	ins->input.data=s;
+	ins->input.len=l;
+	ins->input.setmefree=0;
+	ins->flush=1;
+	bsdconv(ins);
+
+	r=Py_BuildValue("s#",ins->output.data, ins->output.len);
+	free(ins->output.data);
 	return r;
 }
 
@@ -95,15 +99,14 @@ static PyObject *
 py_bsdconv_conv_file(PyObject *self, PyObject *args)
 {
 	unsigned long k;
-	struct bsdconv_instance *p;
+	struct bsdconv_instance *ins;
 	char *s1, *s2;
 	FILE *inf, *otf;
-	char in[IBUFLEN], out[OBUFLEN];
-	int r;
+	char *in;
 
 	if (!PyArg_ParseTuple(args, "kss", &k,&s1,&s2))
 		return NULL;
-	p=(struct bsdconv_instance *) k;
+	ins=(struct bsdconv_instance *) k;
 	inf=fopen(s1,"r");
 	if(!inf){
 		Py_INCREF(Py_None);
@@ -114,17 +117,20 @@ py_bsdconv_conv_file(PyObject *self, PyObject *args)
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
-	p->in_buf=in;
-	p->in_len=IBUFLEN;
-	p->out_buf=out;
-	p->out_len=OBUFLEN;
-	p->mode=BSDCONV_BB;
-	bsdconv_init(p);
+
+	bsdconv_init(ins);
 	do{
-		if(p->feed_len) p->feed_len=fread(p->feed, 1, p->feed_len, inf);
-		r=bsdconv(p);
-		if(p->back_len)fwrite(p->back, 1, p->back_len, otf);
-	}while(r);
+		in=malloc(IBUFLEN);
+		ins->input.data=in;
+		ins->input.len=fread(in, 1, IBUFLEN, inf);
+		if(ins->input.len==0){
+			free(in);
+			ins->flush=1;
+		}
+		ins->output_mode=BSDCONV_FILE;
+		ins->output.data=otf;
+		bsdconv(ins);
+	}while(ins->flush==0);
 
 	fclose(inf);
 	fclose(otf);
