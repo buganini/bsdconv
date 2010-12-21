@@ -25,7 +25,7 @@ void callback(struct bsdconv_instance *ins){
 	ins->phase[ins->phase_index].state.status=NEXTPHASE;
 
 	for(i=0;i<ins->phase[ins->phase_index].data->len;++i){
-		printf("%02X",(unsigned char)ins->phase[ins->phase_index].data->data[i]);
+		printf("%02X",UCP(ins->phase[ins->phase_index].data->data)[i]);
 	}
 	printf("\n");
 }

@@ -60,7 +60,7 @@ void callback(struct bsdconv_instance *ins){
 	void *p;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	char d=this_phase->data->data[this_phase->i];
+	char d=CP(this_phase->data->data)[this_phase->i];
 	if(hex[(unsigned char)d]==-1){
 		this_phase->state.status=DEADEND;
 		t->flag=F_CLEAR;
@@ -85,13 +85,13 @@ void callback(struct bsdconv_instance *ins){
 						free(p);
 					}
 				}
-				t->data.data[t->data.len]=hex[(unsigned char)d];
+				CP(t->data.data)[t->data.len]=hex[(unsigned char)d];
 				t->data.len+=1;
 				t->flag=F_B;
 				break;
 			case F_B:
-				t->data.data[t->data.len-1]<<=4;
-				t->data.data[t->data.len-1]|=hex[(unsigned char)d];
+				CP(t->data.data)[t->data.len-1]<<=4;
+				CP(t->data.data)[t->data.len-1]|=hex[(unsigned char)d];
 				t->flag=F_A;
 				break;
 		}

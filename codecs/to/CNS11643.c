@@ -60,7 +60,7 @@ void callback(struct bsdconv_instance *ins){
 		case 0x01:
 			memcpy(&state, t->cd.z, sizeof(struct state_st));
 			for(i=0;i<ins->phase[ins->phase_index].data->len;++i){
-				memcpy(&state, t->cd.z + (uintptr_t)state.sub[(unsigned char)data[i]], sizeof(struct state_st));
+				memcpy(&state, t->cd.z + (uintptr_t)state.sub[UCP(data)[i]], sizeof(struct state_st));
 				if(state.status==DEADEND){
 					break;
 				}
@@ -79,7 +79,7 @@ void callback(struct bsdconv_instance *ins){
 						ptr=t->cd.z+(uintptr_t)this_phase->data_tail->data;
 						this_phase->data_tail->data=malloc(this_phase->data_tail->len);
 						memcpy(this_phase->data_tail->data, ptr, this_phase->data_tail->len);
-						this_phase->data_tail->data[0]=0;
+						CP(this_phase->data_tail->data)[0]=0;
 					}
 					return;
 				default:
@@ -97,7 +97,7 @@ void callback(struct bsdconv_instance *ins){
 			this_phase->data_tail->len=4;
 			this_phase->data_tail->data=malloc(4);
 			memcpy(this_phase->data_tail->data, data, this_phase->data_tail->len);
-			this_phase->data_tail->data[0]=0;
+			CP(this_phase->data_tail->data)[0]=0;
 			this_phase->state.status=NEXTPHASE;
 			return;
 		default:
