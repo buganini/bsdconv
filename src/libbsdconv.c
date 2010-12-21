@@ -614,20 +614,30 @@ void bsdconv(struct bsdconv_instance *ins){
 			break;
 		case BSDCONV_PREMALLOC:
 			ins->output.setmefree=0;
-			i=0;
-			while(ins->phase[ins->phasen].data_head->next && ins->phase[ins->phasen].data_head->next->len<=ins->output.len-i){
-				memcpy(ins->output.data+i, ins->phase[ins->phasen].data_head->next->data, ins->phase[ins->phasen].data_head->next->len);
-				i+=ins->phase[ins->phasen].data_head->next->len;
-				if(ins->phase[ins->phasen].data_tail==ins->phase[ins->phasen].data_head->next){
-					ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_head;
+			if(ins->output.data!=NULL && ins->output.len){
+				i=0;
+				while(ins->phase[ins->phasen].data_head->next && ins->phase[ins->phasen].data_head->next->len<=ins->output.len-i){
+					memcpy(ins->output.data+i, ins->phase[ins->phasen].data_head->next->data, ins->phase[ins->phasen].data_head->next->len);
+					i+=ins->phase[ins->phasen].data_head->next->len;
+					if(ins->phase[ins->phasen].data_tail==ins->phase[ins->phasen].data_head->next){
+						ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_head;
+					}
+					data_ptr=ins->phase[ins->phasen].data_head->next;
+					ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
+					if(data_ptr->setmefree)
+						free(data_ptr->data);
+					free(data_ptr);
 				}
-				data_ptr=ins->phase[ins->phasen].data_head->next;
-				ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
-				if(data_ptr->setmefree)
-					free(data_ptr->data);
-				free(data_ptr);
+				ins->output.len=i;
+			}else{
+				i=0;
+				data_ptr=ins->phase[ins->phasen].data_head;
+				while(data_ptr){
+					i+=data_ptr->len;
+					data_ptr=data_ptr->next;
+				}
+				ins->output.len=i;
 			}
-			ins->output.len=i;
 			break;
 		case BSDCONV_FILE:
 			fp=ins->output.data;
