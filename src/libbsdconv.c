@@ -36,6 +36,7 @@ void bsdconv_init(struct bsdconv_instance *ins){
 	int i, j;
 	struct data_rt *data_ptr;
 
+	ins->flush=0;
 	ins->input.data=NULL;
 	ins->input.len=0;
 	ins->output.data=NULL;
@@ -114,7 +115,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 		brk=0;
 	}
 	for(i=1;i<=ins->phasen;++i){
-		if(brk==0){
+		if(brk==0 && 0){
 			struct bsdconv_instance *alias_ins;
 			switch(ins->phase[i].type){
 				case FROM:
@@ -166,42 +167,43 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 		chdir(PREFIX);
 	}
 	chdir("share/bsdconv");
-	ins->phase[0].data_tail=ins->phase[0].data_head=malloc(sizeof(struct data_st));
-	ins->phase[0].data_head->next=NULL;
-	for(i=1;i<=ins->phasen;++i){
-		ins->phase[i].codec=malloc(ins->phase[i].codecn * sizeof(struct bsdconv_codec_t));
-		switch(ins->phase[i].type){
-			case FROM:
-				chdir("from");
-				break;
-			case INTER:
-				chdir("inter");
-				break;
-			case TO:
-				chdir("to");
-				break;
-		}
-		brk=0;
-		t=opipe[i];
-		for(j=0;j<ins->phase[i].codecn;++j){
-			ins->phase[i].codec[j].desc=strdup(strsep(&t, ","));
-			strcpy(buf, ins->phase[i].codec[j].desc);
-			REALPATH(buf, path);
-			if(!loadcodec(&ins->phase[i].codec[j], path, 0)){
-				return NULL;
+	for(i=0;i<=ins->phasen;++i){
+		if(i>0){
+			ins->phase[i].codec=malloc(ins->phase[i].codecn * sizeof(struct bsdconv_codec_t));
+			switch(ins->phase[i].type){
+				case FROM:
+					chdir("from");
+					break;
+				case INTER:
+					chdir("inter");
+					break;
+				case TO:
+					chdir("to");
+					break;
 			}
-		}
-		chdir("..");
+			brk=0;
+			t=opipe[i];
+			for(j=0;j<ins->phase[i].codecn;++j){
+				ins->phase[i].codec[j].desc=strdup(strsep(&t, ","));
+				strcpy(buf, ins->phase[i].codec[j].desc);
+				REALPATH(buf, path);
+				if(!loadcodec(&ins->phase[i].codec[j], path, 0)){
+					return NULL;
+				}
+			}
+			chdir("..");
 
-		ins->phase[i].codecn--;
-		ins->phase[i].data_head=malloc(sizeof(struct data_st));
-		ins->phase[i].data_head->next=NULL;
-		for(j=0;j<=ins->phase[i].codecn;j++){
-			if(ins->phase[i].codec[j].cbcreate){
-				ins->phase[i].codec[j].priv=ins->phase[i].codec[j].cbcreate();
+			ins->phase[i].codecn--;
+			for(j=0;j<=ins->phase[i].codecn;j++){
+				if(ins->phase[i].codec[j].cbcreate){
+					ins->phase[i].codec[j].priv=ins->phase[i].codec[j].cbcreate();
+				}
 			}
+			free(opipe[i]);
 		}
-		free(opipe[i]);
+		ins->phase[i].data_head=malloc(sizeof(struct data_rt));
+		ins->phase[i].data_head->next=NULL;
+		ins->phase[i].data_head->setmefree=0;
 	}
 
 	chdir(cwd);
@@ -214,18 +216,22 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 	int i,j;
 	struct data_rt *data_ptr;
 
-	for(i=1;i<=ins->phasen;i++){
-		for(j=0;j<=ins->phase[i].codecn;j++){
-			free(ins->phase[i].codec[j].desc);
-			if(ins->phase[i].codec[j].cbdestroy){
-				ins->phase[i].codec[j].cbdestroy(ins->phase[i].codec[j].priv);
+	for(i=0;i<=ins->phasen;i++){
+		if(i>0){
+			for(j=0;j<=ins->phase[i].codecn;j++){
+				free(ins->phase[i].codec[j].desc);
+				if(ins->phase[i].codec[j].cbdestroy){
+					ins->phase[i].codec[j].cbdestroy(ins->phase[i].codec[j].priv);
+				}
+				unloadcodec(&ins->phase[i].codec[j]);
 			}
-			unloadcodec(&ins->phase[i].codec[j]);
+			free(ins->phase[i].codec);
 		}
-		free(ins->phase[i].codec);
 		while(ins->phase[i].data_head){
 			data_ptr=ins->phase[i].data_head;
 			ins->phase[i].data_head=ins->phase[i].data_head->next;
+			if(data_ptr->setmefree)
+				free(data_ptr->data);
 			free(data_ptr);
 		}
 	}
@@ -242,11 +248,12 @@ void bsdconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase;
 	struct bsdconv_phase *prev_phase;
 
-	if(ins->input.len){
+	if(ins->input.len && ins->input.data!=NULL){
 		ins->phase[0].data_tail->next=malloc(sizeof(struct data_rt));
 		ins->phase[0].data_tail=ins->phase[0].data_tail->next;
 		*(ins->phase[0].data_tail)=ins->input;
 		ins->input.data=NULL;
+		ins->input.len=0;
 		ins->input.setmefree=0;
 	}
 
