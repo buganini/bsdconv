@@ -45,7 +45,7 @@ void bsdconv_init(struct bsdconv_instance *ins){
 
 	ins->ierr=0;
 	ins->oerr=0;
-	
+
 	for(i=0;i<=ins->phasen;i++){
 		ins->phase[i].pend=0;
 		while(ins->phase[i].data_head->next){
@@ -428,7 +428,7 @@ void bsdconv(struct bsdconv_instance *ins){
 						if(this_phase->data->next){
 							this_phase->bak=this_phase->data->next;
 						}else{
-							this_phase->bak=prev_phase->data_tail->next=malloc(sizeof(struct data_st));
+							this_phase->bak=prev_phase->data_tail->next=malloc(sizeof(struct data_rt));
 							prev_phase->data_tail=prev_phase->data_tail->next;
 							prev_phase->data_tail->next=NULL;
 							prev_phase->data_tail->len=0;
@@ -529,7 +529,7 @@ void bsdconv(struct bsdconv_instance *ins){
 						if(this_phase->data->next){
 							this_phase->bak=this_phase->data->next;
 						}else{
-							this_phase->bak=prev_phase->data_tail->next=malloc(sizeof(struct data_st));
+							this_phase->bak=prev_phase->data_tail->next=malloc(sizeof(struct data_rt));
 							prev_phase->data_tail=prev_phase->data_tail->next;
 							prev_phase->data_tail->next=NULL;
 							prev_phase->data_tail->len=0;
