@@ -159,7 +159,7 @@ char * index(const char *, int);
 #define UCP(X) ((unsigned char *)(X)) 
 
 #define DATA_MALLOC(X) do{if(ins->pool){(X)=ins->pool; ins->pool=ins->pool->next;}else{(X)=malloc(sizeof(struct data_rt));}}while(0)
-#define DATA_FREE(X) do{(X)->next=ins->pool; ins->pool=(X);}while(0)
+#define DATA_FREE(X) do{ if((X)->setmefree) free((X)->data); (X)->next=ins->pool; ins->pool=(X);}while(0)
 
 struct bsdconv_instance *bsdconv_create(const char *);
 void bsdconv_init(struct bsdconv_instance *);

@@ -658,8 +658,6 @@ void bsdconv(struct bsdconv_instance *ins){
 				memcpy(ptr, data_ptr->data, data_ptr->len);
 				ptr+=data_ptr->len;
 				ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
-				if(data_ptr->setmefree)
-					free(data_ptr->data);
 				DATA_FREE(data_ptr);
 			}
 			break;
@@ -675,8 +673,6 @@ void bsdconv(struct bsdconv_instance *ins){
 					}
 					data_ptr=ins->phase[ins->phasen].data_head->next;
 					ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
-					if(data_ptr->setmefree)
-						free(data_ptr->data);
 					DATA_FREE(data_ptr);
 				}
 				ins->output.len=i;
@@ -696,8 +692,6 @@ void bsdconv(struct bsdconv_instance *ins){
 				data_ptr=ins->phase[ins->phasen].data_head->next;
 				fwrite(data_ptr->data, data_ptr->len, 1, fp);
 				ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
-				if(data_ptr->setmefree)
-					free(data_ptr->data);
 				DATA_FREE(data_ptr);
 			}
 			ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_head;
@@ -708,8 +702,6 @@ void bsdconv(struct bsdconv_instance *ins){
 				data_ptr=ins->phase[ins->phasen].data_head->next;
 				write(fd, data_ptr->data, data_ptr->len);
 				ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
-				if(data_ptr->setmefree)
-					free(data_ptr->data);
 				DATA_FREE(data_ptr);
 			}
 			ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_head;
