@@ -106,6 +106,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 			i+=1;
 		}
 	}
+//errorlevel 0
 	ins->phase[0].type=INPUT;
 	ins->phase[i-1].type=TO;
 
@@ -128,12 +129,12 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 					alias_ins=bsdconv_create("ASCII:TO_ALIAS:ASCII");
 					break;
 				default:
-					alias_ins=NULL;
-					return NULL;
+					SetLastError(EDOOFUS);
+					goto bsdconv_create_error_0;
 			}
 			if(alias_ins==NULL){
 				SetLastError(EDOOFUS);
-				return NULL;
+				goto bsdconv_create_error_0;
 			}
 			bsdconv_init(alias_ins);
 			alias_ins->output_mode=BSDCONV_AUTOMALLOC;
@@ -154,68 +155,98 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 			}
 		}else{
 			SetLastError(EINVAL);
-			return NULL;
+			goto bsdconv_create_error_0;
 		}
 	}
-	free(t2);
 
 	cwd=getwd(NULL);
-
 	if((p=getenv("BSDCONV_PATH"))){
 		chdir(p);
 	}else{
 		chdir(PREFIX);
 	}
 	chdir("share/bsdconv");
-	for(i=0;i<=ins->phasen;++i){
-		if(i>0){
-			ins->phase[i].codec=malloc(ins->phase[i].codecn * sizeof(struct bsdconv_codec_t));
-			switch(ins->phase[i].type){
-				case FROM:
-					chdir("from");
-					break;
-				case INTER:
-					chdir("inter");
-					break;
-				case TO:
-					chdir("to");
-					break;
+	for(i=1;i<=ins->phasen;++i){
+		ins->phase[i].codec=malloc(ins->phase[i].codecn * sizeof(struct bsdconv_codec_t));
+	}
+	for(i=1;i<=ins->phasen;++i){
+//errorlevel 1
+		ins->phase[i].codecn-=1;
+		t=opipe[i];
+		for(j=0;j<=ins->phase[i].codecn;++j){
+			ins->phase[i].codec[j].desc=strsep(&t, ",");
+			if(ins->phase[i].codec[j].desc[0]==0){
+				SetLastError(EINVAL);
+				goto bsdconv_create_error_1;
 			}
-			ins->phase[i].codecn-=1;
-			brk=0;
-			t=opipe[i];
-			for(j=0;j<=ins->phase[i].codecn;++j){
-				ins->phase[i].codec[j].desc=strsep(&t, ",");
-				if(ins->phase[i].codec[j].desc[0]==0){
-					SetLastError(EINVAL);
-					return NULL;
-				}
-			}
-			for(j=0;j<=ins->phase[i].codecn;++j){
-				ins->phase[i].codec[j].desc=strdup(ins->phase[i].codec[j].desc);
-				strcpy(buf, ins->phase[i].codec[j].desc);
-				REALPATH(buf, path);
-				if(!loadcodec(&ins->phase[i].codec[j], path, 0)){
-					return NULL;
-				}
-			}
-			chdir("..");
-			for(j=0;j<=ins->phase[i].codecn;++j){
-				if(ins->phase[i].codec[j].cbcreate){
-					ins->phase[i].codec[j].priv=ins->phase[i].codec[j].cbcreate();
-				}
-			}
-			free(opipe[i]);
 		}
+	}
+	for(i=1;i<=ins->phasen;++i){
+//errorlevel 2
+		switch(ins->phase[i].type){
+			case FROM:
+				chdir("from");
+				break;
+			case INTER:
+				chdir("inter");
+				break;
+			case TO:
+				chdir("to");
+				break;
+		}
+		for(j=0;j<=ins->phase[i].codecn;++j){
+			ins->phase[i].codec[j].desc=strdup(ins->phase[i].codec[j].desc);
+			strcpy(buf, ins->phase[i].codec[j].desc);
+			REALPATH(buf, path);
+			if(!loadcodec(&ins->phase[i].codec[j], path, 0)){
+				goto bsdconv_create_error_2;
+			}
+		}
+		chdir("..");
+	}
+	for(i=1;i<=ins->phasen;++i){
+		for(j=0;j<=ins->phase[i].codecn;++j){
+			if(ins->phase[i].codec[j].cbcreate){
+				ins->phase[i].codec[j].priv=ins->phase[i].codec[j].cbcreate();
+			}
+		}
+	}
+	for(i=0;i<=ins->phasen;++i){
 		ins->phase[i].data_head=malloc(sizeof(struct data_rt));
 		ins->phase[i].data_head->next=NULL;
 		ins->phase[i].data_head->setmefree=0;
 	}
 
 	chdir(cwd);
+	for(i=1;i<=ins->phasen;++i){
+		free(opipe[i]);
+	}
 	free(cwd);
+	free(t2);
 
 	return ins;
+	bsdconv_create_error_2:
+		free(ins->phase[i].codec[j].desc);
+		j-=1;
+		for(;i>=1;j=ins->phase[--i].codecn){
+			for(;j>=0;--j){
+				free(ins->phase[i].codec[j].desc);
+				unloadcodec(&ins->phase[i].codec[j]);
+			}
+		}
+	bsdconv_create_error_1:
+		free(cwd);
+		for(i=1;i<=ins->phasen;++i){
+			free(ins->phase[i].codec);
+		}
+	bsdconv_create_error_0:
+		free(t2);
+		for(i=1;i<=ins->phasen;++i){
+			free(opipe[i]);
+		}
+		free(ins->phase);
+		free(ins);
+		return NULL;
 }
 
 void bsdconv_destroy(struct bsdconv_instance *ins){
@@ -608,22 +639,20 @@ void bsdconv(struct bsdconv_instance *ins){
 				data_ptr=data_ptr->next;
 			}
 			ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_head;
-			if(i>4){
-				ins->output.setmefree=1;
-				ptr=ins->output.data=malloc(i);
-				ins->output.len=i-4;
-				data_ptr=ins->phase[ins->phasen].data_head;
-				while(ins->phase[ins->phasen].data_head->next){
-					data_ptr=ins->phase[ins->phasen].data_head->next;
-					memcpy(ptr, data_ptr->data, data_ptr->len);
-					ptr+=data_ptr->len;
-					ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
-					if(data_ptr->setmefree)
-						free(data_ptr->data);
-					free(data_ptr);
-				}
-				ptr[0]=ptr[1]=ptr[2]=ptr[3]=0;
+			ins->output.setmefree=1;
+			ptr=ins->output.data=malloc(i);
+			ins->output.len=i-4;
+			data_ptr=ins->phase[ins->phasen].data_head;
+			while(ins->phase[ins->phasen].data_head->next){
+				data_ptr=ins->phase[ins->phasen].data_head->next;
+				memcpy(ptr, data_ptr->data, data_ptr->len);
+				ptr+=data_ptr->len;
+				ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
+				if(data_ptr->setmefree)
+					free(data_ptr->data);
+				free(data_ptr);
 			}
+			ptr[0]=ptr[1]=ptr[2]=ptr[3]=0;
 			break;
 		case BSDCONV_PREMALLOCED:
 			ins->output.setmefree=0;
