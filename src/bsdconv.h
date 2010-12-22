@@ -82,6 +82,8 @@ struct bsdconv_instance{
 	struct bsdconv_phase *phase;
 	int phasen, phase_index;
 	unsigned int ierr, oerr;
+
+	struct data_rt *pool;
 };
 
 struct bsdconv_phase{
@@ -133,7 +135,7 @@ char * index(const char *, int);
 #endif
 
 #define LISTCPY(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
-	(X)->next=malloc(sizeof(struct data_rt));	\
+	DATA_MALLOC((X)->next);	\
 	(X)=(X)->next;	\
 	memcpy((X), (char *)((Z)+(uintptr_t)data_ptr), sizeof(struct data_st));	\
 	data_ptr=(X)->next;	\
@@ -149,12 +151,15 @@ char * index(const char *, int);
 	if((Z)==(X)->next){	\
 		(Z)=(X);	\
 	}	\
-	free((X)->next);	\
+	DATA_FREE((X)->next);	\
 	(X)->next=data_ptr;	\
 }
 
 #define CP(X) ((char *)(X)) 
 #define UCP(X) ((unsigned char *)(X)) 
+
+#define DATA_MALLOC(X) do{if(ins->pool){(X)=ins->pool; ins->pool=ins->pool->next;}else{(X)=malloc(sizeof(struct data_rt));}}while(0)
+#define DATA_FREE(X) do{(X)->next=ins->pool; ins->pool=(X);}while(0)
 
 struct bsdconv_instance *bsdconv_create(const char *);
 void bsdconv_init(struct bsdconv_instance *);
