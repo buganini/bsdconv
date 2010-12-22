@@ -153,8 +153,8 @@ char * index(const char *, int);
 	(X)->next=data_ptr;	\
 }
 
-#define CP(X)((char *)(X)) 
-#define UCP(X)((unsigned char *)(X)) 
+#define CP(X) ((char *)(X)) 
+#define UCP(X) ((unsigned char *)(X)) 
 
 struct bsdconv_instance *bsdconv_create(const char *);
 void bsdconv_init(struct bsdconv_instance *);
