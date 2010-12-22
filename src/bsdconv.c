@@ -82,7 +82,6 @@ int main(int argc, char *argv[]){
 		ins->input.len=fread(in, 1, IBUFLEN, inf);
 		ins->input.setmefree=1;
 		if(ins->input.len==0){
-			free(in);
 			ins->flush=1;
 		}
 		ins->output_mode=BSDCONV_FILE;
