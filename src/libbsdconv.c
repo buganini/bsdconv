@@ -95,6 +95,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	while((t1=strsep(&t, "|")) != NULL){
 		brk=1;
 		while((opipe[i]=strsep(&t1, ":"))!=NULL){
+//errorlevel 0
 			opipe[i]=strdup(opipe[i]);
 			if(brk){
 				ins->phase[i].type=FROM;
@@ -106,7 +107,6 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 			i+=1;
 		}
 	}
-//errorlevel 0
 	ins->phase[0].type=INPUT;
 	ins->phase[i-1].type=TO;
 
@@ -285,7 +285,7 @@ void bsdconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase;
 	struct bsdconv_phase *prev_phase;
 
-	if(ins->input.len && ins->input.data!=NULL){
+	if(ins->input.data!=NULL){
 		ins->phase[0].data_tail->next=malloc(sizeof(struct data_rt));
 		ins->phase[0].data_tail=ins->phase[0].data_tail->next;
 		*(ins->phase[0].data_tail)=ins->input;
