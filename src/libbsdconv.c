@@ -46,7 +46,7 @@ void bsdconv_init(struct bsdconv_instance *ins){
 	ins->ierr=0;
 	ins->oerr=0;
 
-	for(i=0;i<=ins->phasen;i++){
+	for(i=0;i<=ins->phasen;++i){
 		ins->phase[i].pend=0;
 		while(ins->phase[i].data_head->next){
 			data_ptr=ins->phase[i].data_head->next;
@@ -61,7 +61,7 @@ void bsdconv_init(struct bsdconv_instance *ins){
 		if(i>0){
 			ins->phase[i].data=ins->phase[i-1].data_head;
 			RESET(i)
-			for(j=0;j<=ins->phase[i].codecn;j++){
+			for(j=0;j<=ins->phase[i].codecn;++j){
 				if(ins->phase[i].codec[j].cbinit)
 					ins->phase[i].codec[j].cbinit(&(ins->phase[i].codec[j]),ins->phase[i].codec[j].priv);
 			}
@@ -139,7 +139,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 			alias_ins->output_mode=BSDCONV_AUTOMALLOC;
 			alias_ins->input.data=opipe[i];
 			alias_ins->input.len=strlen(opipe[i]);
-			alias_ins->input.setmefree=0;
+			alias_ins->input.setmefree=1;
 			alias_ins->flush=1;
 			bsdconv(alias_ins);
 			opipe[i]=alias_ins->output.data;
@@ -181,9 +181,10 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 					chdir("to");
 					break;
 			}
+			ins->phase[i].codecn-=1;
 			brk=0;
 			t=opipe[i];
-			for(j=0;j<ins->phase[i].codecn;++j){
+			for(j=0;j<=ins->phase[i].codecn;++j){
 				ins->phase[i].codec[j].desc=strdup(strsep(&t, ","));
 				strcpy(buf, ins->phase[i].codec[j].desc);
 				REALPATH(buf, path);
@@ -192,9 +193,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 				}
 			}
 			chdir("..");
-
-			ins->phase[i].codecn--;
-			for(j=0;j<=ins->phase[i].codecn;j++){
+			for(j=0;j<=ins->phase[i].codecn;++j){
 				if(ins->phase[i].codec[j].cbcreate){
 					ins->phase[i].codec[j].priv=ins->phase[i].codec[j].cbcreate();
 				}
@@ -216,9 +215,9 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 	int i,j;
 	struct data_rt *data_ptr;
 
-	for(i=0;i<=ins->phasen;i++){
+	for(i=0;i<=ins->phasen;++i){
 		if(i>0){
-			for(j=0;j<=ins->phase[i].codecn;j++){
+			for(j=0;j<=ins->phase[i].codecn;++j){
 				free(ins->phase[i].codec[j].desc);
 				if(ins->phase[i].codec[j].cbdestroy){
 					ins->phase[i].codec[j].cbdestroy(ins->phase[i].codec[j].priv);
@@ -240,7 +239,7 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 }
 
 void bsdconv(struct bsdconv_instance *ins){
-	uintptr_t i=0;
+	uintptr_t i;
 	struct data_rt *data_ptr;
 	char *ptr;
 	FILE *fp;
@@ -252,6 +251,7 @@ void bsdconv(struct bsdconv_instance *ins){
 		ins->phase[0].data_tail->next=malloc(sizeof(struct data_rt));
 		ins->phase[0].data_tail=ins->phase[0].data_tail->next;
 		*(ins->phase[0].data_tail)=ins->input;
+		ins->phase[0].data_tail->next=NULL;
 		ins->input.data=NULL;
 		ins->input.len=0;
 		ins->input.setmefree=0;
@@ -282,7 +282,6 @@ void bsdconv(struct bsdconv_instance *ins){
 									LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
 									this_phase->data=prev_phase->data_head;
 									i=this_phase->data_head->len;
-
 									this_phase->match=0;
 									RESET(ins->phase_index);
 									goto phase_begin;
@@ -300,7 +299,7 @@ void bsdconv(struct bsdconv_instance *ins){
 									this_phase->bak=this_phase->data;
 									LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
 									this_phase->bak=this_phase->data=prev_phase->data_head;
-									this_phase->data_head->len=i+1;
+									i=this_phase->data_head->len+1;
 									continue;
 								}
 								break;
@@ -358,7 +357,7 @@ void bsdconv(struct bsdconv_instance *ins){
 			while(this_phase->data->next){
 				this_phase->data=this_phase->data->next;
 				this_phase->state.status=DUMMY;
-				for(i=0;i<this_phase->data->len;i++){
+				for(i=0;i<this_phase->data->len;++i){
 					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.sub[UCP(this_phase->data->data)[i]], sizeof(struct state_st));
 					switch(this_phase->state.status){
 						case DEADEND:
@@ -466,7 +465,7 @@ void bsdconv(struct bsdconv_instance *ins){
 			while(this_phase->data->next){
 				this_phase->data=this_phase->data->next;
 				this_phase->state.status=DUMMY;
-				for(i=0;i<this_phase->data->len;i++){
+				for(i=0;i<this_phase->data->len;++i){
 					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.sub[UCP(this_phase->data->data)[i]], sizeof(struct state_st));
 					switch(this_phase->state.status){
 						case DEADEND:
