@@ -138,12 +138,14 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 			}
 			bsdconv_init(alias_ins);
 			alias_ins->output_mode=BSDCONV_AUTOMALLOC;
+			alias_ins->output.len=1;
 			alias_ins->input.data=opipe[i];
 			alias_ins->input.len=strlen(opipe[i]);
 			alias_ins->input.setmefree=1;
 			alias_ins->flush=1;
 			bsdconv(alias_ins);
 			opipe[i]=alias_ins->output.data;
+			opipe[i][alias_ins->output.len]=0;
 			bsdconv_destroy(alias_ins);
 		}
 		if(*opipe[i]){
@@ -632,7 +634,7 @@ void bsdconv(struct bsdconv_instance *ins){
 			ins->output.setmefree=0;
 			break;
 		case BSDCONV_AUTOMALLOC:
-			i=4;
+			i=ins->output.len;
 			data_ptr=ins->phase[ins->phasen].data_head;
 			while(data_ptr){
 				i+=data_ptr->len;
@@ -641,7 +643,7 @@ void bsdconv(struct bsdconv_instance *ins){
 			ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_head;
 			ins->output.setmefree=1;
 			ptr=ins->output.data=malloc(i);
-			ins->output.len=i-4;
+			ins->output.len=i-ins->output.len;
 			data_ptr=ins->phase[ins->phasen].data_head;
 			while(ins->phase[ins->phasen].data_head->next){
 				data_ptr=ins->phase[ins->phasen].data_head->next;
@@ -652,7 +654,6 @@ void bsdconv(struct bsdconv_instance *ins){
 					free(data_ptr->data);
 				free(data_ptr);
 			}
-			ptr[0]=ptr[1]=ptr[2]=ptr[3]=0;
 			break;
 		case BSDCONV_PREMALLOCED:
 			ins->output.setmefree=0;
