@@ -185,7 +185,14 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 			brk=0;
 			t=opipe[i];
 			for(j=0;j<=ins->phase[i].codecn;++j){
-				ins->phase[i].codec[j].desc=strdup(strsep(&t, ","));
+				ins->phase[i].codec[j].desc=strsep(&t, ",");
+				if(ins->phase[i].codec[j].desc[0]==0){
+					SetLastError(EINVAL);
+					return NULL;
+				}
+			}
+			for(j=0;j<=ins->phase[i].codecn;++j){
+				ins->phase[i].codec[j].desc=strdup(ins->phase[i].codec[j].desc);
 				strcpy(buf, ins->phase[i].codec[j].desc);
 				REALPATH(buf, path);
 				if(!loadcodec(&ins->phase[i].codec[j], path, 0)){
