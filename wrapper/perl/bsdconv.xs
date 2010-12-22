@@ -90,6 +90,7 @@ conv_file(i, f1, f2)
 		do{
 			in=malloc(IBUFLEN);
 			ins->input.data=in;
+			ins->input.len=fread(in, 1, IBUFLEN, inf);
 			ins->input.setmefree=1;
 			if(ins->input.len==0){
 				ins->flush=1;
