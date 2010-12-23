@@ -119,6 +119,10 @@ struct bsdconv_codec_t {
 
 #define PATH_BUF_SIZE 512
 
+#ifndef EDOOFUS
+#define EDOOFUS 88
+#endif
+
 #ifdef WIN32
 #define EOPNOTSUPP ERROR_NOT_SUPPORTED
 #define ENOMEM ERROR_NOT_ENOUGH_MEMORY
@@ -127,6 +131,7 @@ struct bsdconv_codec_t {
 #define REALPATH(buf, path) GetFullPathName(buf, PATH_BUF_SIZE, path, NULL)
 char * strsep(char **, const char *);
 char * index(const char *, int);
+char * getwd(char *);
 #else
 #define SetLastError(n) errno=n
 #define GetLastError() errno

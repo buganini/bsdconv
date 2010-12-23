@@ -79,10 +79,6 @@ int main(int argc, char *argv[]){
 	struct data_st ddata;
 	uintptr_t callback=0;
 	void *tofree;
-#ifdef WIN32
-	HANDLE fd;
-	HANDLE md;
-#endif
 
 	table['0']=0;
 	table['1']=1;

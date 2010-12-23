@@ -75,10 +75,10 @@ int loadcodec(struct bsdconv_codec_t *cd, char *path, int maponly){
 
 #ifdef WIN32
 	if((cd->dl=LoadLibrary(path))){
-		cd->callback=GetProcAddress(cd->dl,"callback");
-		cd->cbcreate=GetProcAddress(cd->dl,"cbcreate");
-		cd->cbinit=GetProcAddress(cd->dl,"cbinit");
-		cd->cbdestroy=GetProcAddress(cd->dl,"cbdestroy");
+		cd->callback=(void *)GetProcAddress(cd->dl,"callback");
+		cd->cbcreate=(void *)GetProcAddress(cd->dl,"cbcreate");
+		cd->cbinit=(void *)GetProcAddress(cd->dl,"cbinit");
+		cd->cbdestroy=(void *)GetProcAddress(cd->dl,"cbdestroy");
 	}
 #else
 	if((cd->dl=dlopen(path, RTLD_LAZY))){
@@ -122,7 +122,7 @@ char * strsep(char **stringp, const char *delim){
 }
 char * index(const char *s, int c){
 	for(;*s && *s!=c;++s);
-	if(*s) return s;
+	if(*s) return (char *)s;
 	return NULL;
 }
 
@@ -136,7 +136,7 @@ char * strndup(const char *str, size_t len){
 	return r;
 }
 
-char *getwd(char *buf){
+char * getwd(char *buf){
 	char b[512], *r;
 	int l;
 	getcwd(b,512);
