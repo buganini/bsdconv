@@ -151,12 +151,10 @@ char * getwd(char *);
 
 #define LISTFREE(X,Y,Z)	while((X)->next!=(Y)){	\
 	data_ptr=(X)->next->next;	\
-	if((X)->next->setmefree)	\
-		free((X)->next->data);	\
+	DATA_FREE((X)->next);	\
 	if((Z)==(X)->next){	\
 		(Z)=(X);	\
 	}	\
-	DATA_FREE((X)->next);	\
 	(X)->next=data_ptr;	\
 }
 
