@@ -20,7 +20,6 @@
 #include "bsdconv.h"
 
 #define IBUFLEN 1024
-#define OBUFLEN 1024
 
 int main(int argc, char *argv[]){
 	char *t;
