@@ -18,7 +18,6 @@
 #include <bsdconv.h>
 
 #define IBUFLEN 1024
-#define OBUFLEN 1024
 
 PyDoc_STRVAR(bsdconv_create_doc,
 "create(c)\n\

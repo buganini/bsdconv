@@ -31,7 +31,6 @@ static int le_bsdconv;
 #define LE_BSDCONV_DESC "bsdconv instance"
 
 #define IBUFLEN 1024
-#define OBUFLEN 1024
 
 static void bsdconv_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC){
 	bsdconv_destroy((struct bsdconv_instance *) rsrc->ptr);

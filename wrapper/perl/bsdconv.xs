@@ -25,7 +25,6 @@
 #include <string.h>
 
 #define IBUFLEN 1024
-#define OBUFLEN 1024
 
 MODULE = bsdconv		PACKAGE = bsdconv
 
