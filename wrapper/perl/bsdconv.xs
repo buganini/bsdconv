@@ -76,14 +76,25 @@ conv_file(i, f1, f2)
 		SSize_t l;
 		FILE *inf, *otf;
 		char *in;
+		char *tmp;
 	CODE:
 		ins=INT2PTR(struct bsdconv_instance *, i);
 		s1=SvPV(f1, l);
 		s2=SvPV(f2, l);
 		inf=fopen(s1,"r");
 		if(!inf) XSRETURN_UNDEF;
-		otf=fopen(s2,"w");
-		if(!otf) XSRETURN_UNDEF;
+		tmp=malloc(l+8);
+		strcpy(tmp, s2);
+		strcat(tmp, ".XXXXXX");
+		if(mktemp(tmp)==NULL){
+			free(tmp);
+			XSRETURN_UNDEF;
+		}
+		otf=fopen(tmp,"w");
+		if(!otf){
+			free(tmp);
+			XSRETURN_UNDEF;
+		}
 
 		bsdconv_init(ins);
 		do{
@@ -101,7 +112,9 @@ conv_file(i, f1, f2)
 
 		fclose(inf);
 		fclose(otf);
-
+		unlink(s2);
+		rename(tmp,s2);
+		free(tmp);
 		XSRETURN_YES;
 	OUTPUT:
 		RETVAL

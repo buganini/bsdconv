@@ -105,11 +105,12 @@ PHP_FUNCTION(bsdconv_file){
 	zval *r=NULL;
 	struct bsdconv_instance *ins;
 	char *s1, *s2;
-	int l;
+	int l,l2;
 	FILE *inf, *otf;
 	char *in;
+	char *tmp;
 
-	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &r, &s1, &l, &s2, &l) == FAILURE){
+	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &r, &s1, &l, &s2, &l2) == FAILURE){
 		RETURN_BOOL(0);
 	}
 
@@ -121,8 +122,18 @@ PHP_FUNCTION(bsdconv_file){
 
 	inf=fopen(s1,"r");
 	if(!inf) RETURN_BOOL(0);
-	otf=fopen(s2,"w");
-	if(!otf) RETURN_BOOL(0);
+	tmp=malloc(l2+8);
+	strcpy(tmp, s2);
+	strcat(tmp, ".XXXXXX");
+	if(mktemp(tmp)==NULL){
+		free(tmp);
+		RETURN_BOOL(0);
+	}
+	otf=fopen(tmp,"w");
+	if(!otf){
+		free(tmp);
+		RETURN_BOOL(0);
+	}
 
 	bsdconv_init(ins);
 	do{
@@ -140,6 +151,9 @@ PHP_FUNCTION(bsdconv_file){
 
 	fclose(inf);
 	fclose(otf);
+	unlink(s2);
+	rename(tmp,s2);
+	free(tmp);
 
 	RETURN_BOOL(1);
 }

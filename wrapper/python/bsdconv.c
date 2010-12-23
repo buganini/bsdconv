@@ -102,6 +102,7 @@ py_bsdconv_conv_file(PyObject *self, PyObject *args)
 	char *s1, *s2;
 	FILE *inf, *otf;
 	char *in;
+	char *tmp;
 
 	if (!PyArg_ParseTuple(args, "kss", &k,&s1,&s2))
 		return NULL;
@@ -111,8 +112,17 @@ py_bsdconv_conv_file(PyObject *self, PyObject *args)
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
-	otf=fopen(s2,"w");
+	tmp=malloc(strlen(s2)+8);
+	strcpy(tmp, s2);
+	strcat(tmp, ".XXXXXX");
+	if(mktemp(tmp)==NULL){
+		free(tmp);
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+	otf=fopen(tmp,"w");
 	if(!otf){
+		free(tmp);
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
@@ -133,6 +143,9 @@ py_bsdconv_conv_file(PyObject *self, PyObject *args)
 
 	fclose(inf);
 	fclose(otf);
+	unlink(s2);
+	rename(tmp,s2);
+	free(tmp);
 
 	Py_INCREF(Py_True);
 	return Py_True;
