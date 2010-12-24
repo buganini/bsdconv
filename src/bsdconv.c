@@ -26,10 +26,10 @@ int main(int argc, char *argv[]){
 	char *tmp=NULL;
 	struct bsdconv_instance *ins;
 	FILE *inf, *otf;
-	char *in;
+	char *in, *to;
 
 	if(argc<2){
-		fprintf(stderr, "Usage:\n\t %s from:[inter:..]to [input|- [output|-]]\nfrom,inter,to in form of codec[,codec2..]\n", argv[0]);
+		fprintf(stderr, "Usage:\n\t %s from:[inter:..]to [input|- [output|-|=]]\nfrom,inter,to in form of codec[,codec2..]\n", argv[0]);
 		exit(1);
 	}
 	if(argc>2){
@@ -46,11 +46,15 @@ int main(int argc, char *argv[]){
 		inf=stdin;
 	}
 	if(argc>3){
-		if(strcmp(argv[3],"-")==0){
+		to=argv[3];
+		if(strcmp(to,"=")==0){
+			to=argv[2];
+		}
+		if(strcmp(to,"-")==0){
 			otf=stdout;
 		}else{
-			tmp=malloc(strlen(argv[3])+8);
-			strcpy(tmp, argv[3]);
+			tmp=malloc(strlen(to)+8);
+			strcpy(tmp, to);
 			strcat(tmp, ".XXXXXX");
 			if(mktemp(tmp)==NULL){
 				free(tmp);
@@ -59,11 +63,12 @@ int main(int argc, char *argv[]){
 			}
 			otf=fopen(tmp,"w");
 			if(!otf){
-				fprintf(stderr, "Unable to open output file %s\n", argv[3]);
+				fprintf(stderr, "Unable to open output file %s\n", to);
 				exit(1);
 			}
 		}
 	}else{
+		to=NULL;
 		otf=stdout;
 	}
 
@@ -96,10 +101,10 @@ int main(int argc, char *argv[]){
 	if(inf!=stdin){
 		fclose(inf);
 	}
-	if(otf!=stdout){
+	if(to){
 		fclose(otf);
-		unlink(argv[3]);
-		rename(tmp,argv[3]);
+		unlink(to);
+		rename(tmp,to);
 		free(tmp);
 	}
 	return 0;
