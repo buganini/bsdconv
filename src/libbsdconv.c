@@ -345,7 +345,7 @@ void bsdconv(struct bsdconv_instance *ins){
 									this_phase->bak=this_phase->data;
 									LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
 									this_phase->bak=this_phase->data=prev_phase->data_head;
-									i=this_phase->data_head->len+1;
+									i=this_phase->data_head->len=this_phase->data_head->len+1;
 									continue;
 								}
 								break;
