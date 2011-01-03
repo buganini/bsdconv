@@ -51,7 +51,7 @@ void bsdconv_init(struct bsdconv_instance *ins){
 		while(ins->phase[i].data_head->next){
 			data_ptr=ins->phase[i].data_head->next;
 			ins->phase[i].data_head->next=ins->phase[i].data_head->next->next;
-			if(data_ptr->setmefree)
+			if(data_ptr->flags & F_FREE)
 				free(data_ptr->data);
 			free(data_ptr);
 		}
@@ -141,7 +141,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 			alias_ins->output.len=1;
 			alias_ins->input.data=opipe[i];
 			alias_ins->input.len=strlen(opipe[i]);
-			alias_ins->input.setmefree=1;
+			alias_ins->input.flags|=F_FREE;
 			alias_ins->flush=1;
 			bsdconv(alias_ins);
 			opipe[i]=alias_ins->output.data;
@@ -216,7 +216,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	for(i=0;i<=ins->phasen;++i){
 		ins->phase[i].data_head=malloc(sizeof(struct data_rt));
 		ins->phase[i].data_head->next=NULL;
-		ins->phase[i].data_head->setmefree=0;
+		ins->phase[i].data_head->flags=0;
 	}
 
 	chdir(cwd);
@@ -270,7 +270,7 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 		while(ins->phase[i].data_head){
 			data_ptr=ins->phase[i].data_head;
 			ins->phase[i].data_head=ins->phase[i].data_head->next;
-			if(data_ptr->setmefree)
+			if(data_ptr->flags & F_FREE)
 				free(data_ptr->data);
 			free(data_ptr);
 		}
@@ -300,7 +300,7 @@ void bsdconv(struct bsdconv_instance *ins){
 		ins->phase[0].data_tail->next=NULL;
 		ins->input.data=NULL;
 		ins->input.len=0;
-		ins->input.setmefree=0;
+		ins->input.flags=0;
 	}
 
 	ins->phase_index=1;
@@ -390,6 +390,12 @@ void bsdconv(struct bsdconv_instance *ins){
 
 								ins->phase_index+=1;
 								goto phase_begin;
+							case PASSTHRU:
+								this_phase->match=0;
+								this_phase->pend=0;
+								RESET(ins->phase_index);
+								ins->phase_index+=1;
+								goto phase_begin;
 							case CONTINUE:
 								this_phase->pend=1;
 								break;
@@ -417,7 +423,8 @@ void bsdconv(struct bsdconv_instance *ins){
 				inter_x:
 				switch(this_phase->state.status){
 					case DUMMY:
-						continue;
+						ins->phase_index+=1;
+						goto phase_begin;
 					case DEADEND:
 						inter_deadend:
 						this_phase->pend=0;
@@ -478,7 +485,7 @@ void bsdconv(struct bsdconv_instance *ins){
 							prev_phase->data_tail=prev_phase->data_tail->next;
 							prev_phase->data_tail->next=NULL;
 							prev_phase->data_tail->len=0;
-							prev_phase->data_tail->setmefree=0;
+							prev_phase->data_tail->flags=0;
 						}
 
 						this_phase->pend=1;
@@ -580,7 +587,7 @@ void bsdconv(struct bsdconv_instance *ins){
 							prev_phase->data_tail=prev_phase->data_tail->next;
 							prev_phase->data_tail->next=NULL;
 							prev_phase->data_tail->len=0;
-							prev_phase->data_tail->setmefree=0;
+							prev_phase->data_tail->flags=0;
 						}
 
 						this_phase->pend=1;
@@ -599,6 +606,12 @@ void bsdconv(struct bsdconv_instance *ins){
 
 						RESET(ins->phase_index);
 
+						ins->phase_index+=1;
+						goto phase_begin;
+					case PASSTHRU:
+						this_phase->match=0;
+						this_phase->pend=0;
+						RESET(ins->phase_index);
 						ins->phase_index+=1;
 						goto phase_begin;
 					case CONTINUE:
@@ -639,7 +652,7 @@ void bsdconv(struct bsdconv_instance *ins){
 	switch(ins->output_mode){
 		case BSDCONV_HOLD:
 			ins->output.len=0;
-			ins->output.setmefree=0;
+			ins->output.flags=0;
 			break;
 		case BSDCONV_AUTOMALLOC:
 			i=ins->output.len;
@@ -649,7 +662,7 @@ void bsdconv(struct bsdconv_instance *ins){
 				data_ptr=data_ptr->next;
 			}
 			ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_head;
-			ins->output.setmefree=1;
+			ins->output.flags=1;
 			ptr=ins->output.data=malloc(i);
 			ins->output.len=i-ins->output.len;
 			data_ptr=ins->phase[ins->phasen].data_head;
@@ -662,7 +675,7 @@ void bsdconv(struct bsdconv_instance *ins){
 			}
 			break;
 		case BSDCONV_PREMALLOCED:
-			ins->output.setmefree=0;
+			ins->output.flags=0;
 			if(ins->output.data!=NULL && ins->output.len){
 				i=0;
 				while(ins->phase[ins->phasen].data_head->next && ins->phase[ins->phasen].data_head->next->len<=ins->output.len-i){

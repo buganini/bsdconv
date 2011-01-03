@@ -84,7 +84,7 @@ int main(int argc, char *argv[]){
 		in=malloc(IBUFLEN);
 		ins->input.data=in;
 		ins->input.len=fread(in, 1, IBUFLEN, inf);
-		ins->input.setmefree=1;
+		ins->input.flags|=F_FREE;
 		if(ins->input.len==0){
 			ins->flush=1;
 		}

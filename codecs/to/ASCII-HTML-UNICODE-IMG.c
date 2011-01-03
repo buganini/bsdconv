@@ -53,7 +53,7 @@ void callback(struct bsdconv_instance *ins){
 	TAILIZE(p);
 	len=p-buf;
 	this_phase->data_tail->len=len;
-	this_phase->data_tail->setmefree=1;
+	this_phase->data_tail->flags=F_FREE;
 	this_phase->data_tail->data=malloc(len);
 	memcpy(this_phase->data_tail->data, buf, len);
 

@@ -68,7 +68,7 @@ void cbdestroy(void *p){
 	this_phase->data_tail=this_phase->data_tail->next;	\
 	this_phase->data_tail->next=NULL;	\
 	this_phase->data_tail->len=n;	\
-	this_phase->data_tail->setmefree=1;	\
+	this_phase->data_tail->flags=F_FREE;	\
 	p=this_phase->data_tail->data=malloc(n);	\
 	p[0]=0x01;	\
 }while(0);

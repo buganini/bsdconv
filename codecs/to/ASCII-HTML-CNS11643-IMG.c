@@ -63,7 +63,7 @@ void callback(struct bsdconv_instance *ins){
 					my_tail=this_phase->data;
 					memcpy(my_tail, t->z+(uintptr_t)state.data, sizeof(struct data_st));
 					my_tail->data=t->z+(uintptr_t)my_tail->data;
-					my_tail->setmefree=0;
+					my_tail->flags=0;
 					data_ptr=my_tail->next;
 					my_tail->next=NULL;
 					while(data_ptr){
@@ -73,7 +73,7 @@ void callback(struct bsdconv_instance *ins){
 						data_ptr=my_tail->next;
 						my_tail->next=orig_next;
 						my_tail->data=t->z+(uintptr_t)my_tail->data;
-						my_tail->setmefree=0;
+						my_tail->flags=0;
 					}
 					if(orig_next==NULL){
 						this_phase->data_tail=my_tail;
@@ -110,7 +110,7 @@ void callback(struct bsdconv_instance *ins){
 	TAILIZE(p);
 	len=p-buf;
 	this_phase->data_tail->len=len;
-	this_phase->data_tail->setmefree=1;
+	this_phase->data_tail->flags=F_FREE;
 	this_phase->data_tail->data=malloc(len);
 	memcpy(this_phase->data_tail->data, buf, len);
 
