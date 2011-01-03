@@ -22,6 +22,9 @@
 #include <windows.h>
 #endif
 
+#define F_FREE 0x1
+#define F_SKIP 0x10
+
 enum bsdconv_phase_type {
 	INPUT,
 	FROM,
@@ -36,6 +39,7 @@ enum bsdconv_status{
 	SUBMATCH,
 	SUBROUTINE,
 	NEXTPHASE,
+	PASSTHRU,
 	DUMMY,
 };
 
@@ -57,7 +61,7 @@ struct data_rt{
 	void *data;
 	size_t len;
 	struct data_rt *next;
-	char setmefree;
+	unsigned char flags;
 };
 
 struct state_st{
@@ -146,7 +150,7 @@ char * getwd(char *);
 	data_ptr=(X)->next;	\
 	(X)->next=NULL;	\
 	(X)->data=((Z)+(uintptr_t)(X)->data);	\
-	(X)->setmefree=0; \
+	(X)->flags=0; \
 }
 
 #define LISTFREE(X,Y,Z)	while((X)->next!=(Y)){	\
@@ -162,7 +166,7 @@ char * getwd(char *);
 #define UCP(X) ((unsigned char *)(X)) 
 
 #define DATA_MALLOC(X) do{if(ins->pool){(X)=ins->pool; ins->pool=ins->pool->next;}else{(X)=malloc(sizeof(struct data_rt));}}while(0)
-#define DATA_FREE(X) do{ if((X)->setmefree) free((X)->data); (X)->next=ins->pool; ins->pool=(X);}while(0)
+#define DATA_FREE(X) do{ if((X)->flags & F_FREE) free((X)->data); (X)->next=ins->pool; ins->pool=(X);}while(0)
 
 struct bsdconv_instance *bsdconv_create(const char *);
 void bsdconv_init(struct bsdconv_instance *);

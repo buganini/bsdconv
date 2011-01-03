@@ -23,7 +23,7 @@ void callback(struct bsdconv_instance *ins){
 	this_phase->data_tail=this_phase->data_tail->next;
 	this_phase->data_tail->next=NULL;
 	this_phase->data_tail->len=1;
-	this_phase->data_tail->setmefree=1;
+	this_phase->data_tail->flags=F_FREE;
 	this_phase->data_tail->data=malloc(1);
 	*CP(this_phase->data_tail->data)='?';
 

@@ -86,7 +86,7 @@ PHP_FUNCTION(bsdconv){
 	ins->output_mode=BSDCONV_PREMALLOCED;
 	ins->input.data=c;
 	ins->input.len=l;
-	ins->input.setmefree=0;
+	ins->input.flags=0;
 	ins->output.data=NULL;
 	ins->flush=1;
 	bsdconv(ins);
@@ -140,7 +140,7 @@ PHP_FUNCTION(bsdconv_file){
 		in=malloc(IBUFLEN);
 		ins->input.data=in;
 		ins->input.len=fread(in, 1, IBUFLEN, inf);
-		ins->input.setmefree=1;
+		ins->input.flags|=F_FREE;
 		if(ins->input.len==0){
 			ins->flush=1;
 		}

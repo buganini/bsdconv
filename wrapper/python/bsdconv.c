@@ -80,7 +80,7 @@ py_bsdconv_conv(PyObject *self, PyObject *args)
 	ins->output_mode=BSDCONV_AUTOMALLOC;
 	ins->input.data=s;
 	ins->input.len=l;
-	ins->input.setmefree=0;
+	ins->input.flags=0;
 	ins->flush=1;
 	bsdconv(ins);
 
@@ -132,7 +132,7 @@ py_bsdconv_conv_file(PyObject *self, PyObject *args)
 		in=malloc(IBUFLEN);
 		ins->input.data=in;
 		ins->input.len=fread(in, 1, IBUFLEN, inf);
-		ins->input.setmefree=1;
+		ins->input.flags|=F_FREE;
 		if(ins->input.len==0){
 			ins->flush=1;
 		}

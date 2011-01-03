@@ -28,10 +28,8 @@ struct my_s{
 	int status;
 	int *tbl;
 	int b;
-	union {
-		char c[4];
-		uint32_t i;
-	} buf;
+	char buf[4];
+	char unicode;
 };
 
 void *cbcreate(void){
@@ -40,6 +38,7 @@ void *cbcreate(void){
 
 void cbinit(struct bsdconv_codec_t *cdc, struct my_s *r){
 	r->status=0;
+	r->unicode=0;
 }
 
 void cbdestroy(void *p){
@@ -57,62 +56,97 @@ void cbdestroy(void *p){
 	return;	\
 }while(0);
 
-#define APPEND(n) do{	\
-	this_phase->data_tail->next=malloc(sizeof(struct data_rt));	\
-	this_phase->data_tail=this_phase->data_tail->next;	\
-	this_phase->data_tail->flags=F_FREE	\
-	this_phase->data_tail->next=NULL;	\
-	this_phase->data_tail->len=n;	\
-	p=this_phase->data_tail->data=malloc(n);	\
-	p[0]=0x01;	\
-}while(0);
-
-int dec[256]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,1,2,3,4,5,6,7,8,9,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 int hex[256]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,1,2,3,4,5,6,7,8,9,-1,-1,-1,-1,-1,-1,-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 
 void callback(struct bsdconv_instance *ins){
-	char ob[8], *p;
-	int i,j=0;
+	char *p;
+	int i,j;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
 	char d=CP(this_phase->data->data)[this_phase->i];
-	if(d==';' && t->status){
-		//put data
-		t->buf.i=htonl(t->buf.i);
-		for(i=0;i<4;i++){
-			if(t->buf.c[i] || j)
-				ob[j++]=t->buf.c[i];
-		}
-		this_phase->data_tail->next=malloc(sizeof(struct data_st));
-		this_phase->data_tail=this_phase->data_tail->next;
-		this_phase->data_tail->next=NULL;
-		this_phase->data_tail->flags=F_FREE;
-		this_phase->data_tail->len=j+1;
-		p=this_phase->data_tail->data=malloc(j+1);
-		p[0]=0x01;
-		memcpy(&p[1], ob, j);
-		this_phase->state.status=NEXTPHASE;
-		t->status=0;
-		return;
+
+	switch(t->status){
+		case 0:
+			if(d=='u'){
+				t->status=40;
+				CONTINUE();
+			}else if(hex[(unsigned char)d]==-1){
+				DEADEND();
+			}else{
+				t->status=21;
+				t->buf[0]=hex[(unsigned char)d];
+				CONTINUE();
+			}
+			break;
+		case 21:
+			if(hex[(unsigned char)d]==-1){
+				DEADEND();
+			}else{
+				t->buf[0]*=16;
+				t->buf[0]+=hex[(unsigned char)d];
+				this_phase->data_tail->next=malloc(sizeof(struct data_st));
+				this_phase->data_tail=this_phase->data_tail->next;
+				this_phase->data_tail->next=NULL;
+				this_phase->data_tail->flags=F_FREE;
+				this_phase->data_tail->len=2;
+				p=this_phase->data_tail->data=malloc(2);
+				p[0]=0x03;
+				p[1]=t->buf[0];
+				this_phase->state.status=NEXTPHASE;
+				t->status=0;
+				return;				
+			}
+			break;
+		case 40:
+			if(hex[(unsigned char)d]==-1){
+				DEADEND();
+			}else{
+				t->status=41;
+				t->buf[0]=hex[(unsigned char)d];
+				CONTINUE();
+			}
+			break;
+		case 41:
+			if(hex[(unsigned char)d]==-1){
+				DEADEND();
+			}else{
+				t->status=42;
+				t->buf[0]*=16;
+				t->buf[0]+=hex[(unsigned char)d];
+				CONTINUE();
+			}
+			break;
+		case 42:
+			if(hex[(unsigned char)d]==-1){
+				DEADEND();
+			}else{
+				t->status=43;
+				t->buf[1]=hex[(unsigned char)d];
+				CONTINUE();
+			}
+			break;
+		case 43:
+			if(hex[(unsigned char)d]==-1){
+				DEADEND();
+			}else{
+				i=0;
+				t->buf[1]*=16;
+				t->buf[1]+=hex[(unsigned char)d];
+				while(t->buf[i]==0)++i;
+				this_phase->data_tail->next=malloc(sizeof(struct data_st));
+				this_phase->data_tail=this_phase->data_tail->next;
+				this_phase->data_tail->next=NULL;
+				this_phase->data_tail->flags=F_FREE;
+				this_phase->data_tail->len=3-i;
+				p=this_phase->data_tail->data=malloc(3-i);
+				p[0]=0x01;
+				for(j=1;i<2;++i,++j){
+					p[j]=t->buf[i];
+				}
+				this_phase->state.status=NEXTPHASE;
+				t->status=0;
+				return;				
+			}
+			break;
 	}
-	if(t->status){
-		++t->status;
-		if(t->tbl[(unsigned char)d]==-1) DEADEND();
-		t->buf.i*=t->b;
-		t->buf.i+=t->tbl[(unsigned char)d];
-	}else{
-		if(d=='x'){
-			t->status=1000;
-			t->tbl=hex;
-			t->b=16;
-			t->buf.i=0;
-			CONTINUE();
-		}
-		t->b=10;
-		t->tbl=dec;
-		if(t->tbl[(unsigned char)d]==-1) DEADEND();
-		t->buf.i=t->tbl[(unsigned char)d];
-		t->status=1;
-	}
-	CONTINUE();
 }

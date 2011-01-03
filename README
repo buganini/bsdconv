@@ -38,6 +38,10 @@ Very useful for migrating MySQL DB from Big5 to UTF-8
 Recover from mis-decoding/encoding (mistreated iso-8859-2 as iso-8859-1 and converted to utf-8)
 > bsdconv 'ascii,utf-8:iso-8859-1,ascii|ascii,iso-8859-2:utf-8,ascii'
 
+Decode javasript escaped data (byte/unicode mixed) like %u9644%20
+> bsdconv 'escape:unicode,byte|unicode,ascii:utf-8,ascii'
+
+
 More example:
 > bsdconv big5,ascii:nl2br:ascii,html-img in.txt out.htm
 #html-img is actually ASCII-HTML-UNICODE-IMG
