@@ -27,6 +27,9 @@ Convert traditional chinese big5 to simplified chinese utf-8
 Convert traditional chinese utf-8 to simplified chinese GB2312 with transliteration
 > bsdconv utf-8,ascii:zhcn:cp936,cp936_trans,ascii in.txt out.txt
 
+Convert simplified chiese to traditional chinese
+> bsdconv ascii,utf-8:zhtw:zhtw_words:utf-8,ascii
+
 Convert big5 data, traditional chinese to simplified chinese, 
 CRLF/CR/LF to CRLF, to big5 data, translate simplified chinese words, which are
 not in big5, to HTML entities, and uppercase the ascii characters.
