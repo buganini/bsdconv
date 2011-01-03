@@ -76,7 +76,7 @@ Buganini, E<lt>buganini@twbbs.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2009 by Buganini
+Copyright (C) 2009-2011 by Buganini
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.9 or,
