@@ -89,7 +89,7 @@ void callback(struct bsdconv_instance *ins){
 					LISTCPY(this_phase->data_tail, state.data, t->cd.z);
 					return;
 				default:
-					this_phase->data_tail->next=malloc(sizeof(struct data_st));
+					DATA_MALLOC(this_phase->data_tail->next);
 					this_phase->data_tail=this_phase->data_tail->next;
 					this_phase->data_tail->next=NULL;
 					this_phase->data_tail->len=4;

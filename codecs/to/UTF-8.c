@@ -54,7 +54,7 @@ void callback(struct bsdconv_instance *ins){
 			return;
 	}
 
-	ins->phase[ins->phase_index].data_tail->next=malloc(sizeof(struct data_rt));
+	DATA_MALLOC(ins->phase[ins->phase_index].data_tail->next);
 	ins->phase[ins->phase_index].data_tail=ins->phase[ins->phase_index].data_tail->next;
 	ins->phase[ins->phase_index].data_tail->next=NULL;
 	ins->phase[ins->phase_index].data_tail->flags=F_FREE;
