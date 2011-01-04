@@ -67,7 +67,7 @@ void callback(struct bsdconv_instance *ins){
 					data_ptr=my_tail->next;
 					my_tail->next=NULL;
 					while(data_ptr){
-						my_tail->next=malloc(sizeof(struct data_st));
+						DATA_MALLOC(my_tail->next);
 						my_tail=my_tail->next;
 						memcpy(my_tail, t->z+(uintptr_t)data_ptr, sizeof(struct data_st));
 						data_ptr=my_tail->next;
@@ -92,7 +92,7 @@ void callback(struct bsdconv_instance *ins){
 	i=*data;
 	data+=1;
 	len=this_phase->data->len-1;
-	this_phase->data_tail->next=malloc(sizeof(struct data_rt));
+	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
 	this_phase->data_tail->next=NULL;
 

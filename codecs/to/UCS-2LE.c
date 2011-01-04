@@ -34,7 +34,7 @@ void callback(struct bsdconv_instance *ins){
 	data+=1;
 	len=this_phase->data->len-1;
 
-	this_phase->data_tail->next=malloc(sizeof(struct data_rt));
+	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
 	this_phase->data_tail->next=NULL;
 	this_phase->data_tail->len=2;

@@ -70,7 +70,7 @@ void callback(struct bsdconv_instance *ins){
 				case SUBMATCH:
 					this_phase->state.status=NEXTPHASE;
 					for(data_ptr=state.data;data_ptr;){
-						this_phase->data_tail->next=malloc(sizeof(struct data_rt));
+						DATA_MALLOC(this_phase->data_tail->next);
 						this_phase->data_tail=this_phase->data_tail->next;
 						memcpy(this_phase->data_tail, t->cd.z+(uintptr_t)data_ptr, sizeof(struct data_st));
 						data_ptr=this_phase->data_tail->next;
@@ -89,7 +89,7 @@ void callback(struct bsdconv_instance *ins){
 		case 0x02:
 			len=ins->phase[ins->phase_index].data->len-1;
 
-			this_phase->data_tail->next=malloc(sizeof(struct data_st));
+			DATA_MALLOC(this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
 
