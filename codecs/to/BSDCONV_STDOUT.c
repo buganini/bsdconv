@@ -27,5 +27,11 @@ void callback(struct bsdconv_instance *ins){
 	for(i=0;i<ins->phase[ins->phase_index].data->len;++i){
 		printf("%02X",UCP(ins->phase[ins->phase_index].data->data)[i]);
 	}
+	if(ins->phase[ins->phase_index].data->flags){
+		printf(" (");
+		if(ins->phase[ins->phase_index].data->flags & F_FREE) printf(" FREE");
+		if(ins->phase[ins->phase_index].data->flags & F_SKIP) printf(" SKIP");
+		printf(" )");
+	}
 	printf("\n");
 }
