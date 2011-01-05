@@ -391,6 +391,23 @@ void bsdconv(struct bsdconv_instance *ins){
 								ins->phase_index+=1;
 								goto phase_begin;
 							case PASSTHRU:
+								this_phase->bak=this_phase->data->next;
+								while(prev_phase->data_head->next!=this_phase->data){
+									data_ptr=prev_phase->data_head->next->next;
+									DATA_FREE(prev_phase->data_head->next);
+									prev_phase->data_head->next=data_ptr;
+								}
+								this_phase->data_tail->next=prev_phase->data_head->next;
+								if(prev_phase->data_tail==prev_phase->data_head->next){
+									prev_phase->data_tail=prev_phase->data_head;
+								}
+								prev_phase->data_head->next=prev_phase->data_head->next->next;
+								this_phase->data_tail=this_phase->data_tail->next;
+								this_phase->data_tail->next=NULL;
+
+								this_phase->data_head->len=0;
+								this_phase->data=prev_phase->data_head;
+
 								this_phase->match=0;
 								this_phase->pend=0;
 								RESET(ins->phase_index);
@@ -609,6 +626,24 @@ void bsdconv(struct bsdconv_instance *ins){
 						ins->phase_index+=1;
 						goto phase_begin;
 					case PASSTHRU:
+						this_phase->bak=this_phase->data->next;
+						while(prev_phase->data_head->next!=this_phase->data){
+							data_ptr=prev_phase->data_head->next->next;
+							DATA_FREE(prev_phase->data_head->next);
+							prev_phase->data_head->next=data_ptr;
+						}
+						this_phase->data_tail->next=prev_phase->data_head->next;
+						if(prev_phase->data_tail==prev_phase->data_head->next){
+							prev_phase->data_tail=prev_phase->data_head;
+						}
+						prev_phase->data_head->next=prev_phase->data_head->next->next;
+						this_phase->data_tail=this_phase->data_tail->next;
+						this_phase->data_tail->flags |= F_SKIP;
+						this_phase->data_tail->next=NULL;
+
+						this_phase->data_head->len=0;
+						this_phase->data=prev_phase->data_head;
+
 						this_phase->match=0;
 						this_phase->pend=0;
 						RESET(ins->phase_index);
