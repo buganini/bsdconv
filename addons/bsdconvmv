@@ -35,7 +35,7 @@ def pathsplit(p):
 def usage():
 	print sys.argv[0], "conversion [arguments] files..."
 	print "Arguments:"
-	print "--no-test: actually rename the files"
+	print "--notest: actually rename the files"
 
 def inzone(d):
 	d=os.path.realpath(d)
@@ -100,7 +100,7 @@ for item in sys.argv[2:]:
 			arg=0
 		elif item=='-r':
 			recursive=True
-		elif item=='--no-test':
+		elif item=='--notest':
 			test=False
 		else:
 			arg=0
@@ -112,5 +112,5 @@ for item in zone:
 	os.chdir(cwd)
 
 if test:
-	print "\nUse --no-test to actually rename the files"
+	print "\nUse --notest to actually rename the files"
 bsdconv.destroy(p)
