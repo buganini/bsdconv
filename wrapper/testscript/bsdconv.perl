@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/env perl
 use bsdconv;
 
 $cd=bsdconv::create($ARGV[0]);

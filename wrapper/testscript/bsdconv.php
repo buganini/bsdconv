@@ -1,4 +1,4 @@
-#!/usr/local/bin/php
+#!/usr/bin/env php
 <?php
 $s=file_get_contents('php://stdin');
 $a=bsdconv_create($argv[1]);

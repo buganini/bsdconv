@@ -1,4 +1,4 @@
-#!/bin/local/bin/python
+#!/usr/bin/env python
 """
  Copyright (c) 2009,2010 Kuan-Chung Chiu <buganini@gmail.com>
 
