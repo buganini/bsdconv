@@ -49,14 +49,14 @@ def pathmeaningful(s):
 	return True
 
 def proc(d):
-	if(os.path.isdir(d)):
+	if recursive and os.path.isdir(d):
 		for i in os.listdir(d):
 			proc(os.path.join(d,i))
 	path=os.path.dirname(d)
 	name=os.path.basename(d)
 	newname=bsdconv.conv(p,name)
 	os.chdir(path)
-	if os.path.islink(name):
+	if recursive and os.path.islink(name):
 		src=pathsplit(os.readlink(name))
 		newsrc=[]
 		last=None
@@ -92,11 +92,14 @@ if p==None:
 cwd=os.getcwd()
 arg=1
 test=True
+recursive=False
 zone=[]
 for item in sys.argv[2:]:
 	if(arg==1):
 		if item=='--':
 			arg=0
+		elif item=='-r':
+			recursive=True
 		elif item=='--no-test':
 			test=False
 		else:
