@@ -1,0 +1,31 @@
+4.0:
+	Allow using | to do re-conversion
+	New design of operation mode
+	Add bsdconvmv tool
+
+3.0:
+	Support multiple inter-phase
+
+2.0:
+	from/ASCII-NAMED-HTMLENTITY
+
+1.7:
+	Add Perl wrapper
+
+1.0:
+	Add PHP wrapper
+
+0.6:
+	Support various type of operation mode
+
+0.5:
+	Support alias
+
+0.3:
+	Support callback in codecs
+
+0.2:
+	Make hibernating works (for multiple-cycle conversion)	
+
+0.1:
+	First tag, conversion format: from:inter:to
