@@ -76,9 +76,12 @@ def proc(d):
 				os.symlink(newsrc, newname)
 	else:
 		if newname!=name:
-			print "%s| %s >> %s" % (path, name, newname)
-			if(test==False):
-				os.rename(name,newname)
+			if os.path.exists(newname):
+				print "\033[1;31m!%s| %s >> %s (EXISTS)\033[m" % (path, name, newname)				
+			else:
+				print "%s| %s >> %s" % (path, name, newname)
+				if(test==False):
+					os.rename(name,newname)
 
 if len(sys.argv)<3:
 	usage()
