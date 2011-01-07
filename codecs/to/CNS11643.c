@@ -39,8 +39,6 @@ void cbdestroy(void *p){
 	free(p);
 }
 
-#define bb10000000 0x80
-
 void callback(struct bsdconv_instance *ins){
 	char *data;
 	unsigned int len;

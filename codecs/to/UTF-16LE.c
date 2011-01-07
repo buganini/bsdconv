@@ -19,12 +19,6 @@
 #include <string.h>
 #include "../../src/bsdconv.h"
 
-#define bb11011000 0xD8
-#define bb00000011 0x03
-#define bb11000000 0xC0
-#define bb00111111 0x3F
-#define bb11011100 0xDC
-
 #define SWAP(a,b,i) ((i)=(a), (a)=(b), (b)=(i))
 
 void callback(struct bsdconv_instance *ins){

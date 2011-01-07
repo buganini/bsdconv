@@ -17,18 +17,6 @@
 #include <stdlib.h>
 #include "../../src/bsdconv.h"
 
-#define bb00000111 0x07
-#define bb10000000 0x80
-#define bb11100000 0xE0
-#define bb11000000 0xC0
-#define bb11110000 0xF0
-#define bb11111000 0XF8
-#define bb00011100 0X1C
-#define bb00111111 0X3F
-#define bb00001111 0X0F
-#define bb00000011 0X03
-#define bb00111100 0X3C
-
 struct my_s{
 	int status;
 	char buf[16];
