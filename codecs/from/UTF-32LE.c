@@ -44,42 +44,42 @@ void callback(struct bsdconv_instance *ins){
 	size_t l;
 
 	for(;this_phase->i<this_phase->data->len;this_phase->i+=1){
-	d=CP(this_phase->data->data)[this_phase->i];
-	switch(t->status){
-		case 0:
-			t->buf[3]=d;
-			t->status=1;
-			continue;
-			break;
-		case 1:
-			t->buf[2]=d;
-			t->status=2;
-			continue;
-			break;
-		case 2:
-			t->buf[1]=d;
-			t->status=3;
-			continue;
-			break;
-		case 3:
-			t->buf[0]=d;
-			t->status=0;
-			for(i=0;i<4;++i){
-				if(t->buf[i]) break;
-			}
-			l=(4-i)+1;
-			DATA_MALLOC(this_phase->data_tail->next);
-			this_phase->data_tail=this_phase->data_tail->next;
-			this_phase->data_tail->next=NULL;
-			this_phase->data_tail->len=l;
-			this_phase->data_tail->flags=F_FREE;
-			this_phase->data_tail->data=malloc(l);
-			CP(this_phase->data_tail->data)[0]=0x01;
-			memcpy(CP(this_phase->data_tail->data)+1, &t->buf[i], l-1);
-			this_phase->state.status=NEXTPHASE;
-			return;
-			break;
-	}
+		d=CP(this_phase->data->data)[this_phase->i];
+		switch(t->status){
+			case 0:
+				t->buf[3]=d;
+				t->status=1;
+				continue;
+				break;
+			case 1:
+				t->buf[2]=d;
+				t->status=2;
+				continue;
+				break;
+			case 2:
+				t->buf[1]=d;
+				t->status=3;
+				continue;
+				break;
+			case 3:
+				t->buf[0]=d;
+				t->status=0;
+				for(i=0;i<4;++i){
+					if(t->buf[i]) break;
+				}
+				l=(4-i)+1;
+				DATA_MALLOC(this_phase->data_tail->next);
+				this_phase->data_tail=this_phase->data_tail->next;
+				this_phase->data_tail->next=NULL;
+				this_phase->data_tail->len=l;
+				this_phase->data_tail->flags=F_FREE;
+				this_phase->data_tail->data=malloc(l);
+				CP(this_phase->data_tail->data)[0]=0x01;
+				memcpy(CP(this_phase->data_tail->data)+1, &t->buf[i], l-1);
+				this_phase->state.status=NEXTPHASE;
+				return;
+				break;
+		}
 	}
 	this_phase->state.status=CONTINUE;
 	return;
