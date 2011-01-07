@@ -36,11 +36,6 @@ void cbdestroy(void *p){
 	free(p);
 }
 
-#define bb11111100 0xFC
-#define bb11011000 0xD8
-#define bb11011100 0xDC
-#define bb00000011 0x03
-
 void callback(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;

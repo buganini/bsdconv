@@ -178,4 +178,20 @@ char * bsdconv_error(void);
 int loadcodec(struct bsdconv_codec_t *, char *, int);
 void unloadcodec(struct bsdconv_codec_t *);
 
+#define bb00000011 0x03
+#define bb00000111 0x07
+#define bb00001111 0x0f
+#define bb00011100 0x1c
+#define bb00110000 0x30
+#define bb00111100 0x3c
+#define bb00111111 0x3f
+#define bb10000000 0x80
+#define bb11000000 0xc0
+#define bb11011000 0xd8
+#define bb11011100 0xdc
+#define bb11100000 0xe0
+#define bb11110000 0xf0
+#define bb11111000 0xf8
+#define bb11111100 0xfc
+
 #endif
