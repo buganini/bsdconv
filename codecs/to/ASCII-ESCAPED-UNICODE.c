@@ -26,7 +26,7 @@ void callback(struct bsdconv_instance *ins){
 	unsigned int len, i;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	data=this_phase->data->data;
-	if(*data!=0x01){
+	if(*data!=0x01 || this_phase->data->len>3){
 		this_phase->state.status=DEADEND;
 		return;
 	}
@@ -40,7 +40,7 @@ void callback(struct bsdconv_instance *ins){
 	this_phase->data_tail->flags=F_FREE;
 
 	p=buf;
-	sprintf(p,"\\u%x",(unsigned char)data[0]);
+	sprintf(p,"\\u%02x",(unsigned char)data[0]);
 	for(i=1;i<len;i++){
 		TAILIZE(p);
 		sprintf(p,"%02x", (unsigned char)data[i]);
