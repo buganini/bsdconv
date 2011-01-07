@@ -61,91 +61,91 @@ void callback(struct bsdconv_instance *ins){
 	char d;
 
 	for(;this_phase->i<this_phase->data->len;this_phase->i+=1){
-	d=CP(this_phase->data->data)[this_phase->i];
-	switch(t->status){
-		case 0:
-			if(d=='u'){
-				t->status=40;
-				continue;
-			}else if(hex[(unsigned char)d]==-1){
-				DEADEND();
-			}else{
-				t->status=21;
-				t->buf[0]=hex[(unsigned char)d];
-				continue;
-			}
-			break;
-		case 21:
-			if(hex[(unsigned char)d]==-1){
-				DEADEND();
-			}else{
-				t->buf[0]*=16;
-				t->buf[0]+=hex[(unsigned char)d];
-				DATA_MALLOC(this_phase->data_tail->next);
-				this_phase->data_tail=this_phase->data_tail->next;
-				this_phase->data_tail->next=NULL;
-				this_phase->data_tail->flags=F_FREE;
-				this_phase->data_tail->len=2;
-				p=this_phase->data_tail->data=malloc(2);
-				p[0]=0x03;
-				p[1]=t->buf[0];
-				this_phase->state.status=NEXTPHASE;
-				t->status=0;
-				return;				
-			}
-			break;
-		case 40:
-			if(hex[(unsigned char)d]==-1){
-				DEADEND();
-			}else{
-				t->status=41;
-				t->buf[0]=hex[(unsigned char)d];
-				continue;
-			}
-			break;
-		case 41:
-			if(hex[(unsigned char)d]==-1){
-				DEADEND();
-			}else{
-				t->status=42;
-				t->buf[0]*=16;
-				t->buf[0]+=hex[(unsigned char)d];
-				continue;
-			}
-			break;
-		case 42:
-			if(hex[(unsigned char)d]==-1){
-				DEADEND();
-			}else{
-				t->status=43;
-				t->buf[1]=hex[(unsigned char)d];
-				continue;
-			}
-			break;
-		case 43:
-			if(hex[(unsigned char)d]==-1){
-				DEADEND();
-			}else{
-				i=0;
-				t->buf[1]*=16;
-				t->buf[1]+=hex[(unsigned char)d];
-				while(t->buf[i]==0)++i;
-				DATA_MALLOC(this_phase->data_tail->next);
-				this_phase->data_tail=this_phase->data_tail->next;
-				this_phase->data_tail->next=NULL;
-				this_phase->data_tail->flags=F_FREE;
-				this_phase->data_tail->len=3-i;
-				p=this_phase->data_tail->data=malloc(3-i);
-				p[0]=0x01;
-				for(j=1;i<2;++i,++j){
-					p[j]=t->buf[i];
+		d=CP(this_phase->data->data)[this_phase->i];
+		switch(t->status){
+			case 0:
+				if(d=='u'){
+					t->status=40;
+					continue;
+				}else if(hex[(unsigned char)d]==-1){
+					DEADEND();
+				}else{
+					t->status=21;
+					t->buf[0]=hex[(unsigned char)d];
+					continue;
 				}
-				this_phase->state.status=NEXTPHASE;
-				t->status=0;
-				return;				
-			}
-			break;
-	}
+				break;
+			case 21:
+				if(hex[(unsigned char)d]==-1){
+					DEADEND();
+				}else{
+					t->buf[0]*=16;
+					t->buf[0]+=hex[(unsigned char)d];
+					DATA_MALLOC(this_phase->data_tail->next);
+					this_phase->data_tail=this_phase->data_tail->next;
+					this_phase->data_tail->next=NULL;
+					this_phase->data_tail->flags=F_FREE;
+					this_phase->data_tail->len=2;
+					p=this_phase->data_tail->data=malloc(2);
+					p[0]=0x03;
+					p[1]=t->buf[0];
+					this_phase->state.status=NEXTPHASE;
+					t->status=0;
+					return;				
+				}
+				break;
+			case 40:
+				if(hex[(unsigned char)d]==-1){
+					DEADEND();
+				}else{
+					t->status=41;
+					t->buf[0]=hex[(unsigned char)d];
+					continue;
+				}
+				break;
+			case 41:
+				if(hex[(unsigned char)d]==-1){
+					DEADEND();
+				}else{
+					t->status=42;
+					t->buf[0]*=16;
+					t->buf[0]+=hex[(unsigned char)d];
+					continue;
+				}
+				break;
+			case 42:
+				if(hex[(unsigned char)d]==-1){
+					DEADEND();
+				}else{
+					t->status=43;
+					t->buf[1]=hex[(unsigned char)d];
+					continue;
+				}
+				break;
+			case 43:
+				if(hex[(unsigned char)d]==-1){
+					DEADEND();
+				}else{
+					i=0;
+					t->buf[1]*=16;
+					t->buf[1]+=hex[(unsigned char)d];
+					while(t->buf[i]==0)++i;
+					DATA_MALLOC(this_phase->data_tail->next);
+					this_phase->data_tail=this_phase->data_tail->next;
+					this_phase->data_tail->next=NULL;
+					this_phase->data_tail->flags=F_FREE;
+					this_phase->data_tail->len=3-i;
+					p=this_phase->data_tail->data=malloc(3-i);
+					p[0]=0x01;
+					for(j=1;i<2;++i,++j){
+						p[j]=t->buf[i];
+					}
+					this_phase->state.status=NEXTPHASE;
+					t->status=0;
+					return;				
+				}
+				break;
+		}
 	}
 	this_phase->state.status=CONTINUE;
 	return;
