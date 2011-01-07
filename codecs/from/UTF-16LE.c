@@ -49,69 +49,69 @@ void callback(struct bsdconv_instance *ins){
 	size_t l;
 
 	for(;this_phase->i<this_phase->data->len;this_phase->i+=1){
-	d=CP(this_phase->data->data)[this_phase->i];
-	switch(t->status){
-		case 0:
-			t->buf[1]=d;
-			t->status=1;
-			continue;
-			break;
-		case 1:
-			t->buf[0]=d;
-			if((t->buf[0] & bb11111100) == bb11011000){
-				t->status=2;
+		d=CP(this_phase->data->data)[this_phase->i];
+		switch(t->status){
+			case 0:
+				t->buf[1]=d;
+				t->status=1;
 				continue;
-			}else{
+				break;
+			case 1:
+				t->buf[0]=d;
+				if((t->buf[0] & bb11111100) == bb11011000){
+					t->status=2;
+					continue;
+				}else{
+					t->status=0;
+					for(i=0;i<2;++i){
+						if(t->buf[i]) break;
+					}
+					l=(2-i)+1;
+					DATA_MALLOC(this_phase->data_tail->next);
+					this_phase->data_tail=this_phase->data_tail->next;
+					this_phase->data_tail->next=NULL;
+					this_phase->data_tail->len=l;
+					this_phase->data_tail->flags=F_FREE;
+					this_phase->data_tail->data=malloc(l);
+					CP(this_phase->data_tail->data)[0]=0x01;
+					memcpy(CP(this_phase->data_tail->data)+1, &t->buf[i], l-1);
+					this_phase->state.status=NEXTPHASE;
+				}
+				break;
+			case 2:
+				t->buf[3]=d;
+				t->status=3;
+				continue;
+				break;
+			case 3:
+				t->buf[2]=d;
 				t->status=0;
-				for(i=0;i<2;++i){
-					if(t->buf[i]) break;
+				if((t->buf[2] & bb11111100) == bb11011100){
+					buf[0]=(t->buf[0] & bb00000011) << 2;
+					buf[0] |= (t->buf[1] >> 6) & bb00000011;
+					buf[0] += 1;
+					buf[1]=(t->buf[1] << 2) & bb11111100;
+					buf[1] |= t->buf[2] & bb00000011;
+					buf[2]=t->buf[3];
+					for(i=0;i<3;++i){
+						if(buf[i]) break;
+					}
+					l=(3-i)+1;
+					DATA_MALLOC(this_phase->data_tail->next);
+					this_phase->data_tail=this_phase->data_tail->next;
+					this_phase->data_tail->next=NULL;
+					this_phase->data_tail->len=l;
+					this_phase->data_tail->flags=F_FREE;
+					this_phase->data_tail->data=malloc(l);
+					CP(this_phase->data_tail->data)[0]=0x01;
+					memcpy(CP(this_phase->data_tail->data)+1, &buf[i], l-1);
+					this_phase->state.status=NEXTPHASE;
+				}else{
+					this_phase->state.status=DEADEND;
+					return;
 				}
-				l=(2-i)+1;
-				DATA_MALLOC(this_phase->data_tail->next);
-				this_phase->data_tail=this_phase->data_tail->next;
-				this_phase->data_tail->next=NULL;
-				this_phase->data_tail->len=l;
-				this_phase->data_tail->flags=F_FREE;
-				this_phase->data_tail->data=malloc(l);
-				CP(this_phase->data_tail->data)[0]=0x01;
-				memcpy(CP(this_phase->data_tail->data)+1, &t->buf[i], l-1);
-				this_phase->state.status=NEXTPHASE;
-			}
-			break;
-		case 2:
-			t->buf[3]=d;
-			t->status=3;
-			continue;
-			break;
-		case 3:
-			t->buf[2]=d;
-			t->status=0;
-			if((t->buf[2] & bb11111100) == bb11011100){
-				buf[0]=(t->buf[0] & bb00000011) << 2;
-				buf[0] |= (t->buf[1] >> 6) & bb00000011;
-				buf[0] += 1;
-				buf[1]=(t->buf[1] << 2) & bb11111100;
-				buf[1] |= t->buf[2] & bb00000011;
-				buf[2]=t->buf[3];
-				for(i=0;i<3;++i){
-					if(buf[i]) break;
-				}
-				l=(3-i)+1;
-				DATA_MALLOC(this_phase->data_tail->next);
-				this_phase->data_tail=this_phase->data_tail->next;
-				this_phase->data_tail->next=NULL;
-				this_phase->data_tail->len=l;
-				this_phase->data_tail->flags=F_FREE;
-				this_phase->data_tail->data=malloc(l);
-				CP(this_phase->data_tail->data)[0]=0x01;
-				memcpy(CP(this_phase->data_tail->data)+1, &buf[i], l-1);
-				this_phase->state.status=NEXTPHASE;
-			}else{
-				this_phase->state.status=DEADEND;
-				return;
-			}
-			break;
-	}
+				break;
+		}
 	}
 	this_phase->state.status=CONTINUE;
 	return;
