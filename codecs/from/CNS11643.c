@@ -55,52 +55,52 @@ void callback(struct bsdconv_instance *ins){
 	int i;
 
 	for(;this_phase->i<this_phase->data->len;this_phase->i+=1){
-	d=CP(this_phase->data->data)[this_phase->i];
-	switch(t->status){
-		case 0:
-			if(d==0x0){ //plane switch sequence
-				t->status=10;
-				continue;
-			}else{ //data sequence
-				t->status=1;
-				t->buf[0]=0x02;
-				t->buf[1]=t->plane;
-				t->buf[2]=d;
-				continue;
-			}
-			break;
-		case 1:
-			t->status=0;
-			t->buf[3]=d;
-			memcpy(&state, t->cd.z, sizeof(struct state_st));
-			for(i=0;i<4;++i){
-				memcpy(&state, t->cd.z + (uintptr_t)state.sub[(unsigned char)t->buf[i]], sizeof(struct state_st));
-				if(state.status==DEADEND){
-					break;
+		d=CP(this_phase->data->data)[this_phase->i];
+		switch(t->status){
+			case 0:
+				if(d==0x0){ //plane switch sequence
+					t->status=10;
+					continue;
+				}else{ //data sequence
+					t->status=1;
+					t->buf[0]=0x02;
+					t->buf[1]=t->plane;
+					t->buf[2]=d;
+					continue;
 				}
-			}
-			this_phase->state.status=NEXTPHASE;
-			switch(state.status){
-				case MATCH:
-				case SUBMATCH:
-					LISTCPY(this_phase->data_tail, state.data, t->cd.z);
-					return;
-				default:
-					DATA_MALLOC(this_phase->data_tail->next);
-					this_phase->data_tail=this_phase->data_tail->next;
-					this_phase->data_tail->next=NULL;
-					this_phase->data_tail->len=4;
-					this_phase->data_tail->flags=F_FREE;
-					p=this_phase->data_tail->data=malloc(4);
-					memcpy(p,t->buf,4);
-					return;
-			}
-		case 10:
-			t->status=0;
-			t->plane=d;
-			continue;
-			break;
-	}
+				break;
+			case 1:
+				t->status=0;
+				t->buf[3]=d;
+				memcpy(&state, t->cd.z, sizeof(struct state_st));
+				for(i=0;i<4;++i){
+					memcpy(&state, t->cd.z + (uintptr_t)state.sub[(unsigned char)t->buf[i]], sizeof(struct state_st));
+					if(state.status==DEADEND){
+						break;
+					}
+				}
+				this_phase->state.status=NEXTPHASE;
+				switch(state.status){
+					case MATCH:
+					case SUBMATCH:
+						LISTCPY(this_phase->data_tail, state.data, t->cd.z);
+						return;
+					default:
+						DATA_MALLOC(this_phase->data_tail->next);
+						this_phase->data_tail=this_phase->data_tail->next;
+						this_phase->data_tail->next=NULL;
+						this_phase->data_tail->len=4;
+						this_phase->data_tail->flags=F_FREE;
+						p=this_phase->data_tail->data=malloc(4);
+						memcpy(p,t->buf,4);
+						return;
+				}
+			case 10:
+				t->status=0;
+				t->plane=d;
+				continue;
+				break;
+		}
 	}
 	this_phase->state.status=CONTINUE;
 	return;

@@ -63,45 +63,45 @@ void callback(struct bsdconv_instance *ins){
 	char d;
 
 	for(;this_phase->i<this_phase->data->len;this_phase->i+=1){
-	d=CP(this_phase->data->data)[this_phase->i];
-	if(d==';' && t->status){
-		//put data
-		t->buf.i=htonl(t->buf.i);
-		for(i=0;i<4;i++){
-			if(t->buf.c[i] || j)
-				ob[j++]=t->buf.c[i];
+		d=CP(this_phase->data->data)[this_phase->i];
+		if(d==';' && t->status){
+			//put data
+			t->buf.i=htonl(t->buf.i);
+			for(i=0;i<4;i++){
+				if(t->buf.c[i] || j)
+					ob[j++]=t->buf.c[i];
+			}
+			DATA_MALLOC(this_phase->data_tail->next);
+			this_phase->data_tail=this_phase->data_tail->next;
+			this_phase->data_tail->next=NULL;
+			this_phase->data_tail->flags=F_FREE;
+			this_phase->data_tail->len=j+1;
+			p=this_phase->data_tail->data=malloc(j+1);
+			p[0]=0x01;
+			memcpy(&p[1], ob, j);
+			this_phase->state.status=NEXTPHASE;
+			t->status=0;
+			return;
 		}
-		DATA_MALLOC(this_phase->data_tail->next);
-		this_phase->data_tail=this_phase->data_tail->next;
-		this_phase->data_tail->next=NULL;
-		this_phase->data_tail->flags=F_FREE;
-		this_phase->data_tail->len=j+1;
-		p=this_phase->data_tail->data=malloc(j+1);
-		p[0]=0x01;
-		memcpy(&p[1], ob, j);
-		this_phase->state.status=NEXTPHASE;
-		t->status=0;
-		return;
-	}
-	if(t->status){
-		++t->status;
-		if(t->tbl[(unsigned char)d]==-1) DEADEND();
-		t->buf.i*=t->b;
-		t->buf.i+=t->tbl[(unsigned char)d];
-	}else{
-		if(d=='x'){
-			t->status=1000;
-			t->tbl=hex;
-			t->b=16;
-			t->buf.i=0;
-			continue;
+		if(t->status){
+			++t->status;
+			if(t->tbl[(unsigned char)d]==-1) DEADEND();
+			t->buf.i*=t->b;
+			t->buf.i+=t->tbl[(unsigned char)d];
+		}else{
+			if(d=='x'){
+				t->status=1000;
+				t->tbl=hex;
+				t->b=16;
+				t->buf.i=0;
+				continue;
+			}
+			t->b=10;
+			t->tbl=dec;
+			if(t->tbl[(unsigned char)d]==-1) DEADEND();
+			t->buf.i=t->tbl[(unsigned char)d];
+			t->status=1;
 		}
-		t->b=10;
-		t->tbl=dec;
-		if(t->tbl[(unsigned char)d]==-1) DEADEND();
-		t->buf.i=t->tbl[(unsigned char)d];
-		t->status=1;
-	}
 	}
 	this_phase->state.status=CONTINUE;
 	return;
