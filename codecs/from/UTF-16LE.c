@@ -41,28 +41,26 @@ void cbdestroy(void *p){
 #define bb11011100 0xDC
 #define bb00000011 0x03
 
-#define CONTINUE() do{	\
-	this_phase->state.status=CONTINUE;	\
-	return;	\
-}while(0);
-
 void callback(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	char d=CP(this_phase->data->data)[this_phase->i], buf[3]={0};
+	char d, buf[3]={0};
 	int i;
 	size_t l;
+
+	for(;this_phase->i<this_phase->data->len;this_phase->i+=1){
+	d=CP(this_phase->data->data)[this_phase->i];
 	switch(t->status){
 		case 0:
 			t->buf[1]=d;
 			t->status=1;
-			CONTINUE();
+			continue;
 			break;
 		case 1:
 			t->buf[0]=d;
 			if((t->buf[0] & bb11111100) == bb11011000){
 				t->status=2;
-				CONTINUE();
+				continue;
 			}else{
 				t->status=0;
 				for(i=0;i<2;++i){
@@ -83,7 +81,7 @@ void callback(struct bsdconv_instance *ins){
 		case 2:
 			t->buf[3]=d;
 			t->status=3;
-			CONTINUE();
+			continue;
 			break;
 		case 3:
 			t->buf[2]=d;
@@ -114,4 +112,7 @@ void callback(struct bsdconv_instance *ins){
 			}
 			break;
 	}
+	}
+	this_phase->state.status=CONTINUE;
+	return;
 }

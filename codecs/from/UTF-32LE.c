@@ -36,32 +36,30 @@ void cbdestroy(void *p){
 	free(p);
 }
 
-#define CONTINUE() do{	\
-	this_phase->state.status=CONTINUE;	\
-	return;	\
-}while(0);
-
 void callback(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	char d=CP(this_phase->data->data)[this_phase->i];
+	char d;
 	int i;
 	size_t l;
+
+	for(;this_phase->i<this_phase->data->len;this_phase->i+=1){
+	d=CP(this_phase->data->data)[this_phase->i];
 	switch(t->status){
 		case 0:
 			t->buf[3]=d;
 			t->status=1;
-			CONTINUE();
+			continue;
 			break;
 		case 1:
 			t->buf[2]=d;
 			t->status=2;
-			CONTINUE();
+			continue;
 			break;
 		case 2:
 			t->buf[1]=d;
 			t->status=3;
-			CONTINUE();
+			continue;
 			break;
 		case 3:
 			t->buf[0]=d;
@@ -82,4 +80,7 @@ void callback(struct bsdconv_instance *ins){
 			return;
 			break;
 	}
+	}
+	this_phase->state.status=CONTINUE;
+	return;
 }

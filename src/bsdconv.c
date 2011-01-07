@@ -93,11 +93,6 @@ int main(int argc, char *argv[]){
 		bsdconv(ins);
 	}while(ins->flush==0);
 
-	fprintf(stderr, "Decoding failure: %u\n", ins->ierr);
-	fprintf(stderr, "Encoding failure: %u\n", ins->oerr);
-
-	bsdconv_destroy(ins);
-
 	if(inf!=stdin){
 		fclose(inf);
 	}
@@ -107,6 +102,11 @@ int main(int argc, char *argv[]){
 		rename(tmp,to);
 		free(tmp);
 	}
+
+	fprintf(stderr, "Decoding failure: %u\n", ins->ierr);
+	fprintf(stderr, "Encoding failure: %u\n", ins->oerr);
+	bsdconv_destroy(ins);
+
 	return 0;
 }
 
