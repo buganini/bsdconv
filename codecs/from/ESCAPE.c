@@ -45,11 +45,6 @@ void cbdestroy(void *p){
 	free(p);
 }
 
-#define CONTINUE() do{	\
-	this_phase->state.status=CONTINUE;	\
-	return;	\
-}while(0);
-
 #define DEADEND() do{	\
 	this_phase->state.status=DEADEND;	\
 	t->status=0;	\
@@ -63,19 +58,21 @@ void callback(struct bsdconv_instance *ins){
 	int i,j;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	char d=CP(this_phase->data->data)[this_phase->i];
+	char d;
 
+	for(;this_phase->i<this_phase->data->len;this_phase->i+=1){
+	d=CP(this_phase->data->data)[this_phase->i];
 	switch(t->status){
 		case 0:
 			if(d=='u'){
 				t->status=40;
-				CONTINUE();
+				continue;
 			}else if(hex[(unsigned char)d]==-1){
 				DEADEND();
 			}else{
 				t->status=21;
 				t->buf[0]=hex[(unsigned char)d];
-				CONTINUE();
+				continue;
 			}
 			break;
 		case 21:
@@ -103,7 +100,7 @@ void callback(struct bsdconv_instance *ins){
 			}else{
 				t->status=41;
 				t->buf[0]=hex[(unsigned char)d];
-				CONTINUE();
+				continue;
 			}
 			break;
 		case 41:
@@ -113,7 +110,7 @@ void callback(struct bsdconv_instance *ins){
 				t->status=42;
 				t->buf[0]*=16;
 				t->buf[0]+=hex[(unsigned char)d];
-				CONTINUE();
+				continue;
 			}
 			break;
 		case 42:
@@ -122,7 +119,7 @@ void callback(struct bsdconv_instance *ins){
 			}else{
 				t->status=43;
 				t->buf[1]=hex[(unsigned char)d];
-				CONTINUE();
+				continue;
 			}
 			break;
 		case 43:
@@ -149,4 +146,7 @@ void callback(struct bsdconv_instance *ins){
 			}
 			break;
 	}
+	}
+	this_phase->state.status=CONTINUE;
+	return;
 }

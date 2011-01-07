@@ -376,6 +376,7 @@ void bsdconv(struct bsdconv_instance *ins){
 							case SUBROUTINE:
 								this_phase->i=i;
 								this_phase->codec[this_phase->index].callback(ins);
+								i=this_phase->i;
 								goto from_x;
 							case NEXTPHASE:
 								this_phase->match=0;

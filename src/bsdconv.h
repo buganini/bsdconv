@@ -95,7 +95,7 @@ struct bsdconv_phase{
 	struct data_rt *bak, *match, *data_head, *data_tail, *data;
 	struct state_rt state;
 	int index;
-	int i;
+	unsigned int i;
 	char pend;
 	char type;
 	struct bsdconv_codec_t *codec;
