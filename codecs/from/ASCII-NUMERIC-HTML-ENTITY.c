@@ -46,25 +46,10 @@ void cbdestroy(void *p){
 	free(p);
 }
 
-#define CONTINUE() do{	\
-	this_phase->state.status=CONTINUE;	\
-	return;	\
-}while(0);
-
 #define DEADEND() do{	\
 	this_phase->state.status=DEADEND;	\
 	t->status=0;	\
 	return;	\
-}while(0);
-
-#define APPEND(n) do{	\
-	DATA_MALLOC(this_phase->data_tail->next);	\
-	this_phase->data_tail=this_phase->data_tail->next;	\
-	this_phase->data_tail->flags=F_FREE	\
-	this_phase->data_tail->next=NULL;	\
-	this_phase->data_tail->len=n;	\
-	p=this_phase->data_tail->data=malloc(n);	\
-	p[0]=0x01;	\
 }while(0);
 
 int dec[256]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,1,2,3,4,5,6,7,8,9,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
@@ -75,7 +60,10 @@ void callback(struct bsdconv_instance *ins){
 	int i,j=0;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	char d=CP(this_phase->data->data)[this_phase->i];
+	char d;
+
+	for(;this_phase->i<this_phase->data->len;this_phase->i+=1){
+	d=CP(this_phase->data->data)[this_phase->i];
 	if(d==';' && t->status){
 		//put data
 		t->buf.i=htonl(t->buf.i);
@@ -106,7 +94,7 @@ void callback(struct bsdconv_instance *ins){
 			t->tbl=hex;
 			t->b=16;
 			t->buf.i=0;
-			CONTINUE();
+			continue;
 		}
 		t->b=10;
 		t->tbl=dec;
@@ -114,5 +102,7 @@ void callback(struct bsdconv_instance *ins){
 		t->buf.i=t->tbl[(unsigned char)d];
 		t->status=1;
 	}
-	CONTINUE();
+	}
+	this_phase->state.status=CONTINUE;
+	return;
 }
