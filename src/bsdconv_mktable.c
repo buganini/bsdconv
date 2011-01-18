@@ -47,7 +47,6 @@ struct m_state_st{
 	struct m_state_st *psub[257];
 	uintptr_t p;
 	struct m_state_st *n;
-	int child;
 };
 
 struct list{
@@ -235,7 +234,6 @@ int main(int argc, char *argv[]){
 	state_t->data=0;
 	state_t->p=offset;
 	state_t->n=NULL;
-	state_t->child=0;
 	offset+=sizeof(struct state_st);
 	for(i=0;i<257;i++){
 		state_r->sub[i]=0;
@@ -309,14 +307,12 @@ int main(int argc, char *argv[]){
 		//	printf("%u[%X]=%u\n", state_p->p, c, offset);
 						state_t->n=state_p->p->psub[c]=(struct m_state_st *)malloc(sizeof(struct m_state_st));
 						state_t=state_t->n;
-						state_t->child=0;
 						state_t->n=NULL;
 						for(i=0;i<257;i++){
 							state_t->sub[i]=0;
 							state_t->psub[i]=NULL;
 						}
 						state_p->p->sub[c]=(struct state_st *)offset;
-						state_p->p->child++;
 						state_p->p->psub[c]->p=offset;
 						offset+=sizeof(struct state_st);
 
@@ -334,7 +330,6 @@ int main(int argc, char *argv[]){
 
 						newtodo_tail->p->status=CONTINUE;
 						newtodo_tail->p->data=0;
-						newtodo_tail->p->child=0;
 						for(i=0;i<=256;i++){
 							newtodo_tail->p->sub[i]=0;
 							newtodo_tail->p->psub[i]=NULL;
@@ -361,7 +356,6 @@ int main(int argc, char *argv[]){
 				state_t->data=0;
 				state_t->p=offset;
 				state_t->n=NULL;
-				state_t->child=0;
 				callback=offset;
 				for(i=0;i<257;i++){
 					state_t->sub[i]=(struct state_st *)callback;
@@ -416,7 +410,6 @@ int main(int argc, char *argv[]){
 									state_t->psub[i]=NULL;
 								}
 								state_t->n=NULL;
-								state_t->child=0;
 								state_t->p=offset;
 								state_t->status=MATCH;
 								offset+=sizeof(struct state_st);
