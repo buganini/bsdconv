@@ -454,6 +454,7 @@ int main(int argc, char *argv[]){
 		}
 		todo=NULL;
 	}
+	free(newtodo);
 	fclose(fp);
 	fopen(argv[2], "wb+");
 	state_t=state_r;
