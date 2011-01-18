@@ -117,7 +117,7 @@ int main(int argc, char *argv[]){
 	char inbuf[1024], *f, *t, *tmp, *of, *ot;
 	int dat[1024];
 	uintptr_t l,ret;
-	struct m_data_st *data_r=NULL, *data_p=NULL, *data_t=NULL;
+	struct m_data_st *data_r=NULL, *data_p=NULL, *data_q=NULL, *data_t=NULL;
 	struct m_state_st *state_r, *state_t, holder;
 	struct list *todo=NULL, *newtodo, *newtodo_tail, *state_p;
 	struct state_st dstate;
@@ -457,6 +457,7 @@ int main(int argc, char *argv[]){
 		k=1;	//begin of data cell
 		l=0;	//length counter
 		j=0;	//has read something to proceed
+		data_q=NULL;	//pointer of last data cell
 		while(hash_p && hash_p->p){
 			if(k){
 				k=0;
@@ -464,35 +465,35 @@ int main(int argc, char *argv[]){
 					j=1;
 					if(data_p){
 						//data after head
-						//make new cell
 						data_t->n=(struct m_data_st *)malloc(sizeof(struct m_data_st));
 						data_p=data_t=data_t->n;
 					}else if(data_t){
 						//data head
-						//make new cell
 						data_t->n=(struct m_data_st *)malloc(sizeof(struct m_data_st));
 						data_p=data_t=data_t->n;
 					}else{
 						//frist
-						//make new cell
 						data_t=data_p=data_r=(struct m_data_st *)malloc(sizeof(struct m_data_st));
 					}
 
 					//init new cell
 					hash_p->offset=data_p->p=offset;
-					data_p->next=0;
+					data_p->next=NULL;
 					data_p->n=NULL;
+					ret=offset;
 					offset+=sizeof(struct data_st);
 
 					data_p->data=(char *)hash_p->v;
 				}
+				if(data_q)
+					data_q->next=hash_p->offset;
+				data_q=data_p;
 			}
 			if(hash_p->c==256){
 				k=1;
 				if(j){
 					j=0;
 					data_p->len=l;
-					data_p->next=(struct data_st *)offset;
 				}
 				l=0;
 			}else{
@@ -503,7 +504,6 @@ int main(int argc, char *argv[]){
 		if(j){
 			j=0;
 			data_p->len=l;
-			data_p->next=0;
 		}
 		
 		hash_p=(struct dhash *)state_t->data;
