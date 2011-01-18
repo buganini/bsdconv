@@ -81,9 +81,6 @@ void callback(struct bsdconv_instance *ins){
 					t->size+=8;
 					p=t->data.data;
 					t->data.data=realloc(t->data.data,t->size);
-					if(p!=t->data.data){
-						free(p);
-					}
 				}
 				CP(t->data.data)[t->data.len]=hex[(unsigned char)d];
 				t->data.len+=1;
