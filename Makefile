@@ -1,5 +1,5 @@
 PREFIX?=/usr/local
-CFLAGS+=-Wall -DPREFIX='"${PREFIX}"'
+CFLAGS+=-g -Wall -DPREFIX='"${PREFIX}"'
 SHLIBVER=4
 
 TODO_CODECS_TABLE=
@@ -47,6 +47,8 @@ TODO_CODECS_TABLE+=inter/UNIX
 TODO_CODECS_TABLE+=inter/UPPER
 TODO_CODECS_TABLE+=inter/UPSIDEDOWN
 TODO_CODECS_TABLE+=inter/WIN
+TODO_CODECS_TABLE+=inter/ZH_COMP
+TODO_CODECS_TABLE+=inter/ZH_DECOMP
 TODO_CODECS_TABLE+=inter/ZHCN
 TODO_CODECS_TABLE+=inter/ZHTW
 TODO_CODECS_TABLE+=inter/ZHTW_WORDS
@@ -79,10 +81,6 @@ TODO_CODECS_TABLE+=to/UTF-16LE
 TODO_CODECS_TABLE+=to/UTF-32BE
 TODO_CODECS_TABLE+=to/UTF-32LE
 TODO_CODECS_TABLE+=to/UTF-8
-
-TODO_CODECS_TABLE_EXTRA=
-TODO_CODECS_TABLE_EXTRA+=inter/ZH_COMP
-TODO_CODECS_TABLE_EXTRA+=inter/ZH_DECOMP
 
 TODO_CODECS_CALLBACK=
 TODO_CODECS_CALLBACK+=from/ASCII-NUMERIC-HTML-ENTITY
@@ -144,11 +142,6 @@ bsdconv_mktable: builddir src/bsdconv.h
 
 codecs_table: builddir bsdconv_mktable
 .	for item in ${TODO_CODECS_TABLE}
-	./build/bin/bsdconv_mktable codecs/${item}.txt ./build/share/bsdconv/${item}
-.	endfor
-
-codecs_table_extra: builddir bsdconv_mktable
-.	for item in ${TODO_CODECS_TABLE_EXTRA}
 	./build/bin/bsdconv_mktable codecs/${item}.txt ./build/share/bsdconv/${item}
 .	endfor
 
