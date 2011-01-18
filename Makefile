@@ -1,5 +1,5 @@
 PREFIX?=/usr/local
-CFLAGS+=-g -Wall -DPREFIX='"${PREFIX}"'
+CFLAGS+=-Wall -DPREFIX='"${PREFIX}"'
 SHLIBVER=4
 
 TODO_CODECS_TABLE=

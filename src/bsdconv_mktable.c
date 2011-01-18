@@ -14,12 +14,6 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <sys/stat.h>
-#include <sys/mman.h>
-#endif
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
