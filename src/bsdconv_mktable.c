@@ -26,13 +26,12 @@
 #include <errno.h>
 #endif
 
-
 struct m_data_st{
 	char *data;
 	size_t len;
-	struct data_st *next;
+	offset_t next;
 
-	uintptr_t offset;
+	offset_t offset;
 	struct m_data_st *n;
 };
 
@@ -40,11 +39,11 @@ struct m_state_st{
 	char status;
 	struct m_state_st *sub[257];
 
-	uintptr_t data;
+	struct m_data_st *data;
 
 	int prio;
 
-	uintptr_t offset;
+	offset_t offset;
 	struct m_state_st *n;
 };
 
@@ -59,8 +58,8 @@ struct dhash{
 	int c;
 	struct dhash *p;
 	struct dhash *sub[257];
-	uintptr_t offset;
-	uintptr_t head;
+	offset_t offset;
+	void *head;
 };
 
 char table[256]={};
@@ -98,7 +97,7 @@ uintptr_t hash(int *p, uintptr_t l){
 				hash_q->sub[p[i]]->p=hash_q;
 				hash_q->sub[p[i]]->v=0;
 				hash_q->sub[p[i]]->offset=0;
-				hash_q->sub[p[i]]->head=0;
+				hash_q->sub[p[i]]->head=NULL;
 				for(j=0;j<=256;++j){
 					hash_q->sub[p[i]]->sub[j]=NULL;
 				}
@@ -211,7 +210,7 @@ int main(int argc, char *argv[]){
 	hash_datalist->p=0;
 	hash_datalist->v=0;
 	hash_datalist->offset=0;
-	hash_datalist->head=0;
+	hash_datalist->head=NULL;
 
 	hash_data=malloc(sizeof(struct dhash));
 	for(i=0;i<=256;++i){
@@ -220,7 +219,7 @@ int main(int argc, char *argv[]){
 	hash_data->p=0;
 	hash_data->v=0;
 	hash_data->offset=0;
-	hash_data->head=0;
+	hash_data->head=NULL;
 
 	newtodo=malloc(sizeof(struct list));
 	newtodo->n=NULL;
@@ -407,7 +406,7 @@ int main(int argc, char *argv[]){
 								offset+=sizeof(struct state_st);
 							}
 							if(l){
-								state_p->p->sub[c]->data=ret;
+								state_p->p->sub[c]->data=(struct m_data_st *)ret;
 							}else{
 								state_p->p->sub[c]->data=0;
 							}
@@ -470,7 +469,7 @@ int main(int argc, char *argv[]){
 
 					//init new cell
 					hash_p->offset=data_p->offset=offset;
-					data_p->next=NULL;
+					data_p->next=0;
 					data_p->n=NULL;
 					ret=offset;
 					offset+=sizeof(struct data_st);
@@ -478,7 +477,7 @@ int main(int argc, char *argv[]){
 					data_p->data=(char *)hash_p->v;
 				}
 				if(data_q)
-					data_q->next=(struct data_st *)hash_p->offset;
+					data_q->next=hash_p->offset;
 				data_q=data_p;
 			}
 			if(hash_p->c==256){
@@ -500,12 +499,12 @@ int main(int argc, char *argv[]){
 		
 		hash_p=(struct dhash *)state_t->data;
 		if(hash_p)
-			dstate.data=(struct data_st *)hash_p->offset;
+			dstate.data=(struct data_st *)(uintptr_t)hash_p->offset;
 		else
 			dstate.data=NULL;
 		for(i=0;i<257;i++){
 			if(state_t->sub[i])
-				dstate.sub[i]=(struct state_st *)state_t->sub[i]->offset;
+				dstate.sub[i]=(offset_t)state_t->sub[i]->offset;
 			else
 				dstate.sub[i]=0;
 		}
@@ -521,10 +520,10 @@ int main(int argc, char *argv[]){
 	while(data_t){
 		hash_p=(struct dhash *)data_t->data;
 		if(hash_p && !hash_p->head){
-			hash_p->head=(uintptr_t)data_t->data;
+			hash_p->head=data_t->data;
 			hash_p=hash_p->p;
 			while(hash_p && hash_p->p){
-				hash_p->head=(uintptr_t)data_t->data;
+				hash_p->head=data_t->data;
 				hash_p=hash_p->p;
 			}
 		}
@@ -536,7 +535,7 @@ int main(int argc, char *argv[]){
 		hash_p=(struct dhash *)data_t->data;
 		if(hash_p && !hash_p->offset){
 			fseek(fp, offset, SEEK_SET);
-			hash_p=(struct dhash *)hash_p->head;
+			hash_p=hash_p->head;
 			while(hash_p && hash_p->p){
 				hash_p->offset=offset;
 				//printf("Writing byte: %X.\n", hash_p->c);
@@ -547,11 +546,11 @@ int main(int argc, char *argv[]){
 		}
 		hash_p=(struct dhash *)data_t->data;
 		if(hash_p)
-			ddata.data=(char *)hash_p->offset;
+			ddata.data=(char *)(uintptr_t)hash_p->offset;
 		else
 			ddata.data=NULL;
 		ddata.len=data_t->len;
-		ddata.next=data_t->next;
+		ddata.next=(struct data_st *)(uintptr_t)data_t->next;
 		fseek(fp, data_t->offset, SEEK_SET);
 		//printf("Writing struct data_st.\n");
 		fwrite((void *)&ddata, sizeof(struct data_st), 1, fp);

@@ -26,6 +26,8 @@
 #define F_FREE 0x1
 #define F_SKIP 0x10
 
+typedef uint32_t offset_t;
+
 enum bsdconv_phase_type {
 	INPUT,
 	FROM,
@@ -68,13 +70,13 @@ struct data_rt{
 struct state_st{
 	char status;
 	struct data_st *data;
-	struct state_st *sub[257];
+	offset_t sub[257];
 };
 
 struct state_rt{
 	char status;
 	struct data_rt *data;
-	struct state_st *sub[257];
+	offset_t sub[257];
 };
 
 struct bsdconv_instance{
