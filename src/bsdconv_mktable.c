@@ -32,7 +32,7 @@ struct m_data_st{
 	size_t len;
 	struct data_st *next;
 
-	uintptr_t p;
+	uintptr_t offset;
 	struct m_data_st *n;
 };
 
@@ -44,7 +44,7 @@ struct m_state_st{
 
 	int prio;
 
-	uintptr_t p;
+	uintptr_t offset;
 	struct m_state_st *n;
 };
 
@@ -231,7 +231,7 @@ int main(int argc, char *argv[]){
 	state_t=state_r=(struct m_state_st *)malloc(sizeof(struct m_state_st));
 	state_t->status=DEADEND;
 	state_t->data=0;
-	state_t->p=offset;
+	state_t->offset=offset;
 	state_t->n=NULL;
 	offset+=sizeof(struct state_st);
 	for(i=0;i<257;i++){
@@ -309,7 +309,7 @@ int main(int argc, char *argv[]){
 						for(i=0;i<257;i++){
 							state_t->sub[i]=NULL;
 						}
-						state_p->p->sub[c]->p=offset;
+						state_p->p->sub[c]->offset=offset;
 						offset+=sizeof(struct state_st);
 
 						state_t->n=state_p->p->sub[c];
@@ -349,7 +349,7 @@ int main(int argc, char *argv[]){
 				state_t=state_t->n;
 				state_t->status=SUBROUTINE;
 				state_t->data=0;
-				state_t->p=offset;
+				state_t->offset=offset;
 				state_t->n=NULL;
 				callback=state_t;
 				for(i=0;i<257;i++){
@@ -402,7 +402,7 @@ int main(int argc, char *argv[]){
 									state_t->sub[i]=NULL;
 								}
 								state_t->n=NULL;
-								state_t->p=offset;
+								state_t->offset=offset;
 								state_t->status=MATCH;
 								offset+=sizeof(struct state_st);
 							}
@@ -469,7 +469,7 @@ int main(int argc, char *argv[]){
 					}
 
 					//init new cell
-					hash_p->offset=data_p->p=offset;
+					hash_p->offset=data_p->offset=offset;
 					data_p->next=NULL;
 					data_p->n=NULL;
 					ret=offset;
@@ -505,11 +505,11 @@ int main(int argc, char *argv[]){
 			dstate.data=NULL;
 		for(i=0;i<257;i++){
 			if(state_t->sub[i])
-				dstate.sub[i]=(struct state_st *)state_t->sub[i]->p;
+				dstate.sub[i]=(struct state_st *)state_t->sub[i]->offset;
 			else
 				dstate.sub[i]=0;
 		}
-		fseek(fp, state_t->p, SEEK_SET);
+		fseek(fp, state_t->offset, SEEK_SET);
 		//printf("Writing struct state_st.\n");
 		fwrite((void *)&dstate, sizeof(struct state_st), 1, fp);
 		tofree=state_t;
@@ -552,7 +552,7 @@ int main(int argc, char *argv[]){
 			ddata.data=NULL;
 		ddata.len=data_t->len;
 		ddata.next=data_t->next;
-		fseek(fp, data_t->p, SEEK_SET);
+		fseek(fp, data_t->offset, SEEK_SET);
 		//printf("Writing struct data_st.\n");
 		fwrite((void *)&ddata, sizeof(struct data_st), 1, fp);
 		tofree=data_t;
