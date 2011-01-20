@@ -1,5 +1,8 @@
+4.3:
+	Enhance table builder
+
 4.0:
-	Allow using | to do re-conversion
+	Allow using '|' to do re-conversion
 	New design of operation mode
 	Add bsdconvmv tool
 
