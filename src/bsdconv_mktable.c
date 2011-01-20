@@ -468,6 +468,7 @@ int main(int argc, char *argv[]){
 					}
 
 					//init new cell
+					hash_p->head=data_p;
 					hash_p->offset=data_p->offset=offset;
 					data_p->next=0;
 					data_p->n=NULL;
@@ -476,9 +477,11 @@ int main(int argc, char *argv[]){
 
 					data_p->data=(char *)hash_p->v;
 				}
-				if(data_q)
+				if(data_q){
 					data_q->next=hash_p->offset;
-				data_q=data_p;
+					//printf("Appending %p->%p\n",(void *)(uintptr_t)data_q->offset, (void *)(uintptr_t)data_q->next);
+				}
+				data_q=hash_p->head;
 			}
 			if(hash_p->c==256){
 				k=1;
@@ -552,7 +555,7 @@ int main(int argc, char *argv[]){
 		ddata.len=data_t->len;
 		ddata.next=(struct data_st *)(uintptr_t)data_t->next;
 		fseek(fp, data_t->offset, SEEK_SET);
-		//printf("Writing struct data_st.\n");
+		//printf("Writing struct data_st at %p %c %p.\n", (void *)(uintptr_t)data_t->offset, hash_p->p->c, ddata.next);
 		fwrite((void *)&ddata, sizeof(struct data_st), 1, fp);
 		tofree=data_t;
 		data_t=data_t->n;
