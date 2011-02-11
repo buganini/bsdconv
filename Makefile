@@ -112,7 +112,7 @@ TODO_CODECS_CALLBACK+=to/UTF-32BE
 TODO_CODECS_CALLBACK+=to/UTF-32LE
 TODO_CODECS_CALLBACK+=to/UTF-8
 
-all: libbsdconv bsdconv_mktable bsdconv codecs meta
+all: libbsdconv bsdconv_mktable meta bsdconv codecs
 
 alias:
 .for t in from inter to
@@ -131,11 +131,11 @@ builddir:
 	mkdir -p build/share/bsdconv/inter
 	mkdir -p build/share/bsdconv/to
 
-libbsdconv: builddir src/bsdconv_func.c src/libbsdconv.c src/bsdconv.h
+libbsdconv: builddir meta src/bsdconv_func.c src/libbsdconv.c src/bsdconv.h
 	$(CC) ${CFLAGS} src/bsdconv_func.c src/libbsdconv.c -fPIC -shared -o build/lib/libbsdconv.so.${SHLIBVER}
 
 bsdconv: builddir src/bsdconv_func.c src/libbsdconv.c src/bsdconv.h src/bsdconv.c
-	$(CC) ${CFLAGS} src/bsdconv_func.c src/libbsdconv.c src/bsdconv.c -o build/bin/bsdconv
+	$(CC) ${CFLAGS} src/bsdconv_func.c src/bsdconv.c -L./build/lib/ -lbsdconv -o build/bin/bsdconv
 
 bsdconv_mktable: builddir src/bsdconv.h
 	$(CC) ${CFLAGS} src/bsdconv_func.c src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
