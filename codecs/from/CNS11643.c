@@ -23,12 +23,13 @@
 struct my_s{
 	int status;
 	char plane, buf[4];
-	struct bsdconv_codec_t cd;
+	struct bsdconv_instance *uni;
 };
 
 void *cbcreate(void){
 	struct my_s *r=malloc(sizeof(struct my_s));
-	if(!loadcodec(&r->cd, "inter/UNICODE", 1)){
+	r->uni=bsdconv_create("PASS:UNICODE:PASS");
+	if(r->uni==NULL){
 		free(r);
 		return NULL;
 	}
@@ -42,17 +43,15 @@ void cbinit(struct bsdconv_codec_t *cdc, struct my_s *r){
 
 void cbdestroy(void *p){
 	struct my_s *r=p;
-	unloadcodec(&r->cd);
+	bsdconv_destroy(r->uni);
 	free(p);
 }
 
 void callback(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	char d, *p;
-	struct state_rt state;
-	struct data_rt *data_ptr;
-	int i;
+	struct bsdconv_instance *uni=t->uni;
+	char d;
 
 	for(;this_phase->i<this_phase->data->len;this_phase->i+=1){
 		d=CP(this_phase->data->data)[this_phase->i];
@@ -72,29 +71,19 @@ void callback(struct bsdconv_instance *ins){
 			case 1:
 				t->status=0;
 				t->buf[3]=d;
-				memcpy(&state, t->cd.z, sizeof(struct state_st));
-				for(i=0;i<4;++i){
-					memcpy(&state, t->cd.z + (uintptr_t)state.sub[(unsigned char)t->buf[i]], sizeof(struct state_st));
-					if(state.status==DEADEND){
-						break;
-					}
-				}
+				
+				bsdconv_init(uni);
+				uni->input.data=t->buf;
+				uni->input.len=4;
+				uni->input.flags=F_SKIP;
+				uni->input.next=NULL;
+				uni->flush=1;
+				bsdconv(uni);
+				this_phase->data_tail->next=uni->phase[uni->phasen].data_head->next;
+				uni->phase[uni->phasen].data_head->next=NULL;
+
 				this_phase->state.status=NEXTPHASE;
-				switch(state.status){
-					case MATCH:
-					case SUBMATCH:
-						LISTCPY(this_phase->data_tail, state.data, t->cd.z);
-						return;
-					default:
-						DATA_MALLOC(this_phase->data_tail->next);
-						this_phase->data_tail=this_phase->data_tail->next;
-						this_phase->data_tail->next=NULL;
-						this_phase->data_tail->len=4;
-						this_phase->data_tail->flags=F_FREE;
-						p=this_phase->data_tail->data=malloc(4);
-						memcpy(p,t->buf,4);
-						return;
-				}
+				return;
 			case 10:
 				t->status=0;
 				t->plane=d;

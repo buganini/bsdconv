@@ -177,9 +177,6 @@ void bsdconv_destroy(struct bsdconv_instance *);
 void bsdconv(struct bsdconv_instance *);
 char * bsdconv_error(void);
 
-int loadcodec(struct bsdconv_codec_t *, char *, int);
-void unloadcodec(struct bsdconv_codec_t *);
-
 #define bb00000011 0x03
 #define bb00000111 0x07
 #define bb00001111 0x0f
