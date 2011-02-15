@@ -131,23 +131,23 @@ builddir:
 	mkdir -p build/share/bsdconv/inter
 	mkdir -p build/share/bsdconv/to
 
-libbsdconv: builddir meta src/bsdconv_func.c src/libbsdconv.c src/bsdconv.h
-	$(CC) ${CFLAGS} src/bsdconv_func.c src/libbsdconv.c -fPIC -shared -o build/lib/libbsdconv.so.${SHLIBVER}
+libbsdconv: builddir src/libbsdconv.c src/bsdconv.h
+	$(CC) ${CFLAGS} src/libbsdconv.c -fPIC -shared -o build/lib/libbsdconv.so.${SHLIBVER}
 
-bsdconv: builddir src/bsdconv_func.c src/libbsdconv.c src/bsdconv.h src/bsdconv.c
-	$(CC) ${CFLAGS} src/bsdconv_func.c src/bsdconv.c -L./build/lib/ -lbsdconv -o build/bin/bsdconv
+bsdconv: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
+	$(CC) ${CFLAGS} src/bsdconv.c -L./build/lib/ -lbsdconv -o build/bin/bsdconv
 
 bsdconv_mktable: builddir src/bsdconv.h
-	$(CC) ${CFLAGS} src/bsdconv_func.c src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
+	$(CC) ${CFLAGS} src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
 
 codecs_table: builddir bsdconv_mktable
 .	for item in ${TODO_CODECS_TABLE}
 	./build/bin/bsdconv_mktable codecs/${item}.txt ./build/share/bsdconv/${item}
 .	endfor
 
-codecs_callback: builddir
+codecs_callback: builddir libbsdconv
 .	for item in ${TODO_CODECS_CALLBACK}
-	$(CC) ${CFLAGS} -fPIC -shared -o ./build/share/bsdconv/${item}.so ./src/bsdconv_func.c codecs/${item}.c
+	$(CC) ${CFLAGS} -fPIC -shared -o ./build/share/bsdconv/${item}.so codecs/${item}.c
 .	endfor
 
 codecs: codecs_table codecs_callback

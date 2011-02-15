@@ -20,71 +20,50 @@
 #include <sys/types.h>
 #include "../../src/bsdconv.h"
 
-struct my_s{
-	struct bsdconv_codec_t cd;
-};
-
 void *cbcreate(void){
-	struct my_s *r=malloc(sizeof(struct my_s));
-	if(!loadcodec(&r->cd, "inter/CNS11643", 1)){
-		free(r);
-		return NULL;
-	}
-	return r;
+	return bsdconv_create("PASS:CNS11643:PASS");
 }
 
 void cbdestroy(void *p){
-	struct my_s *r=p;
-	unloadcodec(&r->cd);
-	free(p);
+	bsdconv_destroy(p);
 }
 
 void callback(struct bsdconv_instance *ins){
 	char *data;
 	unsigned int len;
-	struct state_rt state;
-	struct data_rt *data_ptr;
-	char *ptr;
-	int i;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	data=ins->phase[ins->phase_index].data->data;
+	struct bsdconv_instance *cns=this_phase->codec[this_phase->index].priv;
+	struct data_rt *data_p=this_phase->data;
+	data=this_phase->data->data;
 
+	/* exclude ASCII*/
 	if(ins->phase[ins->phase_index].data->len==2 && (data[1] & bb10000000)==0){
 		this_phase->state.status=DEADEND;
 		return;
 	}
+
 	switch(*data){
 		case 0x01:
-			memcpy(&state, t->cd.z, sizeof(struct state_st));
-			for(i=0;i<ins->phase[ins->phase_index].data->len;++i){
-				memcpy(&state, t->cd.z + (uintptr_t)state.sub[UCP(data)[i]], sizeof(struct state_st));
-				if(state.status==DEADEND){
-					break;
-				}
-			}
-			switch(state.status){
-				case MATCH:
-				case SUBMATCH:
-					this_phase->state.status=NEXTPHASE;
-					for(data_ptr=state.data;data_ptr;){
-						DATA_MALLOC(this_phase->data_tail->next);
-						this_phase->data_tail=this_phase->data_tail->next;
-						memcpy(this_phase->data_tail, t->cd.z+(uintptr_t)data_ptr, sizeof(struct data_st));
-						data_ptr=this_phase->data_tail->next;
-						this_phase->data_tail->next=NULL;
-						this_phase->data_tail->flags=F_FREE;
-						ptr=t->cd.z+(uintptr_t)this_phase->data_tail->data;
-						this_phase->data_tail->data=malloc(this_phase->data_tail->len);
-						memcpy(this_phase->data_tail->data, ptr, this_phase->data_tail->len);
-						CP(this_phase->data_tail->data)[0]=0;
-					}
-					return;
-				default:
-					this_phase->state.status=DEADEND;
-					return;
+			bsdconv_init(cns);
+			cns->input.data=data;
+			cns->input.len=this_phase->data->len;
+			cns->input.flags=F_SKIP;
+			cns->input.next=NULL;
+			cns->flush=1;
+			bsdconv(cns);
+			data_p=cns->phase[cns->phasen].data_head->next;
+			cns->phase[cns->phasen].data_head->next=NULL;
+			data=data_p->data;
+			if(*data==0x02){
+				goto converted;
+			}else{
+				this_phase->state.status=DEADEND;
+				if(data_p!=this_phase->data)
+					DATA_FREE(data_p);
+				return;
 			}
 		case 0x02:
+			converted:
 			len=ins->phase[ins->phase_index].data->len-1;
 
 			DATA_MALLOC(this_phase->data_tail->next);
@@ -97,6 +76,10 @@ void callback(struct bsdconv_instance *ins){
 			memcpy(this_phase->data_tail->data, data, this_phase->data_tail->len);
 			CP(this_phase->data_tail->data)[0]=0;
 			this_phase->state.status=NEXTPHASE;
+
+			if(data_p!=this_phase->data)
+				DATA_FREE(data_p);
+
 			return;
 		default:
 			this_phase->state.status=DEADEND;
