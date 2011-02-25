@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <ctype.h>
+#include <dirent.h>
 #include "bsdconv.h"
 #ifdef WIN32
 #include <windows.h>
@@ -205,38 +206,6 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 		brk=0;
 	}
 	for(i=1;i<=ins->phasen;++i){
-		if(brk==0){
-			struct bsdconv_instance *alias_ins;
-			switch(ins->phase[i].type){
-				case FROM:
-					alias_ins=bsdconv_create("ASCII:FROM_ALIAS:ASCII");
-					break;
-				case INTER:
-					alias_ins=bsdconv_create("ASCII:INTER_ALIAS:ASCII");
-					break;
-				case TO:
-					alias_ins=bsdconv_create("ASCII:TO_ALIAS:ASCII");
-					break;
-				default:
-					SetLastError(EDOOFUS);
-					goto bsdconv_create_error_0;
-			}
-			if(alias_ins==NULL){
-				SetLastError(EDOOFUS);
-				goto bsdconv_create_error_0;
-			}
-			bsdconv_init(alias_ins);
-			alias_ins->output_mode=BSDCONV_AUTOMALLOC;
-			alias_ins->output.len=1;
-			alias_ins->input.data=opipe[i];
-			alias_ins->input.len=strlen(opipe[i]);
-			alias_ins->input.flags|=F_FREE;
-			alias_ins->flush=1;
-			bsdconv(alias_ins);
-			opipe[i]=alias_ins->output.data;
-			opipe[i][alias_ins->output.len]=0;
-			bsdconv_destroy(alias_ins);
-		}
 		if(*opipe[i]){
 			ins->phase[i].codecn=1;
 			for(t=(char *)opipe[i];*t;t++){
@@ -290,7 +259,40 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 			strcpy(buf, ins->phase[i].codec[j].desc);
 			REALPATH(buf, path);
 			if(!loadcodec(&ins->phase[i].codec[j], path)){
-				goto bsdconv_create_error_2;
+				struct bsdconv_instance *alias_ins;
+				switch(ins->phase[i].type){
+					case FROM:
+						alias_ins=bsdconv_create("ASCII:FROM_ALIAS:ASCII");
+						break;
+					case INTER:
+						alias_ins=bsdconv_create("ASCII:INTER_ALIAS:ASCII");
+						break;
+					case TO:
+						alias_ins=bsdconv_create("ASCII:TO_ALIAS:ASCII");
+						break;
+					default:
+						SetLastError(EDOOFUS);
+						goto bsdconv_create_error_0;
+				}
+				if(alias_ins==NULL){
+					SetLastError(EDOOFUS);
+					goto bsdconv_create_error_0;
+				}
+				bsdconv_init(alias_ins);
+				alias_ins->output_mode=BSDCONV_AUTOMALLOC;
+				alias_ins->output.len=1;
+				alias_ins->input.data=ins->phase[i].codec[j].desc;
+				alias_ins->input.len=strlen(opipe[i]);
+				alias_ins->input.flags|=F_FREE;
+				alias_ins->flush=1;
+				bsdconv(alias_ins);
+				ins->phase[i].codec[j].desc=alias_ins->output.data;
+				ins->phase[i].codec[j].desc[alias_ins->output.len]=0;
+				bsdconv_destroy(alias_ins);
+				strcpy(buf, ins->phase[i].codec[j].desc);
+				REALPATH(buf, path);
+				if(!loadcodec(&ins->phase[i].codec[j], path))
+					goto bsdconv_create_error_2;
 			}
 		}
 		chdir("..");
