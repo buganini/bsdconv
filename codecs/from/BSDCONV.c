@@ -40,10 +40,8 @@ void cbinit(struct bsdconv_codec_t *cdc, struct my_s *t){
 	t->data.len=0;
 	if(t->data.data)
 		free(t->data.data);
-	t->data.data=NULL;
 	t->data.next=0;
-	t->size=0;
-	t->flag=F_A;
+	t->flag=F_CLEAR;
 }
 
 void cbdestroy(void *p){
@@ -58,16 +56,41 @@ int hex[256]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 
 void callback(struct bsdconv_instance *ins){
 	void *p;
+	struct data_rt *data_ptr;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct bsdconv_phase *prev_phase=&ins->phase[ins->phase_index-1];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
 	char d=CP(this_phase->data->data)[this_phase->i];
 	if(hex[(unsigned char)d]==-1){
-		this_phase->state.status=DEADEND;
+		if(this_phase->match){
+			this_phase->pend=0;
+
+			DATA_MALLOC(this_phase->data_tail->next);
+			this_phase->data_tail=this_phase->data_tail->next;
+			this_phase->data_tail->next=NULL;
+			this_phase->data_tail->data=t->data.data;
+			this_phase->data_tail->len=t->data.len;
+			this_phase->data_tail->flags=F_FREE;
+
+			LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
+			this_phase->data=prev_phase->data_head;
+			this_phase->i=this_phase->data_head->len;
+			this_phase->match=0;
+			RESET(ins->phase_index);
+
+			this_phase->state.status=NOOP;
+
+			t->data.data=NULL;
+		}else{
+			this_phase->state.status=DEADEND;
+		}
 		t->flag=F_CLEAR;
 	}else{
 		if(t->flag==F_CLEAR){
 			t->flag=F_A;
 			t->data.len=0;
+			t->data.data=NULL;
+			t->size=0;
 		}
 
 		if(t->data.len)
