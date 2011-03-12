@@ -79,11 +79,11 @@ void callback(struct bsdconv_instance *ins){
 			RESET(ins->phase_index);
 
 			this_phase->state.status=NOOP;
-
-			t->data.data=NULL;
 		}else{
 			this_phase->state.status=DEADEND;
+			if(t->data.data) free(t->data.data);
 		}
+		t->data.data=NULL;
 		t->flag=F_CLEAR;
 	}else{
 		if(t->flag==F_CLEAR){
