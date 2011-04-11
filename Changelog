@@ -1,3 +1,7 @@
+	Add to/RAW
+	fix bug in CNS11643 conversion
+	fix bug in UTF-8 decoding
+
 4.3:
 	Enhance table builder
 
