@@ -26,6 +26,7 @@ void callback(struct bsdconv_instance *ins){
 	data+=1;
 	len=ins->phase[ins->phase_index].data->len-1;
 
+	/* exclude ASCII */
 	if(len==1 && (*data & bb10000000)==0){
 		ins->phase[ins->phase_index].state.status=DEADEND;
 		return;
