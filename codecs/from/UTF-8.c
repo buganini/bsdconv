@@ -20,7 +20,7 @@
 struct my_s{
 	int status;
 	char buf[16];
-	char *p;
+	char *p, f;
 };
 
 void *cbcreate(void){
@@ -30,6 +30,7 @@ void *cbcreate(void){
 void cbinit(struct bsdconv_codec_t *cdc, struct my_s *r){
 	r->status=0;
 	r->p=r->buf;
+	r->f=0;
 }
 
 void cbdestroy(void *p){
@@ -40,6 +41,7 @@ void cbdestroy(void *p){
 	this_phase->state.status=DEADEND;	\
 	t->status=0;	\
 	t->p=t->buf;	\
+	t->f=0;	\
 	return;	\
 }while(0);
 
@@ -47,6 +49,7 @@ void cbdestroy(void *p){
 	this_phase->state.status=NEXTPHASE;	\
 	t->status=0;	\
 	t->p=t->buf;	\
+	t->f=0;	\
 	return;	\
 }while(0);
 
@@ -76,7 +79,7 @@ void callback(struct bsdconv_instance *ins){
 				}else if((d & bb11100000) == bb11000000){
 					t->status=21;
 					*(t->p)=(d >> 2) & bb00000111;
-					if(*(t->p)) t->p+=1;
+					if(*(t->p)){ t->p+=1; t->f=1;}
 					*(t->p)=(d << 6) & bb11000000;
 				}else if((d & bb11110000) == bb11100000){
 					t->status=31;
@@ -92,7 +95,7 @@ void callback(struct bsdconv_instance *ins){
 			case 21:
 				if((d & bb11000000) == bb10000000){
 					*(t->p) |= d & bb00111111;
-					if(*(t->p)) t->p+=1;
+					if(t->f || *(t->p)){ t->p+=1; t->f=1;}
 					n=t->p - t->buf;
 					APPEND(n);
 					for(i=0;i<n;++i)
@@ -106,7 +109,7 @@ void callback(struct bsdconv_instance *ins){
 				if((d & bb11000000) == bb10000000){
 					t->status=32;
 					*(t->p) |= (d >> 2) & bb00001111;
-					if(*(t->p)) t->p+=1;
+					if(t->f || *(t->p)){ t->p+=1; t->f=1;}
 					*(t->p)=(d << 6) & bb11000000;
 					continue;
 				}else{
@@ -116,7 +119,7 @@ void callback(struct bsdconv_instance *ins){
 			case 32:
 				if((d & bb11000000) == bb10000000){
 					*(t->p) |= d & bb00111111;
-					if(*(t->p)) t->p+=1;
+					if(t->f || *(t->p)){ t->p+=1; t->f=1;}
 					n=t->p - t->buf;
 					APPEND(n);
 					for(i=0;i<n;++i)
@@ -130,7 +133,7 @@ void callback(struct bsdconv_instance *ins){
 				if((d & bb11000000) == bb10000000){
 					t->status=42;
 					*(t->p) |= (d >> 4) & bb00000011;
-					if(*(t->p)) t->p+=1;
+					if(t->f || *(t->p)){ t->p+=1; t->f=1;}
 					*(t->p)=(d << 4) & bb11110000;
 					continue;
 				}else{
@@ -141,7 +144,7 @@ void callback(struct bsdconv_instance *ins){
 				if((d & bb11000000) == bb10000000){
 					t->status=43;
 					*(t->p) |= (d >> 2) & bb00001111;
-					if(*(t->p)) t->p+=1;
+					if(t->f || *(t->p)){ t->p+=1; t->f=1;}
 					*(t->p)=(d << 6) & bb11000000;
 					continue;
 				}else{
@@ -151,7 +154,7 @@ void callback(struct bsdconv_instance *ins){
 			case 43:
 				if((d & bb11000000) == bb10000000){
 					*(t->p) |= d & bb00111111;
-					if(*(t->p)) t->p+=1;
+					if(t->f || *(t->p)){ t->p+=1; t->f=1;}
 					n=t->p - t->buf;
 					APPEND(n);
 					for(i=0;i<n;++i)
