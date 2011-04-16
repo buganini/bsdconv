@@ -158,6 +158,19 @@ clean:
 	rm -rf build
 
 install:
-	cp -R build/ ${PREFIX}
+	install -s -m 555 build/bin/bsdconv ${PREFIX}/bin
+	install -s -m 555 build/bin/bsdconv_mktable ${PREFIX}/bin
+	install -m 444 build/include/bsdconv.h ${PREFIX}/include
+	install -s -m 444 build/lib/libbsdconv.so.${SHLIBVER} ${PREFIX}/lib
+	install -s -m 444 build/lib/libbsdconv.so ${PREFIX}/lib
+	mkdir -p ${PREFIX}/share/bsdconv/from
+	mkdir -p ${PREFIX}/share/bsdconv/inter
+	mkdir -p ${PREFIX}/share/bsdconv/to
+.	for item in ${TODO_CODECS_TABLE}
+	install -m 444 build/share/bsdconv/${item} ${PREFIX}/share/bsdconv/${item}
+.	endfor
+.	for item in ${TODO_CODECS_CALLBACK}
+	install -m 444 build/share/bsdconv/${item}.so ${PREFIX}/share/bsdconv/${item}.so
+.	endfor
 
 
