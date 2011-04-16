@@ -18,9 +18,8 @@
 #include "perl.h"
 #include "XSUB.h"
 
-#include "ppport.h"
-
 #include <bsdconv.h>
+#include "ppport.h"
 #include <errno.h>
 #include <string.h>
 
