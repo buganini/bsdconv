@@ -162,7 +162,7 @@ install:
 	install -s -m 555 build/bin/bsdconv_mktable ${PREFIX}/bin
 	install -m 444 build/include/bsdconv.h ${PREFIX}/include
 	install -s -m 444 build/lib/libbsdconv.so.${SHLIBVER} ${PREFIX}/lib
-	install -s -m 444 build/lib/libbsdconv.so ${PREFIX}/lib
+	ln -sf libbsdconv.so.${SHLIBVER} ${PREFIX}/lib/libbsdconv.so
 	mkdir -p ${PREFIX}/share/bsdconv/from
 	mkdir -p ${PREFIX}/share/bsdconv/inter
 	mkdir -p ${PREFIX}/share/bsdconv/to
