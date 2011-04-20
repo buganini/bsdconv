@@ -49,6 +49,7 @@ void callback(struct bsdconv_instance *ins){
 
 	switch(len){
 		case 1:
+			/* 1-byte cases have been excluded in "exclude ASCII" section */
 			ins->phase[ins->phase_index].data_tail->len=2;
 			ins->phase[ins->phase_index].data_tail->data=malloc(2);
 			p=ins->phase[ins->phase_index].data_tail->data;
