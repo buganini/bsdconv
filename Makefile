@@ -172,7 +172,7 @@ install:
 	install -m 444 build/share/bsdconv/${item} ${PREFIX}/share/bsdconv/${item}
 .	endfor
 .	for item in ${TODO_CODECS_CALLBACK}
-	install -m 444 build/share/bsdconv/${item}.so ${PREFIX}/share/bsdconv/${item}.so
+	install -s -m 444 build/share/bsdconv/${item}.so ${PREFIX}/share/bsdconv/${item}.so
 .	endfor
 
 
