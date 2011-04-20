@@ -76,6 +76,11 @@ void callback(struct bsdconv_instance *ins){
 				if((d & bb10000000) == 0){
 					/* exclude ASCII */
 					DEADEND();
+
+					/* Unreachable */
+					*(t->p)=d;
+					if(*(t->p)){ t->p+=1; }
+					PASS();
 				}else if((d & bb11100000) == bb11000000){
 					t->status=21;
 					*(t->p)=(d >> 2) & bb00000111;
