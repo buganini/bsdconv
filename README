@@ -46,7 +46,7 @@ Recover from mis-decoding/encoding (mistreated iso-8859-2 as iso-8859-1 and conv
 > bsdconv 'ascii,utf-8:iso-8859-1,ascii|ascii,iso-8859-2:utf-8,ascii'
 
 Decode javasript escaped data (byte/unicode mixed) like %u9644%20
-> bsdconv 'escape,byte:unicode,byte|unicode,ascii:utf-8,ascii'
+> bsdconv 'escape,byte:unicode,byte|skip,ascii:utf-8,ascii'
 
 
 More example:
