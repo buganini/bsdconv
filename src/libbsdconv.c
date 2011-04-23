@@ -195,11 +195,6 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	ins->phase[0].type=INPUT;
 	ins->phase[i-1].type=TO;
 
-	if(strcmp("ASCII:FROM_ALIAS:ASCII",conversion)==0 || strcmp("ASCII:INTER_ALIAS:ASCII",conversion)==0 || strcmp("ASCII:TO_ALIAS:ASCII",conversion)==0){
-		brk=1;
-	}else{
-		brk=0;
-	}
 	for(i=1;i<=ins->phasen;++i){
 		if(*opipe[i]){
 			ins->phase[i].codecn=1;
@@ -277,7 +272,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 				alias_ins->output_mode=BSDCONV_AUTOMALLOC;
 				alias_ins->output.len=1;
 				alias_ins->input.data=ins->phase[i].codec[j].desc;
-				alias_ins->input.len=strlen(opipe[i]);
+				alias_ins->input.len=strlen(ins->phase[i].codec[j].desc);
 				alias_ins->input.flags|=F_FREE;
 				alias_ins->flush=1;
 				bsdconv(alias_ins);
