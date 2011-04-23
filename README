@@ -13,6 +13,7 @@ Internal encoding:
 * CNS11643 is prefixed with 02
 * BYTE is prefixed with 03
 * Chinese components is prefixed with 04
+* ANSI control sequence is prefixed with 1b
 
 NOTICE:
 Though many charset encoding is ascii-compatible,
