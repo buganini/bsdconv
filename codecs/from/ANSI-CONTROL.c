@@ -51,7 +51,8 @@ void callback(struct bsdconv_instance *ins){
 	if(t->f){
 		*(t->p)=d;
 		t->p+=1;
-		if(((d>='a'&&d<='z') || (d>='A'&&d<='Z'))|| (t->p - t->buf)==30){
+		this_phase->state.status=CONTINUE;
+		if((d>='a' && d<='z') || (d>='A' && d<='Z') || (t->p - t->buf)==30){
 			DATA_MALLOC(this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
@@ -63,7 +64,6 @@ void callback(struct bsdconv_instance *ins){
 			t->buf=malloc(32);
 			t->p=t->buf;
 		}
-		this_phase->state.status=CONTINUE;
 	}else if(d==0x1b){
 		t->f=1;
 		*(t->p)=d;
