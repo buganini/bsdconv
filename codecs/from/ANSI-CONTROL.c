@@ -33,7 +33,7 @@ void *cbcreate(void){
 	return r;
 }
 
-void cbinit(struct bsdconv_codec_t *cdc, struct my_s *t){
+void cbinit(struct bsdconv_codec_t *cdc, struct my_s *r){
 	r->p=r->buf;
 	r->f=0;
 }
@@ -44,10 +44,7 @@ void cbdestroy(struct my_s *r){
 }
 
 void callback(struct bsdconv_instance *ins){
-	void *p;
-	struct data_rt *data_ptr;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct bsdconv_phase *prev_phase=&ins->phase[ins->phase_index-1];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
 	char d=CP(this_phase->data->data)[this_phase->i];
 
@@ -62,7 +59,6 @@ void callback(struct bsdconv_instance *ins){
 			this_phase->data_tail->flags=F_FREE;
 			this_phase->state.status=NEXTPHASE;
 			this_phase->data_tail->data=t->buf;
-			t->status=0;
 			t->f=0;
 			t->buf=malloc(32);
 			t->p=t->buf;
