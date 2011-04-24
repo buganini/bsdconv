@@ -233,7 +233,7 @@ int main(int argc, char *argv[]){
 	state_t->offset=offset;
 	state_t->n=NULL;
 	offset+=sizeof(struct state_st);
-	for(i=0;i<257;i++){
+	for(i=0;i<=256;++i){
 		state_r->sub[i]=NULL;
 	}
 
@@ -244,7 +244,7 @@ int main(int argc, char *argv[]){
 		tmp=inbuf;
 		f=of=strsep((char **)&tmp, "\t ");
 		while(index("\t ",*tmp)){
-			tmp++;
+			++tmp;
 		}
 		if(*tmp){
 			t=ot=strsep((char **)&tmp, "\t\r\n# ");
@@ -268,7 +268,7 @@ int main(int argc, char *argv[]){
 		while(*f){
 			if(*f=='*'){
 				cl=0;
-				cu=255;
+				cu=256;
 			}else if(*f==','){
 				cu=cl=256;
 			}else{
@@ -281,7 +281,7 @@ int main(int argc, char *argv[]){
 			state_p=todo;
 			while(todo){
 				state_p=todo;
-				for(c=0;c<=256;c++){
+				for(c=0;c<=256;++c){
 					if(c>=state_p->l && c<=state_p->u){
 						pr=1;
 					}else if(ci && ci_table[c] && ci_table[c]>=state_p->l && ci_table[c]<=state_p->u){
@@ -305,7 +305,7 @@ int main(int argc, char *argv[]){
 						state_t->n=state_p->p->sub[c]=(struct m_state_st *)malloc(sizeof(struct m_state_st));
 						state_t=state_t->n;
 						state_t->n=NULL;
-						for(i=0;i<257;i++){
+						for(i=0;i<=256;++i){
 							state_t->sub[i]=NULL;
 						}
 						state_p->p->sub[c]->offset=offset;
@@ -325,7 +325,7 @@ int main(int argc, char *argv[]){
 
 						newtodo_tail->p->status=CONTINUE;
 						newtodo_tail->p->data=0;
-						for(i=0;i<=256;i++){
+						for(i=0;i<=256;++i){
 							newtodo_tail->p->sub[i]=NULL;
 						}
 					}
@@ -351,15 +351,14 @@ int main(int argc, char *argv[]){
 				state_t->offset=offset;
 				state_t->n=NULL;
 				callback=state_t;
-				for(i=0;i<257;i++){
+				for(i=0;i<=256;++i){
 					state_t->sub[i]=callback;
 				}
-				state_t->sub[256]=0;
 				offset+=sizeof(struct state_st);
 			}
 			while(todo){
 				state_p=todo;
-				for(c=0;c<=256;c++){
+				for(c=0;c<=256;++c){
 					if(c>=state_p->l && c<=state_p->u){
 						pr=1;
 					}else if(ci && ci_table[c] && ci_table[c]>=state_p->l && ci_table[c]<=state_p->u){
@@ -379,7 +378,7 @@ int main(int argc, char *argv[]){
 					k=0;
 					while(todo){
 						state_p=todo;
-						for(c=0;c<=256;c++){
+						for(c=0;c<=256;++c){
 							if(c>=state_p->l && c<=state_p->u){
 								pr=1;
 							}else if(ci && ci_table[c] && ci_table[c]>=state_p->l && ci_table[c]<=state_p->u){
@@ -397,7 +396,7 @@ int main(int argc, char *argv[]){
 							}else{
 								state_p->p->sub[c]=state_t->n=malloc(sizeof(struct m_state_st));
 								state_t=state_t->n;
-								for(i=0;i<=256;i++){
+								for(i=0;i<=256;++i){
 									state_t->sub[i]=NULL;
 								}
 								state_t->n=NULL;
@@ -505,7 +504,7 @@ int main(int argc, char *argv[]){
 			dstate.data=(struct data_st *)(uintptr_t)hash_p->offset;
 		else
 			dstate.data=NULL;
-		for(i=0;i<257;i++){
+		for(i=0;i<=256;++i){
 			if(state_t->sub[i])
 				dstate.sub[i]=(offset_t)state_t->sub[i]->offset;
 			else
