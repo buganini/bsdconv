@@ -88,6 +88,12 @@ void callback(struct bsdconv_instance *ins){
 	char *space="\x01\x20";
 	int ucs=0;
 
+	DATA_MALLOC(this_phase->data_tail->next);
+	this_phase->data_tail=this_phase->data_tail->next;
+	*(this_phase->data_tail)=*(this_phase->data);
+	this_phase->data->flags &= ~F_FREE;
+	this_phase->data_tail->next=NULL;
+
 	if(data[0]==0x1){
 		for(pad=1;pad<this_phase->data->len;++pad){
 			ucs<<=8;
@@ -114,14 +120,9 @@ void callback(struct bsdconv_instance *ins){
 			this_phase->data_tail->len=2;
 			this_phase->data_tail->data=space;
 			this_phase->data_tail->flags=0;
+			this_phase->data_tail->next=NULL;
 		}
 	}
-
-	DATA_MALLOC(this_phase->data_tail->next);
-	this_phase->data_tail=this_phase->data_tail->next;
-	*(this_phase->data_tail)=*(this_phase->data);
-	this_phase->data->flags &= ~F_FREE;
-	this_phase->data_tail->next=NULL;
 
 	this_phase->state.status=NEXTPHASE;
 	return;
