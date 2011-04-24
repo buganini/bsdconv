@@ -28,7 +28,8 @@ void *cbcreate(void){
 }
 
 void cbdestroy(void *p){
-	bsdconv_destroy(p);
+	if(p!=NULL)
+		bsdconv_destroy(p);
 }
 
 void callback(struct bsdconv_instance *ins){
@@ -40,15 +41,17 @@ void callback(struct bsdconv_instance *ins){
 	data=this_phase->data->data;
 	switch(*data){
 		case 0x01:
-			bsdconv_init(cns);
-			cns->input.data=data;
-			cns->input.len=this_phase->data->len;
-			cns->input.flags=F_SKIP;
-			cns->input.next=NULL;
-			cns->flush=1;
-			bsdconv(cns);
-			data_p=cns->phase[cns->phasen].data_head->next;
-			cns->phase[cns->phasen].data_head->next=NULL;
+			if(cns!=NULL){
+				bsdconv_init(cns);
+				cns->input.data=data;
+				cns->input.len=this_phase->data->len;
+				cns->input.flags=F_SKIP;
+				cns->input.next=NULL;
+				cns->flush=1;
+				bsdconv(cns);
+				data_p=cns->phase[cns->phasen].data_head->next;
+				cns->phase[cns->phasen].data_head->next=NULL;
+			}
 			break;
 	}
 	data=data_p->data;

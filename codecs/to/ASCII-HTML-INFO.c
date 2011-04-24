@@ -41,16 +41,18 @@ void callback(struct bsdconv_instance *ins){
 
 	switch(*data){
 		case 0x01:
-			bsdconv_init(cns);
-			cns->input.data=data;
-			cns->input.len=this_phase->data->len;
-			cns->input.flags=F_SKIP;
-			cns->input.next=NULL;
-			cns->flush=1;
-			bsdconv(cns);
-			data_p=cns->phase[cns->phasen].data_head->next;
-			cns->phase[cns->phasen].data_head->next=NULL;
-			data=data_p->data;
+			if(cns!=NULL){
+				bsdconv_init(cns);
+				cns->input.data=data;
+				cns->input.len=this_phase->data->len;
+				cns->input.flags=F_SKIP;
+				cns->input.next=NULL;
+				cns->flush=1;
+				bsdconv(cns);
+				data_p=cns->phase[cns->phasen].data_head->next;
+				cns->phase[cns->phasen].data_head->next=NULL;
+				data=data_p->data;
+			}
 			if(*data==0x02){
 				goto converted;
 			}else{
