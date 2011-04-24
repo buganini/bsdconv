@@ -20,6 +20,7 @@ struct my_s{
 	struct data_rt *p;
 	struct data_rt *q;
 	struct data_rt **r;
+	char f;
 };
 
 void *cbcreate(void){
@@ -30,6 +31,7 @@ void cbinit(struct bsdconv_codec_t *cdc, struct my_s *r){
 	r->p=NULL;
 	r->q=NULL;
 	r->r=&(r->q);
+	r->f=0;
 }
 
 void cbdestroy(void *r){
@@ -37,13 +39,14 @@ void cbdestroy(void *r){
 }
 
 void callback(struct bsdconv_instance *ins){
-	char *data;
+	unsigned char *data;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *r=this_phase->codec[this_phase->index].priv;
 	data=this_phase->data->data;
 
-	if(r->p==NULL){
-		if(data[0]==0x3){
+	if(r->f==0){
+		if(data[0]==0x3 && data[1]>0x7f){
+			r->f=1;
 			DATA_MALLOC(r->p);
 			*(r->p)=*(this_phase->data);
 			this_phase->data->flags &= ~F_FREE;
@@ -54,66 +57,40 @@ void callback(struct bsdconv_instance *ins){
 			this_phase->data_tail=this_phase->data_tail->next;
 			*(this_phase->data_tail)=*(this_phase->data);
 			this_phase->data->flags &= ~F_FREE;
-			this_phase->data_tail->next=NULL;
 			this_phase->state.status=NEXTPHASE;
-			r->p=r->q=NULL;
-			r->r=&(r->q);
 			return;
 		}
-	}else if(r->q==NULL){
+	}else if(r->f){
 		if(data[0]==0x1b){
 			DATA_MALLOC(*(r->r));
 			**(r->r)=*(this_phase->data);
 			this_phase->data->flags &= ~F_FREE;
 			r->r=&((*(r->r))->next);
+
 			this_phase->state.status=CONTINUE;
 			return;
 		}else{
+			r->f=0;
+
 			this_phase->data_tail->next=r->p;
 			this_phase->data_tail=this_phase->data_tail->next;
+
 			DATA_MALLOC(this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			*(this_phase->data_tail)=*(this_phase->data);
 			this_phase->data->flags &= ~F_FREE;
-			this_phase->data_tail->next=NULL;
-			this_phase->state.status=NEXTPHASE;
+
+			if(r->q){
+				this_phase->data_tail->next=r->q;
+				*(r->r)=NULL;
+				while(this_phase->data_tail->next){
+					this_phase->data_tail=this_phase->data_tail->next;
+				}
+			}
 			r->p=r->q=NULL;
 			r->r=&(r->q);
-			return;
-		}
-	}else{
-		if(data[0]==0x1b){
-			DATA_MALLOC(*(r->r));
-			**(r->r)=*(this_phase->data);
-			this_phase->data->flags &= ~F_FREE;
-			r->r=&((*(r->r))->next);
-			this_phase->state.status=CONTINUE;
-			return;
-		}else if(data[0]==0x3){
-			this_phase->data_tail->next=r->p;
-			this_phase->data_tail=this_phase->data_tail->next;
-			DATA_MALLOC(this_phase->data_tail->next);
-			*(this_phase->data_tail->next)=*(this_phase->data);
-			this_phase->data->flags &= ~F_FREE;
-			this_phase->data_tail=this_phase->data_tail->next;
-			this_phase->data_tail->next=r->q;
-			*(r->r)=NULL;
+			r->f=0;
 			this_phase->state.status=NEXTPHASE;
-			r->p=r->q=NULL;
-			r->r=&(r->q);
-			return;
-		}else{
-			this_phase->data_tail->next=r->p;
-			this_phase->data_tail=this_phase->data_tail->next;
-			this_phase->data_tail->next=r->q;
-			DATA_MALLOC(*(r->r));
-			this_phase->data_tail=*(r->r);
-			*(this_phase->data_tail)=*(this_phase->data);
-			this_phase->data->flags &= ~F_FREE;
-			this_phase->data_tail->next=NULL;
-			this_phase->state.status=NEXTPHASE;
-			r->p=r->q=NULL;
-			r->r=&(r->q);
 			return;
 		}
 	}
