@@ -1,4 +1,14 @@
-	Add to/ASCII-HTML-INFO
+4.5:
+	from/ANSI-CONTROL
+	from/BSDCONV_LOG
+	from/SKIP
+	inter/AMBIGUOUS-PAD
+	inter/BIG5-DEFRAG
+	to/ANSI-CONTROL
+	to/ASCII-HTML-INFO
+	to/BSDCONV_LOG
+	to/BSDCONV_RAW
+	verify SUBROUTINE in inter phases
 
 4.4:
 	Add to/RAW
