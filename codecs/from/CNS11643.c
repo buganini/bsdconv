@@ -29,10 +29,6 @@ struct my_s{
 void *cbcreate(void){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	r->uni=bsdconv_create("PASS:UNICODE:PASS");
-	if(r->uni==NULL){
-		free(r);
-		return NULL;
-	}
 	return r;
 }
 
@@ -43,7 +39,8 @@ void cbinit(struct bsdconv_codec_t *cdc, struct my_s *r){
 
 void cbdestroy(void *p){
 	struct my_s *r=p;
-	bsdconv_destroy(r->uni);
+	if(r->uni!=NULL)
+		bsdconv_destroy(r->uni);
 	free(p);
 }
 
@@ -72,6 +69,10 @@ void callback(struct bsdconv_instance *ins){
 				t->status=0;
 				t->buf[3]=d;
 				
+				if(uni==NULL){
+					this_phase->state.status=DEADEND;
+					return;
+				}
 				bsdconv_init(uni);
 				uni->input.data=t->buf;
 				uni->input.len=4;
