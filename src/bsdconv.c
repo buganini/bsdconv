@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
 	FILE *inf, *otf;
 	char *in, *to;
 
-	if(argc<2){
+	if(argc<2 || argc>4){
 		fprintf(stderr, "Usage:\n\t %s from:[inter:..]to [input|- [output|-|=]]\nfrom,inter,to in form of codec[,codec2..]\n", argv[0]);
 		exit(1);
 	}
