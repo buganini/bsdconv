@@ -1,3 +1,6 @@
+	from/NUL
+	to/NUL
+	inter/BSDCONV_INFO
 4.6:
 	from/MOZ18 -> from/UAO241
 	to/UAO241
