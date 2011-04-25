@@ -1,4 +1,5 @@
 #Made from http://www.moztw.org/docs/big5/table/moz18-b2u.txt
+# moz18-b2u is identical to uao-2.41-b2u
 # Family: Big5
 8140 014E17
 8141 014E22
