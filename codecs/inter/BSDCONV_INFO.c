@@ -57,16 +57,16 @@ void callback(struct bsdconv_instance *ins){
 		*r=0;
 	}
 
-	DATA_MALLOC(this_phase->data_tail->next);
-	this_phase->data_tail=this_phase->data_tail->next;
-	*(this_phase->data_tail)=*(this_phase->data);
-	this_phase->data->flags &= ~F_FREE;
-	this_phase->data_tail->next=NULL;
-
 	if(*r==sizeof(seq)){
 		fprintf(stderr, "\r\nDecoding failure: %u\r\n", ins->ierr);
 		fprintf(stderr, "Encoding failure: %u\r\n", ins->oerr);
 		*r=0;
+	}else{
+		DATA_MALLOC(this_phase->data_tail->next);
+		this_phase->data_tail=this_phase->data_tail->next;
+		*(this_phase->data_tail)=*(this_phase->data);
+		this_phase->data->flags &= ~F_FREE;
+		this_phase->data_tail->next=NULL;
 	}
 	this_phase->state.status=NEXTPHASE;
 }
