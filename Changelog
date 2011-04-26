@@ -1,6 +1,7 @@
 	split wrappers and bsdconvmv
 	from/NUL
 	to/NUL
+	inter/AMBIGUOUS-UNPAD
 	inter/BSDCONV_INFO
 4.6:
 	from/MOZ18 -> from/UAO241
