@@ -104,6 +104,7 @@ void callback(struct bsdconv_instance *ins){
 
 	if(data[0]==0x1 && this_phase->data->len > 1){
 		if(*r==1 && data[1]==0xA0){
+			*r=0;
 			return;
 		}else{
 			for(pad=1;pad<this_phase->data->len;++pad){
