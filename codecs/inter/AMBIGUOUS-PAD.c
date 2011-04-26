@@ -85,7 +85,7 @@ void callback(struct bsdconv_instance *ins){
 	int max=sizeof(ambiguous) / sizeof(struct interval) - 1;
 	int min = 0;
 	int mid;
-	char *space="\x01\x20";
+	char *space="\x01\xA0";
 	int ucs=0;
 
 	DATA_MALLOC(this_phase->data_tail->next);
