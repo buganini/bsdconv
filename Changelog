@@ -1,3 +1,6 @@
+4.8:
+	improve inter/{half,full}
+
 4.7:
 	from/UAO250
 	to/UAO250
@@ -6,6 +9,7 @@
 	to/NUL
 	inter/AMBIGUOUS-UNPAD
 	inter/BSDCONV_INFO
+
 4.6:
 	from/MOZ18 -> from/UAO241
 	to/UAO241
