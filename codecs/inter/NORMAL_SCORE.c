@@ -23,7 +23,7 @@ struct interval {
 	int score;
 };
 
-static const struct interval ambiguous[] = {
+static const struct interval scoreboard[] = {
 	{ 0x0, 0x7f, 5 },
 	{ 0x3400, 0x4DB5, 3 },
 	{ 0x4E00, 0x9FA5, 4 },
@@ -40,7 +40,7 @@ void callback(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	data=this_phase->data->data;
 	int i;
-	int max=sizeof(ambiguous) / sizeof(struct interval) - 1;
+	int max=sizeof(scoreboard) / sizeof(struct interval) - 1;
 	int min = 0;
 	int mid;
 	int ucs=0;
@@ -57,16 +57,16 @@ void callback(struct bsdconv_instance *ins){
 			ucs|=data[i];
 		}
 
-		if (ucs < ambiguous[0].first || ucs > ambiguous[max].last){
+		if (ucs < scoreboard[0].first || ucs > scoreboard[max].last){
 			//noop
 		}else while (max >= min) {
 				mid = (min + max) / 2;
-				if (ucs > ambiguous[mid].last)
+				if (ucs > scoreboard[mid].last)
 					min = mid + 1;
-				else if (ucs < ambiguous[mid].first)
+				else if (ucs < scoreboard[mid].first)
 					max = mid - 1;
 				else{
-					ins->score+=ambiguous[mid].score;
+					ins->score+=scoreboard[mid].score;
 					break;
 				}
 		}
