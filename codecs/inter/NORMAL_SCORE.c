@@ -1,5 +1,7 @@
 /*
+ * Reference: http://blog.oasisfeng.com/2006/10/19/full-cjk-unicode-range/
  * Some code come from http://www.cl.cam.ac.uk/~mgk25/ucs/wcwidth.c
+ *
  * Copyright (c) 2009-2011 Kuan-Chung Chiu <buganini@gmail.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
