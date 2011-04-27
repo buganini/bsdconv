@@ -93,7 +93,7 @@ struct bsdconv_instance{
 
 	struct bsdconv_phase *phase;
 	int phasen, phase_index;
-	unsigned int ierr, oerr;
+	unsigned int ierr, oerr, score;
 
 	struct data_rt *pool;
 };

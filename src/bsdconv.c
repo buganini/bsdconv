@@ -105,6 +105,8 @@ int main(int argc, char *argv[]){
 
 	fprintf(stderr, "Decoding failure: %u\n", ins->ierr);
 	fprintf(stderr, "Encoding failure: %u\n", ins->oerr);
+	if(ins->score)
+		fprintf(stderr, "Score: %u\n", ins->score);
 	bsdconv_destroy(ins);
 
 	return 0;
