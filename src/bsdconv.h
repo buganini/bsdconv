@@ -23,6 +23,10 @@
 #include <windows.h>
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define F_FREE 0x1
 #define F_SKIP 0x10
 
@@ -199,4 +203,8 @@ char * bsdconv_error(void);
 #define bb11111000 0xf8
 #define bb11111100 0xfc
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif
