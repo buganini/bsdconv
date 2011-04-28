@@ -232,6 +232,10 @@ void bsdconv_init(struct bsdconv_instance *ins){
 }
 
 int bsdconv_get_phase_index(struct bsdconv_instance *ins, int phasen){
+	/*
+	 * phase[0] is a place holder for INPUT
+	 * real phases range is [1,len]=[1,phasen]
+	 */
 	/* logical new index = len */
 	if(phasen /* logical */ >= ins->phasen /* len */){
 		/* real  = logical + 1 */
@@ -244,6 +248,10 @@ int bsdconv_get_phase_index(struct bsdconv_instance *ins, int phasen){
 }
 
 int bsdconv_get_codec_index(struct bsdconv_instance *ins, int phasen, int codecn){
+	/*
+	 * codecn is -=1 for convenient use as boundary
+	 * real phases range is [0,len)=[0,codecn]
+	 */
 	phasen=bsdconv_get_phase_index(ins, phasen);
 
 	/* logical new index = len */
