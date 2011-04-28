@@ -28,7 +28,7 @@ struct my_s{
 
 void *cbcreate(void){
 	struct my_s *r=malloc(sizeof(struct my_s));
-	r->uni=bsdconv_create("PASS:UNICODE:PASS");
+	r->uni=bsdconv_create("UNICODE");
 	return r;
 }
 

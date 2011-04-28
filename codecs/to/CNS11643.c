@@ -21,7 +21,7 @@
 #include "../../src/bsdconv.h"
 
 void *cbcreate(void){
-	return bsdconv_create("PASS:CNS11643:PASS");
+	return bsdconv_create("CNS11643");
 }
 
 void cbdestroy(void *p){

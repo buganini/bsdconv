@@ -38,7 +38,7 @@
 #define MAP_PREFAULT_READ 0
 #endif
 
-int loadcodec(struct bsdconv_codec_t *cd, char *path){
+int _loadcodec(struct bsdconv_codec_t *cd, char *path){
 #ifdef WIN32
 	if ((cd->fd=CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL))==INVALID_HANDLE_VALUE){
 		SetLastError(EOPNOTSUPP);
@@ -100,6 +100,82 @@ int loadcodec(struct bsdconv_codec_t *cd, char *path){
 	return 1;
 }
 
+int loadcodec(struct bsdconv_codec_t *cd, int type, const char *codec){
+	char *cwd;
+	char *c;
+	char buf[PATH_BUF_SIZE];
+	cd->desc=strdup(codec);
+	for(c=cd->desc;*c;++c){
+		if(*c>='a' && *c<='z'){
+			*c=*c-'a'+'A';
+		}
+	}
+	cwd=getwd(NULL);
+	if((c=getenv("BSDCONV_PATH"))){
+		chdir(c);
+	}else{
+		chdir(PREFIX);
+	}
+	chdir("share/bsdconv");
+	switch(type){
+		case FROM:
+			chdir("from");
+			break;
+		case INTER:
+			chdir("inter");
+			break;
+		case TO:
+			chdir("to");
+			break;
+	}
+	REALPATH(cd->desc, buf);
+	if(!_loadcodec(cd, buf)){
+		struct bsdconv_instance *alias_ins;
+		switch(type){
+			case FROM:
+				alias_ins=bsdconv_create("ASCII:FROM_ALIAS:ASCII");
+				break;
+			case INTER:
+				alias_ins=bsdconv_create("ASCII:INTER_ALIAS:ASCII");
+				break;
+			case TO:
+				alias_ins=bsdconv_create("ASCII:TO_ALIAS:ASCII");
+				break;
+			default:
+				SetLastError(EDOOFUS);
+				chdir(cwd);
+				free(cwd);
+				return 0;
+		}
+		if(alias_ins==NULL){
+			SetLastError(EDOOFUS);
+			chdir(cwd);
+			free(cwd);
+			return 0;
+		}
+		bsdconv_init(alias_ins);
+		alias_ins->output_mode=BSDCONV_AUTOMALLOC;
+		alias_ins->output.len=1;
+		alias_ins->input.data=cd->desc;
+		alias_ins->input.len=strlen(cd->desc);
+		alias_ins->input.flags|=F_FREE;
+		alias_ins->flush=1;
+		bsdconv(alias_ins);
+		cd->desc=alias_ins->output.data;
+		cd->desc[alias_ins->output.len]=0;
+		bsdconv_destroy(alias_ins);
+		REALPATH(cd->desc, buf);
+		if(!_loadcodec(cd, buf)){
+			chdir(cwd);
+			free(cwd);
+			return 0;
+		}
+	}
+	chdir(cwd);
+	free(cwd);
+	return 1;
+}
+
 void unloadcodec(struct bsdconv_codec_t *cd){
 #ifdef WIN32
 	if(cd->dl){
@@ -155,46 +231,102 @@ void bsdconv_init(struct bsdconv_instance *ins){
 	}
 }
 
+int bsdconv_get_phase_index(struct bsdconv_instance *ins, int phasen){
+	/* logical new index = len */
+	if(phasen /* logical */ >= ins->phasen /* len */){
+		/* real  = logical + 1 */
+		phasen = ins->phasen + 1;
+	}else{
+		/* real  = (n + logical) % (logical) + 1*/
+		phasen = (phasen + ins->phasen) % (ins->phasen) + 1;
+	}
+	return phasen;
+}
+
+int bsdconv_get_codec_index(struct bsdconv_instance *ins, int phasen, int codecn){
+	phasen=bsdconv_get_phase_index(ins, phasen);
+
+	/* logical new index = len */
+	if(codecn /* logical */ >= ins->phase[phasen].codecn+1 /* len */ ){
+		/* real  = logical */
+		codecn = ins->phase[phasen].codecn+1;
+	}else{
+		/* real  = (n + logical) % (logical) */
+		codecn = (codecn + ins->phase[phasen].codecn+1) % (ins->phase[phasen].codecn+1);
+	}
+	return codecn;
+}
+
+int bsdconv_insert_phase(struct bsdconv_instance *ins, int phase_type, int phasen){
+	int i;
+
+	phasen=bsdconv_get_phase_index(ins, phasen);
+
+	++ins->phasen;
+	ins->phase=realloc(ins->phase, sizeof(struct bsdconv_phase) * (ins->phasen+1));
+
+	for(i=ins->phasen /* shifted index */;i>phasen;--i){
+		ins->phase[i]=ins->phase[i-1];
+	}
+	ins->phase[phasen].type=phase_type;
+	ins->phase[phasen].codec=malloc(sizeof(struct bsdconv_codec_t)*8);
+	ins->phase[phasen].codecn=-1 /* trimmed length */;
+	
+	return phasen;
+}
+
+int bsdconv_insert_codec(struct bsdconv_instance *ins, char *codec, int phasen, int codecn){
+	int i;
+
+	codecn=bsdconv_get_codec_index(ins, phasen, codecn);
+
+	++ins->phase[phasen].codecn;
+	ins->phase[phasen].codec=realloc(ins->phase[phasen].codec, sizeof(struct bsdconv_codec_t)*(ins->phase[phasen].codecn+1));
+
+	for(i=ins->phase[phasen].codecn;i>codecn;--i){
+		ins->phase[phasen].codec[i]=ins->phase[phasen].codec[i-1];
+	}
+	if(loadcodec(&ins->phase[phasen].codec[codecn], ins->phase[phasen].type, codec)<0){
+		return -1;
+	}
+
+	return codecn;
+}
+
 struct bsdconv_instance *bsdconv_create(const char *conversion){
 	struct bsdconv_instance *ins=malloc(sizeof(struct bsdconv_instance));
-	char *t, *t1, *t2, *p, *cwd;
-	int i, j, brk;
-	char buf[64], path[PATH_BUF_SIZE];
+	char *t, *t1, *t2;
+	int i, j, f=0;
 
 	i=1;
 	for(t=(char *)conversion;*t;t++){
 		if(*t==':' || *t=='|')++i;
 	}
-	if(i<2){
-		SetLastError(EINVAL);
-		return NULL;
-	}
 	ins->phasen=i;
-	ins->phase=malloc(sizeof(struct bsdconv_phase) * (i+1));
 	char *opipe[i+1];
 
+	ins->phase=malloc(sizeof(struct bsdconv_phase) * (i+1));
 	t2=t1=t=strdup(conversion);
-	while((*t=toupper(*t))){++t;}
-	t=t1;
+//errorlevel 0
 
 	i=1;
 	while((t1=strsep(&t, "|")) != NULL){
-		brk=1;
+		if(f>1){
+			ins->phase[i-f].type=FROM;
+			ins->phase[i-1].type=TO;
+		}
+		f=0;
 		while((opipe[i]=strsep(&t1, ":"))!=NULL){
-//errorlevel 0
-			opipe[i]=strdup(opipe[i]);
-			if(brk){
-				ins->phase[i].type=FROM;
-				ins->phase[i-1].type=TO;
-				brk=0;
-			}else{
-				ins->phase[i].type=INTER;
-			}
+			ins->phase[i].type=INTER;
 			i+=1;
+			f+=1;
 		}
 	}
+	if(f>1){
+		ins->phase[i-f].type=FROM;
+		ins->phase[i-1].type=TO;
+	}
 	ins->phase[0].type=INPUT;
-	ins->phase[i-1].type=TO;
 
 	for(i=1;i<=ins->phasen;++i){
 		if(*opipe[i]){
@@ -208,21 +340,14 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 			SetLastError(EINVAL);
 			goto bsdconv_create_error_0;
 		}
+		ins->phase[i].codecn-=1;
 	}
 
-	cwd=getwd(NULL);
-	if((p=getenv("BSDCONV_PATH"))){
-		chdir(p);
-	}else{
-		chdir(PREFIX);
-	}
-	chdir("share/bsdconv");
 	for(i=1;i<=ins->phasen;++i){
-		ins->phase[i].codec=malloc(ins->phase[i].codecn * sizeof(struct bsdconv_codec_t));
-	}
-	for(i=1;i<=ins->phasen;++i){
+		ins->phase[i].codec=malloc((ins->phase[i].codecn + 1)* sizeof(struct bsdconv_codec_t));
 //errorlevel 1
-		ins->phase[i].codecn-=1;
+	}
+	for(i=1;i<=ins->phasen;++i){
 		t=opipe[i];
 		for(j=0;j<=ins->phase[i].codecn;++j){
 			ins->phase[i].codec[j].desc=strsep(&t, ",");
@@ -233,60 +358,12 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 		}
 	}
 	for(i=1;i<=ins->phasen;++i){
-//errorlevel 2
-		switch(ins->phase[i].type){
-			case FROM:
-				chdir("from");
-				break;
-			case INTER:
-				chdir("inter");
-				break;
-			case TO:
-				chdir("to");
-				break;
-		}
 		for(j=0;j<=ins->phase[i].codecn;++j){
-			ins->phase[i].codec[j].desc=strdup(ins->phase[i].codec[j].desc);
-			strcpy(buf, ins->phase[i].codec[j].desc);
-			REALPATH(buf, path);
-			if(!loadcodec(&ins->phase[i].codec[j], path)){
-				struct bsdconv_instance *alias_ins;
-				switch(ins->phase[i].type){
-					case FROM:
-						alias_ins=bsdconv_create("ASCII:FROM_ALIAS:ASCII");
-						break;
-					case INTER:
-						alias_ins=bsdconv_create("ASCII:INTER_ALIAS:ASCII");
-						break;
-					case TO:
-						alias_ins=bsdconv_create("ASCII:TO_ALIAS:ASCII");
-						break;
-					default:
-						SetLastError(EDOOFUS);
-						goto bsdconv_create_error_0;
-				}
-				if(alias_ins==NULL){
-					SetLastError(EDOOFUS);
-					goto bsdconv_create_error_0;
-				}
-				bsdconv_init(alias_ins);
-				alias_ins->output_mode=BSDCONV_AUTOMALLOC;
-				alias_ins->output.len=1;
-				alias_ins->input.data=ins->phase[i].codec[j].desc;
-				alias_ins->input.len=strlen(ins->phase[i].codec[j].desc);
-				alias_ins->input.flags|=F_FREE;
-				alias_ins->flush=1;
-				bsdconv(alias_ins);
-				ins->phase[i].codec[j].desc=alias_ins->output.data;
-				ins->phase[i].codec[j].desc[alias_ins->output.len]=0;
-				bsdconv_destroy(alias_ins);
-				strcpy(buf, ins->phase[i].codec[j].desc);
-				REALPATH(buf, path);
-				if(!loadcodec(&ins->phase[i].codec[j], path))
-					goto bsdconv_create_error_2;
+			if(!loadcodec(&ins->phase[i].codec[j], ins->phase[i].type, ins->phase[i].codec[j].desc)){
+//errorlevel 2
+				goto bsdconv_create_error_2;
 			}
 		}
-		chdir("..");
 	}
 	for(i=1;i<=ins->phasen;++i){
 		for(j=0;j<=ins->phase[i].codecn;++j){
@@ -301,11 +378,6 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 		ins->phase[i].data_head->flags=0;
 	}
 
-	chdir(cwd);
-	for(i=1;i<=ins->phasen;++i){
-		free(opipe[i]);
-	}
-	free(cwd);
 	free(t2);
 
 	ins->pool=NULL;
@@ -320,15 +392,11 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 			}
 		}
 	bsdconv_create_error_1:
-		free(cwd);
 		for(i=1;i<=ins->phasen;++i){
 			free(ins->phase[i].codec);
 		}
 	bsdconv_create_error_0:
 		free(t2);
-		for(i=1;i<=ins->phasen;++i){
-			free(opipe[i]);
-		}
 		free(ins->phase);
 		free(ins);
 		return NULL;

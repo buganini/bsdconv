@@ -1,5 +1,10 @@
 5.0:
 	inter/NORMAL_SCORE
+	refactor bsdconv_create()
+	add bsdconv_insert_phase()
+	add bsdconv_insert_codec()
+	add bsdconv_get_phase_index()
+	add bsdconv_get_codec_index()
 
 4.8:
 	improve inter/{half,full}

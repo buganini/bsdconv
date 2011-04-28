@@ -140,7 +140,7 @@ struct bsdconv_codec_t {
 #define ENOMEM ERROR_NOT_ENOUGH_MEMORY
 #define EINVAL ERROR_BAD_COMMAND
 #define SHLIBEXT "dll"
-#define REALPATH(buf, path) GetFullPathName(buf, PATH_BUF_SIZE, path, NULL)
+#define REALPATH(path, buf) GetFullPathName(path, PATH_BUF_SIZE, buf, NULL)
 char * strsep(char **, const char *);
 char * index(const char *, int);
 char * getwd(char *);
@@ -148,7 +148,7 @@ char * getwd(char *);
 #define SetLastError(n) errno=n
 #define GetLastError() errno
 #define SHLIBEXT "so"
-#define REALPATH(buf, path) realpath(buf, path)
+#define REALPATH(path, buf) realpath(path, buf)
 #endif
 
 #define LISTCPY(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
@@ -182,6 +182,10 @@ char * getwd(char *);
 #define DATA_FREE(X) do{ if((X)->flags & F_FREE) free((X)->data); (X)->next=ins->pool; ins->pool=(X);}while(0)
 
 struct bsdconv_instance *bsdconv_create(const char *);
+int bsdconv_get_phase_index(struct bsdconv_instance *, int);
+int bsdconv_get_codec_index(struct bsdconv_instance *, int, int);
+int bsdconv_insert_phase(struct bsdconv_instance *, int, int);
+int bsdconv_insert_codec(struct bsdconv_instance *, char *, int, int);
 void bsdconv_init(struct bsdconv_instance *);
 void bsdconv_destroy(struct bsdconv_instance *);
 void bsdconv(struct bsdconv_instance *);

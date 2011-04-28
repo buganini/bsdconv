@@ -75,8 +75,13 @@ int main(int argc, char *argv[]){
 	ins=bsdconv_create(argv[1]);
 	if(!ins){
 		t=bsdconv_error();
-		printf("%s\n", t);
+		fprintf(stderr, "%s\n", t);
 		free(t);
+		exit(1);
+	}
+	if(ins->phasen==1){
+		fprintf(stderr, "Syntax error\n");
+		bsdconv_destroy(ins);
 		exit(1);
 	}
 	bsdconv_init(ins);
