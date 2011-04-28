@@ -27,12 +27,13 @@ struct interval {
 
 static const struct interval scoreboard[] = {
 	{ 0x0, 0x7F, 5 },	//ASCII
-	{ 0x3000, 0x303F, 3 },	//CJK punctuation
-	{ 0x3040, 0x309F, 3 },	//Japanese hiragana
-	{ 0x30A0, 0x30FF, 3 },	//Japanese katakana
-	{ 0x3100, 0x312F, 3 },	//Chinese Bopomofo
+	{ 0x3000, 0x303F, 4 },	//CJK punctuation
+	{ 0x3040, 0x309F, 5 },	//Japanese hiragana
+	{ 0x30A0, 0x30FF, 5 },	//Japanese katakana
+	{ 0x3100, 0x312F, 4 },	//Chinese Bopomofo
 	{ 0x3400, 0x4DB5, 3 },	//CJK Unified Ideographs Extension A	;Unicode3.0
-	{ 0x4E00, 0x9FA5, 4 },	//CJK Unified Ideographs	;Unicode 1.1
+	{ 0x4E00, 0x6FFF, 5 },	//CJK Unified Ideographs	;Unicode 1.1	;HF
+	{ 0x7000, 0x9FA5, 4 },	//CJK Unified Ideographs	;Unicode 1.1	;LF
 	{ 0x9FA6, 0x9FBB, 3 },	//CJK Unified Ideographs	;Unicode 4.1
 	{ 0xAC00, 0xD7AF, 3 },	//Korean word
 	{ 0xF900, 0xFA2D, 4 },	//CJK Compatibility Ideographs	;Unicode 1.1
