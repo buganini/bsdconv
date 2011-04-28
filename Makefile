@@ -203,10 +203,10 @@ clean:
 install: install_main install_basic install_extra
 
 install_main:
-	install -s -m 555 build/bin/bsdconv ${PREFIX}/bin
-	install -s -m 555 build/bin/bsdconv_mktable ${PREFIX}/bin
+	install -m 555 build/bin/bsdconv ${PREFIX}/bin
+	install -m 555 build/bin/bsdconv_mktable ${PREFIX}/bin
 	install -m 444 build/include/bsdconv.h ${PREFIX}/include
-	install -s -m 444 build/lib/libbsdconv.so.${SHLIBVER} ${PREFIX}/lib
+	install -m 444 build/lib/libbsdconv.so.${SHLIBVER} ${PREFIX}/lib
 	ln -sf libbsdconv.so.${SHLIBVER} ${PREFIX}/lib/libbsdconv.so
 	mkdir -p ${PREFIX}/share/bsdconv/from
 	mkdir -p ${PREFIX}/share/bsdconv/inter
@@ -217,7 +217,7 @@ install_basic:
 	install -m 444 build/share/bsdconv/${item} ${PREFIX}/share/bsdconv/${item}
 .	endfor
 .	for item in ${TODO_CODECS_BASIC_CALLBACK}
-	install -s -m 444 build/share/bsdconv/${item}.so ${PREFIX}/share/bsdconv/${item}.so
+	install -m 444 build/share/bsdconv/${item}.so ${PREFIX}/share/bsdconv/${item}.so
 .	endfor
 
 install_extra:
@@ -225,7 +225,7 @@ install_extra:
 	install -m 444 build/share/bsdconv/${item} ${PREFIX}/share/bsdconv/${item}
 .	endfor
 .	for item in ${TODO_CODECS_EXTRA_CALLBACK}
-	install -s -m 444 build/share/bsdconv/${item}.so ${PREFIX}/share/bsdconv/${item}.so
+	install -m 444 build/share/bsdconv/${item}.so ${PREFIX}/share/bsdconv/${item}.so
 .	endfor
 
 

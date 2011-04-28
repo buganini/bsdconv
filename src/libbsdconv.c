@@ -279,7 +279,11 @@ int bsdconv_insert_phase(struct bsdconv_instance *ins, int phase_type, int phase
 	ins->phase[phasen].type=phase_type;
 	ins->phase[phasen].codec=malloc(sizeof(struct bsdconv_codec_t)*8);
 	ins->phase[phasen].codecn=-1 /* trimmed length */;
-	
+
+	ins->phase[phasen].data_head=malloc(sizeof(struct data_rt));
+	ins->phase[phasen].data_head->next=NULL;
+	ins->phase[phasen].data_head->flags=0;
+
 	return phasen;
 }
 
@@ -297,7 +301,8 @@ int bsdconv_insert_codec(struct bsdconv_instance *ins, char *codec, int phasen, 
 	if(loadcodec(&ins->phase[phasen].codec[codecn], ins->phase[phasen].type, codec)<0){
 		return -1;
 	}
-
+	if(ins->phase[phasen].codec[codecn].cbcreate)
+		ins->phase[phasen].codec[codecn].priv=ins->phase[phasen].codec[codecn].cbcreate();
 	return codecn;
 }
 
