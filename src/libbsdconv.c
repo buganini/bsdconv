@@ -237,7 +237,7 @@ int bsdconv_get_phase_index(struct bsdconv_instance *ins, int phasen){
 		/* real  = logical + 1 */
 		phasen = ins->phasen + 1;
 	}else{
-		/* real  = (n + logical) % (logical) + 1*/
+		/* real  = (n + len) % (len) + 1*/
 		phasen = (phasen + ins->phasen) % (ins->phasen) + 1;
 	}
 	return phasen;
@@ -251,7 +251,7 @@ int bsdconv_get_codec_index(struct bsdconv_instance *ins, int phasen, int codecn
 		/* real  = logical */
 		codecn = ins->phase[phasen].codecn+1;
 	}else{
-		/* real  = (n + logical) % (logical) */
+		/* real  = (n + len) % (len) */
 		codecn = (codecn + ins->phase[phasen].codecn+1) % (ins->phase[phasen].codecn+1);
 	}
 	return codecn;
