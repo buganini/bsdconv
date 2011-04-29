@@ -311,6 +311,10 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	char *t, *t1, *t2;
 	int i, j, f=0;
 
+	ins->pool=NULL;
+	ins->input.flags=0;
+	ins->output.flags=0;
+
 	i=1;
 	for(t=(char *)conversion;*t;t++){
 		if(*t==':' || *t=='|')++i;
@@ -392,8 +396,6 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	}
 
 	free(t2);
-
-	ins->pool=NULL;
 	return ins;
 	bsdconv_create_error_2:
 		free(ins->phase[i].codec[j].desc);
