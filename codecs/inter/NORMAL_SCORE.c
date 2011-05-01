@@ -26,7 +26,7 @@ struct interval {
 };
 
 static const struct interval scoreboard[] = {
-	{ 0x0, 0x7F, 5 },	//ASCII
+	{ 0x0, 0x7F, 4 },	//ASCII
 	{ 0x3000, 0x303F, 4 },	//CJK punctuation
 	{ 0x3040, 0x309F, 5 },	//Japanese hiragana
 	{ 0x30A0, 0x30FF, 5 },	//Japanese katakana
