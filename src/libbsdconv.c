@@ -265,10 +265,14 @@ int bsdconv_get_codec_index(struct bsdconv_instance *ins, int phasen, int codecn
 	return codecn;
 }
 
-int bsdconv_insert_phase(struct bsdconv_instance *ins, int phase_type, int phasen){
-	int i;
+int bsdconv_insert_phase(struct bsdconv_instance *ins, const char *codec, int phase_type, int phasen){
+	int i,len;
+	char *c,*t,*cd=strdup(codec);
 
 	phasen=bsdconv_get_phase_index(ins, phasen);
+
+	len=1;
+	for(c=codec;*c;++c) if(*c==',') ++len;
 
 	++ins->phasen;
 	ins->phase=realloc(ins->phase, sizeof(struct bsdconv_phase) * (ins->phasen+1));
@@ -277,17 +281,28 @@ int bsdconv_insert_phase(struct bsdconv_instance *ins, int phase_type, int phase
 		ins->phase[i]=ins->phase[i-1];
 	}
 	ins->phase[phasen].type=phase_type;
-	ins->phase[phasen].codec=malloc(sizeof(struct bsdconv_codec_t)*8);
-	ins->phase[phasen].codecn=-1 /* trimmed length */;
+	ins->phase[phasen].codec=malloc(sizeof(struct bsdconv_codec_t)*len);
+	ins->phase[phasen].codecn=len-1 /* trimmed length */;
 
 	ins->phase[phasen].data_head=malloc(sizeof(struct data_rt));
 	ins->phase[phasen].data_head->next=NULL;
 	ins->phase[phasen].data_head->flags=0;
 
+	c=cd;
+	for(i=0;i<len;++i){
+		t=strsep(&c,",");
+		if(loadcodec(&ins->phase[phasen].codec[i], phase_type, t)<0){
+			return -1;
+		}
+		if(ins->phase[phasen].codec[i].cbcreate)
+			ins->phase[phasen].codec[i].priv=ins->phase[phasen].codec[i].cbcreate();
+	}
+	free(cd);
+
 	return phasen;
 }
 
-int bsdconv_insert_codec(struct bsdconv_instance *ins, char *codec, int phasen, int codecn){
+int bsdconv_insert_codec(struct bsdconv_instance *ins, const char *codec, int phasen, int codecn){
 	int i;
 
 	codecn=bsdconv_get_codec_index(ins, phasen, codecn);
