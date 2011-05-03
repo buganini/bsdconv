@@ -3,6 +3,8 @@
 	refactor bsdconv_create()
 	add bsdconv_insert_phase()
 	add bsdconv_insert_codec()
+	add bsdconv_replace_phase()
+	add bsdconv_replace_codec()
 	add bsdconv_get_phase_index()
 	add bsdconv_get_codec_index()
 
