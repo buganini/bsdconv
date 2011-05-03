@@ -37,14 +37,14 @@ void callback(struct bsdconv_instance *ins){
 	unsigned int len, i;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct bsdconv_instance *cns=this_phase->codec[this_phase->index].priv;
-	struct data_rt *data_p=this_phase->data;
-	data=this_phase->data->data;
+	struct data_rt *data_p=this_phase->curr;
+	data=this_phase->curr->data;
 	switch(*data){
 		case 0x01:
 			if(cns!=NULL){
 				bsdconv_init(cns);
 				cns->input.data=data;
-				cns->input.len=this_phase->data->len;
+				cns->input.len=this_phase->curr->len;
 				cns->input.flags=F_SKIP;
 				cns->input.next=NULL;
 				cns->flush=1;
@@ -57,7 +57,7 @@ void callback(struct bsdconv_instance *ins){
 	data=data_p->data;
 	if(*data!=0x02){
 		this_phase->state.status=DEADEND;
-		if(data_p!=this_phase->data)
+		if(data_p!=this_phase->curr)
 			DATA_FREE(data_p);
 		return;
 	}
@@ -88,7 +88,7 @@ void callback(struct bsdconv_instance *ins){
 	this_phase->data_tail->data=malloc(len);
 	memcpy(this_phase->data_tail->data, buf, len);
 
-	if(data_p!=this_phase->data)
+	if(data_p!=this_phase->curr)
 		DATA_FREE(data_p);
 	return;
 }

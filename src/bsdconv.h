@@ -99,7 +99,7 @@ struct bsdconv_instance{
 };
 
 struct bsdconv_phase{
-	struct data_rt *bak, *match, *data_head, *data_tail, *data;
+	struct data_rt *bak, *match, *data_head, *data_tail, *curr;
 	struct state_rt state;
 	int index;
 	unsigned int i;

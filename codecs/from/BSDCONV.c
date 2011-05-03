@@ -60,7 +60,7 @@ void callback(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct bsdconv_phase *prev_phase=&ins->phase[ins->phase_index-1];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
-	char d=CP(this_phase->data->data)[this_phase->i];
+	char d=CP(this_phase->curr->data)[this_phase->i];
 	if(hex[(unsigned char)d]==-1){
 		if(this_phase->match){
 			this_phase->pend=0;
@@ -73,7 +73,7 @@ void callback(struct bsdconv_instance *ins){
 			this_phase->data_tail->flags=F_FREE;
 
 			LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
-			this_phase->data=prev_phase->data_head;
+			this_phase->curr=prev_phase->data_head;
 			this_phase->i=this_phase->data_head->len;
 			this_phase->match=0;
 			RESET(ins->phase_index);

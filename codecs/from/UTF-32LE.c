@@ -43,8 +43,8 @@ void callback(struct bsdconv_instance *ins){
 	int i;
 	size_t l;
 
-	for(;this_phase->i<this_phase->data->len;this_phase->i+=1){
-		d=CP(this_phase->data->data)[this_phase->i];
+	for(;this_phase->i<this_phase->curr->len;this_phase->i+=1){
+		d=CP(this_phase->curr->data)[this_phase->i];
 		switch(t->status){
 			case 0:
 				t->buf[3]=d;

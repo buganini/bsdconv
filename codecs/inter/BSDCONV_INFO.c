@@ -33,7 +33,7 @@ void callback(struct bsdconv_instance *ins){
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	char *r=this_phase->codec[this_phase->index].priv;
-	data=this_phase->data->data;
+	data=this_phase->curr->data;
 	char seq[]={
 		0x1b,0x5b,0x41, // UP
 		0x1b,0x5b,0x41, // UP
@@ -47,7 +47,7 @@ void callback(struct bsdconv_instance *ins){
 		0x41 // A
 		};
 
-	if(this_phase->data->len==2 && data[0]==0x1){
+	if(this_phase->curr->len==2 && data[0]==0x1){
 		if(data[1]==seq[(int)(*r)]){
 			++(*r);
 		}else{
@@ -64,8 +64,8 @@ void callback(struct bsdconv_instance *ins){
 	}else{
 		DATA_MALLOC(this_phase->data_tail->next);
 		this_phase->data_tail=this_phase->data_tail->next;
-		*(this_phase->data_tail)=*(this_phase->data);
-		this_phase->data->flags &= ~F_FREE;
+		*(this_phase->data_tail)=*(this_phase->curr);
+		this_phase->curr->flags &= ~F_FREE;
 		this_phase->data_tail->next=NULL;
 	}
 	this_phase->state.status=NEXTPHASE;

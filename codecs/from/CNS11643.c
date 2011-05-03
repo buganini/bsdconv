@@ -50,8 +50,8 @@ void callback(struct bsdconv_instance *ins){
 	struct bsdconv_instance *uni=t->uni;
 	char d;
 
-	for(;this_phase->i<this_phase->data->len;this_phase->i+=1){
-		d=CP(this_phase->data->data)[this_phase->i];
+	for(;this_phase->i<this_phase->curr->len;this_phase->i+=1){
+		d=CP(this_phase->curr->data)[this_phase->i];
 		switch(t->status){
 			case 0:
 				if(d==0x0){ //plane switch sequence

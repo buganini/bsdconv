@@ -80,7 +80,7 @@ static const struct interval ambiguous[] = {
 void callback(struct bsdconv_instance *ins){
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	data=this_phase->data->data;
+	data=this_phase->curr->data;
 	int pad;
 	int max=sizeof(ambiguous) / sizeof(struct interval) - 1;
 	int min = 0;
@@ -90,12 +90,12 @@ void callback(struct bsdconv_instance *ins){
 
 	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
-	*(this_phase->data_tail)=*(this_phase->data);
-	this_phase->data->flags &= ~F_FREE;
+	*(this_phase->data_tail)=*(this_phase->curr);
+	this_phase->curr->flags &= ~F_FREE;
 	this_phase->data_tail->next=NULL;
 
 	if(data[0]==0x1){
-		for(pad=1;pad<this_phase->data->len;++pad){
+		for(pad=1;pad<this_phase->curr->len;++pad){
 			ucs<<=8;
 			ucs|=data[pad];
 		}

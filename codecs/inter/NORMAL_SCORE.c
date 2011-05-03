@@ -47,7 +47,7 @@ static const struct interval scoreboard[] = {
 void callback(struct bsdconv_instance *ins){
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	data=this_phase->data->data;
+	data=this_phase->curr->data;
 	int i;
 	int max=sizeof(scoreboard) / sizeof(struct interval) - 1;
 	int min = 0;
@@ -56,12 +56,12 @@ void callback(struct bsdconv_instance *ins){
 
 	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
-	*(this_phase->data_tail)=*(this_phase->data);
-	this_phase->data->flags &= ~F_FREE;
+	*(this_phase->data_tail)=*(this_phase->curr);
+	this_phase->curr->flags &= ~F_FREE;
 	this_phase->data_tail->next=NULL;
 
 	if(data[0]==0x1){
-		for(i=1;i<this_phase->data->len;++i){
+		for(i=1;i<this_phase->curr->len;++i){
 			ucs<<=8;
 			ucs|=data[i];
 		}

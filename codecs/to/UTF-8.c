@@ -20,11 +20,11 @@
 void callback(struct bsdconv_instance *ins){
 	char *data, *p;
 	unsigned int len;
-	data=ins->phase[ins->phase_index].data->data;
+	data=ins->phase[ins->phase_index].curr->data;
 
 	ins->phase[ins->phase_index].state.status=NEXTPHASE;
 	data+=1;
-	len=ins->phase[ins->phase_index].data->len-1;
+	len=ins->phase[ins->phase_index].curr->len-1;
 
 	/* exclude ASCII */
 	if(len==1 && (*data & bb10000000)==0){

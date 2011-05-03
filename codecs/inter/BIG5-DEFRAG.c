@@ -42,29 +42,29 @@ void callback(struct bsdconv_instance *ins){
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *r=this_phase->codec[this_phase->index].priv;
-	data=this_phase->data->data;
+	data=this_phase->curr->data;
 
 	if(r->f==0){
 		if(data[0]==0x3 && data[1]>0x7f){
 			r->f=1;
 			DATA_MALLOC(r->p);
-			*(r->p)=*(this_phase->data);
-			this_phase->data->flags &= ~F_FREE;
+			*(r->p)=*(this_phase->curr);
+			this_phase->curr->flags &= ~F_FREE;
 			this_phase->state.status=CONTINUE;
 			return;
 		}else{
 			DATA_MALLOC(this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
-			*(this_phase->data_tail)=*(this_phase->data);
-			this_phase->data->flags &= ~F_FREE;
+			*(this_phase->data_tail)=*(this_phase->curr);
+			this_phase->curr->flags &= ~F_FREE;
 			this_phase->state.status=NEXTPHASE;
 			return;
 		}
 	}else if(r->f){
 		if(data[0]==0x1b){
 			DATA_MALLOC(*(r->r));
-			**(r->r)=*(this_phase->data);
-			this_phase->data->flags &= ~F_FREE;
+			**(r->r)=*(this_phase->curr);
+			this_phase->curr->flags &= ~F_FREE;
 			r->r=&((*(r->r))->next);
 
 			this_phase->state.status=CONTINUE;
@@ -77,8 +77,8 @@ void callback(struct bsdconv_instance *ins){
 
 			DATA_MALLOC(this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
-			*(this_phase->data_tail)=*(this_phase->data);
-			this_phase->data->flags &= ~F_FREE;
+			*(this_phase->data_tail)=*(this_phase->curr);
+			this_phase->curr->flags &= ~F_FREE;
 
 			if(r->q){
 				this_phase->data_tail->next=r->q;

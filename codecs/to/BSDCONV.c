@@ -32,10 +32,10 @@ void callback(struct bsdconv_instance *ins){
 	this_phase->data_tail->next=NULL;
 	this_phase->data_tail->flags=F_FREE;
 
-	this_phase->data_tail->len=this_phase->data->len*2;
+	this_phase->data_tail->len=this_phase->curr->len*2;
 	p=this_phase->data_tail->data=malloc(this_phase->data_tail->len+1);
-	for(i=0;i<this_phase->data->len;++i){
-		sprintf(p,"%02X", UCP(this_phase->data->data)[i]);
+	for(i=0;i<this_phase->curr->len;++i){
+		sprintf(p,"%02X", UCP(this_phase->curr->data)[i]);
 		TAILIZE(p);
 	}
 }

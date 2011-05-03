@@ -25,10 +25,10 @@ void callback(struct bsdconv_instance *ins){
 	char *data, *p, c;
 	unsigned int len, i;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	data=this_phase->data->data;
+	data=this_phase->curr->data;
 
 	data+=1;
-	if(this_phase->data->len > 3){
+	if(this_phase->curr->len > 3){
 		this_phase->state.status=NEXTPHASE;
 
 		DATA_MALLOC(this_phase->data_tail->next);
@@ -58,7 +58,7 @@ void callback(struct bsdconv_instance *ins){
 		SWAP(data[2],data[3],i);
 	}else{
 		this_phase->state.status=NEXTPHASE;
-		len=this_phase->data->len-1;
+		len=this_phase->curr->len-1;
 
 		DATA_MALLOC(this_phase->data_tail->next);
 		this_phase->data_tail=this_phase->data_tail->next;

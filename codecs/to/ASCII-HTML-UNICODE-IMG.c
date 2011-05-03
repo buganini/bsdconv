@@ -25,7 +25,7 @@ void callback(struct bsdconv_instance *ins){
 	char *data, *p, buf[128]={0};
 	unsigned int len, i;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	data=this_phase->data->data;
+	data=this_phase->curr->data;
 	if(*data!=0x01){
 		this_phase->state.status=DEADEND;
 		return;
@@ -34,7 +34,7 @@ void callback(struct bsdconv_instance *ins){
 	p=buf;
 	i=*data;
 	data+=1;
-	len=this_phase->data->len-1;
+	len=this_phase->curr->len-1;
 	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
 	this_phase->data_tail->next=NULL;

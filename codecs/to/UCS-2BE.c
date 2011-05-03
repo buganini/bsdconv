@@ -23,15 +23,15 @@ void callback(struct bsdconv_instance *ins){
 	char *data;
 	unsigned int len, i;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	data=this_phase->data->data;
-	if(this_phase->data->len > 3){
+	data=this_phase->curr->data;
+	if(this_phase->curr->len > 3){
 		this_phase->state.status=DEADEND;
 		return;
 	}
 
 	this_phase->state.status=NEXTPHASE;
 	data+=1;
-	len=this_phase->data->len-1;
+	len=this_phase->curr->len-1;
 
 	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
