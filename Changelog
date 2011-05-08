@@ -1,5 +1,5 @@
 5.0:
-	inter/NORMAL_SCORE
+	inter/SCORE
 	inter/SCORE_TRAIN
 	refactor bsdconv_create()
 	add bsdconv_insert_phase()
