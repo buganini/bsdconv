@@ -75,7 +75,7 @@ void callback(struct bsdconv_instance *ins){
 	int min = 0;
 	int mid;
 	int ucs=0;
-	uint32_t v=0;
+	unsigned char v=0;
 
 	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
@@ -105,8 +105,8 @@ void callback(struct bsdconv_instance *ins){
 					}
 			}
 		}else{
-			fseek(fp, ucs*sizeof(uint32_t), SEEK_SET);
-			fread(&v, sizeof(uint32_t), 1, fp);
+			fseek(fp, ucs*sizeof(unsigned char), SEEK_SET);
+			fread(&v, sizeof(unsigned char), 1, fp);
 			if(ins->score+v < INT_MAX)
 				ins->score+=v;
 		}

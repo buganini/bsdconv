@@ -45,7 +45,7 @@ void callback(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	FILE *fp=this_phase->codec[this_phase->index].priv;
 	data=this_phase->curr->data;
-	uint32_t v=0;
+	unsigned char v=0;
 	int i;
 	int ucs=0;
 
@@ -60,11 +60,12 @@ void callback(struct bsdconv_instance *ins){
 			ucs<<=8;
 			ucs|=data[i];
 		}
-		fseek(fp, ucs*sizeof(uint32_t), SEEK_SET);
-		fread(&v, sizeof(uint32_t), 1, fp);
-		if(v<UINT32_MAX)
+		fseek(fp, ucs*sizeof(unsigned char), SEEK_SET);
+//		fread(&v, sizeof(unsigned char), 1, fp);
+//		if(v<3){
 			v+=1;
-		fwrite(&v, sizeof(uint32_t), 1, fp);
+			fwrite(&v, sizeof(unsigned char), 1, fp);
+//		}
 	}
 
 	this_phase->state.status=NEXTPHASE;
