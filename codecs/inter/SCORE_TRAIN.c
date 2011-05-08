@@ -17,14 +17,23 @@
 #include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 #include "../../src/bsdconv.h"
 
 void * cbcreate(void){
+	char buf[256]={0};
+	FILE *fp;
 	char *p=getenv("BSDCONV_FREQ");
 	if(p==NULL){
-		p="/tmp/bsdconv.freq";
+		strcpy(buf,getenv("HOME"));
+		strcat(buf,"/.bsdconv.freq");
+		p=buf;
 	}
-	return fopen(p,"w");
+	fp=fopen(p,"r+");
+	if(fp==NULL){
+		fp=fopen(p,"w+");
+	}
+	return fp;
 }
 
 void cbdestroy(FILE *fp){
