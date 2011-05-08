@@ -26,10 +26,10 @@
 
 void * cbcreate(void){
 	char buf[256]={0};
-	char *p=getenv("BSDCONV_FREQ");
+	char *p=getenv("BSDCONV_SCORE");
 	if(p==NULL){
 		strcpy(buf,getenv("HOME"));
-		strcat(buf,"/.bsdconv.freq");
+		strcat(buf,"/.bsdconv.score");
 		p=buf;
 	}
 	return fopen(p,"r");
