@@ -17,7 +17,23 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <stdio.h>
+#include <stdint.h>
 #include "../../src/bsdconv.h"
+
+
+void * cbcreate(void){
+	char *p=getenv("BSDCONV_FREQ");
+	if(p==NULL){
+		p="/tmp/bsdconv.freq";
+	}
+	return fopen(p,"r");
+}
+
+void cbdestroy(FILE *fp){
+	if(fp)
+		fclose(fp);
+}
 
 struct interval {
 	int first;
@@ -47,12 +63,14 @@ static const struct interval scoreboard[] = {
 void callback(struct bsdconv_instance *ins){
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	FILE *fp=this_phase->codec[this_phase->index].priv;
 	data=this_phase->curr->data;
 	int i;
 	int max=sizeof(scoreboard) / sizeof(struct interval) - 1;
 	int min = 0;
 	int mid;
 	int ucs=0;
+	uint32_t v;
 
 	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
@@ -66,18 +84,24 @@ void callback(struct bsdconv_instance *ins){
 			ucs|=data[i];
 		}
 
-		if (ucs < scoreboard[0].first || ucs > scoreboard[max].last){
-			//noop
-		}else while (max >= min) {
-				mid = (min + max) / 2;
-				if (ucs > scoreboard[mid].last)
-					min = mid + 1;
-				else if (ucs < scoreboard[mid].first)
-					max = mid - 1;
-				else{
-					ins->score+=scoreboard[mid].score;
-					break;
-				}
+		if(fp){
+			if (ucs < scoreboard[0].first || ucs > scoreboard[max].last){
+				//noop
+			}else while (max >= min) {
+					mid = (min + max) / 2;
+					if (ucs > scoreboard[mid].last)
+						min = mid + 1;
+					else if (ucs < scoreboard[mid].first)
+						max = mid - 1;
+					else{
+						ins->score+=scoreboard[mid].score;
+						break;
+					}
+			}
+		}else{
+			fseek(fp, ucs*sizeof(uint32_t), SEEK_SET);
+			fread(&v, sizeof(uint32_t), 1, fp);
+			ins->score+=v;
 		}
 	}
 
