@@ -17,6 +17,7 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdint.h>
 #include "../../src/bsdconv.h"
@@ -70,7 +71,7 @@ void callback(struct bsdconv_instance *ins){
 	int min = 0;
 	int mid;
 	int ucs=0;
-	uint32_t v;
+	uint32_t v=0;
 
 	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
@@ -84,7 +85,7 @@ void callback(struct bsdconv_instance *ins){
 			ucs|=data[i];
 		}
 
-		if(fp){
+		if(fp==NULL){
 			if (ucs < scoreboard[0].first || ucs > scoreboard[max].last){
 				//noop
 			}else while (max >= min) {
@@ -94,14 +95,16 @@ void callback(struct bsdconv_instance *ins){
 					else if (ucs < scoreboard[mid].first)
 						max = mid - 1;
 					else{
-						ins->score+=scoreboard[mid].score;
+						if(ins->score+scoreboard[mid].score < INT_MAX)
+							ins->score+=scoreboard[mid].score;
 						break;
 					}
 			}
 		}else{
 			fseek(fp, ucs*sizeof(uint32_t), SEEK_SET);
 			fread(&v, sizeof(uint32_t), 1, fp);
-			ins->score+=v;
+			if(ins->score+v < INT_MAX)
+				ins->score+=v;
 		}
 	}
 

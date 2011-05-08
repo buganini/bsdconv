@@ -14,6 +14,7 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
 #include "../../src/bsdconv.h"
@@ -35,7 +36,7 @@ void callback(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	FILE *fp=this_phase->codec[this_phase->index].priv;
 	data=this_phase->curr->data;
-	uint32_t v;
+	uint32_t v=0;
 	int i;
 	int ucs=0;
 
@@ -52,7 +53,8 @@ void callback(struct bsdconv_instance *ins){
 		}
 		fseek(fp, ucs*sizeof(uint32_t), SEEK_SET);
 		fread(&v, sizeof(uint32_t), 1, fp);
-		v+=1;
+		if(v<UINT32_MAX)
+			v+=1;
 		fwrite(&v, sizeof(uint32_t), 1, fp);
 	}
 
