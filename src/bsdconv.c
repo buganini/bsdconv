@@ -23,6 +23,7 @@
 
 int main(int argc, char *argv[]){
 	char *t;
+	int fd;
 	char *tmp=NULL;
 	struct bsdconv_instance *ins;
 	FILE *inf, *otf;
@@ -56,12 +57,12 @@ int main(int argc, char *argv[]){
 			tmp=malloc(strlen(to)+8);
 			strcpy(tmp, to);
 			strcat(tmp, ".XXXXXX");
-			if(mktemp(tmp)==NULL){
+			if((fd=mkstemp(tmp))==-1){
 				free(tmp);
 				fprintf(stderr, "Failed creating temp file.\n");
 				exit(1);
 			}
-			otf=fopen(tmp,"w");
+			otf=fdopen(fd,"w");
 			if(!otf){
 				fprintf(stderr, "Unable to open output file %s\n", to);
 				exit(1);
