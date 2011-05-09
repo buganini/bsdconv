@@ -182,6 +182,7 @@ char * getwd(char *);
 #define DATA_FREE(X) do{ if((X)->flags & F_FREE) free((X)->data); (X)->next=ins->pool; ins->pool=(X);}while(0)
 
 struct bsdconv_instance *bsdconv_create(const char *);
+struct bsdconv_instance *bsdconv_duplicate(struct bsdconv_instance *);
 int bsdconv_get_phase_index(struct bsdconv_instance *, int);
 int bsdconv_get_codec_index(struct bsdconv_instance *, int, int);
 int bsdconv_insert_phase(struct bsdconv_instance *, const char *, int, int);

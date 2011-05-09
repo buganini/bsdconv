@@ -487,6 +487,35 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 		return NULL;
 }
 
+struct bsdconv_instance *bsdconv_duplicate(struct bsdconv_instance *oins){
+	int i,j;
+	struct bsdconv_instance *ins=malloc(sizeof(struct bsdconv_instance));
+
+	ins->phasen=oins->phasen;
+	ins->phase=malloc(sizeof(struct bsdconv_phase) * (ins->phasen+1));
+	for(i=1;i<=ins->phasen;++i){
+		ins->phase[i].type=oins->phase[i].type;
+		ins->phase[i].codecn=oins->phase[i].codecn;
+		ins->phase[i].codec=malloc(sizeof(struct bsdconv_codec_t) * (ins->phase[i].codecn + 1));
+		for(j=0;j<=ins->phase[i].codecn;++j){
+			loadcodec(&ins->phase[i].codec[j], ins->phase[i].type, oins->phase[i].codec[j].desc);
+		}
+	}
+	for(i=1;i<=ins->phasen;++i){
+		for(j=0;j<=ins->phase[i].codecn;++j){
+			if(ins->phase[i].codec[j].cbcreate){
+				ins->phase[i].codec[j].priv=ins->phase[i].codec[j].cbcreate();
+			}
+		}
+	}
+	for(i=0;i<=ins->phasen;++i){
+		ins->phase[i].data_head=malloc(sizeof(struct data_rt));
+		ins->phase[i].data_head->next=NULL;
+		ins->phase[i].data_head->flags=0;
+	}
+	return ins;
+}
+
 void bsdconv_destroy(struct bsdconv_instance *ins){
 	int i,j;
 	struct data_rt *data_ptr;
