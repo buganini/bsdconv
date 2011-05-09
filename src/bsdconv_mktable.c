@@ -26,6 +26,32 @@
 #include <errno.h>
 #endif
 
+#ifdef FILE_MALLOC
+#include <sys/mman.h>
+#define FILE_MALLOC_SIZE 1024*1024*1024
+#define MALLOC fmalloc
+#define FREE ffree
+void * fmalloc_z;
+size_t fmalloc_offset;
+void * fmalloc(size_t s){
+	size_t o=fmalloc_offset;
+	fmalloc_offset+=s;
+	if(fmalloc_offset>FILE_MALLOC_SIZE){
+		return malloc(s);
+	}
+	return fmalloc_z+o;
+}
+
+void ffree(void *p){
+	if(p<fmalloc_z || p>fmalloc_z+fmalloc_offset){
+		free(p);
+	}
+}
+#else
+#define MALLOC malloc
+#define FREE free
+#endif
+
 struct m_data_st{
 	char *data;
 	size_t len;
@@ -75,7 +101,7 @@ uintptr_t hash(int *p, uintptr_t l){
 	struct dhash *hash_q=hash_data;
 	for(i=l-1;i>=0;--i){
 		if(hash_p->sub[p[i]]==NULL){
-			hash_p->sub[p[i]]=malloc(sizeof(struct dhash));
+			hash_p->sub[p[i]]=MALLOC(sizeof(struct dhash));
 			hash_p->sub[p[i]]->c=p[i];
 			hash_p->sub[p[i]]->p=hash_p;
 			hash_p->sub[p[i]]->v=0;
@@ -92,7 +118,7 @@ uintptr_t hash(int *p, uintptr_t l){
 		}else{
 			hash_p=hash_p->sub[p[i]];
 			if(hash_q->sub[p[i]]==NULL){
-				hash_q->sub[p[i]]=malloc(sizeof(struct dhash));
+				hash_q->sub[p[i]]=MALLOC(sizeof(struct dhash));
 				hash_q->sub[p[i]]->c=p[i];
 				hash_q->sub[p[i]]->p=hash_q;
 				hash_q->sub[p[i]]->v=0;
@@ -123,6 +149,18 @@ int main(int argc, char *argv[]){
 	struct dhash *hash_p;
 	struct m_state_st *callback=NULL;
 	void *tofree;
+
+#ifdef FILE_MALLOC
+	char tmpfile[32]={0};
+	int tmpfd;
+	sprintf(tmpfile,"/tmp/.bsdconv_mktable.XXXXXX");
+	if((tmpfd=mkstemp(tmpfile))==-1){
+		exit(1);
+	}
+	ftruncate(tmpfd, FILE_MALLOC_SIZE);
+	fmalloc_z=mmap(0, FILE_MALLOC_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, tmpfd, 0);
+	fmalloc_offset=0;
+#endif
 
 	table['0']=0;
 	table['1']=1;
@@ -203,7 +241,7 @@ int main(int argc, char *argv[]){
 
 	fp=fopen(argv[1], "r");
 
-	hash_datalist=malloc(sizeof(struct dhash));
+	hash_datalist=MALLOC(sizeof(struct dhash));
 	for(i=0;i<=256;++i){
 		hash_datalist->sub[i]=0;
 	}
@@ -212,7 +250,7 @@ int main(int argc, char *argv[]){
 	hash_datalist->offset=0;
 	hash_datalist->head=NULL;
 
-	hash_data=malloc(sizeof(struct dhash));
+	hash_data=MALLOC(sizeof(struct dhash));
 	for(i=0;i<=256;++i){
 		hash_data->sub[i]=0;
 	}
@@ -227,7 +265,7 @@ int main(int argc, char *argv[]){
 	newtodo->u=2;
 	newtodo_tail=newtodo;
 
-	state_t=state_r=(struct m_state_st *)malloc(sizeof(struct m_state_st));
+	state_t=state_r=(struct m_state_st *)MALLOC(sizeof(struct m_state_st));
 	state_t->status=DEADEND;
 	state_t->data=0;
 	state_t->offset=offset;
@@ -302,7 +340,7 @@ int main(int argc, char *argv[]){
 						newtodo_tail->n=NULL;
 					}else{
 		//	printf("%u[%X]=%u\n", state_p->p, c, offset);
-						state_t->n=state_p->p->sub[c]=(struct m_state_st *)malloc(sizeof(struct m_state_st));
+						state_t->n=state_p->p->sub[c]=(struct m_state_st *)MALLOC(sizeof(struct m_state_st));
 						state_t=state_t->n;
 						state_t->n=NULL;
 						for(i=0;i<=256;++i){
@@ -344,7 +382,7 @@ int main(int argc, char *argv[]){
 		k=1;
 		if(*t=='?'){
 			if(callback==NULL){
-				state_t->n=(struct m_state_st *)malloc(sizeof(struct m_state_st));
+				state_t->n=(struct m_state_st *)MALLOC(sizeof(struct m_state_st));
 				state_t=state_t->n;
 				state_t->status=SUBROUTINE;
 				state_t->data=0;
@@ -394,7 +432,7 @@ int main(int argc, char *argv[]){
 									state_p->p->sub[c]->status=SUBMATCH;
 								}
 							}else{
-								state_p->p->sub[c]=state_t->n=malloc(sizeof(struct m_state_st));
+								state_p->p->sub[c]=state_t->n=MALLOC(sizeof(struct m_state_st));
 								state_t=state_t->n;
 								for(i=0;i<=256;++i){
 									state_t->sub[i]=NULL;
@@ -455,15 +493,15 @@ int main(int argc, char *argv[]){
 					j=1;
 					if(data_p){
 						//data after head
-						data_t->n=(struct m_data_st *)malloc(sizeof(struct m_data_st));
+						data_t->n=(struct m_data_st *)MALLOC(sizeof(struct m_data_st));
 						data_p=data_t=data_t->n;
 					}else if(data_t){
 						//data head
-						data_t->n=(struct m_data_st *)malloc(sizeof(struct m_data_st));
+						data_t->n=(struct m_data_st *)MALLOC(sizeof(struct m_data_st));
 						data_p=data_t=data_t->n;
 					}else{
 						//frist
-						data_t=data_p=data_r=(struct m_data_st *)malloc(sizeof(struct m_data_st));
+						data_t=data_p=data_r=(struct m_data_st *)MALLOC(sizeof(struct m_data_st));
 					}
 
 					//init new cell
@@ -515,7 +553,7 @@ int main(int argc, char *argv[]){
 		fwrite((void *)&dstate, sizeof(struct state_st), 1, fp);
 		tofree=state_t;
 		state_t=state_t->n;
-		free(tofree);
+		FREE(tofree);
 	}
 
 	data_t=data_r;
@@ -558,9 +596,13 @@ int main(int argc, char *argv[]){
 		fwrite((void *)&ddata, sizeof(struct data_st), 1, fp);
 		tofree=data_t;
 		data_t=data_t->n;
-		free(tofree);
+		FREE(tofree);
 	}
 	fclose(fp);
 	printf("Total size: %u\n", (unsigned int)offset);
+
+#ifdef FILE_MALLOC
+	unlink(tmpfile);
+#endif
 	return 0;
 }
