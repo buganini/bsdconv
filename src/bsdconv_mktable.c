@@ -602,6 +602,7 @@ int main(int argc, char *argv[]){
 	printf("Total size: %u\n", (unsigned int)offset);
 
 #ifdef FILE_MALLOC
+	close(tmpfd);
 	unlink(tmpfile);
 #endif
 	return 0;
