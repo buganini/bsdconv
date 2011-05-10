@@ -125,6 +125,7 @@ struct bsdconv_codec_t {
 	void (*callback)(struct bsdconv_instance *);
 	void *(*cbcreate)(void);
 	void (*cbinit)(struct bsdconv_codec_t *, void *);
+	void (*cbctl)(struct bsdconv_codec_t *, int, void *, int);
 	void (*cbdestroy)(void *);
 	void *priv;
 };
@@ -190,9 +191,12 @@ int bsdconv_insert_codec(struct bsdconv_instance *, const char *, int, int);
 int bsdconv_replace_phase(struct bsdconv_instance *, const char *, int, int);
 int bsdconv_replace_codec(struct bsdconv_instance *, const char *, int, int);
 void bsdconv_init(struct bsdconv_instance *);
+void bsdconv_ctl(struct bsdconv_instance *, int, void *, int);
 void bsdconv_destroy(struct bsdconv_instance *);
 void bsdconv(struct bsdconv_instance *);
 char * bsdconv_error(void);
+
+#define BSDCONV_SCORE_ATTACH 0
 
 #define bb00000011 0x03
 #define bb00000111 0x07

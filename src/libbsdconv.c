@@ -84,6 +84,7 @@ int _loadcodec(struct bsdconv_codec_t *cd, char *path){
 		cd->callback=(void *)GetProcAddress(cd->dl,"callback");
 		cd->cbcreate=(void *)GetProcAddress(cd->dl,"cbcreate");
 		cd->cbinit=(void *)GetProcAddress(cd->dl,"cbinit");
+		cd->cbctl=(void *)GetProcAddress(cd->dl,"cbctl");
 		cd->cbdestroy=(void *)GetProcAddress(cd->dl,"cbdestroy");
 	}
 #else
@@ -91,6 +92,7 @@ int _loadcodec(struct bsdconv_codec_t *cd, char *path){
 		cd->callback=dlsym(cd->dl,"callback");
 		cd->cbcreate=dlsym(cd->dl,"cbcreate");
 		cd->cbinit=dlsym(cd->dl,"cbinit");
+		cd->cbctl=dlsym(cd->dl,"cbctl");
 		cd->cbdestroy=dlsym(cd->dl,"cbdestroy");
 		if(cd->cbcreate && cd->cbdestroy==NULL){
 			fprintf(stderr,"Possible memory leak in %s\n", path);
@@ -374,6 +376,17 @@ int bsdconv_replace_codec(struct bsdconv_instance *ins, const char *codec, int o
 	if(ins->phase[phasen].codec[codecn].cbcreate)
 		ins->phase[phasen].codec[codecn].priv=ins->phase[phasen].codec[codecn].cbcreate();
 	return codecn;
+}
+
+void bsdconv_ctl(struct bsdconv_instance *ins, int ctl, void *p, int v){
+	int i,j;
+	for(i=1;i<=ins->phasen;++i){
+		for(j=0;j<=ins->phase[i].codecn;++j){
+			if(ins->phase[i].codec[j].cbctl){
+				ins->phase[i].codec[j].cbctl(&ins->phase[i].codec[j], ctl, p, v);
+			}
+		}
+	}
 }
 
 struct bsdconv_instance *bsdconv_create(const char *conversion){

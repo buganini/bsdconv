@@ -36,6 +36,16 @@ void * cbcreate(void){
 	return fp;
 }
 
+void cbctl(struct bsdconv_codec_t *cd, int ctl, void *ptr, int v){
+	switch(ctl){
+		case BSDCONV_SCORE_ATTACH:
+			if(cd->priv)
+				fclose(cd->priv);
+			cd->priv=ptr;
+			break;
+	}
+}
+
 void cbdestroy(FILE *fp){
 	fclose(fp);
 }

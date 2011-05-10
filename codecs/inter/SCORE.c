@@ -23,7 +23,6 @@
 #include <string.h>
 #include "../../src/bsdconv.h"
 
-
 void * cbcreate(void){
 	char buf[256]={0};
 	char *p=getenv("BSDCONV_SCORE");
@@ -33,6 +32,16 @@ void * cbcreate(void){
 		p=buf;
 	}
 	return fopen(p,"r");
+}
+
+void cbctl(struct bsdconv_codec_t *cd, int ctl, void *ptr, int v){
+	switch(ctl){
+		case BSDCONV_SCORE_ATTACH:
+			if(cd->priv)
+				fclose(cd->priv);
+			cd->priv=ptr;
+			break;
+	}
 }
 
 void cbdestroy(FILE *fp){
