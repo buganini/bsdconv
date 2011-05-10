@@ -8,6 +8,8 @@
 	add bsdconv_replace_codec()
 	add bsdconv_get_phase_index()
 	add bsdconv_get_codec_index()
+	add bsdconv_duplicate()
+	add bsdconv_ctl() and cbctl() in callback mechanism
 
 4.8:
 	improve inter/{half,full}
