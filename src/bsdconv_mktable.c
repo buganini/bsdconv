@@ -157,6 +157,7 @@ int main(int argc, char *argv[]){
 	if((tmpfd=mkstemp(tmpfile))==-1){
 		exit(1);
 	}
+	unlink(tmpfile);
 	ftruncate(tmpfd, FILE_MALLOC_SIZE);
 	fmalloc_z=mmap(0, FILE_MALLOC_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, tmpfd, 0);
 	fmalloc_offset=0;
