@@ -228,4 +228,26 @@ install_extra:
 	install -s -m 444 build/share/bsdconv/${item}.so ${PREFIX}/share/bsdconv/${item}.so
 .	endfor
 
+plist:
+	@echo bin/bsdconv
+	@echo bin/bsdconv_mktable
+	@echo include/bsdconv.h
+	@echo lib/libbsdconv.so
+	@echo lib/libbsdconv.so.4
+.	for item in ${TODO_CODECS_BASIC_TABLE}
+	@echo %%DATADIR%%/${item}
+.	endfor
+.	for item in ${TODO_CODECS_BASIC_CALLBACK}
+	@echo %%DATADIR%%/${item}.so
+.	endfor
+.	for item in ${TODO_CODECS_EXTRA_TABLE}
+	@echo %%EXTRA%%%%DATADIR%%/${item}
+.	endfor
+.	for item in ${TODO_CODECS_EXTRA_CALLBACK}
+	@echo %%EXTRA%%%%DATADIR%%/${item}.so
+.	endfor
+	@echo @dirrmtry %%DATADIR%%/to
+	@echo @dirrmtry %%DATADIR%%/inter
+	@echo @dirrmtry %%DATADIR%%/from
+	@echo @dirrmtry %%DATADIR%%
 
