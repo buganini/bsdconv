@@ -28,7 +28,7 @@
 
 #ifdef FILE_MALLOC
 #include <sys/mman.h>
-#define FILE_MALLOC_SIZE 1024*1024*1024
+#define FILE_MALLOC_SIZE 512*1024*1024
 #define MALLOC fmalloc
 #define FREE ffree
 void * fmalloc_z;
