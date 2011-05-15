@@ -5,6 +5,7 @@
 
 void * fmalloc(size_t s);
 void ffree(void *p);
+
 struct fmalloc_entry {
 	void *z;
 	size_t offset;
