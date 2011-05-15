@@ -46,7 +46,7 @@ void * fmalloc(size_t s){
 void fmfree(void *p){
 	struct fmalloc_entry *entry=fmalloc_pools;
 	while(entry){
-		if(p>=entry->z && p<=entry->z+entry->offset){
+		if(p>=entry->z && p<entry->z+entry->offset){
 			return;
 		}
 		entry=entry->next;
