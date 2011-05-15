@@ -4,8 +4,9 @@
 #ifdef USE_FMALLOC
 
 void * fmalloc(size_t s);
-void ffree(void *p);
-void fcleanup(void);
+void fmfree(void *p);
+void fmsync(void);
+void fmcleanup(void);
 
 struct fmalloc_entry {
 	void *z;
@@ -17,7 +18,7 @@ struct fmalloc_entry {
 #define FMALLOC_SIZE 256*1024*1024
 #define FMALLOC_NUM 6
 #define FMALLOC(X) fmalloc(X)
-#define FFREE(X) ffree(X)
+#define FFREE(X) fmfree(X)
 
 #else
 

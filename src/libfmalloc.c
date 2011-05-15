@@ -43,7 +43,7 @@ void * fmalloc(size_t s){
 	return fmalloc_pools->z + o_offset;
 }
 
-void ffree(void *p){
+void fmfree(void *p){
 	struct fmalloc_entry *entry=fmalloc_pools;
 	while(entry){
 		if(p>=entry->z && p<=entry->z+entry->offset){
@@ -54,7 +54,15 @@ void ffree(void *p){
 	free(p);
 }
 
-void fcleanup(void){
+void fmsync(void){
+	struct fmalloc_entry *entry=fmalloc_pools;
+	while(entry){
+		msync(entry->z, entry->offset, MS_SYNC);
+		entry=entry->next;
+	}
+}
+
+void fmcleanup(void){
 	struct fmalloc_entry *next=fmalloc_pools;
 	while(fmalloc_pools){
 		next=fmalloc_pools->next;
