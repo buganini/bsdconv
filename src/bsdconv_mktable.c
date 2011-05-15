@@ -125,19 +125,6 @@ int main(int argc, char *argv[]){
 	struct m_state_st *callback=NULL;
 	void *tofree;
 
-#ifdef FILE_MALLOC
-	char tmpfile[32]={0};
-	int tmpfd;
-	sprintf(tmpfile,"/tmp/.bsdconv_mktable.XXXXXX");
-	if((tmpfd=mkstemp(tmpfile))==-1){
-		exit(1);
-	}
-	unlink(tmpfile);
-	ftruncate(tmpfd, FILE_MALLOC_SIZE);
-	fmalloc_z=mmap(0, FILE_MALLOC_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, tmpfd, 0);
-	fmalloc_offset=0;
-#endif
-
 	table['0']=0;
 	table['1']=1;
 	table['2']=2;
@@ -577,9 +564,5 @@ int main(int argc, char *argv[]){
 	fclose(fp);
 	printf("Total size: %u\n", (unsigned int)offset);
 
-#ifdef FILE_MALLOC
-	close(tmpfd);
-	unlink(tmpfile);
-#endif
 	return 0;
 }
