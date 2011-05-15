@@ -167,7 +167,7 @@ bsdconv: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
 	$(CC) ${CFLAGS} src/bsdconv.c -L./build/lib/ -lbsdconv -o build/bin/bsdconv
 
 bsdconv_mktable: builddir src/bsdconv.h
-	$(CC) ${CFLAGS} -DFILE_MALLOC src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
+	$(CC) ${CFLAGS} -DUSE_FMALLOC src/libfmalloc.c src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
 
 codecs_basic_table: builddir bsdconv_mktable
 .	for item in ${TODO_CODECS_BASIC_TABLE}
