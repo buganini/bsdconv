@@ -564,5 +564,7 @@ int main(int argc, char *argv[]){
 	fclose(fp);
 	printf("Total size: %u\n", (unsigned int)offset);
 
+	fcleanup();
+
 	return 0;
 }

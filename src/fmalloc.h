@@ -5,10 +5,12 @@
 
 void * fmalloc(size_t s);
 void ffree(void *p);
+void fcleanup(void);
 
 struct fmalloc_entry {
 	void *z;
 	size_t offset;
+	int fd;
 	struct fmalloc_entry *next;
 };
 

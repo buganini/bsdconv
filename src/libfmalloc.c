@@ -31,6 +31,7 @@ void * fmalloc(size_t s){
 			fmalloc_pools=malloc(sizeof(struct fmalloc_entry));
 			fmalloc_pools->z=m;
 			fmalloc_pools->offset=0;
+			fmalloc_pools->fd=tmpfd;
 			fmalloc_pools->next=last;
 			fmalloc_num+=1;
 		}else{
@@ -53,4 +54,13 @@ void ffree(void *p){
 	free(p);
 }
 
+void fcleanup(void){
+	struct fmalloc_entry *next=fmalloc_pools;
+	while(fmalloc_pools){
+		next=fmalloc_pools->next;
+		munmap(fmalloc_pools->z, FMALLOC_SIZE);
+		close(fmalloc_pools->fd);
+		fmalloc_pools=next;
+	}
+}
 #endif
