@@ -68,6 +68,7 @@ void fmcleanup(void){
 		next=fmalloc_pools->next;
 		munmap(fmalloc_pools->z, FMALLOC_SIZE);
 		close(fmalloc_pools->fd);
+		free(fmalloc_pools);
 		fmalloc_pools=next;
 	}
 }
