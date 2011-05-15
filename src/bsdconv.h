@@ -214,8 +214,8 @@ char * bsdconv_error(void);
 #define bb11111000 0xf8
 #define bb11111100 0xfc
 
-#endif
-
 #ifdef __cplusplus
 }
+#endif
+
 #endif
