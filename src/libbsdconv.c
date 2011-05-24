@@ -562,11 +562,13 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 }
 
 void bsdconv(struct bsdconv_instance *ins){
+	offset_t offset;
 	uintptr_t i;
 	struct data_rt *data_ptr;
 	char *ptr;
 	FILE *fp;
 	int fd;
+	unsigned char c;
 	struct bsdconv_phase *this_phase;
 	struct bsdconv_phase *prev_phase;
 
@@ -594,7 +596,12 @@ void bsdconv(struct bsdconv_instance *ins){
 					fflush(stdout);
 					this_phase->curr=this_phase->curr->next;
 					while(this_phase->i<this_phase->curr->len){
-						memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.sub[UCP(this_phase->curr->data)[this_phase->i]], sizeof(struct state_st));
+						c=UCP(this_phase->curr->data)[this_phase->i];
+						if(c>=this_phase->state.beg && c<this_phase->state.end)
+							memcpy(&offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (c - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
+						else
+							offset=0;
+						memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + offset, sizeof(struct state_st));
 						from_x:
 						switch(this_phase->state.status){
 							case DEADEND:
@@ -706,7 +713,12 @@ void bsdconv(struct bsdconv_instance *ins){
 				this_phase->curr=this_phase->curr->next;
 				this_phase->state.status=DUMMY;
 				for(this_phase->i=0;this_phase->i<this_phase->curr->len;this_phase->i+=1){
-					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.sub[UCP(this_phase->curr->data)[this_phase->i]], sizeof(struct state_st));
+					c=UCP(this_phase->curr->data)[this_phase->i];
+					if(c>=this_phase->state.beg && c<this_phase->state.end)
+						memcpy(&offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (c - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
+					else
+						offset=0;
+					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + offset, sizeof(struct state_st));
 					switch(this_phase->state.status){
 						case DEADEND:
 							goto inter_deadend;
@@ -806,7 +818,11 @@ void bsdconv(struct bsdconv_instance *ins){
 						this_phase->pend=1;
 						break;
 				}
-				memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.sub[256], sizeof(struct state_st));
+				if(256<this_phase->state.end)
+					memcpy(&offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (256 - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
+				else
+					offset=0;
+				memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + offset, sizeof(struct state_st));
 				if(this_phase->state.status==DEADEND){ goto inter_deadend;}
 			}
 			break;
@@ -816,7 +832,12 @@ void bsdconv(struct bsdconv_instance *ins){
 				this_phase->curr=this_phase->curr->next;
 				this_phase->state.status=DUMMY;
 				for(this_phase->i=0;this_phase->i<this_phase->curr->len;this_phase->i+=1){
-					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.sub[UCP(this_phase->curr->data)[this_phase->i]], sizeof(struct state_st));
+					c=UCP(this_phase->curr->data)[this_phase->i];
+					if(c>=this_phase->state.beg && c<this_phase->state.end)
+						memcpy(&offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (c - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
+					else
+						offset=0;
+					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + offset, sizeof(struct state_st));
 					switch(this_phase->state.status){
 						case DEADEND:
 							goto to_deadend;
@@ -932,7 +953,11 @@ void bsdconv(struct bsdconv_instance *ins){
 						this_phase->pend=1;
 						break;
 				}
-				memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.sub[256], sizeof(struct state_st));
+				if(256<this_phase->state.end)
+					memcpy(&offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (256 - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
+				else
+					offset=0;
+				memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + offset, sizeof(struct state_st));
 				if(this_phase->state.status==DEADEND){ goto to_deadend;}
 			}
 			break;

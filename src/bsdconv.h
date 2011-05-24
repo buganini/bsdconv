@@ -75,13 +75,17 @@ struct data_rt{
 struct state_st{
 	char status;
 	struct data_st *data;
-	offset_t sub[257];
+	uint16_t beg;
+	uint16_t end;
+	offset_t base;
 };
 
 struct state_rt{
 	char status;
 	struct data_rt *data;
-	offset_t sub[257];
+	uint16_t beg;
+	uint16_t end;
+	offset_t base;
 };
 
 struct bsdconv_instance{
