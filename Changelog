@@ -1,4 +1,5 @@
 5.0:
+	table format change
 	inter/SCORE
 	inter/SCORE_TRAIN
 	refactor bsdconv_create()
