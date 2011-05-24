@@ -233,7 +233,7 @@ plist:
 	@echo bin/bsdconv_mktable
 	@echo include/bsdconv.h
 	@echo lib/libbsdconv.so
-	@echo lib/libbsdconv.so.4
+	@echo lib/libbsdconv.so.${SHLIBVER}
 .	for item in ${TODO_CODECS_BASIC_TABLE}
 	@echo %%DATADIR%%/${item}
 .	endfor
