@@ -241,8 +241,6 @@ int main(int argc, char *argv[]){
 	state_t=state_r=(struct m_state_st *)FMALLOC(sizeof(struct m_state_st));
 	STATE_INIT(state_t);
 	state_t->status=DEADEND;
-	state_t->offset=offset;
-	offset+=sizeof(struct state_st);
 
 	holder.beg=0;
 	holder.end=1;
@@ -322,8 +320,6 @@ int main(int argc, char *argv[]){
 						state_t->n=state_p->p->base[c]=(struct m_state_st *)FMALLOC(sizeof(struct m_state_st));
 						state_t=state_t->n;
 						STATE_INIT(state_t);
-						state_p->p->base[c]->offset=offset;
-						offset+=sizeof(struct state_st);
 
 						state_t->n=state_p->p->base[c];
 						state_t=state_t->n;
@@ -360,7 +356,6 @@ int main(int argc, char *argv[]){
 				state_t=state_t->n;
 				STATE_INIT(state_t);
 				state_t->status=SUBROUTINE;
-				state_t->offset=offset;
 				state_t->beg=0;
 				state_t->end=256+1;
 				state_t->base=calloc(257, sizeof(struct m_state_st *));
@@ -368,7 +363,6 @@ int main(int argc, char *argv[]){
 				for(i=0;i<=256;++i){
 					state_t->base[i]=callback;
 				}
-				offset+=sizeof(struct state_st);
 			}
 			while(todo){
 				state_p=todo;
@@ -424,9 +418,7 @@ int main(int argc, char *argv[]){
 								state_t=state_t->n;
 								STATE_INIT(state_t);
 
-								state_t->offset=offset;
 								state_t->status=MATCH;
-								offset+=sizeof(struct state_st);
 							}
 							if(l){
 								state_p->p->base[c]->data=(struct m_data_st *)ret;
@@ -464,6 +456,14 @@ int main(int argc, char *argv[]){
 	free(newtodo);
 	fclose(fp);
 	free(holder.base);
+
+	//Allocating
+	state_t=state_r;
+	while(state_t){
+		state_t->offset=offset;
+		offset+=sizeof(struct state_st);
+		state_t=state_t->n;
+	}
 
 	//Write
 	fopen(argv[2], "wb+");
