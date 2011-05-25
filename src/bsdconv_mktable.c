@@ -601,7 +601,9 @@ int main(int argc, char *argv[]){
 	fclose(fp);
 	printf("Total size: %u\n", (unsigned int)offset);
 
+#ifdef USE_FMALLOC
 	fmcleanup();
+#endif
 
 	return 0;
 }

@@ -1,3 +1,4 @@
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -37,5 +38,13 @@ char * getwd(char *buf){
 	memcpy(r,b,l);
 	return r;
 }
+
+int mkstemp(char *tmpl){
+	int ret;
+	mktemp(tmpl);
+	ret=open(tmpl,O_RDWR|O_BINARY|O_CREAT|O_EXCL);
+	return ret;
+}
+
 #endif
 
