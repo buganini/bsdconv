@@ -27,6 +27,7 @@
 extern "C" {
 #endif
 
+//struct data_rt.flags
 #define F_FREE 0x1
 #define F_SKIP 0x10
 
@@ -156,6 +157,8 @@ char * getwd(char *);
 #define REALPATH(path, buf) realpath(path, buf)
 #endif
 
+
+//Internal API
 #define LISTCPY(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
 	DATA_MALLOC((X)->next);	\
 	(X)=(X)->next;	\
@@ -186,6 +189,7 @@ char * getwd(char *);
 #define DATA_MALLOC(X) do{if(ins->pool){(X)=ins->pool; ins->pool=ins->pool->next;}else{(X)=malloc(sizeof(struct data_rt));}}while(0)
 #define DATA_FREE(X) do{ if((X)->flags & F_FREE) free((X)->data); (X)->next=ins->pool; ins->pool=(X);}while(0)
 
+//API
 struct bsdconv_instance *bsdconv_create(const char *);
 struct bsdconv_instance *bsdconv_duplicate(struct bsdconv_instance *);
 int bsdconv_get_phase_index(struct bsdconv_instance *, int);
@@ -200,8 +204,10 @@ void bsdconv_destroy(struct bsdconv_instance *);
 void bsdconv(struct bsdconv_instance *);
 char * bsdconv_error(void);
 
+//CTL Action
 #define BSDCONV_SCORE_ATTACH 0
 
+//Binary
 #define bb00000011 0x03
 #define bb00000111 0x07
 #define bb00001111 0x0f
