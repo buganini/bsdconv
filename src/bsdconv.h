@@ -181,7 +181,7 @@ char * getwd(char *);
 #define RESET(X) do{	\
 	ins->phase[X].index=0;	\
 	memcpy(&ins->phase[X].state, ins->phase[X].codec[ins->phase[X].index].z, sizeof(struct state_st));	\
-}while(0);
+}while(0)
 
 #define CP(X) ((char *)(X)) 
 #define UCP(X) ((unsigned char *)(X)) 

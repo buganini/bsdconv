@@ -224,7 +224,7 @@ void bsdconv_init(struct bsdconv_instance *ins){
 		ins->phase[i].match=NULL;
 		if(i>0){
 			ins->phase[i].curr=ins->phase[i-1].data_head;
-			RESET(i)
+			RESET(i);
 			for(j=0;j<=ins->phase[i].codecn;++j){
 				if(ins->phase[i].codec[j].cbinit)
 					ins->phase[i].codec[j].cbinit(&(ins->phase[i].codec[j]),ins->phase[i].codec[j].priv);
