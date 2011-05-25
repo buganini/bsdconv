@@ -67,7 +67,7 @@ struct dhash{
 	uintptr_t v;
 	int c;
 	struct dhash *p;
-	struct dhash *sub[257];
+	struct dhash **sub;
 	offset_t offset;
 	void *head;
 };
@@ -80,27 +80,29 @@ uintptr_t offset=0;
 struct dhash *hash_datalist, *hash_data;
 
 uintptr_t hash(int *p, uintptr_t l){
-	int i,j;
+	int i;
 	struct dhash *hash_p=hash_datalist;
 	struct dhash *hash_q=hash_data;
 	for(i=l-1;i>=0;--i){
+		if(hash_p->sub==NULL)
+			hash_p->sub=calloc(257, sizeof(struct dhash *));
 		if(hash_p->sub[p[i]]==NULL){
 			hash_p->sub[p[i]]=FMALLOC(sizeof(struct dhash));
 			hash_p->sub[p[i]]->c=p[i];
 			hash_p->sub[p[i]]->p=hash_p;
 			hash_p->sub[p[i]]->v=0;
 			hash_p->sub[p[i]]->offset=0;
-			for(j=0;j<=256;++j){
-				hash_p->sub[p[i]]->sub[j]=NULL;
-			}
+			hash_p->sub[p[i]]->sub=NULL;
 		}
-//		printf("hash_p: [%d]%X %p => %p\n", i, p[i], hash_p, hash_p->sub[p[i]]);
+		//printf("hash_p: [%d]%X %p => %p\n", i, p[i], hash_p, hash_p->sub[p[i]]);
 		if(p[i]==256){
 			hash_p->v=(uintptr_t) hash_q;
 			hash_p=hash_p->sub[p[i]];
 			hash_q=hash_data;
 		}else{
 			hash_p=hash_p->sub[p[i]];
+			if(hash_q->sub==NULL)
+				hash_q->sub=calloc(257, sizeof(struct dhash *));
 			if(hash_q->sub[p[i]]==NULL){
 				hash_q->sub[p[i]]=FMALLOC(sizeof(struct dhash));
 				hash_q->sub[p[i]]->c=p[i];
@@ -108,9 +110,7 @@ uintptr_t hash(int *p, uintptr_t l){
 				hash_q->sub[p[i]]->v=0;
 				hash_q->sub[p[i]]->offset=0;
 				hash_q->sub[p[i]]->head=NULL;
-				for(j=0;j<=256;++j){
-					hash_q->sub[p[i]]->sub[j]=NULL;
-				}
+				hash_q->sub[p[i]]->sub=NULL;
 			}
 			hash_q=hash_q->sub[p[i]];
 		}
@@ -215,18 +215,14 @@ int main(int argc, char *argv[]){
 	fp=fopen(argv[1], "r");
 
 	hash_datalist=FMALLOC(sizeof(struct dhash));
-	for(i=0;i<=256;++i){
-		hash_datalist->sub[i]=0;
-	}
+	hash_datalist->sub=NULL;
 	hash_datalist->p=0;
 	hash_datalist->v=0;
 	hash_datalist->offset=0;
 	hash_datalist->head=NULL;
 
 	hash_data=FMALLOC(sizeof(struct dhash));
-	for(i=0;i<=256;++i){
-		hash_data->sub[i]=0;
-	}
+	hash_data->sub=NULL;
 	hash_data->p=0;
 	hash_data->v=0;
 	hash_data->offset=0;
