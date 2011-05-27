@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include "fmalloc.h"
 
+const char *fmalloc_template="/tmp/.fmalloc.XXXXXX";
 struct fmalloc_entry * fmalloc_pools=NULL;
 int fmalloc_num=0;
 
@@ -17,7 +18,7 @@ void * fmalloc(size_t s){
 	struct fmalloc_entry * last;
 	if(fmalloc_pools==NULL || ((fmalloc_pools->offset+s) > FMALLOC_SIZE)){
 		if(fmalloc_num < FMALLOC_NUM){
-			sprintf(tmpfile,"/tmp/.fmalloc.XXXXXX");
+			sprintf(tmpfile, fmalloc_template);
 			if((tmpfd=mkstemp(tmpfile))==-1){
 				return malloc(s);
 			}
