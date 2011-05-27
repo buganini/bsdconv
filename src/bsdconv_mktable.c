@@ -134,6 +134,7 @@ int main(int argc, char *argv[]){
 	struct dhash *hash_p;
 	struct m_state_st *callback=NULL;
 	void *tofree;
+	char fmalloc_template[256];
 
 	table['0']=0;
 	table['1']=1;
@@ -211,6 +212,8 @@ int main(int argc, char *argv[]){
 	ci_table['z']='Z';
 
 	printf("Making table %s\n", argv[1]);
+
+	sprintf(fmalloc_template, "%s.XXXXX", argv[2]);
 
 	fp=fopen(argv[1], "r");
 
