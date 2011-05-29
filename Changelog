@@ -1,3 +1,6 @@
+5.1:
+	reduce memory usage in bsdconv_mktable
+
 5.0:
 	table format change
 	inter/SCORE
