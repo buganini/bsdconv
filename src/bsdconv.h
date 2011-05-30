@@ -101,6 +101,7 @@ struct bsdconv_instance{
 	unsigned int ierr, oerr, score;
 
 	struct data_rt *pool;
+	unsigned int full, half, ambi;
 };
 
 struct bsdconv_phase{

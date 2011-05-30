@@ -209,6 +209,9 @@ void bsdconv_init(struct bsdconv_instance *ins){
 	ins->ierr=0;
 	ins->oerr=0;
 	ins->score=0;
+	ins->full=0;
+	ins->half=0;
+	ins->ambi=0;
 
 	for(i=0;i<=ins->phasen;++i){
 		ins->phase[i].pend=0;

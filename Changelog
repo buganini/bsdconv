@@ -1,5 +1,6 @@
 5.1:
 	reduce memory usage in bsdconv_mktable
+	inter/WIDTH
 
 5.0:
 	table format change

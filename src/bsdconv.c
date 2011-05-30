@@ -111,6 +111,11 @@ int main(int argc, char *argv[]){
 
 	fprintf(stderr, "Decoding failure: %u\n", ins->ierr);
 	fprintf(stderr, "Encoding failure: %u\n", ins->oerr);
+	if(ins->full || ins->half || ins->ambi){
+		fprintf(stderr, "Full width: %u\n", ins->full);
+		fprintf(stderr, "Half width: %u\n", ins->half);
+		fprintf(stderr, "Ambi width: %u\n", ins->ambi);
+	}
 	if(ins->score)
 		fprintf(stderr, "Score: %u\n", ins->score);
 	bsdconv_destroy(ins);
