@@ -27,6 +27,8 @@
 #include <errno.h>
 #endif
 
+extern const char *fmalloc_template;
+
 struct m_data_st{
 	char *data;
 	size_t len;
@@ -134,7 +136,7 @@ int main(int argc, char *argv[]){
 	struct dhash *hash_p;
 	struct m_state_st *callback=NULL;
 	void *tofree;
-	char fmalloc_template[256];
+	char bsdconv_mktable_fmalloc_template[256];
 
 	table['0']=0;
 	table['1']=1;
@@ -213,7 +215,8 @@ int main(int argc, char *argv[]){
 
 	printf("Making table %s\n", argv[1]);
 
-	sprintf(fmalloc_template, "%s.XXXXX", argv[2]);
+	sprintf(bsdconv_mktable_fmalloc_template, "%s.XXXXX", argv[2]);
+	fmalloc_template=bsdconv_mktable_fmalloc_template;
 
 	fp=fopen(argv[1], "r");
 
