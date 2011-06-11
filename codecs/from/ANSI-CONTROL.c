@@ -52,7 +52,7 @@ void callback(struct bsdconv_instance *ins){
 		*(t->p)=d;
 		t->p+=1;
 		this_phase->state.status=CONTINUE;
-		if((d>='a' && d<='z') || (d>='A' && d<='Z') || (t->p - t->buf)==30){
+		if((d>='a' && d<='z') || (d>='A' && d<='N') || (d>='P' && d<='Z') || (t->p - t->buf)==30 || ((t->p - t->buf)==2 && d!='[')){
 			DATA_MALLOC(this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
