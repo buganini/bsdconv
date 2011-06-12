@@ -23,7 +23,8 @@
 #include <string.h>
 #include "../../src/bsdconv.h"
 
-void * cbcreate(void){
+void cbcreate(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	char buf[256]={0};
 	char *p=getenv("BSDCONV_SCORE");
 	if(p==NULL){
@@ -31,22 +32,24 @@ void * cbcreate(void){
 		strcat(buf,"/.bsdconv.score");
 		p=buf;
 	}
-	return fopen(p,"r");
+	ins->phase[ins->phase_index].codec[this_phase->index].priv=fopen(p,"r");
 }
 
-void cbctl(struct bsdconv_codec_t *cd, int ctl, void *ptr, int v){
+void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	switch(ctl){
 		case BSDCONV_SCORE_ATTACH:
-			if(cd->priv)
-				fclose(cd->priv);
-			cd->priv=ptr;
+			if(ins->phase[ins->phase_index].codec[this_phase->index].priv)
+				fclose(ins->phase[ins->phase_index].codec[this_phase->index].priv);
+			ins->phase[ins->phase_index].codec[this_phase->index].priv=ptr;
 			break;
 	}
 }
 
-void cbdestroy(FILE *fp){
-	if(fp)
-		fclose(fp);
+void cbdestroy(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	if(ins->phase[ins->phase_index].codec[this_phase->index].priv)
+		fclose(ins->phase[ins->phase_index].codec[this_phase->index].priv);
 }
 
 struct interval {

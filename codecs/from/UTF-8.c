@@ -23,19 +23,24 @@ struct my_s{
 	char *p, f;
 };
 
-void *cbcreate(void){
+void cbcreate(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *r=malloc(sizeof(struct my_s));
 	r->buf=malloc(8);
-	return r;
+	ins->phase[ins->phase_index].codec[this_phase->index].priv=r;
 }
 
-void cbinit(struct bsdconv_codec_t *cdc, struct my_s *r){
+void cbinit(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct my_s *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
 	r->status=0;
 	r->p=r->buf+1;
 	r->f=0;
 }
 
-void cbdestroy(struct my_s *r){
+void cbdestroy(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct my_s *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
 	free(r->buf);
 	free(r);
 }

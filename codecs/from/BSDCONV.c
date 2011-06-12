@@ -29,14 +29,17 @@ struct my_s {
 	char flag;
 };
 
-void *cbcreate(void){
+void cbcreate(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *r=malloc(sizeof(struct my_s));
 	r->data.data=NULL;
-	return r;
+	ins->phase[ins->phase_index].codec[this_phase->index].priv=r;
 }
 
-void cbinit(struct bsdconv_codec_t *cdc, struct my_s *t){
-	cdc->data_z=0;
+void cbinit(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct my_s *t=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	ins->phase[ins->phase_index].codec[this_phase->index].data_z=0;
 	t->data.len=0;
 	if(t->data.data)
 		free(t->data.data);
@@ -44,12 +47,13 @@ void cbinit(struct bsdconv_codec_t *cdc, struct my_s *t){
 	t->flag=F_CLEAR;
 }
 
-void cbdestroy(void *p){
-	struct my_s *t=p;
+void cbdestroy(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct my_s *t=ins->phase[ins->phase_index].codec[this_phase->index].priv;
 	if(t->data.data){
 		free(t->data.data);
 	}
-	free(p);
+	free(t);
 }
 
 int hex[256]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,1,2,3,4,5,6,7,8,9,-1,-1,-1,-1,-1,-1,-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};

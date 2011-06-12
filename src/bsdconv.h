@@ -89,6 +89,12 @@ struct state_rt{
 	offset_t base;
 };
 
+struct hash_entry{
+	char *key;
+	void *ptr;
+	struct hash_entry *next;
+};
+
 struct bsdconv_instance{
 	int output_mode;
 	
@@ -98,10 +104,12 @@ struct bsdconv_instance{
 
 	struct bsdconv_phase *phase;
 	int phasen, phase_index;
+	struct hash_entry *hash;
+
 	unsigned int ierr, oerr, score;
+	unsigned int full, half, ambi;
 
 	struct data_rt *pool;
-	unsigned int full, half, ambi;
 };
 
 struct bsdconv_phase{
@@ -129,10 +137,10 @@ struct bsdconv_codec_t {
 	char *data_z;
 	char *desc;
 	void (*callback)(struct bsdconv_instance *);
-	void *(*cbcreate)(void);
-	void (*cbinit)(struct bsdconv_codec_t *, void *);
-	void (*cbctl)(struct bsdconv_codec_t *, int, void *, int);
-	void (*cbdestroy)(void *);
+	void (*cbcreate)(struct bsdconv_instance *);
+	void (*cbinit)(struct bsdconv_instance *);
+	void (*cbctl)(struct bsdconv_instance *, int, void *, size_t);
+	void (*cbdestroy)(struct bsdconv_instance *);
 	void *priv;
 };
 
@@ -204,6 +212,16 @@ void bsdconv_ctl(struct bsdconv_instance *, int, void *, int);
 void bsdconv_destroy(struct bsdconv_instance *);
 void bsdconv(struct bsdconv_instance *);
 char * bsdconv_error(void);
+void * bsdconv_hash(struct bsdconv_instance *, const char *, size_t);
+int bsdconv_hash_has(struct bsdconv_instance *, const char *);
+void bsdconv_hash_delete(struct bsdconv_instance *, const char *);
+
+//Callback function interface
+void callback(struct bsdconv_instance *);
+void cbcreate(struct bsdconv_instance *);
+void cbinit(struct bsdconv_instance *);
+void cbctl(struct bsdconv_instance *, int, void *, size_t);
+void cbdestroy(struct bsdconv_instance *);
 
 //CTL Action
 #define BSDCONV_SCORE_ATTACH 0

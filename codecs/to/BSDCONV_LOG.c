@@ -20,12 +20,15 @@
 
 #define TAILIZE(p) while(*p){ p++ ;}
 
-void * cbcreate(void){
-	return fopen(getenv("BSDCONV_TO_LOG"),"a");
+void cbcreate(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	ins->phase[ins->phase_index].codec[this_phase->index].priv=fopen(getenv("BSDCONV_TO_LOG"),"a");
 }
 
-void cbdestroy(FILE *fp){
-	fclose(fp);
+void cbdestroy(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	void *p=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	fclose(p);
 }
 
 void callback(struct bsdconv_instance *ins){

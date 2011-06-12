@@ -26,22 +26,26 @@ struct my_s{
 	struct bsdconv_instance *uni;
 };
 
-void *cbcreate(void){
+void cbcreate(struct bsdconv_instance *ins){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	r->uni=bsdconv_create("UNICODE");
-	return r;
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	ins->phase[ins->phase_index].codec[this_phase->index].priv=r;
 }
 
-void cbinit(struct bsdconv_codec_t *cdc, struct my_s *r){
+void cbinit(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct my_s *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
 	r->status=0;
 	r->plane=1;
 }
 
-void cbdestroy(void *p){
-	struct my_s *r=p;
+void cbdestroy(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct my_s *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
 	if(r->uni!=NULL)
 		bsdconv_destroy(r->uni);
-	free(p);
+	free(r);
 }
 
 void callback(struct bsdconv_instance *ins){

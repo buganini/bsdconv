@@ -195,6 +195,47 @@ void unloadcodec(struct bsdconv_codec_t *cd){
 #endif
 }
 
+void * bsdconv_hash(struct bsdconv_instance *ins, const char *key, size_t size){
+	struct hash_entry *p=ins->hash;
+	while(p!=NULL){
+		if(strcmp(p->key, key)==0)
+			return p->ptr;
+		p=p->next;
+	}
+	p=malloc(sizeof(struct hash_entry));
+	p->next=ins->hash;
+	ins->hash=p;
+	p->key=strdup(key);
+	p->ptr=malloc(size);
+	return p->ptr;
+}
+
+int bsdconv_hash_has(struct bsdconv_instance *ins, const char *key){
+	struct hash_entry *p=ins->hash;
+	while(p!=NULL){
+		if(strcmp(p->key, key)==0)
+			return 1;
+		p=p->next;
+	}
+	return 0;
+}
+
+void bsdconv_hash_delete(struct bsdconv_instance *ins, const char *key){
+	struct hash_entry *p=ins->hash;
+	struct hash_entry **q=&ins->hash;
+	while(p!=NULL){
+		if(strcmp(p->key, key)==0){
+			free(p->key);
+			free(p->ptr);
+			*q=p->next;
+			free(p);
+			return;
+		}
+		p=p->next;
+		q=&p->next;
+	}
+}
+
 void bsdconv_init(struct bsdconv_instance *ins){
 	int i, j;
 	struct data_rt *data_ptr;
@@ -214,6 +255,7 @@ void bsdconv_init(struct bsdconv_instance *ins){
 	ins->ambi=0;
 
 	for(i=0;i<=ins->phasen;++i){
+		ins->phase_index=i;
 		ins->phase[i].pend=0;
 		while(ins->phase[i].data_head->next){
 			data_ptr=ins->phase[i].data_head->next;
@@ -227,11 +269,12 @@ void bsdconv_init(struct bsdconv_instance *ins){
 		ins->phase[i].match=NULL;
 		if(i>0){
 			ins->phase[i].curr=ins->phase[i-1].data_head;
-			RESET(i);
 			for(j=0;j<=ins->phase[i].codecn;++j){
+				ins->phase[i].index=j;
 				if(ins->phase[i].codec[j].cbinit)
-					ins->phase[i].codec[j].cbinit(&(ins->phase[i].codec[j]),ins->phase[i].codec[j].priv);
+					ins->phase[i].codec[j].cbinit(ins);
 			}
+			RESET(i);
 		}
 	}
 }
@@ -298,8 +341,10 @@ int bsdconv_insert_phase(struct bsdconv_instance *ins, const char *codec, int ph
 		if(!loadcodec(&ins->phase[phasen].codec[i], phase_type, c)){
 			return -1;
 		}
+		ins->phase_index=phasen;
+		ins->phase[phasen].index=i;
 		if(ins->phase[phasen].codec[i].cbcreate)
-			ins->phase[phasen].codec[i].priv=ins->phase[phasen].codec[i].cbcreate();
+			ins->phase[phasen].codec[i].cbcreate(ins);
 	}
 	free(cd);
 
@@ -321,8 +366,10 @@ int bsdconv_insert_codec(struct bsdconv_instance *ins, const char *codec, int op
 	if(!loadcodec(&ins->phase[phasen].codec[codecn], ins->phase[phasen].type, codec)){
 		return -1;
 	}
+	ins->phase_index=phasen;
+	ins->phase[phasen].index=codecn;
 	if(ins->phase[phasen].codec[codecn].cbcreate)
-		ins->phase[phasen].codec[codecn].priv=ins->phase[phasen].codec[codecn].cbcreate();
+		ins->phase[phasen].codec[codecn].cbcreate(ins);
 	return codecn;
 }
 
@@ -355,8 +402,10 @@ int bsdconv_replace_phase(struct bsdconv_instance *ins, const char *codec, int p
 			free(cd);
 			return -1;
 		}
+		ins->phase_index=phasen;
+		ins->phase[phasen].index=i;
 		if(ins->phase[phasen].codec[i].cbcreate)
-			ins->phase[phasen].codec[i].priv=ins->phase[phasen].codec[i].cbcreate();
+			ins->phase[phasen].codec[i].cbcreate(ins);
 	}
 	free(cd);
 
@@ -376,8 +425,10 @@ int bsdconv_replace_codec(struct bsdconv_instance *ins, const char *codec, int o
 	if(!loadcodec(&ins->phase[phasen].codec[codecn], ins->phase[phasen].type, codec)){
 		return -1;
 	}
+	ins->phase_index=phasen;
+	ins->phase[phasen].index=codecn;
 	if(ins->phase[phasen].codec[codecn].cbcreate)
-		ins->phase[phasen].codec[codecn].priv=ins->phase[phasen].codec[codecn].cbcreate();
+		ins->phase[phasen].codec[codecn].cbcreate(ins);
 	return codecn;
 }
 
@@ -386,7 +437,9 @@ void bsdconv_ctl(struct bsdconv_instance *ins, int ctl, void *p, int v){
 	for(i=1;i<=ins->phasen;++i){
 		for(j=0;j<=ins->phase[i].codecn;++j){
 			if(ins->phase[i].codec[j].cbctl){
-				ins->phase[i].codec[j].cbctl(&ins->phase[i].codec[j], ctl, p, v);
+				ins->phase_index=i;
+				ins->phase[i].index=j;
+				ins->phase[i].codec[j].cbctl(ins, ctl, p, v);
 			}
 		}
 	}
@@ -398,6 +451,7 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	int i, j, f=0;
 
 	ins->pool=NULL;
+	ins->hash=NULL;
 	ins->input.flags=0;
 	ins->output.flags=0;
 
@@ -471,7 +525,9 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	for(i=1;i<=ins->phasen;++i){
 		for(j=0;j<=ins->phase[i].codecn;++j){
 			if(ins->phase[i].codec[j].cbcreate){
-				ins->phase[i].codec[j].priv=ins->phase[i].codec[j].cbcreate();
+				ins->phase_index=i;
+				ins->phase[i].index=j;
+				ins->phase[i].codec[j].cbcreate(ins);
 			}
 		}
 	}
@@ -507,6 +563,11 @@ struct bsdconv_instance *bsdconv_duplicate(struct bsdconv_instance *oins){
 	int i,j;
 	struct bsdconv_instance *ins=malloc(sizeof(struct bsdconv_instance));
 
+	ins->pool=NULL;
+	ins->hash=NULL;
+	ins->input.flags=0;
+	ins->output.flags=0;
+
 	ins->phasen=oins->phasen;
 	ins->phase=malloc(sizeof(struct bsdconv_phase) * (ins->phasen+1));
 	for(i=1;i<=ins->phasen;++i){
@@ -520,7 +581,9 @@ struct bsdconv_instance *bsdconv_duplicate(struct bsdconv_instance *oins){
 	for(i=1;i<=ins->phasen;++i){
 		for(j=0;j<=ins->phase[i].codecn;++j){
 			if(ins->phase[i].codec[j].cbcreate){
-				ins->phase[i].codec[j].priv=ins->phase[i].codec[j].cbcreate();
+				ins->phase_index=i;
+				ins->phase[i].index=j;
+				ins->phase[i].codec[j].cbcreate(ins);
 			}
 		}
 	}
@@ -541,7 +604,9 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 			for(j=0;j<=ins->phase[i].codecn;++j){
 				free(ins->phase[i].codec[j].desc);
 				if(ins->phase[i].codec[j].cbdestroy){
-					ins->phase[i].codec[j].cbdestroy(ins->phase[i].codec[j].priv);
+					ins->phase_index=i;
+					ins->phase[i].index=j;
+					ins->phase[i].codec[j].cbdestroy(ins);
 				}
 				unloadcodec(&ins->phase[i].codec[j]);
 			}
@@ -561,6 +626,11 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 		free(data_ptr);
 	}
 	free(ins->phase);
+	while(ins->hash){
+		free(ins->hash->key);
+		free(ins->hash->ptr);
+		ins->hash=ins->hash->next;
+	}
 	free(ins);
 }
 

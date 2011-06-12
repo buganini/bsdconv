@@ -23,11 +23,14 @@
 
 #define TAILIZE(p) while(*p){ p++ ;}
 
-void *cbcreate(void){
-	return bsdconv_create("CNS11643");
+void cbcreate(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	ins->phase[ins->phase_index].codec[this_phase->index].priv=bsdconv_create("CNS11643");
 }
 
-void cbdestroy(void *p){
+void cbdestroy(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	void *p=ins->phase[ins->phase_index].codec[this_phase->index].priv;
 	if(p!=NULL)
 		bsdconv_destroy(p);
 }

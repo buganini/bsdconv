@@ -32,16 +32,21 @@ struct my_s{
 	char unicode;
 };
 
-void *cbcreate(void){
-	return malloc(sizeof(struct my_s));
+void cbcreate(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	ins->phase[ins->phase_index].codec[this_phase->index].priv=malloc(sizeof(struct my_s));
 }
 
-void cbinit(struct bsdconv_codec_t *cdc, struct my_s *r){
+void cbinit(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct my_s *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
 	r->status=0;
 	r->unicode=0;
 }
 
-void cbdestroy(void *p){
+void cbdestroy(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	void *p=ins->phase[ins->phase_index].codec[this_phase->index].priv;
 	free(p);
 }
 

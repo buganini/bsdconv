@@ -77,15 +77,20 @@ static const struct interval ambiguous[] = {
 	{ 0xFFFD, 0xFFFD }, { 0xF0000, 0xFFFFD }, { 0x100000, 0x10FFFD }
 };
 
-void *cbcreate(void){
-	return malloc(sizeof(char));
+void cbcreate(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	ins->phase[ins->phase_index].codec[this_phase->index].priv=malloc(sizeof(char));
 }
 
-void cbinit(struct bsdconv_codec_t *cdc, char *r){
+void cbinit(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	char *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
 	*r=0;
 }
 
-void cbdestroy(void *r){
+void cbdestroy(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	void *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
 	free(r);
 }
 
