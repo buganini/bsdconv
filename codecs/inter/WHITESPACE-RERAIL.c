@@ -79,8 +79,10 @@ void callback(struct bsdconv_instance *ins){
 		this_phase->data_tail->next=t->queue->data;
 		this_phase->data_tail=this_phase->data_tail->next;
 		this_phase->data_tail->next=NULL;
-		if(&t->queue->next==t->last)
+		if(&t->queue->next==t->last){
 			t->last=&t->queue;
+			t->dlast=NULL;
+		}
 		q=t->queue->next;
 		DATA_FREE(t->queue);
 		t->queue=q;

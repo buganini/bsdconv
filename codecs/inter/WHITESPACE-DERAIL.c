@@ -76,7 +76,7 @@ void callback(struct bsdconv_instance *ins){
 
 	this_phase->state.status=NEXTPHASE;
 
-	if(data[0]==0x1){
+	if(this_phase->curr->len>0 && data[0]==0x1){
 		for(i=1;i<this_phase->curr->len;++i){
 			ucs<<=8;
 			ucs|=data[i];
