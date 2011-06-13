@@ -34,6 +34,8 @@ Convert traditional chinese utf-8 to simplified chinese GB2312 with transliterat
 
 Convert simplified chiese to traditional chinese
 > bsdconv ascii,utf-8:zhtw:zhtw_words:utf-8,ascii
+ignoring whitespaces mixed in words
+> bsdconv utf-8,ascii:whitespace-derail:zhtw:zhtw_words:whitespace-rerail:utf-8,ascii
 
 Convert big5 data, traditional chinese to simplified chinese, 
 CRLF/CR/LF to CRLF, to big5 data, translate simplified chinese words, which are

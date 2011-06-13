@@ -1,3 +1,6 @@
+	inter/WHITESPACE-DERAIL
+	inter/WHITESPACE-RERAIL
+
 5.1:
 	reduce memory usage in bsdconv_mktable
 	inter/WIDTH
