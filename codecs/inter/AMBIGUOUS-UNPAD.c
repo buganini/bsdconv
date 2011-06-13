@@ -107,7 +107,7 @@ void callback(struct bsdconv_instance *ins){
 
 	this_phase->state.status=NEXTPHASE;
 
-	if(data[0]==0x1 && this_phase->curr->len > 1){
+	if(this_phase->curr->len>1 && data[0]==0x1){
 		if(*r==1 && data[1]==0xA0){
 			*r=0;
 			return;

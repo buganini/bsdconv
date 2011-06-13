@@ -94,7 +94,7 @@ void callback(struct bsdconv_instance *ins){
 	this_phase->curr->flags &= ~F_FREE;
 	this_phase->data_tail->next=NULL;
 
-	if(data[0]==0x1){
+	if(this_phase->curr->len>0 && data[0]==0x1){
 		for(pad=1;pad<this_phase->curr->len;++pad){
 			ucs<<=8;
 			ucs|=data[pad];
