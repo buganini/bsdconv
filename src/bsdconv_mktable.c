@@ -27,7 +27,9 @@
 #include <errno.h>
 #endif
 
+#ifdef USE_FMALLOC
 extern const char *fmalloc_template;
+#endif
 
 struct m_data_st{
 	char *data;
@@ -216,7 +218,9 @@ int main(int argc, char *argv[]){
 	printf("Making table %s\n", argv[1]);
 
 	sprintf(bsdconv_mktable_fmalloc_template, "%s.XXXXX", argv[2]);
+#ifdef USE_FMALLOC
 	fmalloc_template=bsdconv_mktable_fmalloc_template;
+#endif
 
 	fp=fopen(argv[1], "r");
 
