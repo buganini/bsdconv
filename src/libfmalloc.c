@@ -1,7 +1,7 @@
 #ifdef USE_FMALLOC
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/mman.h>
 #include <unistd.h>
 #include "fmalloc.h"
@@ -18,7 +18,7 @@ void * fmalloc(size_t s){
 	struct fmalloc_entry * last;
 	if(fmalloc_pools==NULL || ((fmalloc_pools->offset+s) > FMALLOC_SIZE)){
 		if(fmalloc_num < FMALLOC_NUM){
-			sprintf(tmpfile, fmalloc_template);
+			strcpy(tmpfile, fmalloc_template);
 			if((tmpfd=mkstemp(tmpfile))==-1){
 				return malloc(s);
 			}
