@@ -12,7 +12,7 @@ int fmalloc_num=0;
 
 void * fmalloc(size_t s){
 	void *m;
-	char tmpfile[32]={0};
+	char tmpfile[256]={0};
 	int tmpfd;
 	size_t o_offset;
 	struct fmalloc_entry * last;
