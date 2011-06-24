@@ -12,17 +12,18 @@ int fmalloc_num=0;
 
 void * fmalloc(size_t s){
 	void *m;
-	char tmpfile[256]={0};
+	char *tmpfile;
 	int tmpfd;
 	size_t o_offset;
 	struct fmalloc_entry * last;
 	if(fmalloc_pools==NULL || ((fmalloc_pools->offset+s) > FMALLOC_SIZE)){
 		if(fmalloc_num < FMALLOC_NUM){
-			strcpy(tmpfile, fmalloc_template);
+			tmpfile=strdup(fmalloc_template);
 			if((tmpfd=mkstemp(tmpfile))==-1){
 				return malloc(s);
 			}
 			unlink(tmpfile);
+			free(tmpfile);
 			ftruncate(tmpfd, FMALLOC_SIZE);
 			m=mmap(0, FMALLOC_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, tmpfd, 0);
 			if(m==NULL){

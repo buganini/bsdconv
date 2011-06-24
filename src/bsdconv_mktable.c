@@ -138,7 +138,7 @@ int main(int argc, char *argv[]){
 	struct dhash *hash_p;
 	struct m_state_st *callback=NULL;
 	void *tofree;
-	char bsdconv_mktable_fmalloc_template[256];
+	char *bsdconv_mktable_fmalloc_template;
 
 	table['0']=0;
 	table['1']=1;
@@ -217,8 +217,9 @@ int main(int argc, char *argv[]){
 
 	printf("Making table %s\n", argv[1]);
 
-	sprintf(bsdconv_mktable_fmalloc_template, "%s.XXXXX", argv[2]);
 #ifdef USE_FMALLOC
+	bsdconv_mktable_fmalloc_template=malloc(strlen(argv[2])+10);
+	sprintf(bsdconv_mktable_fmalloc_template, "%s.XXXXX", argv[2]);
 	fmalloc_template=bsdconv_mktable_fmalloc_template;
 #endif
 
@@ -608,6 +609,7 @@ int main(int argc, char *argv[]){
 	printf("Total size: %u\n", (unsigned int)offset);
 
 #ifdef USE_FMALLOC
+	free(bsdconv_mktable_fmalloc_template);
 	fmcleanup();
 #endif
 
