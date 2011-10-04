@@ -156,9 +156,9 @@ TODO_CODECS_EXTRA_CALLBACK+=to/CNS11643
 all: libbsdconv bsdconv_mktable meta bsdconv codecs
 
 alias:
-.for t in from inter to
-	python tools/mkalias.py codecs/$t/alias codecs/inter/${t:U}_ALIAS.txt
-.endfor
+	python tools/mkalias.py codecs/from/alias codecs/inter/FROM_ALIAS.txt
+	python tools/mkalias.py codecs/inter/alias codecs/inter/INTER_ALIAS.txt
+	python tools/mkalias.py codecs/to/alias codecs/inter/TO_ALIAS.txt
 
 builddir:
 	mkdir -p build/bin
@@ -178,24 +178,24 @@ bsdconv_mktable: builddir src/bsdconv.h
 	$(CC) ${CFLAGS} -DUSE_FMALLOC src/libfmalloc.c src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
 
 codecs_basic_table: builddir bsdconv_mktable
-.	for item in ${TODO_CODECS_BASIC_TABLE}
-	./build/bin/bsdconv_mktable codecs/${item}.txt ./build/share/bsdconv/${item}
-.	endfor
+	for item in ${TODO_CODECS_BASIC_TABLE} ; do \
+		./build/bin/bsdconv_mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
+	done
 
 codecs_basic_callback: builddir libbsdconv
-.	for item in ${TODO_CODECS_BASIC_CALLBACK}
-	$(CC) ${CFLAGS} -fPIC -shared -o ./build/share/bsdconv/${item}.so codecs/${item}.c
-.	endfor
+	for item in ${TODO_CODECS_BASIC_CALLBACK} ; do \
+		$(CC) ${CFLAGS} -fPIC -shared -o ./build/share/bsdconv/$${item}.so codecs/$${item}.c ; \
+	done
 
 codecs_extra_table: builddir bsdconv_mktable
-.	for item in ${TODO_CODECS_EXTRA_TABLE}
-	./build/bin/bsdconv_mktable codecs/${item}.txt ./build/share/bsdconv/${item}
-.	endfor
+	for item in ${TODO_CODECS_EXTRA_TABLE} ; do \
+		./build/bin/bsdconv_mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
+	done
 
 codecs_extra_callback: builddir libbsdconv
-.	for item in ${TODO_CODECS_EXTRA_CALLBACK}
-	$(CC) ${CFLAGS} -fPIC -shared -o ./build/share/bsdconv/${item}.so codecs/${item}.c
-.	endfor
+	for item in ${TODO_CODECS_EXTRA_CALLBACK} ; do \
+		$(CC) ${CFLAGS} -fPIC -shared -o ./build/share/bsdconv/$${item}.so codecs/$${item}.c ; \
+	done
 
 codecs: codecs_basic codecs_extra
 codecs_basic: codecs_basic_table codecs_basic_callback
@@ -221,20 +221,20 @@ install_main:
 	mkdir -p ${PREFIX}/share/bsdconv/to
 
 install_basic:
-.	for item in ${TODO_CODECS_BASIC_TABLE}
-	install -m 444 build/share/bsdconv/${item} ${PREFIX}/share/bsdconv/${item}
-.	endfor
-.	for item in ${TODO_CODECS_BASIC_CALLBACK}
-	install -s -m 444 build/share/bsdconv/${item}.so ${PREFIX}/share/bsdconv/${item}.so
-.	endfor
+	for item in ${TODO_CODECS_BASIC_TABLE} ; do \
+		install -m 444 build/share/bsdconv/$${item} ${PREFIX}/share/bsdconv/$${item} ; \
+	done
+	for item in ${TODO_CODECS_BASIC_CALLBACK} ; do \
+		install -s -m 444 build/share/bsdconv/$${item}.so ${PREFIX}/share/bsdconv/$${item}.so ; \
+	done
 
 install_extra:
-.	for item in ${TODO_CODECS_EXTRA_TABLE}
-	install -m 444 build/share/bsdconv/${item} ${PREFIX}/share/bsdconv/${item}
-.	endfor
-.	for item in ${TODO_CODECS_EXTRA_CALLBACK}
-	install -s -m 444 build/share/bsdconv/${item}.so ${PREFIX}/share/bsdconv/${item}.so
-.	endfor
+	for item in ${TODO_CODECS_EXTRA_TABLE} ; do \
+		install -m 444 build/share/bsdconv/$${item} ${PREFIX}/share/bsdconv/$${item} ; \
+	done
+	for item in ${TODO_CODECS_EXTRA_CALLBACK} ; do \
+		install -s -m 444 build/share/bsdconv/$${item}.so ${PREFIX}/share/bsdconv/$${item}.so ; \
+	done
 
 plist:
 	@echo bin/bsdconv
@@ -242,18 +242,18 @@ plist:
 	@echo include/bsdconv.h
 	@echo lib/libbsdconv.so
 	@echo lib/libbsdconv.so.${SHLIBVER}
-.	for item in ${TODO_CODECS_BASIC_TABLE}
-	@echo %%DATADIR%%/${item}
-.	endfor
-.	for item in ${TODO_CODECS_BASIC_CALLBACK}
-	@echo %%DATADIR%%/${item}.so
-.	endfor
-.	for item in ${TODO_CODECS_EXTRA_TABLE}
-	@echo %%EXTRA%%%%DATADIR%%/${item}
-.	endfor
-.	for item in ${TODO_CODECS_EXTRA_CALLBACK}
-	@echo %%EXTRA%%%%DATADIR%%/${item}.so
-.	endfor
+	for item in ${TODO_CODECS_BASIC_TABLE} ; do \
+		@echo %%DATADIR%%/$${item} ; \
+	done
+	for item in ${TODO_CODECS_BASIC_CALLBACK} ; do \
+		@echo %%DATADIR%%/$${item}.so ; \
+	done
+	for item in ${TODO_CODECS_EXTRA_TABLE} ; do \
+		@echo %%EXTRA%%%%DATADIR%%/$${item} ; \
+	done
+	for item in ${TODO_CODECS_EXTRA_CALLBACK} ; do \
+		@echo %%EXTRA%%%%DATADIR%%/$${item}.so ; \
+	done
 	@echo @dirrmtry %%DATADIR%%/to
 	@echo @dirrmtry %%DATADIR%%/inter
 	@echo @dirrmtry %%DATADIR%%/from
