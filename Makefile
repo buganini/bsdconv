@@ -184,7 +184,7 @@ codecs_basic_table: builddir bsdconv_mktable
 
 codecs_basic_callback: builddir libbsdconv
 	for item in ${TODO_CODECS_BASIC_CALLBACK} ; do \
-		$(CC) ${CFLAGS} -fPIC -shared -o ./build/share/bsdconv/$${item}.so codecs/$${item}.c ; \
+		$(CC) ${CFLAGS} -L./build/lib/ -lbsdconv -fPIC -shared -o ./build/share/bsdconv/$${item}.so codecs/$${item}.c ; \
 	done
 
 codecs_extra_table: builddir bsdconv_mktable
@@ -194,7 +194,7 @@ codecs_extra_table: builddir bsdconv_mktable
 
 codecs_extra_callback: builddir libbsdconv
 	for item in ${TODO_CODECS_EXTRA_CALLBACK} ; do \
-		$(CC) ${CFLAGS} -fPIC -shared -o ./build/share/bsdconv/$${item}.so codecs/$${item}.c ; \
+		$(CC) ${CFLAGS} -L./build/lib/ -lbsdconv -fPIC -shared -o ./build/share/bsdconv/$${item}.so codecs/$${item}.c ; \
 	done
 
 codecs: codecs_basic codecs_extra
