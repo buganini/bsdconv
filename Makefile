@@ -201,7 +201,7 @@ codecs: codecs_basic codecs_extra
 codecs_basic: codecs_basic_table codecs_basic_callback
 codecs_extra: codecs_extra_table codecs_extra_callback
 
-meta:
+meta: libbsdconv
 	ln -sf libbsdconv.so.${SHLIBVER} build/lib/libbsdconv.so
 	cp src/bsdconv.h build/include
 
@@ -210,7 +210,7 @@ clean:
 
 install: install_main install_basic install_extra
 
-install_main:
+install_main: bsdconv bsdconv_mktable meta
 	install -s -m 555 build/bin/bsdconv ${PREFIX}/bin
 	install -s -m 555 build/bin/bsdconv_mktable ${PREFIX}/bin
 	install -m 444 build/include/bsdconv.h ${PREFIX}/include
@@ -220,7 +220,7 @@ install_main:
 	mkdir -p ${PREFIX}/share/bsdconv/inter
 	mkdir -p ${PREFIX}/share/bsdconv/to
 
-install_basic:
+install_basic: codecs_basic
 	for item in ${TODO_CODECS_BASIC_TABLE} ; do \
 		install -m 444 build/share/bsdconv/$${item} ${PREFIX}/share/bsdconv/$${item} ; \
 	done
@@ -228,7 +228,7 @@ install_basic:
 		install -s -m 444 build/share/bsdconv/$${item}.so ${PREFIX}/share/bsdconv/$${item}.so ; \
 	done
 
-install_extra:
+install_extra: codecs_extra
 	for item in ${TODO_CODECS_EXTRA_TABLE} ; do \
 		install -m 444 build/share/bsdconv/$${item} ${PREFIX}/share/bsdconv/$${item} ; \
 	done
