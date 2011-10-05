@@ -17,6 +17,7 @@
 #ifndef BSDCONV_H
 #define BSDCONV_H
 
+#include <stdint.h>
 #include <unistd.h>
 #include <stdlib.h>
 #ifdef WIN32
