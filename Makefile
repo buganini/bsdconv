@@ -168,6 +168,14 @@ builddir:
 	mkdir -p build/share/bsdconv/inter
 	mkdir -p build/share/bsdconv/to
 
+installdir:
+	mkdir -p ${PREFIX}/bin
+	mkdir -p ${PREFIX}/lib
+	mkdir -p ${PREFIX}/include
+	mkdir -p ${PREFIX}/share/bsdconv/from
+	mkdir -p ${PREFIX}/share/bsdconv/inter
+	mkdir -p ${PREFIX}/share/bsdconv/to
+
 libbsdconv: builddir src/libbsdconv.c src/bsdconv.h
 	$(CC) ${CFLAGS} src/libbsdconv.c -fPIC -shared -o build/lib/libbsdconv.so.${SHLIBVER}
 
@@ -208,7 +216,7 @@ meta: libbsdconv
 clean:
 	rm -rf build
 
-install: install_main install_basic install_extra
+install: installdir install_main install_basic install_extra
 
 install_main: bsdconv bsdconv_mktable meta
 	install -m 555 build/bin/bsdconv ${PREFIX}/bin
@@ -216,9 +224,6 @@ install_main: bsdconv bsdconv_mktable meta
 	install -m 444 build/include/bsdconv.h ${PREFIX}/include
 	install -m 444 build/lib/libbsdconv.so.${SHLIBVER} ${PREFIX}/lib
 	ln -sf libbsdconv.so.${SHLIBVER} ${PREFIX}/lib/libbsdconv.so
-	mkdir -p ${PREFIX}/share/bsdconv/from
-	mkdir -p ${PREFIX}/share/bsdconv/inter
-	mkdir -p ${PREFIX}/share/bsdconv/to
 
 install_basic: codecs_basic
 	for item in ${TODO_CODECS_BASIC_TABLE} ; do \
