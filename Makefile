@@ -247,17 +247,17 @@ plist:
 	@echo include/bsdconv.h
 	@echo lib/libbsdconv.so
 	@echo lib/libbsdconv.so.${SHLIBVER}
-	for item in ${TODO_CODECS_BASIC_TABLE} ; do \
-		@echo %%DATADIR%%/$${item} ; \
+	@for item in ${TODO_CODECS_BASIC_TABLE} ; do \
+		echo %%DATADIR%%/$${item} ; \
 	done
-	for item in ${TODO_CODECS_BASIC_CALLBACK} ; do \
-		@echo %%DATADIR%%/$${item}.so ; \
+	@for item in ${TODO_CODECS_BASIC_CALLBACK} ; do \
+		echo %%DATADIR%%/$${item}.so ; \
 	done
-	for item in ${TODO_CODECS_EXTRA_TABLE} ; do \
-		@echo %%EXTRA%%%%DATADIR%%/$${item} ; \
+	@for item in ${TODO_CODECS_EXTRA_TABLE} ; do \
+		echo %%EXTRA%%%%DATADIR%%/$${item} ; \
 	done
-	for item in ${TODO_CODECS_EXTRA_CALLBACK} ; do \
-		@echo %%EXTRA%%%%DATADIR%%/$${item}.so ; \
+	@for item in ${TODO_CODECS_EXTRA_CALLBACK} ; do \
+		echo %%EXTRA%%%%DATADIR%%/$${item}.so ; \
 	done
 	@echo @dirrmtry %%DATADIR%%/to
 	@echo @dirrmtry %%DATADIR%%/inter
