@@ -1,3 +1,7 @@
+6.1:
+	mac os compatible
+	improve inter/ZHTW_WORDS
+
 6.0:
 	improve cross-codecs communication
 	inter/WHITESPACE-DERAIL
