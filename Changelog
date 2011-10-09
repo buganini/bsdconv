@@ -1,6 +1,7 @@
 6.1:
 	mac os compatible
 	improve inter/ZHTW_WORDS
+	improve inter/ZH_DECOMP and inter/ZH_COMP
 
 6.0:
 	improve cross-codecs communication
