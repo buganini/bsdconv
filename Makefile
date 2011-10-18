@@ -218,14 +218,14 @@ clean:
 
 install: installdir install_main install_basic install_extra
 
-install_main: bsdconv bsdconv_mktable meta
+install_main:
 	install -m 555 build/bin/bsdconv ${PREFIX}/bin
 	install -m 555 build/bin/bsdconv_mktable ${PREFIX}/bin
 	install -m 444 build/include/bsdconv.h ${PREFIX}/include
 	install -m 444 build/lib/libbsdconv.so.${SHLIBVER} ${PREFIX}/lib
 	ln -sf libbsdconv.so.${SHLIBVER} ${PREFIX}/lib/libbsdconv.so
 
-install_basic: codecs_basic
+install_basic:
 	for item in ${TODO_CODECS_BASIC_TABLE} ; do \
 		install -m 444 build/share/bsdconv/$${item} ${PREFIX}/share/bsdconv/$${item} ; \
 	done
@@ -233,7 +233,7 @@ install_basic: codecs_basic
 		install -m 444 build/share/bsdconv/$${item}.so ${PREFIX}/share/bsdconv/$${item}.so ; \
 	done
 
-install_extra: codecs_extra
+install_extra:
 	for item in ${TODO_CODECS_EXTRA_TABLE} ; do \
 		install -m 444 build/share/bsdconv/$${item} ${PREFIX}/share/bsdconv/$${item} ; \
 	done
@@ -263,4 +263,3 @@ plist:
 	@echo @dirrmtry %%DATADIR%%/inter
 	@echo @dirrmtry %%DATADIR%%/from
 	@echo @dirrmtry %%DATADIR%%
-
