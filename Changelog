@@ -1,3 +1,6 @@
+6.2:
+	improve inter/{zh_decomp,zh_comp}
+
 6.1:
 	mac os compatible
 	improve inter/ZHTW_WORDS
