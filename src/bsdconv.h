@@ -216,6 +216,8 @@ char * bsdconv_error(void);
 void * bsdconv_hash(struct bsdconv_instance *, const char *, size_t);
 int bsdconv_hash_has(struct bsdconv_instance *, const char *);
 void bsdconv_hash_delete(struct bsdconv_instance *, const char *);
+int bsdconv_codec_check(int, const char *);
+char ** bsdconv_codecs_list(void);
 
 //Callback function interface
 void callback(struct bsdconv_instance *);

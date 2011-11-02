@@ -1,3 +1,7 @@
+6.3:
+	add bsdconv_codec_check()
+	add bsdconv_codecs_list()
+
 6.2:
 	improve inter/{zh_decomp,zh_comp}
 

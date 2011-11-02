@@ -1149,3 +1149,92 @@ char * bsdconv_error(void){
 				return strdup("Unknown error");
 	}
 }
+
+int bsdconv_codec_check(int type, const char *_codec){
+	int ret=0;
+	char *cwd;
+	char *codec;
+	char *c;
+	FILE *fp;
+
+	codec=strdup(_codec);
+	for(c=codec;*c;++c){
+		if(*c>='a' && *c<='z'){
+			*c=*c-'a'+'A';
+		}
+	}
+
+	cwd=getwd(NULL);
+
+	if((c=getenv("BSDCONV_PATH"))){
+		chdir(c);
+	}else{
+		chdir(PREFIX);
+	}
+
+	chdir("share/bsdconv");
+	switch(type){
+		case FROM:
+			chdir("from");
+			break;
+		case INTER:
+			chdir("inter");
+			break;
+		case TO:
+			chdir("to");
+			break;
+	}
+	fp=fopen(codec, "rb");
+	if(fp!=NULL){
+		fclose(fp);
+		ret=1;
+	}
+	chdir(cwd);
+	free(cwd);
+	return ret;
+}
+
+char ** bsdconv_codecs_list(void){
+	char **list=NULL;
+	int i;
+	int size=0;
+	int length=0;
+	char *cwd;
+	char *c;
+	DIR *dir;
+	struct dirent *d;
+	char *type[]={"from","inter","to"};
+
+	if((c=getenv("BSDCONV_PATH"))){
+		chdir(c);
+	}else{
+		chdir(PREFIX);
+	}
+	chdir("share/bsdconv");
+	for(i=0;i<3;++i){
+		dir=opendir(type[i]);
+		if(dir!=NULL){
+			while((d=readdir(dir))!=NULL){
+				if(strcmp(d->d_name, ".")==0 || strcmp(d->d_name, "..")==0)
+					continue;
+				if(length>=size){
+					size+=8;
+					list=realloc(list, sizeof(char *) * size);
+				}
+				list[length]=strdup(d->d_name);
+				length+=1;
+			}
+			closedir(dir);
+		}
+		if(length>=size){
+			size+=8;
+			list=realloc(list, sizeof(char *) * size);
+		}
+		list[length]=NULL;
+		length+=1;
+	}
+	cwd=getwd(NULL);
+	chdir(cwd);
+	free(cwd);
+	return list;
+}
