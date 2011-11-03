@@ -169,7 +169,6 @@ int loadcodec(struct bsdconv_codec_t *cd, int type, const char *codec){
 		cd->desc=bsdconv_solve_alias(type, c);
 		free(c);
 		if(cd->desc==NULL){
-			SetLastError(EDOOFUS);
 			chdir(cwd);
 			free(cwd);
 			return 0;
