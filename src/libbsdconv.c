@@ -102,6 +102,39 @@ int _loadcodec(struct bsdconv_codec_t *cd, char *path){
 	return 1;
 }
 
+char * bsdconv_solve_alias(int type, char *codec){
+	char *ret;
+	struct bsdconv_instance *ins;
+	switch(type){
+		case FROM:
+			ins=bsdconv_create("ASCII:FROM_ALIAS:ASCII");
+			break;
+		case INTER:
+			ins=bsdconv_create("ASCII:INTER_ALIAS:ASCII");
+			break;
+		case TO:
+			ins=bsdconv_create("ASCII:TO_ALIAS:ASCII");
+			break;
+		default:
+			return NULL;
+	}
+	if(ins==NULL){
+		return NULL;
+	}
+	bsdconv_init(ins);
+	ins->output_mode=BSDCONV_AUTOMALLOC;
+	ins->output.len=1;
+	ins->input.data=codec;
+	ins->input.len=strlen(codec);
+	ins->input.flags=0;
+	ins->flush=1;
+	bsdconv(ins);
+	ret=ins->output.data;
+	ret[ins->output.len]=0;
+	bsdconv_destroy(ins);
+	return ret;
+}
+
 int loadcodec(struct bsdconv_codec_t *cd, int type, const char *codec){
 	char *cwd;
 	char *c;
@@ -132,40 +165,14 @@ int loadcodec(struct bsdconv_codec_t *cd, int type, const char *codec){
 	}
 	REALPATH(cd->desc, buf);
 	if(!_loadcodec(cd, buf)){
-		struct bsdconv_instance *alias_ins;
-		switch(type){
-			case FROM:
-				alias_ins=bsdconv_create("ASCII:FROM_ALIAS:ASCII");
-				break;
-			case INTER:
-				alias_ins=bsdconv_create("ASCII:INTER_ALIAS:ASCII");
-				break;
-			case TO:
-				alias_ins=bsdconv_create("ASCII:TO_ALIAS:ASCII");
-				break;
-			default:
-				SetLastError(EDOOFUS);
-				chdir(cwd);
-				free(cwd);
-				return 0;
-		}
-		if(alias_ins==NULL){
+		c=cd->desc;
+		cd->desc=bsdconv_solve_alias(type, c);
+		if(cd->desc==NULL){
 			SetLastError(EDOOFUS);
 			chdir(cwd);
 			free(cwd);
 			return 0;
 		}
-		bsdconv_init(alias_ins);
-		alias_ins->output_mode=BSDCONV_AUTOMALLOC;
-		alias_ins->output.len=1;
-		alias_ins->input.data=cd->desc;
-		alias_ins->input.len=strlen(cd->desc);
-		alias_ins->input.flags|=F_FREE;
-		alias_ins->flush=1;
-		bsdconv(alias_ins);
-		cd->desc=alias_ins->output.data;
-		cd->desc[alias_ins->output.len]=0;
-		bsdconv_destroy(alias_ins);
 		REALPATH(cd->desc, buf);
 		if(!_loadcodec(cd, buf)){
 			chdir(cwd);
