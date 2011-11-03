@@ -1188,6 +1188,13 @@ int bsdconv_codec_check(int type, const char *_codec){
 	}
 
 	chdir("share/bsdconv");
+	c=codec;
+	codec=bsdconv_solve_alias(type, codec);
+	if(codec==NULL){
+		codec=c;
+	}else{
+		free(c);
+	}
 	switch(type){
 		case FROM:
 			chdir("from");
@@ -1206,6 +1213,7 @@ int bsdconv_codec_check(int type, const char *_codec){
 	}
 	chdir(cwd);
 	free(cwd);
+	free(codec);
 	return ret;
 }
 
