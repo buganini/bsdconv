@@ -59,6 +59,7 @@ enum bsdconv_output_mode{
 	BSDCONV_PREMALLOCED,
 	BSDCONV_FILE,
 	BSDCONV_FD,
+	BSDCONV_NULL,
 };
 
 struct data_st{

@@ -1138,6 +1138,13 @@ void bsdconv(struct bsdconv_instance *ins){
 			}
 			ins->phase[ins->phasen].data_tail=ins->phase[ins->phasen].data_head;
 			break;
+		case BSDCONV_NULL:
+			while(ins->phase[ins->phasen].data_head->next){
+				data_ptr=ins->phase[ins->phasen].data_head->next;
+				ins->phase[ins->phasen].data_head->next=ins->phase[ins->phasen].data_head->next->next;
+				DATA_FREE(data_ptr);
+			}
+			break;
 	}
 	return;
 }
