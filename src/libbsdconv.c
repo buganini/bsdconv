@@ -1238,7 +1238,7 @@ char ** bsdconv_codecs_list(void){
 		dir=opendir(type[i]);
 		if(dir!=NULL){
 			while((d=readdir(dir))!=NULL){
-				if(strcmp(d->d_name, ".")==0 || strcmp(d->d_name, "..")==0)
+				if(strstr(d->d_name, ".")!=NULL)
 					continue;
 				if(length>=size){
 					size+=8;
