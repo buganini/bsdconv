@@ -1164,8 +1164,7 @@ char * bsdconv_error(void){
 	}
 }
 
-int bsdconv_codec_check(int type, const char *_codec){
-	int ret=0;
+char * bsdconv_codec_check(int type, const char *_codec){
 	char *cwd;
 	char *codec;
 	char *c;
@@ -1206,14 +1205,16 @@ int bsdconv_codec_check(int type, const char *_codec){
 			break;
 	}
 	fp=fopen(codec, "rb");
-	if(fp!=NULL){
-		fclose(fp);
-		ret=1;
+	if(fp==NULL){
+		chdir(cwd);
+		free(cwd);
+		free(codec);
+		return NULL;
 	}
+	fclose(fp);
 	chdir(cwd);
 	free(cwd);
-	free(codec);
-	return ret;
+	return codec;
 }
 
 char ** bsdconv_codecs_list(void){
