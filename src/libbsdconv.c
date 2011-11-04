@@ -1164,7 +1164,7 @@ char * bsdconv_error(void){
 	}
 }
 
-char * bsdconv_codec_check(int type, const char *_codec){
+char * bsdconv_codec_lookup(int type, const char *_codec){
 	char *cwd;
 	char *codec;
 	char *c;
