@@ -598,6 +598,7 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 					free(ins);
 					if(fail){
 						SetLastError(EOPNOTSUPP);
+						free(conversion);
 						return NULL;
 					}
 					goto start_parse;
@@ -627,13 +628,12 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 		ins->phase[i].data_head->flags=0;
 	}
 
-	free(conversion);
-
 	ins->pool=NULL;
 	ins->hash=NULL;
 	ins->input.flags=0;
 	ins->output.flags=0;
 
+	free(conversion);
 	return ins;
 
 bsdconv_create_error:
