@@ -38,6 +38,15 @@
 #define MAP_PREFAULT_READ 0
 #endif
 
+static void strtoupper(char *s){
+	char *c;
+	for(c=s;*c;++c){
+		if(*c>='a' && *c<='z'){
+			*c=*c-'a'+'A';
+		}
+	}
+}
+
 int _loadcodec(struct bsdconv_codec_t *cd, char *path){
 #ifdef WIN32
 	if ((cd->fd=CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL))==INVALID_HANDLE_VALUE){
@@ -102,8 +111,9 @@ int _loadcodec(struct bsdconv_codec_t *cd, char *path){
 	return 1;
 }
 
-char * bsdconv_solve_alias(int type, char *codec){
+char * bsdconv_solve_alias(int type, char *_codec){
 	char *ret;
+	char *codec;
 	struct bsdconv_instance *ins;
 	switch(type){
 		case FROM:
@@ -121,12 +131,14 @@ char * bsdconv_solve_alias(int type, char *codec){
 	if(ins==NULL){
 		return NULL;
 	}
+	codec=strdup(_codec);
+	strtoupper(codec);
 	bsdconv_init(ins);
 	ins->output_mode=BSDCONV_AUTOMALLOC;
 	ins->output.len=1;
 	ins->input.data=codec;
 	ins->input.len=strlen(codec);
-	ins->input.flags=0;
+	ins->input.flags=F_FREE;
 	ins->flush=1;
 	bsdconv(ins);
 	ret=ins->output.data;
@@ -139,12 +151,6 @@ int loadcodec(struct bsdconv_codec_t *cd, int type, const char *codec){
 	char *cwd;
 	char *c;
 	char buf[PATH_BUF_SIZE];
-	cd->desc=strdup(codec);
-	for(c=cd->desc;*c;++c){
-		if(*c>='a' && *c<='z'){
-			*c=*c-'a'+'A';
-		}
-	}
 	cwd=getwd(NULL);
 	if((c=getenv("BSDCONV_PATH"))){
 		chdir(c);
@@ -165,20 +171,9 @@ int loadcodec(struct bsdconv_codec_t *cd, int type, const char *codec){
 	}
 	REALPATH(cd->desc, buf);
 	if(!_loadcodec(cd, buf)){
-		c=cd->desc;
-		cd->desc=bsdconv_solve_alias(type, c);
-		free(c);
-		if(cd->desc==NULL){
-			chdir(cwd);
-			free(cwd);
-			return 0;
-		}
-		REALPATH(cd->desc, buf);
-		if(!_loadcodec(cd, buf)){
-			chdir(cwd);
-			free(cwd);
-			return 0;
-		}
+		chdir(cwd);
+		free(cwd);
+		return 0;
 	}
 	chdir(cwd);
 	free(cwd);
@@ -452,16 +447,51 @@ void bsdconv_ctl(struct bsdconv_instance *ins, int ctl, void *p, int v){
 	}
 }
 
-struct bsdconv_instance *bsdconv_create(const char *conversion){
+char *bsdconv_pack(struct bsdconv_instance *ins){
+	char *ret;
+	int len=0;
+	int i,j;
+	for(i=1;i<=ins->phasen;++i){
+		for(j=0;j<=ins->phase[i].codecn;++j){
+			len+=strlen(ins->phase[i].codec[j].desc);
+			len+=1;
+		}
+	}
+	ret=malloc(sizeof(char) * len);
+	ret[0]=0;
+	for(i=1;i<=ins->phasen;++i){
+		for(j=0;j<=ins->phase[i].codecn;++j){
+			if(j==0){
+				if(i>1){
+					switch(ins->phase[i].type){
+						case FROM:
+							strcat(ret, "|");
+							break;
+						case INTER:
+						case TO:
+							strcat(ret, ":");
+						break;
+					}
+				}
+			}else{
+				strcat(ret, ",");
+			}
+			strcat(ret, ins->phase[i].codec[j].desc);
+		}
+	}
+	return ret;
+}
+
+struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 	struct bsdconv_instance *ins=malloc(sizeof(struct bsdconv_instance));
-	char *t, *t1, *t2;
-	int i, j, f=0;
+	char *conversion;
+	char *t, *t1;
+	int i,j;
+	int f=0;
 
-	ins->pool=NULL;
-	ins->hash=NULL;
-	ins->input.flags=0;
-	ins->output.flags=0;
-
+	conversion=strdup(_conversion);
+	t1=t=conversion;
+	strtoupper(conversion);
 	i=1;
 	for(t=(char *)conversion;*t;t++){
 		if(*t==':' || *t=='|')++i;
@@ -470,10 +500,9 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 	char *opipe[i+1];
 
 	ins->phase=malloc(sizeof(struct bsdconv_phase) * (i+1));
-	t2=t1=t=strdup(conversion);
-//errorlevel 0
 
 	i=1;
+	t1=t=conversion;
 	while((t1=strsep(&t, "|")) != NULL){
 		if(f>1){
 			ins->phase[i-f].type=FROM;
@@ -501,31 +530,78 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 				}
 			}
 		}else{
-			SetLastError(EINVAL);
-			goto bsdconv_create_error_0;
+			free(ins->phase);
+			free(ins);
+			free(conversion);
+			return NULL;
 		}
 		ins->phase[i].codecn-=1;
 	}
-
 	for(i=1;i<=ins->phasen;++i){
 		ins->phase[i].codec=malloc((ins->phase[i].codecn + 1)* sizeof(struct bsdconv_codec_t));
-//errorlevel 1
 	}
 	for(i=1;i<=ins->phasen;++i){
 		t=opipe[i];
 		for(j=0;j<=ins->phase[i].codecn;++j){
-			ins->phase[i].codec[j].desc=strsep(&t, ",");
+			ins->phase[i].codec[j].desc=strdup(strsep(&t, ","));
 			if(ins->phase[i].codec[j].desc[0]==0){
-				SetLastError(EINVAL);
-				goto bsdconv_create_error_1;
+				for(;j>=0;--j){
+					free(ins->phase[i].codec[j].desc);
+				}
+				for(i=1;i<=ins->phasen;++i){
+					free(ins->phase[i].codec);
+				}
+				free(ins->phase);
+				free(ins);
+				free(conversion);
+				return NULL;
+			}
+		}
+	}
+	free(conversion);
+	return ins;
+}
+
+struct bsdconv_instance *bsdconv_create(const char *_conversion){
+	struct bsdconv_instance *ins=NULL;
+	char *conversion=strdup(_conversion);
+	int i, j;
+	char *c;
+
+	i=0;
+	while(i==0 || i<=ins->phasen){
+		start_parse:
+		ins=bsdconv_unpack(conversion);
+		if(ins==NULL){
+			free(conversion);
+			SetLastError(EINVAL);
+			return NULL;
+		}
+		for(i=1;i<=ins->phasen;++i){
+			for(j=0;j<=ins->phase[i].codecn;++j){
+				if(!bsdconv_codec_check(ins->phase[i].type, ins->phase[i].codec[j].desc)){
+					c=ins->phase[i].codec[j].desc;
+					ins->phase[i].codec[j].desc=bsdconv_solve_alias(ins->phase[i].type, ins->phase[i].codec[j].desc);
+					free(c);
+					free(conversion);
+					conversion=bsdconv_pack(ins);
+					for(i=1;i<=ins->phasen;++i){
+						for(j=0;j<=ins->phase[i].codecn;++j){
+							free(ins->phase[i].codec[j].desc);
+						}
+						free(ins->phase[i].codec);
+					}
+					free(ins->phase);
+					free(ins);
+					goto start_parse;
+				}
 			}
 		}
 	}
 	for(i=1;i<=ins->phasen;++i){
 		for(j=0;j<=ins->phase[i].codecn;++j){
 			if(!loadcodec(&ins->phase[i].codec[j], ins->phase[i].type, ins->phase[i].codec[j].desc)){
-//errorlevel 2
-				goto bsdconv_create_error_2;
+				goto bsdconv_create_error;
 			}
 		}
 	}
@@ -544,26 +620,33 @@ struct bsdconv_instance *bsdconv_create(const char *conversion){
 		ins->phase[i].data_head->flags=0;
 	}
 
-	free(t2);
+	free(conversion);
+
+	ins->pool=NULL;
+	ins->hash=NULL;
+	ins->input.flags=0;
+	ins->output.flags=0;
+
 	return ins;
-	bsdconv_create_error_2:
-		free(ins->phase[i].codec[j].desc);
-		j-=1;
-		for(;i>=1;j=ins->phase[--i].codecn){
-			for(;j>=0;--j){
-				free(ins->phase[i].codec[j].desc);
-				unloadcodec(&ins->phase[i].codec[j]);
-			}
+
+bsdconv_create_error:
+	free(ins->phase[i].codec[j].desc);
+	j-=1;
+	for(;i>=1;j=ins->phase[--i].codecn){
+		for(;j>=0;--j){
+			free(ins->phase[i].codec[j].desc);
+			unloadcodec(&ins->phase[i].codec[j]);
 		}
-	bsdconv_create_error_1:
-		for(i=1;i<=ins->phasen;++i){
-			free(ins->phase[i].codec);
-		}
-	bsdconv_create_error_0:
-		free(t2);
-		free(ins->phase);
-		free(ins);
-		return NULL;
+	}
+
+	for(i=1;i<=ins->phasen;++i){
+		free(ins->phase[i].codec);
+	}
+
+	free(conversion);
+	free(ins->phase);
+	free(ins);
+	return NULL;
 }
 
 struct bsdconv_instance *bsdconv_duplicate(struct bsdconv_instance *oins){
@@ -1164,18 +1247,15 @@ char * bsdconv_error(void){
 	}
 }
 
-char * bsdconv_codec_lookup(int type, const char *_codec){
+int bsdconv_codec_check(int type, const char *_codec){
+	int ret=0;
 	char *cwd;
 	char *codec;
-	char *c;
 	FILE *fp;
+	char *c;
 
 	codec=strdup(_codec);
-	for(c=codec;*c;++c){
-		if(*c>='a' && *c<='z'){
-			*c=*c-'a'+'A';
-		}
-	}
+	strtoupper(codec);
 
 	cwd=getwd(NULL);
 
@@ -1186,13 +1266,6 @@ char * bsdconv_codec_lookup(int type, const char *_codec){
 	}
 
 	chdir("share/bsdconv");
-	c=codec;
-	codec=bsdconv_solve_alias(type, codec);
-	if(codec==NULL){
-		codec=c;
-	}else{
-		free(c);
-	}
 	switch(type){
 		case FROM:
 			chdir("from");
@@ -1205,16 +1278,14 @@ char * bsdconv_codec_lookup(int type, const char *_codec){
 			break;
 	}
 	fp=fopen(codec, "rb");
-	if(fp==NULL){
-		chdir(cwd);
-		free(cwd);
-		free(codec);
-		return NULL;
+	if(fp!=NULL){
+		fclose(fp);
+		ret=1;
 	}
-	fclose(fp);
 	chdir(cwd);
 	free(cwd);
-	return codec;
+	free(codec);
+	return ret;
 }
 
 char ** bsdconv_codecs_list(void){
