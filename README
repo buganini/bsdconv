@@ -17,8 +17,8 @@ Internal encoding:
 * ANSI control sequence is prefixed with 1b
 
 NOTICE:
-Though many charset encoding is ascii-compatible,
- ascii is excluded from their codecs to provide flexibility.
+ASCII-compatible codecs are excluded the ascii part and named as _codec,
+with alias codec => _codec,ascii or ascii,_codec
 
 --
 Compiling & Installation (FreeBSD):
@@ -28,42 +28,41 @@ sudo make install
 --
 Run:
 Convert traditional chinese big5 to simplified chinese utf-8
-> bsdconv big5,ascii:zhcn:utf-8,ascii in.txt out.txt
+> bsdconv big5:zhcn:utf-8 in.txt out.txt
 
 Convert traditional chinese utf-8 to simplified chinese GB2312 with transliteration
-> bsdconv utf-8,ascii:zhcn:cp936,cp936_trans,ascii in.txt out.txt
+> bsdconv utf-8:zhcn:cp936,cp936_trans in.txt out.txt
 
 Convert simplified chiese to traditional chinese
-> bsdconv ascii,utf-8:zhtw:zhtw_words:utf-8,ascii
+> bsdconv utf-8:zhtw:zhtw_words:utf-8
 ignoring whitespaces mixed in words
-> bsdconv utf-8,ascii:whitespace-derail:zhtw:zhtw_words:whitespace-rerail:utf-8,ascii
+> bsdconv utf-8:whitespace-derail:zhtw:zhtw_words:whitespace-rerail:utf-8
 
 Convert big5 data, traditional chinese to simplified chinese, 
 CRLF/CR/LF to CRLF, to big5 data, translate simplified chinese words, which are
 not in big5, to HTML entities, and uppercase the ascii characters.
-> bsdconv big5,ascii:zhcn:win:upper:cp950,ascii,htmlentity in.txt out.txt
+> bsdconv big5:zhcn:win:upper:big5,htmlentity in.txt out.txt
 
 Very useful for migrating MySQL DB from Big5 to UTF-8
-> bsdconv htmlentity,big5-5c,big5,ascii:utf-8,ascii in.sql out.sql
+> bsdconv htmlentity,big5-5c,big5:utf-8 in.sql out.sql
 
-Recover from mis-decoding/encoding (mistreated iso-8859-2 as iso-8859-1 and converted to utf-8)
-> bsdconv 'ascii,utf-8:iso-8859-1,ascii|ascii,iso-8859-2:utf-8,ascii'
+Recover from mis-decoding/encoding (mistreated big5 as iso-8859-1 and converted to utf-8)
+> bsdconv 'utf-8:iso-8859-1|big5:utf-8'
 
 Decode javasript escaped data (byte/unicode mixed) like %u9644%20
-> bsdconv 'escape,byte:unicode,byte|skip,ascii:utf-8,ascii'
+> bsdconv 'escape,byte:unicode,byte|skip,ascii:utf-8'
 
 
 More example:
-> bsdconv big5,ascii:nl2br:ascii,html-img in.txt out.htm
-#html-img is actually ASCII-HTML-UNICODE-IMG
+> bsdconv big5:nl2br:ascii,html-img in.txt out.htm
 
-> bsdconv ascii,utf-8:ascii,ascii-html-cns11643-img in.txt out.htm
+> bsdconv utf-8:ascii,ascii-html-cns11643-img in.txt out.htm
 #if you prefer to use glyph image from http://www.cns11643.gov.tw
 
 Maintain inter map:
-> bsdconv bsdconv_keyword,bsdconv:bsdconv_keyword,utf-8,ascii MAP.txt edit.tmp
+> bsdconv bsdconv_keyword,bsdconv:bsdconv_keyword,utf-8 MAP.txt edit.tmp
 > vi edit.tmp
-> bsdconv bsdconv_keyword,ascii,utf-8:bsdconv_keyword,bsdconv edit.tmp MAP.txt
+> bsdconv bsdconv_keyword,utf-8:bsdconv_keyword,bsdconv edit.tmp MAP.txt
 
 --
 WINDOWS:
