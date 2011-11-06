@@ -563,6 +563,7 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 }
 
 struct bsdconv_instance *bsdconv_create(const char *_conversion){
+	int fail=0;
 	struct bsdconv_instance *ins=NULL;
 	char *conversion=strdup(_conversion);
 	int i, j;
@@ -582,6 +583,8 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 				if(!bsdconv_codec_check(ins->phase[i].type, ins->phase[i].codec[j].desc)){
 					c=ins->phase[i].codec[j].desc;
 					ins->phase[i].codec[j].desc=bsdconv_solve_alias(ins->phase[i].type, ins->phase[i].codec[j].desc);
+					if(strcmp(c, ins->phase[i].codec[j].desc)==0)
+						fail=1;
 					free(c);
 					free(conversion);
 					conversion=bsdconv_pack(ins);
@@ -593,6 +596,10 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 					}
 					free(ins->phase);
 					free(ins);
+					if(fail){
+						SetLastError(EOPNOTSUPP);
+						return NULL;
+					}
 					goto start_parse;
 				}
 			}
