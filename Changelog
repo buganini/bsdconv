@@ -1,3 +1,6 @@
+6.4:
+	bugfixes
+
 6.3:
 	add bsdconv_codec_check()
 	add bsdconv_codecs_list()
