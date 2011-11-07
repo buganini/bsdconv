@@ -2,6 +2,7 @@
 	bugfixes
 
 6.3:
+	improve alias mechanism
 	add bsdconv_codec_check()
 	add bsdconv_codecs_list()
 	add bsdconv_pack()
