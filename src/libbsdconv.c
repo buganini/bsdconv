@@ -147,7 +147,7 @@ char * bsdconv_solve_alias(int type, char *_codec){
 	return ret;
 }
 
-int loadcodec(struct bsdconv_codec_t *cd, int type, const char *codec){
+int loadcodec(struct bsdconv_codec_t *cd, int type){
 	char *cwd;
 	char *c;
 	char buf[PATH_BUF_SIZE];
@@ -339,8 +339,8 @@ int bsdconv_insert_phase(struct bsdconv_instance *ins, const char *codec, int ph
 
 	t=cd;
 	for(i=0;i<len;++i){
-		c=strsep(&t,",");
-		if(!loadcodec(&ins->phase[phasen].codec[i], phase_type, c)){
+		ins->phase[phasen].codec[i].desc=strdup(strsep(&t,","));
+		if(!loadcodec(&ins->phase[phasen].codec[i], phase_type)){
 			return -1;
 		}
 		ins->phase_index=phasen;
@@ -365,7 +365,8 @@ int bsdconv_insert_codec(struct bsdconv_instance *ins, const char *codec, int op
 	for(i=ins->phase[phasen].codecn;i>codecn;--i){
 		ins->phase[phasen].codec[i]=ins->phase[phasen].codec[i-1];
 	}
-	if(!loadcodec(&ins->phase[phasen].codec[codecn], ins->phase[phasen].type, codec)){
+	ins->phase[phasen].codec[codecn].desc=strdup(codec);
+	if(!loadcodec(&ins->phase[phasen].codec[codecn], ins->phase[phasen].type)){
 		return -1;
 	}
 	ins->phase_index=phasen;
@@ -399,8 +400,8 @@ int bsdconv_replace_phase(struct bsdconv_instance *ins, const char *codec, int p
 
 	t=cd;
 	for(i=0;i<len;++i){
-		c=strsep(&t,",");
-		if(!loadcodec(&ins->phase[phasen].codec[i], phase_type, c)){
+		ins->phase[phasen].codec[i].desc=strdup(strsep(&t,","));
+		if(!loadcodec(&ins->phase[phasen].codec[i], phase_type)){
 			free(cd);
 			return -1;
 		}
@@ -424,7 +425,8 @@ int bsdconv_replace_codec(struct bsdconv_instance *ins, const char *codec, int o
 	}
 	unloadcodec(&ins->phase[phasen].codec[codecn]);
 
-	if(!loadcodec(&ins->phase[phasen].codec[codecn], ins->phase[phasen].type, codec)){
+	ins->phase[phasen].codec[codecn].desc=strdup(codec);
+	if(!loadcodec(&ins->phase[phasen].codec[codecn], ins->phase[phasen].type)){
 		return -1;
 	}
 	ins->phase_index=phasen;
@@ -608,7 +610,7 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 	}
 	for(i=1;i<=ins->phasen;++i){
 		for(j=0;j<=ins->phase[i].codecn;++j){
-			if(!loadcodec(&ins->phase[i].codec[j], ins->phase[i].type, ins->phase[i].codec[j].desc)){
+			if(!loadcodec(&ins->phase[i].codec[j], ins->phase[i].type)){
 				goto bsdconv_create_error;
 			}
 		}
@@ -672,7 +674,8 @@ struct bsdconv_instance *bsdconv_duplicate(struct bsdconv_instance *oins){
 		ins->phase[i].codecn=oins->phase[i].codecn;
 		ins->phase[i].codec=malloc(sizeof(struct bsdconv_codec_t) * (ins->phase[i].codecn + 1));
 		for(j=0;j<=ins->phase[i].codecn;++j){
-			loadcodec(&ins->phase[i].codec[j], ins->phase[i].type, oins->phase[i].codec[j].desc);
+			ins->phase[i].codec[j].desc=strdup(oins->phase[i].codec[j].desc);
+			loadcodec(&ins->phase[i].codec[j], ins->phase[i].type);
 		}
 	}
 	for(i=1;i<=ins->phasen;++i){
