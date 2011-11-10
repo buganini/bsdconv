@@ -1311,6 +1311,8 @@ char ** bsdconv_codecs_list(void){
 	char *c;
 	DIR *dir;
 	struct dirent *d;
+	FILE *fp;
+	char buf[256];
 	char *type[]={"from","inter","to"};
 
 	if((c=getenv("BSDCONV_PATH"))){
@@ -1323,7 +1325,7 @@ char ** bsdconv_codecs_list(void){
 		dir=opendir(type[i]);
 		if(dir!=NULL){
 			while((d=readdir(dir))!=NULL){
-				if(strstr(d->d_name, ".")!=NULL)
+				if(strstr(d->d_name, ".")!=NULL || strcmp(d->d_name, "alias")==0)
 					continue;
 				if(length>=size){
 					size+=8;
@@ -1334,6 +1336,21 @@ char ** bsdconv_codecs_list(void){
 			}
 			closedir(dir);
 		}
+		chdir(type[i]);
+		fp=fopen("alias","rb");
+		if(fp!=NULL){
+			while(fgets(buf, sizeof(buf), fp)!=NULL){
+				if(length>=size){
+					size+=8;
+					list=realloc(list, sizeof(char *) * size);
+				}
+				c=buf;
+				list[length]=strdup(strsep(&c, "\t"));
+				length+=1;
+			}
+			fclose(fp);
+		}
+		chdir("..");
 		if(length>=size){
 			size+=8;
 			list=realloc(list, sizeof(char *) * size);

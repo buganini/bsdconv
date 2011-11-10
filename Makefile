@@ -212,6 +212,9 @@ codecs_extra: codecs_extra_table codecs_extra_callback
 meta: libbsdconv
 	ln -sf libbsdconv.so.${SHLIBVER} build/lib/libbsdconv.so
 	cp src/bsdconv.h build/include
+	cp codecs/from/alias build/share/bsdconv/from/alias
+	cp codecs/inter/alias build/share/bsdconv/inter/alias
+	cp codecs/to/alias build/share/bsdconv/to/alias
 
 clean:
 	rm -rf build
@@ -223,6 +226,9 @@ install_main:
 	install -m 555 build/bin/bsdconv_mktable ${PREFIX}/bin
 	install -m 444 build/include/bsdconv.h ${PREFIX}/include
 	install -m 444 build/lib/libbsdconv.so.${SHLIBVER} ${PREFIX}/lib
+	install -m 444 build/share/bsdconv/from/alias ${PREFIX}/share/bsdconv/from/alias
+	install -m 444 build/share/bsdconv/inter/alias ${PREFIX}/share/bsdconv/inter/alias
+	install -m 444 build/share/bsdconv/to/alias ${PREFIX}/share/bsdconv/to/alias
 	ln -sf libbsdconv.so.${SHLIBVER} ${PREFIX}/lib/libbsdconv.so
 
 install_basic:
@@ -247,6 +253,9 @@ plist:
 	@echo include/bsdconv.h
 	@echo lib/libbsdconv.so
 	@echo lib/libbsdconv.so.${SHLIBVER}
+	@echo %%DATADIR%%/from/alias
+	@echo %%DATADIR%%/inter/alias
+	@echo %%DATADIR%%/to/alias
 	@for item in ${TODO_CODECS_BASIC_TABLE} ; do \
 		echo %%DATADIR%%/$${item} ; \
 	done
