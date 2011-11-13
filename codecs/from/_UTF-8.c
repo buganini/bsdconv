@@ -169,3 +169,117 @@ void callback(struct bsdconv_instance *ins){
 	this_phase->state.status=CONTINUE;
 	return;
 }
+
+#if 0
+//This is a simpler version, but somehow slower.
+#include <stdlib.h>
+#include "../../src/bsdconv.h"
+#ifdef WIN32
+#include <winsock2.h>
+#else
+#include <netinet/in.h>
+#endif
+
+struct my_s{
+	unsigned char w;
+	union {
+		unsigned char bytes[4];
+		uint32_t ucs4;
+	} ucs4;
+};
+
+void cbcreate(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct my_s *r=malloc(sizeof(struct my_s));
+	ins->phase[ins->phase_index].codec[this_phase->index].priv=r;
+}
+
+void cbinit(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct my_s *t=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	t->w=0;
+	t->ucs4.ucs4=0;
+}
+
+void cbdestroy(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct my_s *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	free(r);
+}
+
+#define DEADEND() do{	\
+	this_phase->state.status=DEADEND;	\
+	t->w=0;	\
+	return;	\
+}while(0);
+
+#define PASS() do{	\
+	t->ucs4.ucs4=htonl(t->ucs4.ucs4);	\
+	for(i=0;t->ucs4.bytes[i]==0 && i<4;++i);	\
+	DATA_MALLOC(this_phase->data_tail->next);	\
+	this_phase->data_tail=this_phase->data_tail->next;	\
+	this_phase->data_tail->next=NULL;	\
+	this_phase->data_tail->len=5 - i;	\
+	this_phase->data_tail->data=c=malloc(5 - i);	\
+	this_phase->data_tail->flags=F_FREE;	\
+	this_phase->state.status=NEXTPHASE;	\
+	*c=0x01;	\
+	c+=1;	\
+	for(;i<4;++i,c+=1){	\
+		*c=t->ucs4.bytes[i];	\
+	}	\
+	return;	\
+}while(0);
+
+void callback(struct bsdconv_instance *ins){
+	int i;
+	unsigned char *c;
+	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct my_s *t=this_phase->codec[this_phase->index].priv;
+	char d;
+
+	for(;this_phase->i<this_phase->curr->len;this_phase->i+=1){
+		d=CP(this_phase->curr->data)[this_phase->i];
+		switch(t->w){
+			case 0:
+				if((d & bb10000000) == 0){
+					/* exclude ASCII */
+					DEADEND();
+
+					/* Unreachable */
+					t->ucs4.ucs4=d & bb01111111;
+					PASS();
+				}else if((d & bb11100000) == bb11000000){
+					t->w=1;
+					t->ucs4.ucs4=d & bb00011111;
+				}else if((d & bb11110000) == bb11100000){
+					t->w=2;
+					t->ucs4.ucs4=d & bb00001111;
+				}else if((d & bb11111000) == bb11110000){
+					t->w=3;
+					t->ucs4.ucs4=d & bb00000111;
+				}else{
+					DEADEND();
+				}
+				continue;
+			case 1:
+			case 2:
+			case 3:
+				if((d & bb11000000) != bb10000000){
+					DEADEND();
+				}
+				t->ucs4.ucs4 <<= 6;	
+				t->w-=1;
+				t->ucs4.ucs4 |= d & bb00111111;
+				if(t->w==0){
+					PASS();
+				}
+				continue;
+			default:
+				DEADEND();
+		}
+	}
+	this_phase->state.status=CONTINUE;
+	return;
+}
+#endif
