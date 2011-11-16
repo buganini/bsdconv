@@ -1318,11 +1318,7 @@ char ** bsdconv_codecs_list(void){
 	if((c=getenv("BSDCONV_PATH"))){
 		chdir(c);
 	}else{
-#ifdef BSDCONV_PATH
 		chdir(BSDCONV_PATH);
-#else
-		chdir(PREFIX);
-#endif
 	}
 	chdir("share/bsdconv");
 	for(i=0;i<3;++i){
