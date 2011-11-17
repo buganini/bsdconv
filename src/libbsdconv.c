@@ -1334,10 +1334,9 @@ int bsdconv_codec_check(int type, const char *_codec){
 	return ret;
 }
 
-char ** bsdconv_codecs_list(void){
-	char **list=NULL;
-	int i;
-	int size=0;
+char ** bsdconv_codecs_list(int phase_type){
+	char **list=malloc(sizeof(char *) * 8);
+	int size=8;
 	int length=0;
 	char *cwd;
 	char *c;
@@ -1345,51 +1344,62 @@ char ** bsdconv_codecs_list(void){
 	struct dirent *d;
 	FILE *fp;
 	char buf[256];
-	char *type[]={"from","inter","to"};
+	const char *type;
 
 	if((c=getenv("BSDCONV_PATH"))){
 		chdir(c);
 	}else{
 		chdir(BSDCONV_PATH);
 	}
+	list[0]=NULL;
 	chdir("share/bsdconv");
-	for(i=0;i<3;++i){
-		dir=opendir(type[i]);
-		if(dir!=NULL){
-			while((d=readdir(dir))!=NULL){
-				if(strstr(d->d_name, ".")!=NULL || strcmp(d->d_name, "alias")==0)
-					continue;
-				if(length>=size){
-					size+=8;
-					list=realloc(list, sizeof(char *) * size);
-				}
-				list[length]=strdup(d->d_name);
-				length+=1;
-			}
-			closedir(dir);
-		}
-		chdir(type[i]);
-		fp=fopen("alias","rb");
-		if(fp!=NULL){
-			while(fgets(buf, sizeof(buf), fp)!=NULL){
-				if(length>=size){
-					size+=8;
-					list=realloc(list, sizeof(char *) * size);
-				}
-				c=buf;
-				list[length]=strdup(strsep(&c, "\t"));
-				length+=1;
-			}
-			fclose(fp);
-		}
-		chdir("..");
-		if(length>=size){
-			size+=8;
-			list=realloc(list, sizeof(char *) * size);
-		}
-		list[length]=NULL;
-		length+=1;
+	switch(phase_type){
+		case FROM:
+			type="from";
+			break;
+		case INTER:
+			type="inter";
+			break;
+		case TO:
+			type="to";
+			break;
+		default:
+			return list;
 	}
+	dir=opendir(type);
+	if(dir!=NULL){
+		while((d=readdir(dir))!=NULL){
+			if(strstr(d->d_name, ".")!=NULL || strcmp(d->d_name, "alias")==0)
+				continue;
+			if(length>=size){
+				size+=8;
+				list=realloc(list, sizeof(char *) * size);
+			}
+			list[length]=strdup(d->d_name);
+			length+=1;
+		}
+		closedir(dir);
+	}
+	chdir(type);
+	fp=fopen("alias","rb");
+	if(fp!=NULL){
+		while(fgets(buf, sizeof(buf), fp)!=NULL){
+			if(length>=size){
+				size+=8;
+				list=realloc(list, sizeof(char *) * size);
+			}
+			c=buf;
+			list[length]=strdup(strsep(&c, "\t"));
+			length+=1;
+		}
+		fclose(fp);
+	}
+	if(length>=size){
+		size+=8;
+		list=realloc(list, sizeof(char *) * size);
+	}
+	list[length]=NULL;
+	length+=1;
 	cwd=getwd(NULL);
 	chdir(cwd);
 	free(cwd);
