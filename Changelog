@@ -1,6 +1,7 @@
-6.5:
+7.0:
 	add inter/SPLIT
 	add from/_CP874
+	alter bsdconv_codecs_list()
 
 6.4:
 	bugfixes
