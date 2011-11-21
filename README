@@ -53,7 +53,7 @@ Very useful for migrating MySQL DB from Big5 to UTF-8
 Recover from mis-decoding/encoding (mistreated big5 as iso-8859-1 and converted to utf-8)
 > bsdconv 'utf-8:iso-8859-1|big5:utf-8'
 
-Decode javasript escaped data (byte/unicode mixed) like %u9644%20
+Decode javascript escaped data (byte/unicode mixed) like %u9644%20
 > bsdconv 'escape,byte:unicode,byte|skip,ascii:utf-8'
 
 
