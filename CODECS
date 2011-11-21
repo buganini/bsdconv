@@ -180,6 +180,9 @@ to/PASS
 	0161 ( SKIP )
 	0162 ( SKIP )
 	0163 ( SKIP )
+	> echo -n 測試 | bsdconv 'utf-8:utf-16le|pass:bsdconv_stdout'
+	2C6E ( FREE )
+	668A ( FREE )
 
 to/UNICODE
 	#tag UNICODE packets (leading by 0x01) with flag F_SKIP
@@ -253,13 +256,16 @@ inter/TO_ALIAS
 	_CP950,ASCII
 
 inter/CNS11643
+	#for internal use
 	> echo -n 測試 | bsdconv utf-8:cns11643:bsdconv_stdout
 	02016041
 	0201665C
 
 inter/UNICODE
 	#for internal use
-	#ref inter/CNS11643
+	> echo 02016041,0201665C | bsdconv bsdconv:unicode:bsdconv_stdout
+	016E2C
+	018A66
 
 inter/UPPER
 	> echo testTEST | bsdconv utf-8:upper:utf-8
