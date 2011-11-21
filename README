@@ -26,7 +26,11 @@ make
 sudo make install
 
 --
+See CODECS for description for each codecs
+
+--
 Run:
+
 Convert traditional chinese big5 to simplified chinese utf-8
 > bsdconv big5:zhcn:utf-8 in.txt out.txt
 
