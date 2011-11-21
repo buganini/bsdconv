@@ -4,6 +4,7 @@ from/3F
 
 from/ANSI-CONTROL
 	#used in https://github.com/buganini/bug5
+	#used with inter/BIG5-DEFRAG
 	> perl -e 'print "a\033[1mb"' | bsdconv ansi-control,utf-8:bsdconv_stdout
 	0161
 	1B5B316D ( FREE )
@@ -91,6 +92,8 @@ from/_CP1251
 from/_SHIFT-JIS
 
 from/NUL
+	#used in https://github.com/buganini/bug5
+	#serve for '\0'
 
 from/PASS
 
@@ -141,6 +144,10 @@ inter/HAN_PINYIN
 	> echo 測試 | bsdconv utf-8:chewing:han_pinyin:utf-8
 	ce4[sh]4
 
+inter/KANA_PHONETIC
+	> echo ドラえもん | bsdconv utf-8:kana_phonetic:utf-8
+	doraemon
+
 inter/FROM_ALIAS
 	#for internal use
 	> echo BIG5 | bsdconv ascii:from_alias:ascii
@@ -158,8 +165,6 @@ inter/TO_ALIAS
 	CP950
 	> echo CP950 | bsdconv ascii:to_alias:ascii
 	_CP950,ASCII
-
-inter/JP_PINYIN
 
 inter/CNS11643
 	> echo -n 測試 | bsdconv utf-8:cns11643:bsdconv_stdout
@@ -191,7 +196,7 @@ inter/UPSIDEDOWN
 	Ⅎ∩ᴎᴎ⅄
 
 inter/UNIX
-	>  perl -e 'print "a\r\nb"' | bsdconv utf-8:unix:utf-8 | hexdump -C
+	> perl -e 'print "a\r\nb"' | bsdconv utf-8:unix:utf-8 | hexdump -C
 	00000000  61 0a 62                                          |a.b|
 
 inter/MAC
@@ -251,6 +256,12 @@ inter/WIDTH
 	Ambi width: 1
 
 inter/SCORE
+	#used for encoding detecting (roughly)
+	> perl -e 'print "123Б測試"' | bsdconv utf-8:score:null
+	Score: 5
+	> perl -e 'print "123Б測試"' | bsdconv big5:score:null
+	Score: 3
+
 
 inter/SPLIT
 	> echo 測試|bsdconv utf-8:bsdconv
