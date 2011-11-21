@@ -1,6 +1,77 @@
+from/ASCII
+to/ASCII
+	#just ascii (U+0001 ~ U+007F)
+
+from/BIG5-5C
+	> perl -e 'print "\xa5\x5c\x5c\xaf\xe0"' | bsdconv big5-5c,big5:utf-8
+	功能
+to/BIG5-5C
+	> echo 功能|bsdconv utf-8:big5-5c,big5|hexdump -C
+	00000000  a5 5c 5c af e0 0a                                 |.\\...|
+
+from/_CP950
+from/_UAO241
+from/_UAO250
+to/_UAO241
+to/_UAO250
+to/_CP950
+to/CP950_TRANS
+	> perl -e 'print "\xa5\x5c\xaf\xe0"' | bsdconv _cp950:utf-8
+	功能
+	> echo 喆 | bsdconv utf-8:_cp950,ascii | hexdump -C
+	00000000  0a                                                |.|
+	> echo 喆 | bsdconv utf-8:_uao241,ascii | hexdump -C
+	00000000  95 ed 0a                                          |...|
+	> echo 测试 | bsdconv utf-8:big5 | hexdump -C
+	00000000  0a                                                |.|
+	> echo 测试 | bsdconv utf-8:big5,cp950_trans | hexdump -C
+	00000000  b4 fa b8 d5 0a                                    |.....|
+
+from/_CP936
+from/_GB2312
+from/_GBK
+to/_CP936
+to/CP936_TRANS
+to/_GB2312
+to/_GBK
+
+from/_SHIFT-JIS
+
+from/_ISO-8859-1
+to/_ISO-8859-1
+
+from/_CP1251
+
+from/_CP1252
+
+from/_CP874
+
+from/_CP949
+
+from/UTF-16BE
+from/UTF-16LE
+to/UTF-16BE
+to/UTF-16LE
+to/UCS-2BE
+to/UCS-2LE
+
+from/UTF-32BE
+from/UTF-32LE
+to/UTF-32BE
+to/UTF-32LE
+
+from/_UTF-8
+to/_UTF-8
+
+from/_CNS11643
+to/_CNS11643
+
 from/3F
 	> echo test測試test | bsdconv ascii,3f:ascii
 	test??????test
+to/3F
+	> echo -n test測試test |bsdconv utf-8:ascii,3f
+	test??test
 
 from/ANSI-CONTROL
 	#used in https://github.com/buganini/bug5
@@ -9,28 +80,45 @@ from/ANSI-CONTROL
 	0161
 	1B5B316D ( FREE )
 	0162
+to/ANSI-CONTROL
+	#tag ANSI-CONTROL packets (leading by 0x1b) with flag F_SKIP
 
 from/ASCII-NAMED-HTML-ENTITY
 	> echo '&uuml;' | bsdconv ascii-named-html-entity:utf-8
 	ü
-
 from/ASCII-NUMERIC-HTML-ENTITY
 	> echo '&#x6e2c;&#35430;' | bsdconv ascii-numeric-html-entity:utf-8
 	測試
-
-from/ASCII
-	#just ascii
-
-from/BIG5-5C
-	#ref: to/BIG5-5C
-	> perl -e 'print "\xa5\x5c\x5c\xaf\xe0"' | bsdconv big5-5c,big5:utf-8
-	功能
+to/ASCII-HEX-NUMERIC-HTML-ENTITY
+	> echo 測 | bsdconv utf-8:ascii-hex-numeric-html-entity
+	&#x6E2C;&#xA;
+to/ASCII-NAMED-HTML-ENTITY
+	> echo Ç | bsdconv utf-8:ascii-named-html-entity
+	&Ccedil;
 
 from/BSDCONV
 	> echo 016e2c|bsdconv bsdconv:utf-8
 	測
 	> echo 016e2c,018a66 | bsdconv bsdconv:utf-8
 	測試
+to/BSDCONV
+	> echo 測 | bsdconv utf-8:bsdconv
+	016E2C010A
+
+to/BSDCONV_RAW
+	> echo 測 | bsdconv utf-8:bsdconv_raw|hexdump -C
+	00000000  01 6e 2c 01 0a                                    |.n,..|
+
+to/RAW	
+	> echo 測試 | bsdconv utf-8:raw|hexdump -C
+	00000000  6e 2c 8a 66 0a                                    |n,.f.|
+
+to/BSDCONV_STDOUT
+	#foreground debug tool
+	> echo 測試 | bsdconv utf-8:bsdconv_stdout
+	016E2C ( FREE )
+	018A66 ( FREE )
+	010A
 
 from/BSDCONV_KEYWORD
 to/BSDCONV_KEYWORD
@@ -50,32 +138,18 @@ from/BSDCONV_LOG
 	A9
 	A6
 	0A
-	
+to/BSDCONV_LOG
+	> echo 測試 | env BSDCONV_TO_LOG=/tmp/bsdconv.log bsdconv utf-8:bsdconv_log
+	> cat /tmp/bsdconv.log 
+	016E2C ( FREE )
+	018A66 ( FREE )
+	010A
+
 from/BYTE
+to/BYTE
 	> perl -e 'print "\xaa\xbb\xcc\xdd"' | bsdconv byte:byte|hexdump -C
 	00000000  aa bb cc dd                                       |....|
 	
-from/_CP950
-	> perl -e 'print "\xa5\x5c\xaf\xe0"' | bsdconv _cp950:utf-8
-	功能
-
-from/_UAO241
-	> echo 喆 | bsdconv utf-8:_cp950,ascii | hexdump -C
-	00000000  0a                                                |.|
-	> echo 喆 | bsdconv utf-8:_uao241,ascii | hexdump -C
-	00000000  95 ed 0a                                          |...|
-
-from/_CP1252
-
-from/_CP936
-
-from/_CP949
-
-from/_ISO-8859-1
-
-from/_UAO250
-	#ref: from/_UAO241
-
 from/ESCAPE
 	> echo %u6e2c | bsdconv escape:utf-8
 	測
@@ -86,37 +160,49 @@ from/ESCAPE
 	03A6 ( FREE )
 	> echo %u6e2c%e8%a9%a6 | bsdconv 'escape:unicode,byte|skip,utf-8:utf-8'
 	測試
-	
-from/_CP1251
-
-from/_SHIFT-JIS
+	> echo %u6e2c%b8%d5功能 | bsdconv 'escape,utf-8:unicode,byte|skip,big5:utf-8'
+	測試功能
+	> echo '%u6e2c%b8%d5&#x529F;能' | bsdconv 'escape,ascii-numeric-html-entity,utf-8:unicode,byte|skip,big5:utf-8'
+	測試功能
+to/ASCII-ESCAPED-UNICODE
+	> echo -n test測試 | bsdconv utf-8:ascii,ascii-escaped-unicode
+	test\u6e2c\u8a66
 
 from/NUL
+to/NUL
 	#used in https://github.com/buganini/bug5
 	#serve for '\0'
 
 from/PASS
+to/PASS
+	#pass through packets queue
+	> echo -n abc | bsdconv 'ascii:pass|pass:bsdconv_stdout'
+	0161 ( SKIP )
+	0162 ( SKIP )
+	0163 ( SKIP )
+
+to/UNICODE
+	#tag UNICODE packets (leading by 0x01) with flag F_SKIP
 
 from/SKIP
 	#pass-through the packets with flag F_SKIP
 
-from/UTF-16BE
+to/ASCII-HTML-CNS11643-IMG
+	> echo 測 | bsdconv utf-8:ascii-html-cns11643-img
+	<img class="cns11643_img" src="http://www.cns11643.gov.tw/AIDB/png.do?page=1&code=6041" />
 
-from/UTF-16LE
+to/ASCII-HTML-INFO
+	> echo 測 | bsdconv utf-8:ascii-html-info
+	<a href="http://www.cns11643.gov.tw/AIDB/query_general_view.do?page=1&code=6041"><img src="http://www.cns11643.gov.tw/AIDB/png.do?page=1&code=6041" /></a><a href="http://www.fileformat.info/info/unicode/char/0A/index.htm"><img class="unicode_img" src="http://www.unicode.org/cgi-bin/refglyph?24-A" /></a>
+	
+to/ASCII-HTML-UNICODE-IMG
+	> echo 測 | bsdconv utf-8:ascii-html-unicode-img
+	<img class="unicode_img" src="http://www.unicode.org/cgi-bin/refglyph?24-6E2C" /><img class="unicode_img" src="http://www.unicode.org/cgi-bin/refglyph?24-A" />
 
-from/UTF-32BE
-
-from/UTF-32LE
-
-from/_CP874
-
-from/_UTF-8
-
-from/_GBK
-
-from/_GB2312
-
-from/_CNS11643
+to/NULL
+	#used to test decoding
+	> echo 測試blah blah blah | bsdconv utf-8:null
+	(no output)
 
 inter/AMBIGUOUS-PAD
 	#used in https://github.com/buganini/bug5
@@ -225,6 +311,8 @@ inter/ZHTW_WORDS
 
 inter/WHITESPACE-DERAIL
 inter/WHITESPACE-RERAIL
+	> echo 之后 | bsdconv utf-8:zhtw:zhtw_words:utf-8
+	之後
 	> echo 之 后 | bsdconv utf-8:zhtw:zhtw_words:utf-8
 	之 后
 	> echo 之 后 | bsdconv utf-8:whitespace-derail:zhtw:zhtw_words:whitespace-rerail:utf-8
@@ -262,7 +350,6 @@ inter/SCORE
 	> perl -e 'print "123Б測試"' | bsdconv big5:score:null
 	Score: 3
 
-
 inter/SPLIT
 	> echo 測試|bsdconv utf-8:bsdconv
 	016E2C018A66010A
@@ -270,116 +357,4 @@ inter/SPLIT
 	016E2C,018A66,010A,
 
 inter/SCORE_TRAIN
-
-to/3F
-	> echo -n test測試test |bsdconv utf-8:ascii,3f
-	test??test
-
-to/ANSI-CONTROL
-	#used in https://github.com/buganini/bug5
-	#tag ANSI-CONTROL packets (leading by 0x1b) with flag F_SKIP
-
-to/ASCII-ESCAPED-UNICODE
-	> echo -n 測試 | bsdconv utf-8:ascii-escaped-unicode
-	\u6e2c\u8a66
-
-to/ASCII-HEX-NUMERIC-HTML-ENTITY
-	> echo 測 | bsdconv utf-8:ascii-hex-numeric-html-entity
-	&#x6E2C;&#xA;
-
-to/ASCII-HTML-CNS11643-IMG
-	> echo 測 | bsdconv utf-8:ascii-html-cns11643-img
-	<img class="cns11643_img" src="http://www.cns11643.gov.tw/AIDB/png.do?page=1&code=6041" />
-
-to/ASCII-HTML-INFO
-	> echo 測 | bsdconv utf-8:ascii-html-info
-	<a href="http://www.cns11643.gov.tw/AIDB/query_general_view.do?page=1&code=6041"><img src="http://www.cns11643.gov.tw/AIDB/png.do?page=1&code=6041" /></a><a href="http://www.fileformat.info/info/unicode/char/0A/index.htm"><img class="unicode_img" src="http://www.unicode.org/cgi-bin/refglyph?24-A" /></a>
-	
-to/ASCII-HTML-UNICODE-IMG
-	> echo 測 | bsdconv utf-8:ascii-html-unicode-img
-	<img class="unicode_img" src="http://www.unicode.org/cgi-bin/refglyph?24-6E2C" /><img class="unicode_img" src="http://www.unicode.org/cgi-bin/refglyph?24-A" />
-
-to/ASCII-NAMED-HTML-ENTITY
-	> echo Ç | bsdconv utf-8:ascii-named-html-entity
-	&Ccedil;
-
-to/ASCII
-	#just ascii
-
-to/BIG5-5C
-	> echo 功能|bsdconv utf-8:big5-5c,big5|hexdump -C
-	00000000  a5 5c 5c af e0 0a                                 |.\\...|
-
-to/BSDCONV
-	> echo 測 | bsdconv utf-8:bsdconv
-	016E2C010A
-
-to/BSDCONV_LOG
-
-to/BSDCONV_RAW
-	> echo 測 | bsdconv utf-8:bsdconv_raw|hexdump -C
-	00000000  01 6e 2c 01 0a                                    |.n,..|
-
-to/BSDCONV_STDOUT
-	#foreground debug tool
-	> echo 測試 | bsdconv utf-8:bsdconv_stdout
-	016E2C ( FREE )
-	018A66 ( FREE )
-	010A
-
-to/BYTE
-	#ref: from/BYTE
-
-to/_CP936
-
-to/_CP950
-
-to/_GB2312
-
-to/CP936_TRANS
-
-to/_GBK
-
-to/CP950_TRANS
-
-to/_ISO-8859-1
-
-to/_UAO241
-
-to/NUL
-
-to/PASS
-	#pass through packets queue
-	> echo -n abc | bsdconv 'ascii:pass|pass:bsdconv_stdout'
-	0161 ( SKIP )
-	0162 ( SKIP )
-	0163 ( SKIP )
-
-to/RAW
-
-to/_UAO250
-
-to/UCS-2BE
-
-to/UCS-2LE
-
-to/UNICODE
-	#tag ANSI-CONTROL packets (leading by 0x1b) with flag F_SKIP
-
-to/UTF-16BE
-
-to/UTF-16LE
-
-to/UTF-32BE
-
-to/UTF-32LE
-
-to/NULL
-	#used to test decoding
-	> echo 測試blah blah blah | bsdconv utf-8:null
-	(no output)
-
-to/_CNS11643
-
-to/_UTF-8
 
