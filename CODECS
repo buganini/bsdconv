@@ -4,6 +4,10 @@ from/3F
 
 from/ANSI-CONTROL
 	#used in https://github.com/buganini/bug5
+	> perl -e 'print "a\033[1mb"' | bsdconv ansi-control,utf-8:bsdconv_stdout
+	0161
+	1B5B316D ( FREE )
+	0162
 
 from/ASCII-NAMED-HTML-ENTITY
 	> echo '&uuml;' | bsdconv ascii-named-html-entity:utf-8
@@ -28,6 +32,7 @@ from/BSDCONV
 	測試
 
 from/BSDCONV_KEYWORD
+to/BSDCONV_KEYWORD
 	> printf "測,試\t测,试\n" | bsdconv bsdconv_keyword,utf-8:bsdconv_keyword,bsdconv
 	016E2C,018A66	016D4B,018BD5
 	> printf "測,試\t测,试\n" | bsdconv bsdconv_keyword,utf-8:bsdconv_keyword,bsdconv | bsdconv bsdconv_keyword,bsdconv:bsdconv_keyword,utf-8
@@ -71,7 +76,16 @@ from/_UAO250
 	#ref: from/_UAO241
 
 from/ESCAPE
-
+	> echo %u6e2c | bsdconv escape:utf-8
+	測
+	> echo %u6e2c%e8%a9%a6 | bsdconv escape:bsdconv_stdout
+	016E2C ( FREE )
+	03E8 ( FREE )
+	03A9 ( FREE )
+	03A6 ( FREE )
+	> echo %u6e2c%e8%a9%a6 | bsdconv 'escape:unicode,byte|skip,utf-8:utf-8'
+	測試
+	
 from/_CP1251
 
 from/_SHIFT-JIS
@@ -81,6 +95,7 @@ from/NUL
 from/PASS
 
 from/SKIP
+	#pass-through the packets with flag F_SKIP
 
 from/UTF-16BE
 
@@ -101,16 +116,67 @@ from/_GB2312
 from/_CNS11643
 
 inter/AMBIGUOUS-PAD
+	#used in https://github.com/buganini/bug5
+	> echo БИ 2 | bsdconv utf-8:ambiguous-pad:utf-8 
+	Б И  2
+	> echo БИ 2 | bsdconv utf-8:ambiguous-pad:utf-8 | hexdump -C
+	00000000  d0 91 c2 a0 d0 98 c2 a0  20 32 0a                 |........ 2.|
+	(the padded character is U+00A0)
+
+inter/AMBIGUOUS-UNPAD
+	#used in https://github.com/buganini/bug5
+	> echo Б И  2|bsdconv utf-8:ambiguous-unpad:utf-8
+	БИ 2
 
 inter/BIG5-DEFRAG
+	> perl -e 'print "\xaf\033[1m\xe0"' | bsdconv 'ansi-control,byte:big5-defrag:byte,ansi-control|skip,big5:bsdconv_stdout'
+	0180FD
+	1B5B316D ( FREE )
 
 inter/CHEWING
 	> echo abc測試xyz|bsdconv utf-8:chewing:utf-8
 	abcㄘㄜˋㄕˋxyz
 
-inter/CNS11643
+inter/HAN_PINYIN
+	> echo 測試 | bsdconv utf-8:chewing:han_pinyin:utf-8
+	ce4[sh]4
 
 inter/FROM_ALIAS
+	#for internal use
+	> echo BIG5 | bsdconv ascii:from_alias:ascii
+	UAO250
+	> echo UAO250 | bsdconv ascii:from_alias:ascii
+	ASCII,_UAO250
+
+inter/INTER_ALIAS
+	#for internal use
+	#currently no any mapping listed
+
+inter/TO_ALIAS
+	#for internal use
+	> echo BIG5 | bsdconv ascii:to_alias:ascii
+	CP950
+	> echo CP950 | bsdconv ascii:to_alias:ascii
+	_CP950,ASCII
+
+inter/JP_PINYIN
+
+inter/CNS11643
+	> echo -n 測試 | bsdconv utf-8:cns11643:bsdconv_stdout
+	02016041
+	0201665C
+
+inter/UNICODE
+	#for internal use
+	#ref inter/CNS11643
+
+inter/UPPER
+	> echo testTEST | bsdconv utf-8:upper:utf-8
+	TESTTEST
+
+inter/LOWER
+	> echo testTEST | bsdconv utf-8:lower:utf-8
+	testtest
 
 inter/FULL
 	> echo testTEST1234 | bsdconv utf-8:full:utf-8
@@ -120,37 +186,25 @@ inter/HALF
 	> echo ｔｅｓｔＴＥＳＴ１２３４ | bsdconv utf-8:half:utf-8
 	testTEST1234
 
-inter/HAN_PINYIN
-	> echo 測試 | bsdconv utf-8:chewing:han_pinyin:utf-8
-	ce4[sh]4
-
-inter/INTER_ALIAS
-
-inter/JP_PINYIN
-
-inter/LOWER
-	> echo testTEST | bsdconv utf-8:lower:utf-8
-	testtest
-
-inter/MAC
-
-inter/NL2BR
-
-inter/TO_ALIAS
-
-inter/UNICODE
-
-inter/UNIX
-
-inter/UPPER
-	> echo testTEST | bsdconv utf-8:upper:utf-8
-	TESTTEST
-
-inter/WIN
-
 inter/UPSIDEDOWN
 	> echo FUNNY | bsdconv utf-8:upsidedown:utf-8
 	Ⅎ∩ᴎᴎ⅄
+
+inter/UNIX
+	>  perl -e 'print "a\r\nb"' | bsdconv utf-8:unix:utf-8 | hexdump -C
+	00000000  61 0a 62                                          |a.b|
+
+inter/MAC
+	> perl -e 'print "a\nb"' | bsdconv utf-8:mac:utf-8|hexdump -C
+	00000000  61 0d 62                                          |a.b|
+
+inter/WIN
+	> perl -e 'print "a\nb"' | bsdconv utf-8:win:utf-8 | hexdump -C
+	00000000  61 0d 0a 62                                       |a..b|
+
+inter/NL2BR
+	> perl -e 'print "a\nb"'|bsdconv utf-8:nl2br:utf-8
+	a<br />b
 
 inter/ZHCN
 	> echo 測試 | bsdconv utf-8:zhcn:utf-8
@@ -164,23 +218,39 @@ inter/ZHTW_WORDS
 	> echo 測試之后 | bsdconv utf-8:zhtw:zhtw_words:utf-8
 	測試之後
 
-inter/ZH_COMP
-inter/ZH_DECOMP
-	#used in https://github.com/buganini/chicomp
-
-inter/AMBIGUOUS-UNPAD
-	#used in https://github.com/buganini/bug5
-
-inter/WIDTH
-
-inter/SCORE
-
 inter/WHITESPACE-DERAIL
 inter/WHITESPACE-RERAIL
 	> echo 之 后 | bsdconv utf-8:zhtw:zhtw_words:utf-8
 	之 后
 	> echo 之 后 | bsdconv utf-8:whitespace-derail:zhtw:zhtw_words:whitespace-rerail:utf-8
 	之 後
+
+inter/ZH_COMP
+inter/ZH_DECOMP
+	#used in https://github.com/buganini/chicomp
+	> echo 功夫不好不要艹我|bsdconv utf-8:zh_decomp:bsdconv_stdout
+	0449
+	043A
+	0483
+	048D
+	0476
+	047A
+	048D
+	040107
+	0476
+	0495
+	040139
+	010A
+	> echo 功夫不好不要艹我 | bsdconv utf-8:zh_decomp:zh_comp:utf-8
+	巭孬嫑莪
+
+inter/WIDTH
+	> perl -e 'print "123Б測試"' | bsdconv utf-8:width:null
+	Full width: 2
+	Half width: 3
+	Ambi width: 1
+
+inter/SCORE
 
 inter/SPLIT
 	> echo 測試|bsdconv utf-8:bsdconv
@@ -191,15 +261,24 @@ inter/SPLIT
 inter/SCORE_TRAIN
 
 to/3F
+	> echo -n test測試test |bsdconv utf-8:ascii,3f
+	test??test
 
 to/ANSI-CONTROL
 	#used in https://github.com/buganini/bug5
+	#tag ANSI-CONTROL packets (leading by 0x1b) with flag F_SKIP
 
 to/ASCII-ESCAPED-UNICODE
+	> echo -n 測試 | bsdconv utf-8:ascii-escaped-unicode
+	\u6e2c\u8a66
 
 to/ASCII-HEX-NUMERIC-HTML-ENTITY
+	> echo 測 | bsdconv utf-8:ascii-hex-numeric-html-entity
+	&#x6E2C;&#xA;
 
 to/ASCII-HTML-CNS11643-IMG
+	> echo 測 | bsdconv utf-8:ascii-html-cns11643-img
+	<img class="cns11643_img" src="http://www.cns11643.gov.tw/AIDB/png.do?page=1&code=6041" />
 
 to/ASCII-HTML-INFO
 	> echo 測 | bsdconv utf-8:ascii-html-info
@@ -223,8 +302,6 @@ to/BIG5-5C
 to/BSDCONV
 	> echo 測 | bsdconv utf-8:bsdconv
 	016E2C010A
-
-to/BSDCONV_KEYWORD
 
 to/BSDCONV_LOG
 
@@ -261,6 +338,11 @@ to/_UAO241
 to/NUL
 
 to/PASS
+	#pass through packets queue
+	> echo -n abc | bsdconv 'ascii:pass|pass:bsdconv_stdout'
+	0161 ( SKIP )
+	0162 ( SKIP )
+	0163 ( SKIP )
 
 to/RAW
 
@@ -271,6 +353,7 @@ to/UCS-2BE
 to/UCS-2LE
 
 to/UNICODE
+	#tag ANSI-CONTROL packets (leading by 0x1b) with flag F_SKIP
 
 to/UTF-16BE
 
