@@ -42,8 +42,8 @@ void callback(struct bsdconv_instance *ins){
 	}
 	if(ins->phase[ins->phase_index].curr->flags){
 		fprintf(fp," (");
-		if(ins->phase[ins->phase_index].curr->flags & F_FREE) printf(" FREE");
-		if(ins->phase[ins->phase_index].curr->flags & F_SKIP) printf(" SKIP");
+		if(ins->phase[ins->phase_index].curr->flags & F_FREE) fprintf(fp, " FREE");
+		if(ins->phase[ins->phase_index].curr->flags & F_SKIP) fprintf(fp, " SKIP");
 		fprintf(fp," )");
 	}
 	fprintf(fp,"\n");
