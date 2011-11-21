@@ -205,7 +205,7 @@ to/ASCII-HTML-UNICODE-IMG
 to/NULL
 	#used to test decoding
 	> echo 測試blah blah blah | bsdconv utf-8:null
-	(no output)
+	#(no output)
 
 inter/AMBIGUOUS-PAD
 	#used in https://github.com/buganini/bug5
@@ -213,8 +213,7 @@ inter/AMBIGUOUS-PAD
 	Б И  2
 	> echo БИ 2 | bsdconv utf-8:ambiguous-pad:utf-8 | hexdump -C
 	00000000  d0 91 c2 a0 d0 98 c2 a0  20 32 0a                 |........ 2.|
-	(the padded character is U+00A0)
-
+	#(the padded character is U+00A0)
 inter/AMBIGUOUS-UNPAD
 	#used in https://github.com/buganini/bug5
 	> echo Б И  2|bsdconv utf-8:ambiguous-unpad:utf-8
