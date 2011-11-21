@@ -53,6 +53,7 @@ void callback(struct bsdconv_instance *ins){
 	bsdconv(uni);
 	this_phase->data_tail->next=uni->phase[uni->phasen].data_head->next;
 	uni->phase[uni->phasen].data_head->next=NULL;
+	uni->phase[uni->phasen].data_tail=uni->phase[uni->phasen].data_head;
 	while(this_phase->data_tail->next!=NULL){
 		this_phase->data_tail=this_phase->data_tail->next;
 	}
