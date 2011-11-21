@@ -34,7 +34,7 @@ void cbdestroy(struct bsdconv_instance *ins){
 void callback(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	FILE *fp=this_phase->codec[this_phase->index].priv;
-	fprintf(fp,"%X\n", (int)UCP(this_phase->curr->data)[this_phase->i]);
+	fprintf(fp,"%02X\n", (int)UCP(this_phase->curr->data)[this_phase->i]);
 	this_phase->state.status=NEXTPHASE;	
 	fflush(fp);
 }
