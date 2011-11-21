@@ -3,6 +3,8 @@ to/ASCII
 	#just ascii (U+0001 ~ U+007F)
 
 from/BIG5-5C
+	> perl -e 'print "\xa5\x5c\x5c\xaf\xe0"' | bsdconv big5:utf-8
+	功\能
 	> perl -e 'print "\xa5\x5c\x5c\xaf\xe0"' | bsdconv big5-5c,big5:utf-8
 	功能
 to/BIG5-5C
@@ -289,15 +291,12 @@ inter/UPSIDEDOWN
 inter/UNIX
 	> perl -e 'print "a\r\nb"' | bsdconv utf-8:unix:utf-8 | hexdump -C
 	00000000  61 0a 62                                          |a.b|
-
 inter/MAC
 	> perl -e 'print "a\nb"' | bsdconv utf-8:mac:utf-8|hexdump -C
 	00000000  61 0d 62                                          |a.b|
-
 inter/WIN
 	> perl -e 'print "a\nb"' | bsdconv utf-8:win:utf-8 | hexdump -C
 	00000000  61 0d 0a 62                                       |a..b|
-
 inter/NL2BR
 	> perl -e 'print "a\nb"'|bsdconv utf-8:nl2br:utf-8
 	a<br />b
