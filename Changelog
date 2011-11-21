@@ -1,5 +1,6 @@
 7.1:
 	add {from,to}/LOCALE alias to system locale
+	rename inter/JP_PINYIN to inter/KANA_PHONETIC
 
 7.0:
 	add inter/SPLIT
