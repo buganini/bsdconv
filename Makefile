@@ -124,9 +124,11 @@ TODO_CODECS_BASIC_CALLBACK+=from/_UTF-8
 TODO_CODECS_BASIC_CALLBACK+=inter/AMBIGUOUS-PAD
 TODO_CODECS_BASIC_CALLBACK+=inter/AMBIGUOUS-UNPAD
 TODO_CODECS_BASIC_CALLBACK+=inter/BIG5-DEFRAG
+TODO_CODECS_BASIC_CALLBACK+=inter/FROM_ALIAS
 TODO_CODECS_BASIC_CALLBACK+=inter/SCORE
 TODO_CODECS_BASIC_CALLBACK+=inter/SCORE_TRAIN
 TODO_CODECS_BASIC_CALLBACK+=inter/SPLIT
+TODO_CODECS_BASIC_CALLBACK+=inter/TO_ALIAS
 TODO_CODECS_BASIC_CALLBACK+=inter/WHITESPACE-DERAIL
 TODO_CODECS_BASIC_CALLBACK+=inter/WHITESPACE-RERAIL
 TODO_CODECS_BASIC_CALLBACK+=inter/WIDTH
@@ -161,8 +163,10 @@ all: libbsdconv bsdconv_mktable meta bsdconv codecs
 
 alias:
 	python tools/mkalias.py codecs/from/alias codecs/inter/FROM_ALIAS.txt
+	@echo -e "014C,014F,0143,0141,014C,0145\t?" >> codecs/inter/FROM_ALIAS.txt
 	python tools/mkalias.py codecs/inter/alias codecs/inter/INTER_ALIAS.txt
 	python tools/mkalias.py codecs/to/alias codecs/inter/TO_ALIAS.txt
+	@echo -e "014C,014F,0143,0141,014C,0145\t?" >> codecs/inter/TO_ALIAS.txt
 
 builddir:
 	mkdir -p build/bin

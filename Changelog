@@ -1,3 +1,6 @@
+7.1:
+	add {from,to}/LOCALE alias to system locale
+
 7.0:
 	add inter/SPLIT
 	add from/_CP874
