@@ -93,6 +93,8 @@ to/_CNS11643
 	#but in implementation, ascii characters appers in ASCII,
 	#so you should use ascii,_cns11643 for decoding,
 	#and ascii,_cns11643 for encoding.
+	#by design, to/_CNS11643 should only output plane switching sequence when needed,
+	#but in implementation, it appears all the time.
 
 from/3F
 	> echo test測試test | bsdconv ascii,3f:ascii
