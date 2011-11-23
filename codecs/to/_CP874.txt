@@ -1,4 +1,4 @@
-	#http://unicode.org/Public/MAPPINGS/VENDORS/MICSFT/WINDOWS/CP874.TXT
+#transposed from from/_CP874
 0120AC	80
 012026	85
 012018	91
