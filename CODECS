@@ -19,7 +19,7 @@ to/_UAO250
 to/_CP950
 to/CP950_TRANS
 	#traditional chinese
-	#ascii is excluded
+	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 	> perl -e 'print "\xa5\x5c\xaf\xe0"' | bsdconv _cp950:utf-8
 	功能
 	> echo 喆 | bsdconv utf-8:_cp950,ascii | hexdump -C
@@ -40,33 +40,33 @@ to/CP936_TRANS
 to/_GB2312
 to/_GBK
 	#simplified chinese
-	#ascii is excluded
+	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 	#cp936_trans is for transliteration
 
 from/_SHIFT-JIS
 	#japanese
-	#ascii is excluded
+	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 
 from/_ISO-8859-1
 to/_ISO-8859-1
 	#latin alphabet
-	#ascii is excluded
+	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 
 from/_CP1251
 	#cyrillic alphabet
-	#ascii is excluded
+	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 
 from/_CP1252
 	#latin alphabet
-	#ascii is excluded
+	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 
 from/_CP874
 	#thai characters
-	#ascii is excluded
+	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 
 from/_CP949
 	#korean characters
-	#ascii is excluded
+	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 
 from/UTF-16BE
 from/UTF-16LE
@@ -84,7 +84,7 @@ to/UTF-32LE
 
 from/_UTF-8
 to/_UTF-8
-	#ascii is excluded
+	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 
 from/_CNS11643
 to/_CNS11643
@@ -92,7 +92,8 @@ to/_CNS11643
 	#by design, it's mutually exclusive with ascii (each ascii characters has it's own definition in CNS11643)
 	#but in implementation, ascii characters appers in ASCII,
 	#so you should use ascii,_cns11643 for decoding,
-	#and ascii,_cns11643 for encoding.
+	#and ascii,_cns11643 for encoding,
+	#or use cns11643 directly in both decoding and encoding, try are properly associated aliases.
 	#by design, to/_CNS11643 should only output plane switching sequence when needed,
 	#but in implementation, it appears all the time.
 
