@@ -44,6 +44,7 @@ to/_GBK
 	#cp936_trans is for transliteration
 
 from/_SHIFT-JIS
+to/_SHIFT-JIS
 	#japanese
 	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 
@@ -53,18 +54,22 @@ to/_ISO-8859-1
 	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 
 from/_CP1251
+to/_CP1251
 	#cyrillic alphabet
 	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 
 from/_CP1252
+to/_CP1252
 	#latin alphabet
 	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 
 from/_CP874
+to/_CP874
 	#thai characters
 	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 
 from/_CP949
+to/_CP949
 	#korean characters
 	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 
