@@ -244,11 +244,13 @@ inter/FROM_ALIAS
 	UAO250
 	> echo UAO250 | bsdconv ascii:from_alias:ascii
 	ASCII,_UAO250
-
+	> echo LOCALE | bsdconv ascii:from_alias:ascii
+	UTF-8
+	> echo UTF-8 | bsdconv ascii:from_alias:ascii
+	ASCII,_UTF-8
 inter/INTER_ALIAS
 	#for internal use
 	#currently no any mapping listed
-
 inter/TO_ALIAS
 	#for internal use
 	> echo BIG5 | bsdconv ascii:to_alias:ascii
