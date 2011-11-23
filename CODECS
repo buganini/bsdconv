@@ -350,17 +350,38 @@ inter/WIDTH
 	Ambi width: 1
 
 inter/SCORE
+inter/SCORE_TRAIN
 	#used for encoding detecting (roughly)
-	> perl -e 'print "123Б測試"' | bsdconv utf-8:score:null
-	Score: 5
-	> perl -e 'print "123Б測試"' | bsdconv big5:score:null
-	Score: 3
+	#reference codecs/inter/SCORE.c static const struct interval scoreboard for default weight
+	> echo 123Б測試 | bsdconv utf-8:score:null
+	Decoding failure: 0
+	Encoding failure: 0
+	Score: 6
+	> echo 123Б測試 | bsdconv big5:score:null
+	Decoding failure: 2
+	Encoding failure: 0
+	Score: 4
+	#if score data exists, it will use it.
+	#default score data path is $HOME/.bsdconv.score
+	> echo 123Б測試 | bsdconv utf-8:score_train:null
+	> echo 123Б測試 | bsdconv utf-8:score:null
+	Score: 7
+	> echo 123Б測試功能 | bsdconv utf-8:score:null
+	Score: 7
+	> echo 123Б測試功能 | bsdconv utf-8:score_train:null
+	> echo 123Б測試功能 | bsdconv utf-8:score:null
+	Score: 9
+	#specify score data path in C
+	bsdconv_ctl(
+		struct bsdconv_instance *, /*conversion instance*/
+		BSDCONV_SCORE_ATTACH, /* Magic constant*/
+		FILE *, /* File pointer to the score data*/
+		0 /* unused argument */
+	);
 
 inter/SPLIT
 	> echo 測試|bsdconv utf-8:bsdconv
 	016E2C018A66010A
 	> echo 測試 | bsdconv utf-8:split:bsdconv_keyword,bsdconv
 	016E2C,018A66,010A,
-
-inter/SCORE_TRAIN
 
