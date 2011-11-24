@@ -419,25 +419,25 @@ void callback(struct bsdconv_instance *ins){
 		if (ucs < width_table[0].beg || ucs > width_table[max].end){
 			//noop
 		}else while (max >= min) {
-				mid = (min + max) / 2;
-				if (ucs > width_table[mid].end)
-					min = mid + 1;
-				else if (ucs < width_table[mid].beg)
-					max = mid - 1;
-				else{
-					switch(width_table[mid].width){
-						case FULL:
-							ins->full+=1;
-							break;
-						case HALF:
-							ins->half+=1;
-							break;
-						case AMBI:
-							ins->ambi+=1;
-							break;
-					}
-					break;
+			mid = (min + max) / 2;
+			if (ucs > width_table[mid].end)
+				min = mid + 1;
+			else if (ucs < width_table[mid].beg)
+				max = mid - 1;
+			else{
+				switch(width_table[mid].width){
+					case FULL:
+						ins->full+=1;
+						break;
+					case HALF:
+						ins->half+=1;
+						break;
+					case AMBI:
+						ins->ambi+=1;
+						break;
 				}
+				break;
+			}
 		}
 	}
 
