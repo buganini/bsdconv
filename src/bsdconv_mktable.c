@@ -387,7 +387,9 @@ int main(int argc, char *argv[]){
 					}else{
 						continue;
 					}
-					state_p->p->base[c]=callback;
+					if(state_p->p->base[c]==NULL){
+						state_p->p->base[c]=callback;
+					}
 				}
 				todo=todo->n;
 				free(state_p);
