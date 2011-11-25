@@ -80,6 +80,7 @@ char table[256]={};
 char ci_table[256]={0};
 
 uintptr_t offset=0;
+struct m_state_st *state_r, *state_t, holder;
 
 struct dhash *hash_datalist, *hash_data;
 
@@ -122,6 +123,42 @@ uintptr_t hash(int *p, uintptr_t l){
 	hash_p->v=(uintptr_t) hash_q;
 	return (uintptr_t) hash_p;
 }
+struct dhash *callback_hash;
+
+uintptr_t hash_callback(int *p, uintptr_t l){
+	int i;
+	struct dhash *hash_p=hash_datalist;
+	struct dhash *hash_q=callback_hash;
+	for(i=l-1;i>=0;--i){
+		hash_p=hash_p->sub[p[i]];
+		if(hash_q->sub==NULL)
+			hash_q->sub=calloc(257, sizeof(struct dhash *));
+		if(hash_q->sub[p[i]]==NULL){
+			hash_q->sub[p[i]]=FMALLOC(sizeof(struct dhash));
+			hash_q->sub[p[i]]->c=p[i];
+			hash_q->sub[p[i]]->p=hash_q;
+			hash_q->sub[p[i]]->v=0;
+			hash_q->sub[p[i]]->offset=0;
+			hash_q->sub[p[i]]->head=NULL;
+			hash_q->sub[p[i]]->sub=NULL;
+		}
+		hash_q=hash_q->sub[p[i]];
+	}
+	if(hash_q->v==0){
+		state_t->n=(struct m_state_st *)FMALLOC(sizeof(struct m_state_st));
+		state_t=state_t->n;
+		STATE_INIT(state_t);
+		state_t->status=SUBROUTINE;
+		state_t->beg=0;
+		state_t->end=256+1;
+		state_t->base=calloc(257, sizeof(struct m_state_st *));
+		for(i=0;i<=256;++i){
+			state_t->base[i]=state_t;
+		}
+		hash_q->v=(uintptr_t) state_t;
+	}
+	return hash_q->v;
+}
 
 int main(int argc, char *argv[]){
 	int i, j, k, c=0, cu, cl, ci,pr;
@@ -129,14 +166,13 @@ int main(int argc, char *argv[]){
 	char inbuf[1024], *f, *t, *tmp, *of, *ot;
 	int dat[1024];
 	offset_t sub[257];
-	uintptr_t l,ret;
+	uintptr_t l,ret,callback_state=0;
 	struct m_data_st *data_r=NULL, *data_p=NULL, *data_q=NULL, *data_t=NULL;
-	struct m_state_st *state_r, *state_t, holder;
 	struct list *todo=NULL, *newtodo, *newtodo_tail, *state_p;
 	struct state_st dstate;
 	struct data_st ddata;
 	struct dhash *hash_p;
-	struct m_state_st *callback=NULL;
+	int callback=0;
 	void *tofree;
 	char *bsdconv_mktable_fmalloc_template;
 
@@ -239,6 +275,13 @@ int main(int argc, char *argv[]){
 	hash_data->offset=0;
 	hash_data->head=NULL;
 
+	callback_hash=FMALLOC(sizeof(struct dhash));
+	callback_hash->sub=NULL;
+	callback_hash->p=0;
+	callback_hash->v=0;
+	callback_hash->offset=0;
+	callback_hash->head=NULL;
+
 	newtodo=malloc(sizeof(struct list));
 	newtodo->n=NULL;
 	newtodo->l=3;
@@ -328,10 +371,6 @@ int main(int argc, char *argv[]){
 						state_t=state_t->n;
 						STATE_INIT(state_t);
 
-						state_t->n=state_p->p->base[c];
-						state_t=state_t->n;
-						state_t->n=NULL;
-
 						newtodo_tail->n=malloc(sizeof(struct list));
 						newtodo_tail=newtodo_tail->n;
 						newtodo_tail->n=NULL;
@@ -357,46 +396,16 @@ int main(int argc, char *argv[]){
 		j=0;
 		l=0;
 		k=1;
+		callback=0;
 		if(*t=='?'){
-			if(callback==NULL){
-				state_t->n=(struct m_state_st *)FMALLOC(sizeof(struct m_state_st));
-				state_t=state_t->n;
-				STATE_INIT(state_t);
-				state_t->status=SUBROUTINE;
-				state_t->beg=0;
-				state_t->end=256+1;
-				state_t->base=calloc(257, sizeof(struct m_state_st *));
-				callback=state_t;
-				for(i=0;i<=256;++i){
-					state_t->base[i]=callback;
-				}
-			}
-			while(todo){
-				state_p=todo;
-				for(c=0;c<=256;++c){
-					if(c < state_p->p->beg)
-						state_p->p->beg=c;
-					if(c >= state_p->p->end)
-						state_p->p->end=c+1;
-					if(state_p->p->base==NULL)
-						state_p->p->base=calloc(257, sizeof(struct m_state_st *));
-					if(c>=state_p->l && c<=state_p->u){
-						pr=1;
-					}else if(ci && ci_table[c] && ci_table[c]>=state_p->l && ci_table[c]<=state_p->u){
-						pr=0;
-					}else{
-						continue;
-					}
-					if(state_p->p->base[c]==NULL){
-						state_p->p->base[c]=callback;
-					}
-				}
-				todo=todo->n;
-				free(state_p);
-			}
-		}else while(1){
+			t+=1;
+			callback=1;
+		}
+		while(1){
 			if(*t==0){
 				ret=hash(dat,l);
+				if(callback)
+					callback_state=hash_callback(dat, l);
 				if(k){
 					k=0;
 					while(todo){
@@ -422,6 +431,8 @@ int main(int argc, char *argv[]){
 								}else{
 									state_p->p->base[c]->status=SUBMATCH;
 								}
+							}else if(callback){
+								state_p->p->base[c]=(struct m_state_st *) callback_state;
 							}else{
 								state_p->p->base[c]=state_t->n=FMALLOC(sizeof(struct m_state_st));
 								state_t=state_t->n;
