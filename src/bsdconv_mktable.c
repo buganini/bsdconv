@@ -356,6 +356,11 @@ int main(int argc, char *argv[]){
 						state_p->p->base=calloc(257, sizeof(struct m_state_st *));
 					if(state_p->p->base[c]){
 						if(state_p->p->base[c]->status==MATCH){
+							if(state_p->p->base[c]->status==SUBROUTINE){
+								state_p->p->base[c]=state_t->n=FMALLOC(sizeof(struct m_state_st));
+								state_t=state_t->n;
+								STATE_INIT(state_t);
+							}
 							state_p->p->base[c]->status=SUBMATCH;
 						}
 						newtodo_tail->n=malloc(sizeof(struct list));
@@ -425,10 +430,15 @@ int main(int argc, char *argv[]){
 							if(state_p->p->base==NULL)
 								state_p->p->base=calloc(257, sizeof(struct m_state_st *));
 							if(state_p->p->base[c]){
-								if(state_p->p->base[c]->data && (pr+state_p->pr) <= state_p->p->base[c]->prio){
+								if((state_p->p->base[c]->status==MATCH || state_p->p->base[c]->status==SUBMATCH) && (pr+state_p->pr) <= state_p->p->base[c]->prio){
 //									printf("Duplicated key: %s dropping data: %s\n", of, ot);
 									continue;
 								}else{
+									if(state_p->p->base[c]->status==SUBROUTINE){
+										state_p->p->base[c]=state_t->n=FMALLOC(sizeof(struct m_state_st));
+										state_t=state_t->n;
+										STATE_INIT(state_t);
+									}
 									state_p->p->base[c]->status=SUBMATCH;
 								}
 							}else if(callback){
