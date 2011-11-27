@@ -21,93 +21,20 @@
 
 #define IBUFLEN 1024
 
-int main(int argc, char *argv[]){
-	char *t;
-	int fd;
-	char *tmp=NULL;
-	struct bsdconv_instance *ins;
-	FILE *inf, *otf;
-	char *in, *to;
-
-	if(argc<2 || argc>4){
-		fprintf(stderr, "Usage:\n\t %s from:[inter:..]to [input|- [output|-|=]]\nfrom,inter,to in form of codec[,codec2..]\n", argv[0]);
-		exit(1);
-	}
-	if(argc>2){
-		if(strcmp(argv[2],"-")==0){
-			inf=stdin;
-		}else{
-			inf=fopen(argv[2],"r");
-			if(!inf){
-				fprintf(stderr, "Unable to open input file %s\n", argv[2]);
-				exit(1);
-			}
-		}
-	}else{
-		inf=stdin;
-	}
-	if(argc>3){
-		to=argv[3];
-		if(strcmp(to,"=")==0){
-			to=argv[2];
-		}
-		if(strcmp(to,"-")==0){
-			otf=stdout;
-		}else{
-			tmp=malloc(strlen(to)+8);
-			strcpy(tmp, to);
-			strcat(tmp, ".XXXXXX");
-			if((fd=mkstemp(tmp))==-1){
-				free(tmp);
-				fprintf(stderr, "Failed creating temp file.\n");
-				exit(1);
-			}
-			otf=fdopen(fd,"w");
-			if(!otf){
-				fprintf(stderr, "Unable to open output file %s\n", to);
-				exit(1);
-			}
-		}
-	}else{
-		to=NULL;
-		otf=stdout;
-	}
-
-	ins=bsdconv_create(argv[1]);
-	if(!ins){
-		t=bsdconv_error();
-		fprintf(stderr, "%s\n", t);
-		free(t);
-		exit(1);
-	}
-	if(ins->phasen==1){
-		fprintf(stderr, "Syntax error\n");
-		bsdconv_destroy(ins);
-		exit(1);
-	}
+void bsdconv_file(struct bsdconv_instance *ins, FILE *in, FILE *out){
+	char *ib;
 	bsdconv_init(ins);
 	do{
-		in=malloc(IBUFLEN);
-		ins->input.data=in;
-		ins->input.len=fread(in, 1, IBUFLEN, inf);
+		ib=malloc(IBUFLEN);
+		ins->input.data=ib;
 		ins->input.flags|=F_FREE;
-		if(ins->input.len==0){
+		if((ins->input.len=fread(ib, 1, IBUFLEN, in))==0){
 			ins->flush=1;
 		}
 		ins->output_mode=BSDCONV_FILE;
-		ins->output.data=otf;
+		ins->output.data=out;
 		bsdconv(ins);
 	}while(ins->flush==0);
-
-	if(inf!=stdin){
-		fclose(inf);
-	}
-	if(to){
-		fclose(otf);
-		unlink(to);
-		rename(tmp,to);
-		free(tmp);
-	}
 
 	fprintf(stderr, "Decoding failure: %u\n", ins->ierr);
 	fprintf(stderr, "Encoding failure: %u\n", ins->oerr);
@@ -118,6 +45,68 @@ int main(int argc, char *argv[]){
 	}
 	if(ins->score)
 		fprintf(stderr, "Score: %u\n", ins->score);
+}
+
+int main(int argc, char *argv[]){
+	char *t;
+	int fd;
+	char *tmp=NULL;
+	struct bsdconv_instance *ins;
+	FILE *inf=NULL, *otf=stdout;
+	int inplace=0;
+	int i;
+
+	if(argc<2){
+		fprintf(stderr, "Usage:\n\t %s conversion [-i] [file] [...]\n", argv[0]);
+		exit(1);
+	}
+	i=2;
+	if(argc>2 && strcmp(argv[i],"-i")==0){
+		i+=1;
+		inplace=1;
+	}
+
+	ins=bsdconv_create(argv[1]);
+	if(!ins){
+		t=bsdconv_error();
+		fprintf(stderr, "%s\n", t);
+		free(t);
+		exit(1);
+	}
+
+	if(i>=argc){
+		bsdconv_file(ins, stdin, stdout);
+	}else for(;i<argc;++i){
+		if(inplace){
+			tmp=malloc(strlen(argv[i])+8);
+			strcpy(tmp, argv[i]);
+			strcat(tmp, ".XXXXXX");
+			if((fd=mkstemp(tmp))==-1){
+				free(tmp);
+				fprintf(stderr, "Failed creating temp file.\n");
+				bsdconv_destroy(ins);
+				exit(1);
+			}
+			otf=fdopen(fd,"w");
+			if(!otf){
+				fprintf(stderr, "Unable to open output file %s\n", argv[i]);
+				bsdconv_destroy(ins);
+				exit(1);
+			}
+			inf=fopen(argv[i],"r");
+			bsdconv_file(ins, inf, otf);
+			fclose(inf);
+			fclose(otf);
+			unlink(argv[i]);
+			rename(tmp,argv[i]);
+			free(tmp);
+
+		}else{
+			inf=fopen(argv[i],"r");
+			bsdconv_file(ins, inf, stdout);
+			fclose(inf);
+		}
+	}
 	bsdconv_destroy(ins);
 
 	return 0;
