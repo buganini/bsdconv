@@ -356,12 +356,11 @@ int main(int argc, char *argv[]){
 						state_p->p->base=calloc(257, sizeof(struct m_state_st *));
 					if(state_p->p->base[c]){
 						if(state_p->p->base[c]->status==MATCH){
-							if(state_p->p->base[c]->status==SUBROUTINE){
-								state_p->p->base[c]=state_t->n=FMALLOC(sizeof(struct m_state_st));
-								state_t=state_t->n;
-								STATE_INIT(state_t);
-							}
 							state_p->p->base[c]->status=SUBMATCH;
+						}else if(state_p->p->base[c]->status==SUBROUTINE){
+							state_p->p->base[c]=state_t->n=FMALLOC(sizeof(struct m_state_st));
+							state_t=state_t->n;
+							STATE_INIT(state_t);
 						}
 						newtodo_tail->n=malloc(sizeof(struct list));
 						newtodo_tail=newtodo_tail->n;
