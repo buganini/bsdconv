@@ -32,10 +32,11 @@ See CODECS for description for each codecs
 Run:
 
 Convert traditional chinese big5 to simplified chinese utf-8
-> bsdconv big5:zhcn:utf-8 in.txt out.txt
+> bsdconv big5:zhcn:utf-8 in.txt > out.txt
+> bsdconv big5:zhcn:utf-8 -i in.txt #in-place
 
 Convert traditional chinese utf-8 to simplified chinese GB2312 with transliteration
-> bsdconv utf-8:zhcn:cp936,cp936_trans in.txt out.txt
+> bsdconv utf-8:zhcn:cp936,cp936_trans in.txt > out.txt
 
 Convert simplified chiese to traditional chinese
 > bsdconv utf-8:zhtw:zhtw_words:utf-8
@@ -45,10 +46,10 @@ ignoring whitespaces mixed in words
 Convert big5 data, traditional chinese to simplified chinese, 
 CRLF/CR/LF to CRLF, to big5 data, translate simplified chinese words, which are
 not in big5, to HTML entities, and uppercase the ascii characters.
-> bsdconv big5:zhcn:win:upper:big5,htmlentity in.txt out.txt
+> bsdconv big5:zhcn:win:upper:big5,htmlentity in.txt > out.txt
 
 Very useful for migrating MySQL DB from Big5 to UTF-8
-> bsdconv htmlentity,big5-5c,big5:utf-8 in.sql out.sql
+> bsdconv htmlentity,big5-5c,big5:utf-8 in.sql > out.sql
 
 Recover from mis-decoding/encoding (mistreated big5 as iso-8859-1 and converted to utf-8)
 > bsdconv 'utf-8:iso-8859-1|big5:utf-8'
@@ -58,15 +59,15 @@ Decode javascript escaped data (byte/unicode mixed) like %u9644%20
 
 
 More example:
-> bsdconv big5:nl2br:ascii,html-img in.txt out.htm
+> bsdconv big5:nl2br:ascii,html-img in.txt > out.htm
 
 > bsdconv utf-8:ascii,ascii-html-cns11643-img in.txt out.htm
 #if you prefer to use glyph image from http://www.cns11643.gov.tw
 
 Maintain inter map:
-> bsdconv bsdconv_keyword,bsdconv:bsdconv_keyword,utf-8 MAP.txt edit.tmp
+> bsdconv bsdconv_keyword,bsdconv:bsdconv_keyword,utf-8 MAP.txt > edit.tmp
 > vi edit.tmp
-> bsdconv bsdconv_keyword,utf-8:bsdconv_keyword,bsdconv edit.tmp MAP.txt
+> bsdconv bsdconv_keyword,utf-8:bsdconv_keyword,bsdconv edit.tmp > MAP.txt
 
 --
 WINDOWS:
