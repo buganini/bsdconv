@@ -33,10 +33,12 @@ to/CP950_TRANS
 	00000000  b4 fa b8 d5 0a                                    |.....|
 
 from/_CP936
+from/_GB18030
 from/_GB2312
 from/_GBK
 to/_CP936
 to/CP936_TRANS
+to/_GB18030
 to/_GB2312
 to/_GBK
 	#simplified chinese
