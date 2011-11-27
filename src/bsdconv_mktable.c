@@ -355,6 +355,7 @@ int main(int argc, char *argv[]){
 					if(state_p->p->base==NULL)
 						state_p->p->base=calloc(257, sizeof(struct m_state_st *));
 					if(state_p->p->base[c]){
+						//XXX
 						if(state_p->p->base[c]->status==MATCH){
 							state_p->p->base[c]->status=SUBMATCH;
 						}else if(state_p->p->base[c]->status==SUBROUTINE){
@@ -429,6 +430,7 @@ int main(int argc, char *argv[]){
 							if(state_p->p->base==NULL)
 								state_p->p->base=calloc(257, sizeof(struct m_state_st *));
 							if(state_p->p->base[c]){
+								//XXX
 								if((state_p->p->base[c]->status==MATCH || state_p->p->base[c]->status==SUBMATCH) && (pr+state_p->pr) <= state_p->p->base[c]->prio){
 //									printf("Duplicated key: %s dropping data: %s\n", of, ot);
 									continue;
