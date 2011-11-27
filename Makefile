@@ -199,6 +199,9 @@ bsdconv: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
 bsdconv_mktable: builddir src/bsdconv.h
 	$(CC) ${CFLAGS} -DUSE_FMALLOC src/libfmalloc.c src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
 
+bsdconv_dbg: builddir src/libbsdconv.c src/bsdconv.h src/bsdconv_dbg.c
+	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv_dbg.c -o build/bin/bsdconv_dbg
+
 codecs_basic_table: builddir bsdconv_mktable
 	for item in ${TODO_CODECS_BASIC_TABLE} ; do \
 		./build/bin/bsdconv_mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
