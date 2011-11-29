@@ -566,6 +566,15 @@ int main(int argc, char *argv[]){
 			dstate.data=(struct data_st *)(uintptr_t)hash_p->offset;
 		else
 			dstate.data=NULL;
+		if(state_t->status==SUBROUTINE){
+			state_t->beg=0;
+			state_t->end=256+1;
+			if(state_t->base==NULL)
+				state_t->base=calloc(257, sizeof(struct m_state_st *));
+			for(i=0;i<=256;++i)
+				if(state_t->base[i]==0)
+					state_t->base[i]=state_t;
+		}
 
 		dstate.beg=state_t->beg;
 		dstate.end=state_t->end;
