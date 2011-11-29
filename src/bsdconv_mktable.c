@@ -53,12 +53,15 @@ struct m_state_st{
 	struct m_state_st *n;
 };
 
-void STATE_INIT(struct m_state_st *state_t){
-	state_t->n=NULL;
-	state_t->beg=~0;
-	state_t->end=0;
-	state_t->base=NULL;
-	state_t->data=NULL;
+struct m_state_st * state_new(int status){
+	struct m_state_st *ret=(struct m_state_st *)FMALLOC(sizeof(struct m_state_st));
+	ret->status=status;
+	ret->n=NULL;
+	ret->beg=~0;
+	ret->end=0;
+	ret->base=NULL;
+	ret->data=NULL;
+	return ret;
 }
 
 struct list{
@@ -145,10 +148,8 @@ uintptr_t hash_callback(int *p, uintptr_t l){
 		hash_q=hash_q->sub[p[i]];
 	}
 	if(hash_q->v==0){
-		state_t->n=(struct m_state_st *)FMALLOC(sizeof(struct m_state_st));
+		state_t->n=state_new(DUMMY);
 		state_t=state_t->n;
-		STATE_INIT(state_t);
-		state_t->status=DUMMY;
 		state_t->beg=0;
 		state_t->end=256+1;
 		state_t->base=calloc(257, sizeof(struct m_state_st *));
@@ -288,9 +289,7 @@ int main(int argc, char *argv[]){
 	newtodo->u=2;
 	newtodo_tail=newtodo;
 
-	state_t=state_r=(struct m_state_st *)FMALLOC(sizeof(struct m_state_st));
-	STATE_INIT(state_t);
-	state_t->status=DEADEND;
+	state_t=state_r=state_new(DEADEND);
 
 	holder.beg=0;
 	holder.end=1;
@@ -358,10 +357,8 @@ int main(int argc, char *argv[]){
 						if(state_p->p->base[c]->status==MATCH){
 							state_p->p->base[c]->status=SUBMATCH;
 						}else if(state_p->p->base[c]->status==DUMMY){
-							state_p->p->base[c]=state_t->n=FMALLOC(sizeof(struct m_state_st));
+							state_p->p->base[c]=state_t->n=state_new(SUBROUTINE);
 							state_t=state_t->n;
-							STATE_INIT(state_t);
-							state_t->status=SUBROUTINE;
 						}
 						newtodo_tail->n=malloc(sizeof(struct list));
 						newtodo_tail=newtodo_tail->n;
@@ -372,9 +369,8 @@ int main(int argc, char *argv[]){
 						newtodo_tail->n=NULL;
 					}else{
 						//printf("%u[%X]=%u\n", state_p->p, c, offset);
-						state_t->n=state_p->p->base[c]=(struct m_state_st *)FMALLOC(sizeof(struct m_state_st));
+						state_t->n=state_p->p->base[c]=state_new(CONTINUE);
 						state_t=state_t->n;
-						STATE_INIT(state_t);
 
 						newtodo_tail->n=malloc(sizeof(struct list));
 						newtodo_tail=newtodo_tail->n;
@@ -383,9 +379,6 @@ int main(int argc, char *argv[]){
 						newtodo_tail->l=cl;
 						newtodo_tail->u=cu;
 						newtodo_tail->pr=state_p->pr+pr;
-
-						newtodo_tail->p->status=CONTINUE;
-						newtodo_tail->p->data=0;
 					}
 				}
 				todo=todo->n;
@@ -435,10 +428,8 @@ int main(int argc, char *argv[]){
 									continue;
 								}else{
 									if(state_p->p->base[c]->status==DUMMY){
-										state_p->p->base[c]=state_t->n=FMALLOC(sizeof(struct m_state_st));
+										state_p->p->base[c]=state_t->n=state_new(MATCH);
 										state_t=state_t->n;
-										STATE_INIT(state_t);
-										state_t->status=MATCH;
 									}else if(state_p->p->base[c]->status==CONTINUE || state_p->p->base[c]->status==SUBROUTINE){
 										state_p->p->base[c]->status=SUBMATCH;
 									}else{
@@ -448,11 +439,8 @@ int main(int argc, char *argv[]){
 							}else if(callback){
 								state_p->p->base[c]=(struct m_state_st *) callback_state;
 							}else{
-								state_p->p->base[c]=state_t->n=FMALLOC(sizeof(struct m_state_st));
+								state_p->p->base[c]=state_t->n=state_new(MATCH);
 								state_t=state_t->n;
-								STATE_INIT(state_t);
-
-								state_t->status=MATCH;
 							}
 							if(l){
 								state_p->p->base[c]->data=(struct m_data_st *)ret;
