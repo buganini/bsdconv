@@ -182,6 +182,7 @@ int main(int argc, char *argv[]){
 	void *tofree;
 	char *bsdconv_mktable_fmalloc_template;
 
+	/* hex table */
 	for(i=0;i<10;++i){
 		table['0'+i]=i;
 	}
@@ -189,6 +190,8 @@ int main(int argc, char *argv[]){
 		table['a'+i]=10+i;
 		table['A'+i]=10+i;
 	}
+
+	/* case insensitive table */
 	for(i=0;i<=26;++i){
 		ci_table['A'+i]='a'+i;
 		ci_table['a']='A'+i;
@@ -357,7 +360,7 @@ int main(int argc, char *argv[]){
 								level=0;
 							}else{
 								continue;
-									}
+							}
 							if(c < todo_item->state->beg)
 								todo_item->state->beg=c;
 							if(c >= todo_item->state->end)
@@ -426,9 +429,6 @@ int main(int argc, char *argv[]){
 	while(state_t){
 		state_t->offset=offset;
 		offset+=sizeof(struct state_st);
-		if(state_t->status==DUMMY){
-			state_t->status=SUBROUTINE;
-		}
 		state_t=state_t->n;
 	}
 
@@ -436,7 +436,6 @@ int main(int argc, char *argv[]){
 	fopen(argv[2], "wb+");
 	state_t=state_r;
 	while(state_t){
-		dstate.status=state_t->status;
 		hash_p=(struct hash *)state_t->data;
 		k=1;	//begin of data cell
 		l=0;	//length counter
@@ -496,6 +495,9 @@ int main(int argc, char *argv[]){
 			dstate.data=(struct data_st *)(uintptr_t)hash_p->offset;
 		else
 			dstate.data=NULL;
+		if(state_t->status==DUMMY){
+			state_t->status=SUBROUTINE;
+		}
 		if(state_t->status==SUBROUTINE){
 			state_t->beg=0;
 			state_t->end=256+1;
@@ -505,7 +507,7 @@ int main(int argc, char *argv[]){
 				if(state_t->base[i]==0)
 					state_t->base[i]=state_t;
 		}
-
+		dstate.status=state_t->status;
 		dstate.beg=state_t->beg;
 		dstate.end=state_t->end;
 		if(state_t->base){
