@@ -148,7 +148,7 @@ uintptr_t hash_callback(int *p, uintptr_t l){
 		state_t->n=(struct m_state_st *)FMALLOC(sizeof(struct m_state_st));
 		state_t=state_t->n;
 		STATE_INIT(state_t);
-		state_t->status=SUBROUTINE;
+		state_t->status=DUMMY;
 		state_t->beg=0;
 		state_t->end=256+1;
 		state_t->base=calloc(257, sizeof(struct m_state_st *));
@@ -355,13 +355,13 @@ int main(int argc, char *argv[]){
 					if(state_p->p->base==NULL)
 						state_p->p->base=calloc(257, sizeof(struct m_state_st *));
 					if(state_p->p->base[c]){
-						//XXX
 						if(state_p->p->base[c]->status==MATCH){
 							state_p->p->base[c]->status=SUBMATCH;
-						}else if(state_p->p->base[c]->status==SUBROUTINE){
+						}else if(state_p->p->base[c]->status==DUMMY){
 							state_p->p->base[c]=state_t->n=FMALLOC(sizeof(struct m_state_st));
 							state_t=state_t->n;
 							STATE_INIT(state_t);
+							state_t->status=SUBROUTINE;
 						}
 						newtodo_tail->n=malloc(sizeof(struct list));
 						newtodo_tail=newtodo_tail->n;
@@ -430,17 +430,20 @@ int main(int argc, char *argv[]){
 							if(state_p->p->base==NULL)
 								state_p->p->base=calloc(257, sizeof(struct m_state_st *));
 							if(state_p->p->base[c]){
-								//XXX
 								if((state_p->p->base[c]->status==MATCH || state_p->p->base[c]->status==SUBMATCH) && (pr+state_p->pr) <= state_p->p->base[c]->prio){
 //									printf("Duplicated key: %s dropping data: %s\n", of, ot);
 									continue;
 								}else{
-									if(state_p->p->base[c]->status==SUBROUTINE){
+									if(state_p->p->base[c]->status==DUMMY){
 										state_p->p->base[c]=state_t->n=FMALLOC(sizeof(struct m_state_st));
 										state_t=state_t->n;
 										STATE_INIT(state_t);
+										state_t->status=MATCH;
+									}else if(state_p->p->base[c]->status==CONTINUE || state_p->p->base[c]->status==SUBROUTINE){
+										state_p->p->base[c]->status=SUBMATCH;
+									}else{
+										state_p->p->base[c]->status=MATCH;
 									}
-									state_p->p->base[c]->status=SUBMATCH;
 								}
 							}else if(callback){
 								state_p->p->base[c]=(struct m_state_st *) callback_state;
@@ -493,6 +496,9 @@ int main(int argc, char *argv[]){
 	while(state_t){
 		state_t->offset=offset;
 		offset+=sizeof(struct state_st);
+		if(state_t->status==DUMMY){
+			state_t->status=SUBROUTINE;
+		}
 		state_t=state_t->n;
 	}
 
