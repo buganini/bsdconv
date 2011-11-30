@@ -9,7 +9,6 @@ from<tab>to
 Internal encoding:
 * Should be as unicoded as possible
 * BSDCONV special chars are prefixed with 00
-  * BOM is 0000
 * UNICODE is prefixed with 01
 * CNS11643 is prefixed with 02
 * BYTE is prefixed with 03
