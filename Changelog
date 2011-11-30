@@ -3,6 +3,7 @@
 	rename inter/JP_PINYIN to inter/KANA_PHONETIC
 	add transposed to/_CP12151, to/_CP1252, to/_CP874, to/_CP949, to/_SHIFT-JIS
 	add {from,to}/GB18030
+	add inter/NOBOM
 
 7.0:
 	add inter/SPLIT
