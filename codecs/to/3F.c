@@ -28,5 +28,7 @@ void callback(struct bsdconv_instance *ins){
 	*CP(this_phase->data_tail->data)='?';
 
 	this_phase->state.status=NEXTPHASE;
+
+	ins->oerr+=1;
 	return;
 }
