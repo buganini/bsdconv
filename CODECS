@@ -105,9 +105,10 @@ to/_CNS11643
 	#but in implementation, it appears all the time.
 
 from/3F
+to/3F
+	#error counter is increased
 	> echo test測試test | bsdconv ascii,3f:ascii
 	test??????test
-to/3F
 	> echo -n test測試test |bsdconv utf-8:ascii,3f
 	test??test
 
