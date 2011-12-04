@@ -36,20 +36,17 @@ struct my_s{
 };
 
 void cbcreate(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *r=malloc(sizeof(struct my_s));
-	ins->phase[ins->phase_index].codec[this_phase->index].priv=r;
+	CURRENT_CODEC(ins)->priv=r;
 }
 
 void cbinit(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct my_s *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	r->status=0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct my_s *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	free(r);
 }
 
@@ -82,8 +79,8 @@ static const struct gb18030_data gb18030_table[] = {
 };
 
 void callback(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct my_s *t=this_phase->codec[this_phase->index].priv;
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct my_s *t=CURRENT_CODEC(ins)->priv;
 	unsigned char d;
 	unsigned char *c;
 	struct data_st data;

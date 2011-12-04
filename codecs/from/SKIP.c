@@ -1,13 +1,13 @@
 #include "../../src/bsdconv.h"
 
 void callback(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 
 	if((this_phase->curr->flags & F_SKIP)){
 		this_phase->curr->flags &= ~F_SKIP;
-		ins->phase[ins->phase_index].state.status=PASSTHRU;
+		this_phase->state.status=PASSTHRU;
 	}else{
-		ins->phase[ins->phase_index].state.status=DEADEND;
+		this_phase->state.status=DEADEND;
 	}
 
 	return;

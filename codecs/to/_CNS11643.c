@@ -21,21 +21,19 @@
 #include "../../src/bsdconv.h"
 
 void cbcreate(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	ins->phase[ins->phase_index].codec[this_phase->index].priv=bsdconv_create("CNS11643");
+	CURRENT_CODEC(ins)->priv=bsdconv_create("CNS11643");
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	void *p=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	void *p=CURRENT_CODEC(ins)->priv;
 	bsdconv_destroy(p);
 }
 
 void callback(struct bsdconv_instance *ins){
 	char *data;
 	unsigned int len;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct bsdconv_instance *cns=this_phase->codec[this_phase->index].priv;
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct bsdconv_instance *cns=CURRENT_CODEC(ins)->priv;
 	struct data_rt *data_p=this_phase->curr;
 	data=this_phase->curr->data;
 

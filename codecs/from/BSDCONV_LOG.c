@@ -21,18 +21,16 @@
 #define TAILIZE(p) while(*p){ p++ ;}
 
 void cbcreate(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	ins->phase[ins->phase_index].codec[this_phase->index].priv=fopen(getenv("BSDCONV_FROM_LOG"),"a");
+	CURRENT_CODEC(ins)->priv=fopen(getenv("BSDCONV_FROM_LOG"),"a");
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	void *fp=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	void *fp=CURRENT_CODEC(ins)->priv;
 	fclose(fp);
 }
 
 void callback(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	FILE *fp=this_phase->codec[this_phase->index].priv;
 	fprintf(fp,"%02X\n", (int)UCP(this_phase->curr->data)[this_phase->i]);
 	this_phase->state.status=NEXTPHASE;	

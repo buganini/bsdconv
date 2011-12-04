@@ -21,29 +21,27 @@
 #define TAILIZE(p) while(*p){ p++ ;}
 
 void cbcreate(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	ins->phase[ins->phase_index].codec[this_phase->index].priv=fopen(getenv("BSDCONV_TO_LOG"),"a");
+	CURRENT_CODEC(ins)->priv=fopen(getenv("BSDCONV_TO_LOG"),"a");
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	void *p=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	void *p=CURRENT_CODEC(ins)->priv;
 	fclose(p);
 }
 
 void callback(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	FILE *fp=this_phase->codec[this_phase->index].priv;
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	FILE *fp=CURRENT_CODEC(ins)->priv;
 	int i;
-	ins->phase[ins->phase_index].state.status=NEXTPHASE;
+	this_phase->state.status=NEXTPHASE;
 
-	for(i=0;i<ins->phase[ins->phase_index].curr->len;++i){
-		fprintf(fp,"%02X",UCP(ins->phase[ins->phase_index].curr->data)[i]);
+	for(i=0;i<this_phase->curr->len;++i){
+		fprintf(fp,"%02X",UCP(this_phase->curr->data)[i]);
 	}
-	if(ins->phase[ins->phase_index].curr->flags){
+	if(this_phase->curr->flags){
 		fprintf(fp," (");
-		if(ins->phase[ins->phase_index].curr->flags & F_FREE) fprintf(fp, " FREE");
-		if(ins->phase[ins->phase_index].curr->flags & F_SKIP) fprintf(fp, " SKIP");
+		if(this_phase->curr->flags & F_FREE) fprintf(fp, " FREE");
+		if(this_phase->curr->flags & F_SKIP) fprintf(fp, " SKIP");
 		fprintf(fp," )");
 	}
 	fprintf(fp,"\n");

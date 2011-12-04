@@ -45,6 +45,7 @@ static const struct gb18030_data gb18030_table[] = {
 };
 
 void callback(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	unsigned char *data, *p;
 	unsigned int len;
 	int max=sizeof(gb18030_table) / sizeof(struct gb18030_data) - 1;
@@ -57,10 +58,10 @@ void callback(struct bsdconv_instance *ins){
 	int i;
 	uint32_t ucs;
 	uint32_t gb;
-	data=ins->phase[ins->phase_index].curr->data;
+	data=this_phase->curr->data;
 
 	data+=1;
-	len=ins->phase[ins->phase_index].curr->len-1;
+	len=this_phase->curr->len-1;
 
 	codepoint.num=0;
 	for(i=0;(len-i)>0;++i){
@@ -69,7 +70,7 @@ void callback(struct bsdconv_instance *ins){
 	ucs=ntohl(codepoint.num);
 
 	if (ucs < gb18030_table[0].beg || ucs > gb18030_table[max].end){
-		ins->phase[ins->phase_index].state.status=DEADEND;
+		this_phase->state.status=DEADEND;
 		return;
 	}else while (max >= min) {
 		mid = (min + max) / 2;
@@ -82,16 +83,16 @@ void callback(struct bsdconv_instance *ins){
 		}
 	}
 	if(gb18030_table[mid].beg<=ucs && ucs<=gb18030_table[mid].end){
-		ins->phase[ins->phase_index].state.status=NEXTPHASE;
-		DATA_MALLOC(ins->phase[ins->phase_index].data_tail->next);
-		ins->phase[ins->phase_index].data_tail=ins->phase[ins->phase_index].data_tail->next;
-		ins->phase[ins->phase_index].data_tail->next=NULL;
-		ins->phase[ins->phase_index].data_tail->flags=F_FREE;
+		this_phase->state.status=NEXTPHASE;
+		DATA_MALLOC(this_phase->data_tail->next);
+		this_phase->data_tail=this_phase->data_tail->next;
+		this_phase->data_tail->next=NULL;
+		this_phase->data_tail->flags=F_FREE;
 
 		gb=gb18030_table[mid].off + (ucs - gb18030_table[mid].beg);
 		
-		ins->phase[ins->phase_index].data_tail->len=4;
-		p=ins->phase[ins->phase_index].data_tail->data=malloc(4);
+		this_phase->data_tail->len=4;
+		p=this_phase->data_tail->data=malloc(4);
 
 		gb-=1687218;
 		p[3]=0x30+gb%10;
@@ -103,7 +104,7 @@ void callback(struct bsdconv_instance *ins){
 		p[0]=0x81+gb;
 		return;
 	}else{
-		ins->phase[ins->phase_index].state.status=DEADEND;
+		this_phase->state.status=DEADEND;
 		return;
 	}
 }

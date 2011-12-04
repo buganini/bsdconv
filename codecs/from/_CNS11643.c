@@ -29,28 +29,25 @@ struct my_s{
 void cbcreate(struct bsdconv_instance *ins){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	r->uni=bsdconv_create("UNICODE");
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	ins->phase[ins->phase_index].codec[this_phase->index].priv=r;
+	CURRENT_CODEC(ins)->priv=r;
 }
 
 void cbinit(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct my_s *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	r->status=0;
 	r->plane=1;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct my_s *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	if(r->uni!=NULL)
 		bsdconv_destroy(r->uni);
 	free(r);
 }
 
 void callback(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct my_s *t=this_phase->codec[this_phase->index].priv;
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct my_s *t=CURRENT_CODEC(ins)->priv;
 	struct bsdconv_instance *uni=t->uni;
 	char d;
 

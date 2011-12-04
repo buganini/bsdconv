@@ -200,6 +200,9 @@ char * getwd(char *);
 #define DATA_MALLOC(X) do{if(ins->pool){(X)=ins->pool; ins->pool=ins->pool->next;}else{(X)=malloc(sizeof(struct data_rt));}}while(0)
 #define DATA_FREE(X) do{ if((X)->flags & F_FREE) free((X)->data); (X)->next=ins->pool; ins->pool=(X);}while(0)
 
+#define CURRENT_PHASE(INS) (&(INS)->phase[(INS)->phase_index])
+#define CURRENT_CODEC(INS) (&(INS)->phase[(INS)->phase_index].codec[(INS)->phase[(INS)->phase_index].index])
+
 //API
 struct bsdconv_instance *bsdconv_create(const char *);
 struct bsdconv_instance *bsdconv_duplicate(struct bsdconv_instance *);

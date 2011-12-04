@@ -30,16 +30,14 @@ struct my_s {
 };
 
 void cbcreate(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *r=malloc(sizeof(struct my_s));
 	r->data.data=NULL;
-	ins->phase[ins->phase_index].codec[this_phase->index].priv=r;
+	CURRENT_CODEC(ins)->priv=r;
 }
 
 void cbinit(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct my_s *t=ins->phase[ins->phase_index].codec[this_phase->index].priv;
-	ins->phase[ins->phase_index].codec[this_phase->index].data_z=0;
+	struct my_s *t=CURRENT_CODEC(ins)->priv;
+	CURRENT_CODEC(ins)->data_z=0;
 	t->data.len=0;
 	if(t->data.data)
 		free(t->data.data);
@@ -48,8 +46,7 @@ void cbinit(struct bsdconv_instance *ins){
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct my_s *t=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	struct my_s *t=CURRENT_CODEC(ins)->priv;
 	if(t->data.data){
 		free(t->data.data);
 	}
@@ -61,7 +58,7 @@ int hex[256]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 void callback(struct bsdconv_instance *ins){
 	void *p;
 	struct data_rt *data_ptr;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct bsdconv_phase *prev_phase=&ins->phase[ins->phase_index-1];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
 	char d=CP(this_phase->curr->data)[this_phase->i];

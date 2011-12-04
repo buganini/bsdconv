@@ -23,7 +23,7 @@
 void callback(struct bsdconv_instance *ins){
 	int i;
 	char *p;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 
 	this_phase->state.status=NEXTPHASE;
 

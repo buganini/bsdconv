@@ -1,6 +1,6 @@
 #include "../../src/bsdconv.h"
 
 void callback(struct bsdconv_instance *ins){
-	ins->phase[ins->phase_index].state.status=PASSTHRU;
+	CURRENT_PHASE(ins)->state.status=PASSTHRU;
 	return;
 }

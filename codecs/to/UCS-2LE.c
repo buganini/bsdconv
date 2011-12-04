@@ -24,7 +24,7 @@
 void callback(struct bsdconv_instance *ins){
 	char *data;
 	unsigned int len, i;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	data=this_phase->curr->data;
 	if(this_phase->curr->len > 3){
 		this_phase->state.status=DEADEND;

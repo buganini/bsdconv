@@ -17,7 +17,6 @@
 #include "../../src/bsdconv.h"
 
 void callback(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	this_phase->state.status=NEXTPHASE;
+	CURRENT_PHASE(ins)->state.status=NEXTPHASE;
 	return;
 }
