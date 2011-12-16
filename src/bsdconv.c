@@ -78,6 +78,12 @@ int main(int argc, char *argv[]){
 		bsdconv_file(ins, stdin, stdout);
 	}else for(;i<argc;++i){
 		if(inplace){
+			inf=fopen(argv[i],"r");
+			if(inf==NULL){
+				fprintf(stderr, "Failed opening file %s.\n", argv[i]);
+				bsdconv_destroy(ins);
+				exit(1);
+			}
 			tmp=malloc(strlen(argv[i])+8);
 			strcpy(tmp, argv[i]);
 			strcat(tmp, ".XXXXXX");
@@ -92,8 +98,7 @@ int main(int argc, char *argv[]){
 				fprintf(stderr, "Unable to open output file %s\n", argv[i]);
 				bsdconv_destroy(ins);
 				exit(1);
-			}
-			inf=fopen(argv[i],"r");
+			}			
 			bsdconv_file(ins, inf, otf);
 			fclose(inf);
 			fclose(otf);
@@ -103,6 +108,11 @@ int main(int argc, char *argv[]){
 
 		}else{
 			inf=fopen(argv[i],"r");
+			if(inf==NULL){
+				fprintf(stderr, "Failed opening file %s.\n", argv[i]);
+				bsdconv_destroy(ins);
+				exit(1);
+			}
 			bsdconv_file(ins, inf, stdout);
 			fclose(inf);
 		}
