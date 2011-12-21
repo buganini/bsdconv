@@ -24,13 +24,11 @@ struct my_s{
 };
 
 void cbcreate(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	ins->phase[ins->phase_index].codec[this_phase->index].priv=malloc(sizeof(struct my_s));
+	CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
 }
 
 void cbinit(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct my_s *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	r->p=NULL;
 	r->q=NULL;
 	r->r=&(r->q);
@@ -38,15 +36,13 @@ void cbinit(struct bsdconv_instance *ins){
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	void *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
-	free(r);
+	free(CURRENT_CODEC(ins)->priv);
 }
 
 void callback(struct bsdconv_instance *ins){
 	unsigned char *data;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct my_s *r=this_phase->codec[this_phase->index].priv;
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	data=this_phase->curr->data;
 
 	if(r->f==0){

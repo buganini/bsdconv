@@ -20,19 +20,16 @@
 
 
 void cbcreate(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	ins->phase[ins->phase_index].codec[this_phase->index].priv=bsdconv_create("ASCII:PASS");
+	CURRENT_CODEC(ins)->priv=bsdconv_create("ASCII:PASS");
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	void *p=ins->phase[ins->phase_index].codec[this_phase->index].priv;
-	bsdconv_destroy(p);
+	bsdconv_destroy(CURRENT_CODEC(ins)->priv);
 }
 
 void callback(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct bsdconv_instance *uni=this_phase->codec[this_phase->index].priv;
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct bsdconv_instance *uni=CURRENT_CODEC(ins)->priv;
 	const char *locale;
 	const char *s;
 

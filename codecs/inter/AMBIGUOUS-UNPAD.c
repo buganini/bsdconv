@@ -78,26 +78,22 @@ static const struct interval ambiguous[] = {
 };
 
 void cbcreate(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	ins->phase[ins->phase_index].codec[this_phase->index].priv=malloc(sizeof(char));
+	CURRENT_CODEC(ins)->priv=malloc(sizeof(char));
 }
 
 void cbinit(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	char *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	char *r=CURRENT_CODEC(ins)->priv;
 	*r=0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	void *r=ins->phase[ins->phase_index].codec[this_phase->index].priv;
-	free(r);
+	free(CURRENT_CODEC(ins)->priv);
 }
 
 void callback(struct bsdconv_instance *ins){
 	unsigned char *data;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	char *r=this_phase->codec[this_phase->index].priv;
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	char *r=CURRENT_CODEC(ins)->priv;
 	data=this_phase->curr->data;
 	int pad;
 	int max=sizeof(ambiguous) / sizeof(struct interval) - 1;

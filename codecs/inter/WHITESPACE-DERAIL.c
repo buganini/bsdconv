@@ -28,15 +28,13 @@ struct my_s{
 };
 
 void cbcreate(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	struct my_s *t=bsdconv_hash(ins, HASHKEY, sizeof(struct my_s));
 	t->queue=NULL;
-	ins->phase[ins->phase_index].codec[this_phase->index].priv=t;
+	CURRENT_CODEC(ins)->priv=t;
 }
 
 void cbinit(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct my_s *t=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	struct my_s *t=CURRENT_CODEC(ins)->priv;
 	t->offsetA=0;
 	t->offsetB=0;
 	t->last=&t->queue;
@@ -51,8 +49,7 @@ void cbinit(struct bsdconv_instance *ins){
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct my_s *t=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	struct my_s *t=CURRENT_CODEC(ins)->priv;
 	struct data_rt *q;
 	if(bsdconv_hash_has(ins, HASHKEY)){
 		while(t->queue){
@@ -67,8 +64,8 @@ void cbdestroy(struct bsdconv_instance *ins){
 
 void callback(struct bsdconv_instance *ins){
 	unsigned char *data;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	struct my_s *t=ins->phase[ins->phase_index].codec[this_phase->index].priv;
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct my_s *t=CURRENT_CODEC(ins)->priv;
 	struct data_rt *q;
 	data=this_phase->curr->data;
 	int i;

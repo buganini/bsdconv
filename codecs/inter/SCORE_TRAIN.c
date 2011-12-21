@@ -21,7 +21,6 @@
 #include "../../src/bsdconv.h"
 
 void cbcreate(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	char buf[256]={0};
 	FILE *fp;
 	char *p=getenv("BSDCONV_SCORE");
@@ -34,29 +33,27 @@ void cbcreate(struct bsdconv_instance *ins){
 	if(fp==NULL){
 		fp=fopen(p,"w+");
 	}
-	ins->phase[ins->phase_index].codec[this_phase->index].priv=fp;
+	CURRENT_CODEC(ins)->priv=fp;
 }
 
 void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	switch(ctl){
 		case BSDCONV_SCORE_ATTACH:
-			if(ins->phase[ins->phase_index].codec[this_phase->index].priv)
-				fclose(ins->phase[ins->phase_index].codec[this_phase->index].priv);
-			ins->phase[ins->phase_index].codec[this_phase->index].priv=ptr;
+			if(CURRENT_CODEC(ins)->priv)
+				fclose(CURRENT_CODEC(ins)->priv);
+			CURRENT_CODEC(ins)->priv=ptr;
 			break;
 	}
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	fclose(ins->phase[ins->phase_index].codec[this_phase->index].priv);
+	fclose(CURRENT_CODEC(ins)->priv);
 }
 
 void callback(struct bsdconv_instance *ins){
 	unsigned char *data;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	FILE *fp=this_phase->codec[this_phase->index].priv;
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	FILE *fp=CURRENT_CODEC(ins)->priv;
 	data=this_phase->curr->data;
 	unsigned char v=0;
 	int i;

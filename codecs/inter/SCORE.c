@@ -24,7 +24,6 @@
 #include "../../src/bsdconv.h"
 
 void cbcreate(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	char buf[256]={0};
 	char *p=getenv("BSDCONV_SCORE");
 	if(p==NULL){
@@ -32,24 +31,22 @@ void cbcreate(struct bsdconv_instance *ins){
 		strcat(buf,"/.bsdconv.score");
 		p=buf;
 	}
-	ins->phase[ins->phase_index].codec[this_phase->index].priv=fopen(p,"r");
+	CURRENT_CODEC(ins)->priv=fopen(p,"r");
 }
 
 void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
 	switch(ctl){
 		case BSDCONV_SCORE_ATTACH:
-			if(ins->phase[ins->phase_index].codec[this_phase->index].priv)
-				fclose(ins->phase[ins->phase_index].codec[this_phase->index].priv);
-			ins->phase[ins->phase_index].codec[this_phase->index].priv=ptr;
+			if(CURRENT_CODEC(ins)->priv)
+				fclose(CURRENT_CODEC(ins)->priv);
+			CURRENT_CODEC(ins)->priv=ptr;
 			break;
 	}
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	if(ins->phase[ins->phase_index].codec[this_phase->index].priv)
-		fclose(ins->phase[ins->phase_index].codec[this_phase->index].priv);
+	if(CURRENT_CODEC(ins)->priv)
+		fclose(CURRENT_CODEC(ins)->priv);
 }
 
 struct interval {
@@ -79,8 +76,8 @@ static const struct interval scoreboard[] = {
 
 void callback(struct bsdconv_instance *ins){
 	unsigned char *data;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
-	FILE *fp=this_phase->codec[this_phase->index].priv;
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	FILE *fp=CURRENT_CODEC(ins)->priv;
 	data=this_phase->curr->data;
 	int i;
 	int max=sizeof(scoreboard) / sizeof(struct interval) - 1;

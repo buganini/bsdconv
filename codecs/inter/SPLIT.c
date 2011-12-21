@@ -19,7 +19,7 @@
 
 void callback(struct bsdconv_instance *ins){
 	unsigned char *data;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	data=this_phase->curr->data;
 
 	DATA_MALLOC(this_phase->data_tail->next);

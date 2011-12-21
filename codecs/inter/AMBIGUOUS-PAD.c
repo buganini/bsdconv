@@ -79,7 +79,7 @@ static const struct interval ambiguous[] = {
 
 void callback(struct bsdconv_instance *ins){
 	unsigned char *data;
-	struct bsdconv_phase *this_phase=&ins->phase[ins->phase_index];
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	data=this_phase->curr->data;
 	int pad;
 	int max=sizeof(ambiguous) / sizeof(struct interval) - 1;
