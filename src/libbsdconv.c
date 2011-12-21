@@ -651,6 +651,12 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 			}
 		}
 	}
+
+	ins->pool=NULL;
+	ins->hash=NULL;
+	ins->input.flags=0;
+	ins->output.flags=0;
+
 	for(i=1;i<=ins->phasen;++i){
 		for(j=0;j<=ins->phase[i].codecn;++j){
 			if(ins->phase[i].codec[j].cbcreate){
@@ -665,11 +671,6 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 		ins->phase[i].data_head->next=NULL;
 		ins->phase[i].data_head->flags=0;
 	}
-
-	ins->pool=NULL;
-	ins->hash=NULL;
-	ins->input.flags=0;
-	ins->output.flags=0;
 
 	free(conversion);
 	return ins;
