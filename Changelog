@@ -1,3 +1,6 @@
+7.2:
+	add {from,to}/_JIS0212 and it's alias
+
 7.1:
 	add {from,to}/LOCALE alias to system locale
 	rename inter/JP_PINYIN to inter/KANA_PHONETIC
