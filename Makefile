@@ -59,6 +59,8 @@ TODO_CODECS_BASIC_TABLE+=inter/WIN
 TODO_CODECS_BASIC_TABLE+=inter/ZHCN
 TODO_CODECS_BASIC_TABLE+=inter/ZHTW
 TODO_CODECS_BASIC_TABLE+=inter/ZHTW_WORDS
+TODO_CODECS_BASIC_TABLE+=inter/ZH_FUZZY_TW
+TODO_CODECS_BASIC_TABLE+=inter/ZH_FUZZY_CN
 TODO_CODECS_BASIC_TABLE+=to/3F
 TODO_CODECS_BASIC_TABLE+=to/ANSI-CONTROL
 TODO_CODECS_BASIC_TABLE+=to/ASCII-ESCAPED-UNICODE
@@ -301,7 +303,9 @@ URL=	http://cnmc.tw/~buganini/chvar/engine.php?action=dump
 chvar:
 	wget -O codecs/inter/ZHTW.txt "${URL}&mode=norml&for=tw"
 	wget -O codecs/inter/ZHCN.txt "${URL}&mode=norml&for=cn"
-	@for file in ZHTW ZHCN ; do \
+	wget -O codecs/inter/ZH_FUZZY_TW.txt "${URL}&mode=fuzzy&for=tw"
+	wget -O codecs/inter/ZH_FUZZY_CN.txt "${URL}&mode=fuzzy&for=cn"
+	@for file in ZHTW ZHCN ZH_FUZZY_TW ZH_FUZZY_CN; do \
 		sed -i '' -e 's|^|01|g' "codecs/inter/$${file}.txt" ; \
 		sed -i '' -e 's|	|	01|g' "codecs/inter/$${file}.txt" ; \
 	done
