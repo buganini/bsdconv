@@ -84,6 +84,7 @@ int _loadcodec(struct bsdconv_codec_t *cd, char *path){
 	cd->dl=NULL;
 	cd->cbcreate=NULL;
 	cd->cbinit=NULL;
+	cd->cbctl=NULL;
 	cd->callback=NULL;
 	cd->cbdestroy=NULL;
 	strcat(path, "." SHLIBEXT);
