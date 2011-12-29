@@ -296,3 +296,18 @@ plist:
 	@echo @dirrmtry %%DATADIR%%/inter
 	@echo @dirrmtry %%DATADIR%%/from
 	@echo @dirrmtry %%DATADIR%%
+
+URL=	http://cnmc.tw/~buganini/chvar/engine.php?action=dump
+chvar:
+	wget -O codecs/inter/ZHTW.txt "${URL}&mode=norml&for=tw"
+	wget -O codecs/inter/ZHCN.txt "${URL}&mode=norml&for=cn"
+	@for file in ZHTW ZHCN ; do \
+		sed -i '' -e 's|^|01|g' "codecs/inter/$${file}.txt" ; \
+		sed -i '' -e 's|	|	01|g' "codecs/inter/$${file}.txt" ; \
+	done
+	wget -O codecs/to/CP950_TRANS.txt "${URL}&mode=trans&for=cp950"
+	wget -O codecs/to/CP936_TRANS.txt "${URL}&mode=trans&for=cp936"
+	@for file in CP950_TRANS CP936_TRANS ; do \
+		sed -i '' -e 's|^|01|g' "codecs/to/$${file}.txt" ; \
+	done
+
