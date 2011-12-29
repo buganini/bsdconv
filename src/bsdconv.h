@@ -180,7 +180,7 @@ char * getwd(char *);
 	(X)->flags=0; \
 }
 
-#define LISTFREE(X,Y,Z)	while((X)->next!=(Y)){	\
+#define LISTFREE(X,Y,Z)	while((X)->next && (X)->next!=(Y)){	\
 	data_ptr=(X)->next->next;	\
 	DATA_FREE((X)->next);	\
 	if((Z)==(X)->next){	\
