@@ -30,9 +30,6 @@ void cbcreate(struct bsdconv_instance *ins){
 		p=buf;
 	}
 	fp=fopen(p,"r+");
-	if(fp==NULL){
-		fp=fopen(p,"w+");
-	}
 	CURRENT_CODEC(ins)->priv=fp;
 }
 
