@@ -245,7 +245,7 @@ int main(int argc, char *argv[]){
 		if(inbuf[0]=='#') continue;
 		tmp=inbuf;
 		f=of=strsep((char **)&tmp, "\t ");
-		while(index("\t ",*tmp)){
+		while(strchr("\t ",*tmp)){
 			++tmp;
 		}
 		if(*tmp){

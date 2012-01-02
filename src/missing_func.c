@@ -7,16 +7,10 @@
 char * strsep(char **stringp, const char *delim){
 	char *r=*stringp;
 	if(!**stringp) return NULL;
-	for(;**stringp && !index(delim, **stringp);++(*stringp));
+	for(;**stringp && !strchr(delim, **stringp);++(*stringp));
 	**stringp=0x0;
 	(*stringp)++;
 	return r;
-}
-
-char * index(const char *s, int c){
-	for(;*s && *s!=c;++s);
-	if(*s) return (char *)s;
-	return NULL;
 }
 
 char * strndup(const char *str, size_t len){
