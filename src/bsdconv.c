@@ -21,6 +21,8 @@
 
 #define IBUFLEN 1024
 
+static int quiet=0;
+
 void bsdconv_file(struct bsdconv_instance *ins, FILE *in, FILE *out){
 	char *ib;
 	bsdconv_init(ins);
@@ -35,6 +37,9 @@ void bsdconv_file(struct bsdconv_instance *ins, FILE *in, FILE *out){
 		ins->output.data=out;
 		bsdconv(ins);
 	}while(ins->flush==0);
+
+	if(quiet)
+		return;
 
 	fprintf(stderr, "Decoding failure: %u\n", ins->ierr);
 	fprintf(stderr, "Encoding failure: %u\n", ins->oerr);
@@ -61,9 +66,15 @@ int main(int argc, char *argv[]){
 		exit(1);
 	}
 	i=2;
-	if(argc>2 && strcmp(argv[i],"-i")==0){
+
+	if(argc>2) while(i<argc){
+		if(strcmp(argv[i],"-i")==0)
+			inplace=1;
+		else if(strcmp(argv[i],"-q")==0)
+			quiet=1;
+		else
+			break;
 		i+=1;
-		inplace=1;
 	}
 
 	ins=bsdconv_create(argv[1]);
