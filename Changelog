@@ -1,3 +1,6 @@
+	bsdconv: add -q for quiet mode
+	sync tables from project chvar
+
 7.2:
 	add {from,to}/_JIS0212 and it's alias
 	update inter/ZHTW, inter/ZHCN, to/CP950_TRANS, to/CP936_TRANS
