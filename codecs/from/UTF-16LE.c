@@ -44,19 +44,20 @@ void callback(struct bsdconv_instance *ins){
 	char d, buf[3]={0};
 	int i;
 	size_t l;
-
 	for(;this_phase->i<this_phase->curr->len;this_phase->i+=1){
 		d=CP(this_phase->curr->data)[this_phase->i];
 		switch(t->status){
 			case 0:
 				t->buf[1]=d;
 				t->status=1;
+				this_phase->state.status=CONTINUE;
 				continue;
 				break;
 			case 1:
 				t->buf[0]=d;
 				if((t->buf[0] & bb11111100) == bb11011000){
 					t->status=2;
+					this_phase->state.status=CONTINUE;
 					continue;
 				}else{
 					t->status=0;
@@ -73,11 +74,13 @@ void callback(struct bsdconv_instance *ins){
 					CP(this_phase->data_tail->data)[0]=0x01;
 					memcpy(CP(this_phase->data_tail->data)+1, &t->buf[i], l-1);
 					this_phase->state.status=NEXTPHASE;
+					return;
 				}
 				break;
 			case 2:
 				t->buf[3]=d;
 				t->status=3;
+				this_phase->state.status=CONTINUE;
 				continue;
 				break;
 			case 3:
@@ -103,6 +106,7 @@ void callback(struct bsdconv_instance *ins){
 					CP(this_phase->data_tail->data)[0]=0x01;
 					memcpy(CP(this_phase->data_tail->data)+1, &buf[i], l-1);
 					this_phase->state.status=NEXTPHASE;
+					return;
 				}else{
 					this_phase->state.status=DEADEND;
 					return;
@@ -110,6 +114,5 @@ void callback(struct bsdconv_instance *ins){
 				break;
 		}
 	}
-	this_phase->state.status=CONTINUE;
 	return;
 }

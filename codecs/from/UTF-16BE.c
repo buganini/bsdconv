@@ -51,12 +51,14 @@ void callback(struct bsdconv_instance *ins){
 			case 0:
 				t->buf[0]=d;
 				t->status=1;
+				this_phase->state.status=CONTINUE;
 				continue;
 				break;
 			case 1:
 				t->buf[1]=d;
 				if((t->buf[0] & bb11111100) == bb11011000){
 					t->status=2;
+					this_phase->state.status=CONTINUE;
 					continue;
 				}else{
 					t->status=0;
@@ -73,11 +75,13 @@ void callback(struct bsdconv_instance *ins){
 					CP(this_phase->data_tail->data)[0]=0x01;
 					memcpy(&CP(this_phase->data_tail->data)[1], &t->buf[i], l-1);
 					this_phase->state.status=NEXTPHASE;
+					return;
 				}
 				break;
 			case 2:
 				t->buf[2]=d;
 				t->status=3;
+				this_phase->state.status=CONTINUE;
 				continue;
 				break;
 			case 3:
@@ -102,6 +106,7 @@ void callback(struct bsdconv_instance *ins){
 					CP(this_phase->data_tail->data)[0]=0x01;
 					memcpy(CP(this_phase->data_tail->data)+1, &buf[i], l-1);
 					this_phase->state.status=NEXTPHASE;
+					return;
 				}else{
 					this_phase->state.status=DEADEND;
 					return;
@@ -109,6 +114,5 @@ void callback(struct bsdconv_instance *ins){
 				break;
 		}
 	}
-	this_phase->state.status=CONTINUE;
 	return;
 }
