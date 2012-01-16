@@ -1,5 +1,7 @@
+7.3:
 	bsdconv: add -q for quiet mode
 	sync tables from project chvar
+	bugfixes
 
 7.2:
 	add {from,to}/_JIS0212 and it's alias
