@@ -62,7 +62,7 @@ int main(int argc, char *argv[]){
 	int i;
 
 	if(argc<2){
-		fprintf(stderr, "Usage:\n\t %s conversion [-i] [file] [...]\n\t\t-i:\tsave in-place\n", argv[0]);
+		fprintf(stderr, "Usage:\n\t %s conversion [-iq] [file] [...]\n\t\t-i:\tsave in-place\n", argv[0]);
 		exit(1);
 	}
 	i=2;
