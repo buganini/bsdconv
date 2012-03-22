@@ -21,9 +21,7 @@
 
 #define IBUFLEN 1024
 
-static int quiet=0;
-
-void bsdconv_file(struct bsdconv_instance *ins, FILE *in, FILE *out){
+void bsdconv_file(struct bsdconv_instance *ins, FILE *in, FILE *out, const char *filename){
 	char *ib;
 	bsdconv_init(ins);
 	do{
@@ -38,11 +36,12 @@ void bsdconv_file(struct bsdconv_instance *ins, FILE *in, FILE *out){
 		bsdconv(ins);
 	}while(ins->flush==0);
 
-	if(quiet)
-		return;
-
-	fprintf(stderr, "Decoding failure: %u\n", ins->ierr);
-	fprintf(stderr, "Encoding failure: %u\n", ins->oerr);
+	if(filename && (ins->ierr || ins->oerr || ins->full || ins->half || ins->ambi || ins->score))
+		fprintf(stderr, "File: %s\n", filename);
+	if(ins->ierr || ins->oerr){
+		fprintf(stderr, "Decoding failure: %u\n", ins->ierr);
+		fprintf(stderr, "Encoding failure: %u\n", ins->oerr);
+	}
 	if(ins->full || ins->half || ins->ambi){
 		fprintf(stderr, "Full width: %u\n", ins->full);
 		fprintf(stderr, "Half width: %u\n", ins->half);
@@ -70,8 +69,6 @@ int main(int argc, char *argv[]){
 	if(argc>2) while(i<argc){
 		if(strcmp(argv[i],"-i")==0)
 			inplace=1;
-		else if(strcmp(argv[i],"-q")==0)
-			quiet=1;
 		else
 			break;
 		i+=1;
@@ -86,7 +83,7 @@ int main(int argc, char *argv[]){
 	}
 
 	if(i>=argc){
-		bsdconv_file(ins, stdin, stdout);
+		bsdconv_file(ins, stdin, stdout, NULL);
 	}else for(;i<argc;++i){
 		if(inplace){
 			inf=fopen(argv[i],"r");
@@ -110,7 +107,7 @@ int main(int argc, char *argv[]){
 				bsdconv_destroy(ins);
 				exit(1);
 			}			
-			bsdconv_file(ins, inf, otf);
+			bsdconv_file(ins, inf, otf, argv[i]);
 			fclose(inf);
 			fclose(otf);
 			unlink(argv[i]);
@@ -124,7 +121,7 @@ int main(int argc, char *argv[]){
 				bsdconv_destroy(ins);
 				exit(1);
 			}
-			bsdconv_file(ins, inf, stdout);
+			bsdconv_file(ins, inf, stdout, argv[i]);
 			fclose(inf);
 		}
 	}
