@@ -2,6 +2,7 @@ PREFIX?=/usr/local
 BSDCONV_PATH?=${PREFIX}
 CFLAGS+=-Wall -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
 SHLIBVER=7
+SHLIBNAME=libbsdconv.so.${SHLIBVER}
 
 TODO_CODECS_BASIC_TABLE=
 TODO_CODECS_BASIC_TABLE+=from/3F
@@ -200,7 +201,7 @@ installdir:
 	mkdir -p ${PREFIX}/share/bsdconv/to
 
 libbsdconv: builddir src/libbsdconv.c src/bsdconv.h
-	$(CC) ${CFLAGS} src/libbsdconv.c -fPIC -shared -o build/lib/libbsdconv.so.${SHLIBVER}
+	$(CC) ${CFLAGS} src/libbsdconv.c -fPIC -shared -o build/lib/${SHLIBNAME}
 
 bsdconv: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
 	$(CC) ${CFLAGS} src/bsdconv.c -L./build/lib/ -lbsdconv -o build/bin/bsdconv
@@ -236,7 +237,9 @@ codecs_basic: codecs_basic_table codecs_basic_callback
 codecs_extra: codecs_extra_table codecs_extra_callback
 
 meta: libbsdconv
-	ln -sf libbsdconv.so.${SHLIBVER} build/lib/libbsdconv.so
+	if [ ${SHLIBNAME} != libbsdconv.so ]; then \
+		ln -sf libbsdconv.so.${SHLIBVER} build/lib/libbsdconv.so ; \
+	fi
 	cp src/bsdconv.h build/include
 	cp codecs/from/alias build/share/bsdconv/from/alias
 	cp codecs/inter/alias build/share/bsdconv/inter/alias
@@ -251,11 +254,13 @@ install_main:
 	install -m 555 build/bin/bsdconv ${PREFIX}/bin
 	install -m 555 build/bin/bsdconv_mktable ${PREFIX}/bin
 	install -m 444 build/include/bsdconv.h ${PREFIX}/include
-	install -m 444 build/lib/libbsdconv.so.${SHLIBVER} ${PREFIX}/lib
+	install -m 444 build/lib/${SHLIBNAME} ${PREFIX}/lib
 	install -m 444 build/share/bsdconv/from/alias ${PREFIX}/share/bsdconv/from/alias
 	install -m 444 build/share/bsdconv/inter/alias ${PREFIX}/share/bsdconv/inter/alias
 	install -m 444 build/share/bsdconv/to/alias ${PREFIX}/share/bsdconv/to/alias
-	ln -sf libbsdconv.so.${SHLIBVER} ${PREFIX}/lib/libbsdconv.so
+	if [ ${SHLIBNAME} != libbsdconv.so ]; then \
+		ln -sf libbsdconv.so.${SHLIBVER} ${PREFIX}/lib/libbsdconv.so ; \
+	fi
 
 install_basic:
 	for item in ${TODO_CODECS_BASIC_TABLE} ; do \
@@ -278,7 +283,7 @@ plist:
 	@echo bin/bsdconv_mktable
 	@echo include/bsdconv.h
 	@echo lib/libbsdconv.so
-	@echo lib/libbsdconv.so.${SHLIBVER}
+	@echo lib/${SHLIBNAME}
 	@echo %%DATADIR%%/from/alias
 	@echo %%DATADIR%%/inter/alias
 	@echo %%DATADIR%%/to/alias
