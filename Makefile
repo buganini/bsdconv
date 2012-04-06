@@ -2,7 +2,13 @@ PREFIX?=/usr/local
 BSDCONV_PATH?=${PREFIX}
 CFLAGS+=-Wall -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
 SHLIBVER=7
+
+UNAME_S=$(shell uname -s)
+ifeq (${UNAME_S}, "Darwin")
+SHLIBNAME=libbsdconv.so
+else
 SHLIBNAME=libbsdconv.so.${SHLIBVER}
+endif
 
 TODO_CODECS_BASIC_TABLE=
 TODO_CODECS_BASIC_TABLE+=from/3F
