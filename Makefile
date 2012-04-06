@@ -4,7 +4,7 @@ CFLAGS+=-Wall -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
 SHLIBVER=7
 
 UNAME_S=$(shell uname -s)
-ifeq (${UNAME_S}, "Darwin")
+ifeq (${UNAME_S}, Darwin)
 SHLIBNAME=libbsdconv.so
 else
 SHLIBNAME=libbsdconv.so.${SHLIBVER}
