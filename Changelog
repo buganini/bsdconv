@@ -1,3 +1,6 @@
+7.4:
+	adaptive verbosity
+
 7.3:
 	bsdconv: add -q for quiet mode
 	sync tables from project chvar
