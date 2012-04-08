@@ -36,7 +36,7 @@ Convert traditional chinese big5 to simplified chinese utf-8
 Convert traditional chinese utf-8 to simplified chinese GB2312 with transliteration
 > bsdconv utf-8:zhcn:cp936,cp936_trans in.txt > out.txt
 
-Convert simplified chiese to traditional chinese
+Convert simplified chinese to traditional chinese
 > bsdconv utf-8:zhtw:zhtw_words:utf-8
 ignoring whitespaces mixed in words
 > bsdconv utf-8:whitespace-derail:zhtw:zhtw_words:whitespace-rerail:utf-8
