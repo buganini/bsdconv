@@ -579,7 +579,11 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 	for(i=1;i<=ins->phasen;++i){
 		t=opipe[i];
 		for(j=0;j<=ins->phase[i].codecn;++j){
+			while(index(" \r\n\t\f\0", t[0])!=NULL)
+				t+=1;
 			ins->phase[i].codec[j].desc=strdup(strsep(&t, ","));
+			for(f=strlen(ins->phase[i].codec[j].desc)-1;index(" \r\n\t\f\0", ins->phase[i].codec[j].desc[f])!=NULL;f-=1)
+				ins->phase[i].codec[j].desc[f]=0;
 			if(ins->phase[i].codec[j].desc[0]==0){
 				for(;j>=0;--j){
 					free(ins->phase[i].codec[j].desc);
