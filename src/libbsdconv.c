@@ -152,7 +152,7 @@ int loadcodec(struct bsdconv_codec_t *cd, int type){
 	char *cwd;
 	char *c;
 	char buf[PATH_BUF_SIZE];
-	cwd=getwd(NULL);
+	cwd=getcwd(NULL, 0);
 	if((c=getenv("BSDCONV_PATH"))){
 		chdir(c);
 	}else{
@@ -1315,7 +1315,7 @@ int bsdconv_codec_check(int type, const char *_codec){
 	codec=strdup(_codec);
 	strtoupper(codec);
 
-	cwd=getwd(NULL);
+	cwd=getcwd(NULL, 0);
 
 	if((c=getenv("BSDCONV_PATH"))){
 		chdir(c);
@@ -1359,7 +1359,7 @@ char ** bsdconv_codecs_list(int phase_type){
 	FILE *fp;
 	char buf[256];
 	const char *type;
-	cwd=getwd(NULL);
+	cwd=getcwd(NULL, 0);
 
 	if((c=getenv("BSDCONV_PATH"))){
 		chdir(c);
