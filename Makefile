@@ -10,6 +10,11 @@ else
 SHLIBNAME=libbsdconv.so.${SHLIBVER}
 endif
 
+LIBS?=
+ifeq (${UNAME_S}, Linux)
+LIBS+=-ldl
+endif
+
 TODO_CODECS_BASIC_TABLE=
 TODO_CODECS_BASIC_TABLE+=from/3F
 TODO_CODECS_BASIC_TABLE+=from/ANSI-CONTROL
@@ -209,10 +214,10 @@ installdir:
 	mkdir -p ${PREFIX}/share/bsdconv/to
 
 libbsdconv: builddir src/libbsdconv.c src/bsdconv.h
-	$(CC) ${CFLAGS} src/libbsdconv.c -fPIC -shared -o build/lib/${SHLIBNAME}
+	$(CC) ${CFLAGS} src/libbsdconv.c -fPIC -shared ${LIBS} -o build/lib/${SHLIBNAME}
 
 bsdconv: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
-	$(CC) ${CFLAGS} src/bsdconv.c -L./build/lib/ -lbsdconv -o build/bin/bsdconv
+	$(CC) ${CFLAGS} src/bsdconv.c -L./build/lib/ -lbsdconv ${LIBS} -o build/bin/bsdconv
 
 bsdconv_mktable: builddir src/bsdconv.h
 	$(CC) ${CFLAGS} -DUSE_FMALLOC src/libfmalloc.c src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
@@ -227,7 +232,7 @@ codecs_basic_table: builddir bsdconv_mktable
 
 codecs_basic_callback: builddir libbsdconv
 	for item in ${TODO_CODECS_BASIC_CALLBACK} ; do \
-		$(CC) ${CFLAGS} -L./build/lib/ -lbsdconv -fPIC -shared -o ./build/share/bsdconv/$${item}.so codecs/$${item}.c ; \
+		$(CC) ${CFLAGS} -L./build/lib/ -lbsdconv ${LIBS} -fPIC -shared -o ./build/share/bsdconv/$${item}.so codecs/$${item}.c ; \
 	done
 
 codecs_extra_table: builddir bsdconv_mktable
@@ -237,7 +242,7 @@ codecs_extra_table: builddir bsdconv_mktable
 
 codecs_extra_callback: builddir libbsdconv
 	for item in ${TODO_CODECS_EXTRA_CALLBACK} ; do \
-		$(CC) ${CFLAGS} -L./build/lib/ -lbsdconv -fPIC -shared -o ./build/share/bsdconv/$${item}.so codecs/$${item}.c ; \
+		$(CC) ${CFLAGS} -L./build/lib/ -lbsdconv ${LIBS} -fPIC -shared -o ./build/share/bsdconv/$${item}.so codecs/$${item}.c ; \
 	done
 
 codecs: codecs_basic codecs_extra
