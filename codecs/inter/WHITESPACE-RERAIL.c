@@ -64,11 +64,9 @@ void cbdestroy(struct bsdconv_instance *ins){
 }
 
 void callback(struct bsdconv_instance *ins){
-	unsigned char *data;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_s *t=CURRENT_CODEC(ins)->priv;
 	struct data_rt *q;
-	data=this_phase->curr->data;
 
 	this_phase->state.status=NEXTPHASE;
 

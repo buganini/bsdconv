@@ -31,7 +31,6 @@ void cbdestroy(struct bsdconv_instance *ins){
 
 void callback(struct bsdconv_instance *ins){
 	char *data;
-	unsigned int len;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct bsdconv_instance *cns=CURRENT_CODEC(ins)->priv;
 	struct data_rt *data_p=this_phase->curr;
@@ -67,7 +66,6 @@ void callback(struct bsdconv_instance *ins){
 			}
 		case 0x02:
 			converted:
-			len=ins->phase[ins->phase_index].curr->len-1;
 
 			DATA_MALLOC(this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
