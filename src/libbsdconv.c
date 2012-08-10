@@ -156,7 +156,7 @@ int loadcodec(struct bsdconv_codec_t *cd, int type){
 	if((c=getenv("BSDCONV_PATH"))){
 		chdir(c);
 	}else{
-		chdir(PREFIX);
+		chdir(BSDCONV_PATH);
 	}
 	chdir("share/bsdconv");
 	switch(type){
@@ -1320,7 +1320,7 @@ int bsdconv_codec_check(int type, const char *_codec){
 	if((c=getenv("BSDCONV_PATH"))){
 		chdir(c);
 	}else{
-		chdir(PREFIX);
+		chdir(BSDCONV_PATH);
 	}
 
 	chdir("share/bsdconv");
