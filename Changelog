@@ -1,3 +1,8 @@
+7.5:
+	add {from,to}/CP1253
+	fix several linux issues
+	bugfixes
+
 7.4:
 	adaptive verbosity
 
