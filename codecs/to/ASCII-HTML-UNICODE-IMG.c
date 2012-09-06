@@ -21,7 +21,7 @@
 
 #define TAILIZE(p) while(*p){ p++ ;}
 
-void callback(struct bsdconv_instance *ins){
+void cbconv(struct bsdconv_instance *ins){
 	char *data, *p, buf[128]={0};
 	unsigned int len, i;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);

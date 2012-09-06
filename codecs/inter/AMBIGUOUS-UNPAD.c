@@ -90,7 +90,7 @@ void cbdestroy(struct bsdconv_instance *ins){
 	free(CURRENT_CODEC(ins)->priv);
 }
 
-void callback(struct bsdconv_instance *ins){
+void cbconv(struct bsdconv_instance *ins){
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	char *r=CURRENT_CODEC(ins)->priv;

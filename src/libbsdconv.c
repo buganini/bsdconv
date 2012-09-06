@@ -85,7 +85,8 @@ int _loadcodec(struct bsdconv_codec_t *cd, char *path){
 	cd->cbcreate=NULL;
 	cd->cbinit=NULL;
 	cd->cbctl=NULL;
-	cd->callback=NULL;
+	cd->cbconv=NULL;
+	cd->cbflush=NULL;
 	cd->cbdestroy=NULL;
 	strcat(path, "." SHLIBEXT);
 
@@ -99,7 +100,8 @@ int _loadcodec(struct bsdconv_codec_t *cd, char *path){
 	}
 #else
 	if((cd->dl=dlopen(path, RTLD_LAZY))){
-		cd->callback=dlsym(cd->dl,"callback");
+		cd->cbconv=dlsym(cd->dl,"cbconv");
+		cd->cbflush=dlsym(cd->dl,"cbflush");
 		cd->cbcreate=dlsym(cd->dl,"cbcreate");
 		cd->cbinit=dlsym(cd->dl,"cbinit");
 		cd->cbctl=dlsym(cd->dl,"cbctl");
@@ -266,7 +268,8 @@ void bsdconv_init(struct bsdconv_instance *ins){
 		}
 		ins->phase[i].data_tail=ins->phase[i].data_head;
 		ins->phase[i].data_head->len=0;
-		ins->phase[i].match=NULL;
+		ins->phase[i].match=0;
+		ins->phase[i].match_data=NULL;
 		if(i>0){
 			ins->phase[i].curr=ins->phase[i-1].data_head;
 			for(j=0;j<=ins->phase[i].codecn;++j){
@@ -820,11 +823,15 @@ void bsdconv(struct bsdconv_instance *ins){
 								from_deadend:
 								this_phase->pend=0;
 								if(this_phase->match){
-									LISTCPY(this_phase->data_tail, this_phase->match, this_phase->codec[this_phase->index].data_z);
+									if(this_phase->match_data){
+										LISTCPY(this_phase->data_tail, this_phase->match_data, this_phase->codec[this_phase->index].data_z);
 
-									LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
-									this_phase->curr=prev_phase->data_head;
-									this_phase->i=this_phase->data_head->len;
+										LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
+										this_phase->curr=prev_phase->data_head;
+										this_phase->i=this_phase->data_head->len;
+									}else if(this_phase->codec[this_phase->index].cbflush){
+										this_phase->codec[this_phase->index].cbflush(ins);
+									}
 									this_phase->match=0;
 									RESET(ins->phase_index);
 									goto phase_begin;
@@ -848,6 +855,7 @@ void bsdconv(struct bsdconv_instance *ins){
 								break;
 							case MATCH:
 								this_phase->match=0;
+								this_phase->match_data=NULL;
 								this_phase->pend=0;
 
 								LISTCPY(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
@@ -863,7 +871,8 @@ void bsdconv(struct bsdconv_instance *ins){
 								goto phase_begin;
 
 							case SUBMATCH:
-								this_phase->match=this_phase->state.data;
+								this_phase->match=1;
+								this_phase->match_data=this_phase->state.data;
 
 								this_phase->bak=this_phase->curr;
 								this_phase->data_head->len=this_phase->i+1;
@@ -871,10 +880,11 @@ void bsdconv(struct bsdconv_instance *ins){
 								this_phase->pend=1;
 								break;
 							case SUBROUTINE:
-								this_phase->codec[this_phase->index].callback(ins);
+								this_phase->codec[this_phase->index].cbconv(ins);
 								goto from_x;
 							case NEXTPHASE:
 								this_phase->match=0;
+								this_phase->match_data=NULL;
 								this_phase->pend=0;
 
 								this_phase->bak=this_phase->curr;
@@ -905,6 +915,7 @@ void bsdconv(struct bsdconv_instance *ins){
 								this_phase->curr=prev_phase->data_head;
 
 								this_phase->match=0;
+								this_phase->match_data=NULL;
 								this_phase->pend=0;
 								RESET(ins->phase_index);
 								ins->phase_index+=1;
@@ -949,10 +960,14 @@ void bsdconv(struct bsdconv_instance *ins){
 						inter_deadend:
 						this_phase->pend=0;
 						if(this_phase->match){
-							LISTCPY(this_phase->data_tail, this_phase->match, this_phase->codec[this_phase->index].data_z);
+							if(this_phase->match_data){
+								LISTCPY(this_phase->data_tail, this_phase->match_data, this_phase->codec[this_phase->index].data_z);
 
-							LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
-							this_phase->curr=prev_phase->data_head;
+								LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
+								this_phase->curr=prev_phase->data_head;
+							}else if(this_phase->codec[this_phase->index].cbflush){
+								this_phase->codec[this_phase->index].cbflush(ins);
+							}
 
 							this_phase->match=0;
 							RESET(ins->phase_index);
@@ -982,6 +997,7 @@ void bsdconv(struct bsdconv_instance *ins){
 						break;
 					case MATCH:
 						this_phase->match=0;
+						this_phase->match_data=NULL;
 						this_phase->pend=0;
 
 						LISTCPY(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
@@ -995,7 +1011,8 @@ void bsdconv(struct bsdconv_instance *ins){
 						ins->phase_index+=1;
 						goto phase_begin;
 					case SUBMATCH:
-						this_phase->match=this_phase->state.data;
+						this_phase->match=1;
+						this_phase->match_data=this_phase->state.data;
 
 						if(this_phase->curr->next){
 							this_phase->bak=this_phase->curr->next;
@@ -1012,10 +1029,11 @@ void bsdconv(struct bsdconv_instance *ins){
 						break;
 					case SUBROUTINE:
 						inter_callback:
-						this_phase->codec[this_phase->index].callback(ins);
+						this_phase->codec[this_phase->index].cbconv(ins);
 						goto inter_x;
 					case NEXTPHASE:
 						this_phase->match=0;
+						this_phase->match_data=NULL;
 						this_phase->pend=0;
 
 						this_phase->bak=this_phase->curr->next;
@@ -1070,10 +1088,14 @@ void bsdconv(struct bsdconv_instance *ins){
 						}
 						this_phase->pend=0;
 						if(this_phase->match){
-							LISTCPY(this_phase->data_tail, this_phase->match, this_phase->codec[this_phase->index].data_z);
+							if(this_phase->match_data){
+								LISTCPY(this_phase->data_tail, this_phase->match_data, this_phase->codec[this_phase->index].data_z);
 
-							LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
-							this_phase->curr=prev_phase->data_head;
+								LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
+								this_phase->curr=prev_phase->data_head;
+							}else if(this_phase->codec[this_phase->index].cbflush){
+								this_phase->codec[this_phase->index].cbflush(ins);
+							}
 
 							this_phase->match=0;
 							RESET(ins->phase_index);
@@ -1099,6 +1121,7 @@ void bsdconv(struct bsdconv_instance *ins){
 					case MATCH:
 						this_phase->data_head->len=0;
 						this_phase->match=0;
+						this_phase->match_data=NULL;
 						this_phase->pend=0;
 
 						LISTCPY(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
@@ -1112,7 +1135,8 @@ void bsdconv(struct bsdconv_instance *ins){
 						goto phase_begin;
 					case SUBMATCH:
 						this_phase->data_head->len=0;
-						this_phase->match=this_phase->state.data;
+						this_phase->match=1;
+						this_phase->match_data=this_phase->state.data;
 						if(this_phase->curr->next){
 							this_phase->bak=this_phase->curr->next;
 						}else{
@@ -1129,11 +1153,12 @@ void bsdconv(struct bsdconv_instance *ins){
 					case SUBROUTINE:
 						to_callback:
 						this_phase->data_head->len=0;
-						this_phase->codec[this_phase->index].callback(ins);
+						this_phase->codec[this_phase->index].cbconv(ins);
 						goto to_x;
 					case NEXTPHASE:
 						this_phase->data_head->len=0;
 						this_phase->match=0;
+						this_phase->match_data=NULL;
 						this_phase->pend=0;
 
 						this_phase->bak=this_phase->curr->next;
@@ -1165,6 +1190,7 @@ void bsdconv(struct bsdconv_instance *ins){
 
 						this_phase->data_head->len=0;
 						this_phase->match=0;
+						this_phase->match_data=NULL;
 						this_phase->pend=0;
 						RESET(ins->phase_index);
 						ins->phase_index+=1;

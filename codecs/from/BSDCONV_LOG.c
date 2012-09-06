@@ -29,7 +29,7 @@ void cbdestroy(struct bsdconv_instance *ins){
 	fclose(fp);
 }
 
-void callback(struct bsdconv_instance *ins){
+void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	FILE *fp=this_phase->codec[this_phase->index].priv;
 	fprintf(fp,"%02X\n", (int)UCP(this_phase->curr->data)[this_phase->i]);

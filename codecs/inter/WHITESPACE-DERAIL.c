@@ -62,7 +62,7 @@ void cbdestroy(struct bsdconv_instance *ins){
 	}
 }
 
-void callback(struct bsdconv_instance *ins){
+void cbconv(struct bsdconv_instance *ins){
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_s *t=CURRENT_CODEC(ins)->priv;
@@ -93,7 +93,8 @@ void callback(struct bsdconv_instance *ins){
 			this_phase->curr->flags &= ~F_FREE;
 			q->len=t->offsetA;
 
-			t->rerail->match=t->queue->data;
+			t->rerail->match=1;
+			t->rerail->match_data=t->queue->data;
 			t->rerail->pend=1;
 
 			return;

@@ -74,7 +74,7 @@ static const struct interval scoreboard[] = {
 	{ 0x2F800, 0x2FA1D, 1 },//CJK Compatibility Supplement	;Unicode 3.1
 };
 
-void callback(struct bsdconv_instance *ins){
+void cbconv(struct bsdconv_instance *ins){
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	FILE *fp=CURRENT_CODEC(ins)->priv;

@@ -44,7 +44,7 @@ static const struct gb18030_data gb18030_table[] = {
 	{0x10000,	0x10FFFF,	1876218},
 };
 
-void callback(struct bsdconv_instance *ins){
+void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	unsigned char *data, *p;
 	unsigned int len;

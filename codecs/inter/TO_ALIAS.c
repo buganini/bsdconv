@@ -29,7 +29,7 @@ void cbdestroy(struct bsdconv_instance *ins){
 	bsdconv_destroy(p);
 }
 
-void callback(struct bsdconv_instance *ins){
+void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct bsdconv_instance *uni=CURRENT_CODEC(ins)->priv;
 	const char *locale;

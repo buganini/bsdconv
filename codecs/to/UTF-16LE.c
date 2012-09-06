@@ -21,7 +21,7 @@
 
 #define SWAP(a,b,i) ((i)=(a), (a)=(b), (b)=(i))
 
-void callback(struct bsdconv_instance *ins){
+void cbconv(struct bsdconv_instance *ins){
 	char *data, *p, c;
 	unsigned int len, i;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);

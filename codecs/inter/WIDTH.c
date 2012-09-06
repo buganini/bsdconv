@@ -395,7 +395,7 @@ static const struct width_interval width_table[] = {
 	{0xE0001, 0xE007F, HALF},
 };
 
-void callback(struct bsdconv_instance *ins){
+void cbconv(struct bsdconv_instance *ins){
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	data=this_phase->curr->data;

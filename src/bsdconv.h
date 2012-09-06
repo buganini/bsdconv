@@ -115,11 +115,12 @@ struct bsdconv_instance{
 };
 
 struct bsdconv_phase{
-	struct data_rt *bak, *match, *data_head, *data_tail, *curr;
+	struct data_rt *bak, *match_data, *data_head, *data_tail, *curr;
 	struct state_rt state;
 	int index;
 	unsigned int i;
 	char pend;
+	char match;
 	char type;
 	struct bsdconv_codec_t *codec;
 	int codecn;
@@ -138,7 +139,8 @@ struct bsdconv_codec_t {
 	char *z;
 	char *data_z;
 	char *desc;
-	void (*callback)(struct bsdconv_instance *);
+	void (*cbconv)(struct bsdconv_instance *);
+	void (*cbflush)(struct bsdconv_instance *);
 	void (*cbcreate)(struct bsdconv_instance *);
 	void (*cbinit)(struct bsdconv_instance *);
 	void (*cbctl)(struct bsdconv_instance *, int, void *, size_t);

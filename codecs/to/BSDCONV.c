@@ -20,7 +20,7 @@
 
 #define TAILIZE(p) while(*p){ p++ ;}
 
-void callback(struct bsdconv_instance *ins){
+void cbconv(struct bsdconv_instance *ins){
 	int i;
 	char *p;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);

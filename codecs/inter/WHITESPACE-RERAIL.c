@@ -63,7 +63,7 @@ void cbdestroy(struct bsdconv_instance *ins){
 	}
 }
 
-void callback(struct bsdconv_instance *ins){
+void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_s *t=CURRENT_CODEC(ins)->priv;
 	struct data_rt *q;
@@ -104,10 +104,12 @@ void callback(struct bsdconv_instance *ins){
 	}
 
 	if(t->queue){
-		this_phase->match=t->queue->data;
+		this_phase->match=1;
+		this_phase->match_data=t->queue->data;
 		this_phase->pend=1;
 	}else{
-		this_phase->match=NULL;
+		this_phase->match=0;
+		this_phase->match_data=NULL;
 		this_phase->pend=0;
 	}
 

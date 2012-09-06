@@ -47,7 +47,7 @@ void cbdestroy(struct bsdconv_instance *ins){
 	fclose(CURRENT_CODEC(ins)->priv);
 }
 
-void callback(struct bsdconv_instance *ins){
+void cbconv(struct bsdconv_instance *ins){
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	FILE *fp=CURRENT_CODEC(ins)->priv;

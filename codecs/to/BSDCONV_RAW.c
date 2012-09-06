@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include "../../src/bsdconv.h"
 
-void callback(struct bsdconv_instance *ins){
+void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 
 	DATA_MALLOC(this_phase->data_tail->next);
