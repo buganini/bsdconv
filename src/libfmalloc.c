@@ -20,6 +20,7 @@ void * fmalloc(size_t s){
 		if(fmalloc_num < FMALLOC_NUM){
 			tmpfile=strdup(fmalloc_template);
 			if((tmpfd=mkstemp(tmpfile))==-1){
+				free(tmpfile);
 				return malloc(s);
 			}
 			unlink(tmpfile);
