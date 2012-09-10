@@ -52,7 +52,7 @@ void cbdestroy(struct bsdconv_instance *ins){
 struct interval {
 	int first;
 	int last;
-	int score;
+	double score;
 };
 
 static const struct interval scoreboard[] = {
@@ -116,8 +116,7 @@ void cbconv(struct bsdconv_instance *ins){
 		}else{
 			fseek(fp, ucs*sizeof(unsigned char), SEEK_SET);
 			fread(&v, sizeof(unsigned char), 1, fp);
-			if(ins->score+v < INT_MAX)
-				ins->score+=v;
+			ins->score+=v;
 		}
 	}
 
