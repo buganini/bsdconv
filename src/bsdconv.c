@@ -48,7 +48,7 @@ void bsdconv_file(struct bsdconv_instance *ins, FILE *in, FILE *out, const char 
 		fprintf(stderr, "Ambi width: %u\n", ins->ambi);
 	}
 	if(ins->score)
-		fprintf(stderr, "Score: %u\n", ins->score);
+		fprintf(stderr, "Score: %lf\n", ins->score);
 }
 
 int main(int argc, char *argv[]){

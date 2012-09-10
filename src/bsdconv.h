@@ -108,8 +108,9 @@ struct bsdconv_instance{
 	int phasen, phase_index;
 	struct hash_entry *hash;
 
-	unsigned int ierr, oerr, score;
+	unsigned int ierr, oerr;
 	unsigned int full, half, ambi;
+	double score;
 
 	struct data_rt *pool;
 };
