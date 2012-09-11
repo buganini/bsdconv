@@ -1,3 +1,9 @@
+8.0:
+	add flush function into callback interface
+	add inter/OPENCC*
+	sync data from project chvar
+	use double data type for score value
+
 7.5:
 	add {from,to}/CP1253
 	fix several linux issues
