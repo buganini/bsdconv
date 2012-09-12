@@ -1,7 +1,8 @@
 8.0:
 	add flush function into callback interface
-	add inter/OPENCC*
+		for supporting inter/OPENCC* ( http://github.com/buganini/bsdconv-opencc )
 	sync data from project chvar
+	update inter/KANA_PHONETIC
 	use double data type for score value
 
 7.5:
