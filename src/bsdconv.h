@@ -238,6 +238,8 @@ void cbdestroy(struct bsdconv_instance *);
 
 //CTL Action
 #define BSDCONV_SCORE_ATTACH 0
+#define BSDCONV_SET_WIDE_AMBI 1
+#define BSDCONV_SET_TRIM_WIDTH 2
 
 //Binary
 #define bb00000011 0x03

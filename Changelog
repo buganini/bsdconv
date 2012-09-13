@@ -4,6 +4,7 @@
 	sync data from project chvar
 	update inter/KANA_PHONETIC
 	use double data type for score value
+	add inter/TRIM-WIDTH
 
 7.5:
 	add {from,to}/CP1253
