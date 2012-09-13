@@ -111,7 +111,7 @@ void cbconv(struct bsdconv_instance *ins){
 		r->ins->phase[r->ins->phasen].data_head->next=NULL;
 		r->remain -= w;
 	}else{
-		r->remain=0;
+		r->remain=-1;
 		if(r->q->next){
 			this_phase->data_tail->next=r->q->next;
 			r->q->next=NULL;
