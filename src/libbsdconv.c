@@ -92,7 +92,8 @@ int _loadcodec(struct bsdconv_codec_t *cd, char *path){
 
 #ifdef WIN32
 	if((cd->dl=LoadLibrary(path))){
-		cd->callback=(void *)GetProcAddress(cd->dl,"callback");
+		cd->cbconv=(void *)GetProcAddress(cd->dl,"cbconv");
+		cd->cbflush=(void *)GetProcAddress(cd->dl,"cbflush");
 		cd->cbcreate=(void *)GetProcAddress(cd->dl,"cbcreate");
 		cd->cbinit=(void *)GetProcAddress(cd->dl,"cbinit");
 		cd->cbctl=(void *)GetProcAddress(cd->dl,"cbctl");

@@ -1,7 +1,7 @@
 PREFIX?=C:/bsdconv
 BSDCONV_PATH?=${PREFIX}
 CFLAGS+=-Wall -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
-SHLIBVER=4
+SHLIBVER=8
 CC=mingw32-gcc
 
 all: builddir libbsdconv bsdconv_mktable bsdconv codecs meta
