@@ -194,10 +194,10 @@ all: libbsdconv bsdconv_mktable meta bsdconv codecs
 
 alias:
 	python tools/mkalias.py codecs/from/alias codecs/inter/FROM_ALIAS.txt
-	@echo -e "014C,014F,0143,0141,014C,0145\t?" >> codecs/inter/FROM_ALIAS.txt
+	@printf "014C,014F,0143,0141,014C,0145\t?\n" >> codecs/inter/FROM_ALIAS.txt
 	python tools/mkalias.py codecs/inter/alias codecs/inter/INTER_ALIAS.txt
 	python tools/mkalias.py codecs/to/alias codecs/inter/TO_ALIAS.txt
-	@echo -e "014C,014F,0143,0141,014C,0145\t?" >> codecs/inter/TO_ALIAS.txt
+	@printf "014C,014F,0143,0141,014C,0145\t?\n" >> codecs/inter/TO_ALIAS.txt
 
 builddir:
 	mkdir -p build/bin
