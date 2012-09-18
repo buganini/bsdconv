@@ -207,10 +207,10 @@ to/ASCII-ESCAPED-UNICODE
 	> echo -n test測試 | bsdconv utf-8:ascii,ascii-escaped-unicode
 	test\u6e2c\u8a66
 
-from/NUL
-to/NUL
+from/00
+to/00
 	#used in https://github.com/buganini/bug5
-	#serve for '\0'
+	#consume and output '\0'
 
 from/PASS
 to/PASS
