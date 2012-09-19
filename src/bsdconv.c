@@ -25,7 +25,7 @@ void bsdconv_file(struct bsdconv_instance *ins, FILE *in, FILE *out, const char 
 	char *ib;
 	bsdconv_init(ins);
 	do{
-		ib=malloc(IBUFLEN);
+		ib=bsdconv_malloc(IBUFLEN);
 		ins->input.data=ib;
 		ins->input.flags|=F_FREE;
 		if((ins->input.len=fread(ib, 1, IBUFLEN, in))==0){

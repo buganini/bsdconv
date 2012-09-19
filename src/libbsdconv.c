@@ -1452,3 +1452,10 @@ char ** bsdconv_codecs_list(int phase_type){
 	free(cwd);
 	return list;
 }
+
+void *bsdconv_malloc(size_t size){
+	return malloc(size);
+}
+void bsdconv_free(void *p){
+	free(p);
+}

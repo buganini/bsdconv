@@ -227,6 +227,8 @@ char * bsdconv_solve_alias(int, char *);
 int bsdconv_codec_check(int, const char *);
 char ** bsdconv_codecs_list(int);
 char *bsdconv_pack(struct bsdconv_instance *);
+void *bsdconv_malloc(size_t);
+void bsdconv_free(void *);
 
 //Callback function interface
 void cbconv(struct bsdconv_instance *);
