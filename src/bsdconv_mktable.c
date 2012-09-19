@@ -199,6 +199,11 @@ int main(int argc, char *argv[]){
 		ci_table['a']='A'+i;
 	}
 
+	if(argc!=3){
+		fprintf(stderr, "Usage:\n\t%s inputfile outputfile\n", argv[0]);
+		return 1;
+	}
+
 	printf("Making table %s\n", argv[1]);
 
 #ifdef USE_FMALLOC
@@ -208,6 +213,10 @@ int main(int argc, char *argv[]){
 #endif
 
 	fp=fopen(argv[1], "r");
+	if(!fp){
+		fprintf(stderr, "Failed opening input file %s.\n", argv[1]);
+		exit(1);
+	}
 
 	datalist_hash=FMALLOC(sizeof(struct hash));
 	datalist_hash->sub=NULL;
@@ -435,7 +444,11 @@ int main(int argc, char *argv[]){
 	}
 
 	//Write
-	fopen(argv[2], "wb+");
+	fp=fopen(argv[2], "wb+");
+	if(!fp){
+		fprintf(stderr, "Failed opening input file %s.\n", argv[1]);
+		exit(1);
+	}
 	state_t=state_r;
 	while(state_t){
 		hash_p=(struct hash *)state_t->data;
