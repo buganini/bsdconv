@@ -180,7 +180,9 @@ int main(int argc, char *argv[]){
 	struct hash *hash_p;
 	int callback=0;
 	void *tofree;
+#ifdef USE_FMALLOC
 	char *bsdconv_mktable_fmalloc_template;
+#endif
 
 	/* hex table */
 	for(i=0;i<10;++i){
