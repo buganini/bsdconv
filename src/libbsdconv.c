@@ -568,8 +568,6 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 	ins->phase[0].type=INPUT;
 
 	for(i=1;i<=ins->phasen;++i){
-printf("%d\t%d\t%s\n", i, ins->phase[i].type, opipe[i]);
-
 		if(*opipe[i]){
 			ins->phase[i].codecn=1;
 			for(t=(char *)opipe[i];*t;t++){
