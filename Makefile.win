@@ -2,34 +2,34 @@ PREFIX?=C:/bsdconv
 BSDCONV_PATH?=${PREFIX}
 CFLAGS+=-Wall -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
 SHLIBVER=8
-CC=mingw32-gcc
+CC=mingw32-cc
 
 all: builddir libbsdconv bsdconv_mktable bsdconv codecs meta
 
 builddir:
-	mkdir -p build/bin
-	mkdir -p build/lib
+	mkdir -p build/
+	mkdir -p build/codecs
 	mkdir -p build/include
-	mkdir -p build/share/bsdconv/from
-	mkdir -p build/share/bsdconv/inter
-	mkdir -p build/share/bsdconv/to
+	mkdir -p build/codecs/from
+	mkdir -p build/codecs/inter
+	mkdir -p build/codecs/to
 
 libbsdconv: builddir
-	$(CC) ${CFLAGS} src/missing_func.c src/libbsdconv.c -shared -o build/lib/libbsdconv.${SHLIBVER}.dll
+	$(CC) ${CFLAGS} src/missing_func.c src/libbsdconv.c -shared -o build/libbsdconv.${SHLIBVER}.dll
 
 bsdconv: builddir libbsdconv src/bsdconv.c
-	$(CC) ${CFLAGS} -lbsdconv.${SHLIBVER} -L./build/lib/ src/bsdconv.c -o build/bin/bsdconv.exe
+	$(CC) ${CFLAGS} -lbsdconv.${SHLIBVER} -L./build/ src/bsdconv.c -o build/bsdconv.exe
 
 bsdconv_mktable: builddir src/bsdconv_mktable.c
-	$(CC) ${CFLAGS} src/missing_func.c src/bsdconv_mktable.c -o build/bin/bsdconv_mktable.exe
+	$(CC) ${CFLAGS} src/missing_func.c src/bsdconv_mktable.c -o build/bsdconv_mktable.exe
 
 codecs_table: builddir bsdconv_mktable
 	cd codecs && \
-	find */*.txt -type f | awk -F. '{cmd="bin\\bsdconv_mktable ../codecs/"$$1"."$$2" share/bsdconv/"$$1; print(cmd);}' > ../build/mk_table.bat
+	find */*.txt -type f | awk -F. '{cmd="bsdconv_mktable ../codecs/"$$1"."$$2" codecs/"$$1; print(cmd);}' > ../build/mk_table.bat
 
-codecs_callback: builddir
+codecs_callback: builddir libbsdconv
 	cd codecs && \
-	find */*.c -type f | awk -F. '{cmd="$(CC) ${CFLAGS} -shared -lbsdconv.${SHLIBVER} -L../build/lib/ -o ../build/share/bsdconv/"$$1".dll "$$1"."$$2" -lwsock32"; system(cmd);}'
+	find */*.c -type f | awk -F. '{cmd="$(CC) ${CFLAGS} -shared -lbsdconv.${SHLIBVER} -L../build/ -o ../build/codecs/"$$1".dll "$$1"."$$2" -lwsock32"; system(cmd);}'
 
 codecs: builddir codecs_table codecs_callback
 

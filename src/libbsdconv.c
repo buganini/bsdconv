@@ -161,7 +161,11 @@ int loadcodec(struct bsdconv_codec_t *cd, int type){
 	}else{
 		chdir(BSDCONV_PATH);
 	}
+#ifdef WIN32
+	chdir("codecs");
+#else
 	chdir("share/bsdconv");
+#endif
 	switch(type){
 		case FROM:
 			chdir("from");
