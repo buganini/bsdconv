@@ -8,8 +8,10 @@ char * strsep(char **stringp, const char *delim){
 	char *r=*stringp;
 	if(!**stringp) return NULL;
 	for(;**stringp && !strchr(delim, **stringp);++(*stringp));
-	**stringp=0x0;
-	(*stringp)++;
+	if(**stringp){
+		**stringp=0x0;
+		(*stringp)++;
+	}
 	return r;
 }
 
