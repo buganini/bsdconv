@@ -1,3 +1,6 @@
+8.1:
+	fix for MinGW
+
 8.0:
 	add flush function into callback interface
 		for supporting inter/OPENCC* ( http://github.com/buganini/bsdconv-opencc )
