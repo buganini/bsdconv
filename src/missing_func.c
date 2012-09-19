@@ -40,8 +40,7 @@ int mkstemp(char *tmpl){
 	return ret;
 }
 
-char *index(const char *s, int c){
-	char *t=s;
+char *index(char *s, int c){
 	while(*s){
 		if(*s==c)
 			return s;
