@@ -1,5 +1,6 @@
 8.1:
 	fix for MinGW
+	export bsdconv_malloc/bsdconv_free
 
 8.0:
 	add flush function into callback interface

@@ -1,7 +1,6 @@
 PREFIX?=C:/bsdconv
 BSDCONV_PATH?=${PREFIX}
 CFLAGS+=-Wall -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
-SHLIBVER=8
 CC=mingw32-cc
 
 all: builddir libbsdconv bsdconv_mktable bsdconv codecs meta
@@ -15,10 +14,10 @@ builddir:
 	mkdir -p build/codecs/to
 
 libbsdconv: builddir
-	$(CC) ${CFLAGS} src/missing_func.c src/libbsdconv.c -shared -o build/libbsdconv.${SHLIBVER}.dll
+	$(CC) ${CFLAGS} src/missing_func.c src/libbsdconv.c -shared -o build/libbsdconv.dll
 
 bsdconv: builddir libbsdconv src/bsdconv.c
-	$(CC) ${CFLAGS} -lbsdconv.${SHLIBVER} -L./build/ src/bsdconv.c -o build/bsdconv.exe
+	$(CC) ${CFLAGS} -lbsdconv -L./build/ src/bsdconv.c -o build/bsdconv.exe
 
 bsdconv_mktable: builddir src/bsdconv_mktable.c
 	$(CC) ${CFLAGS} src/missing_func.c src/bsdconv_mktable.c -o build/bsdconv_mktable.exe
@@ -29,7 +28,7 @@ codecs_table: builddir bsdconv_mktable
 
 codecs_callback: builddir libbsdconv
 	cd codecs && \
-	find */*.c -type f | awk -F. '{cmd="$(CC) ${CFLAGS} -shared -lbsdconv.${SHLIBVER} -L../build/ -o ../build/codecs/"$$1".dll "$$1"."$$2" -lwsock32"; system(cmd);}'
+	find */*.c -type f | awk -F. '{cmd="$(CC) ${CFLAGS} -shared -lbsdconv -L../build/ -o ../build/codecs/"$$1".dll "$$1"."$$2" -lwsock32"; system(cmd);}'
 
 codecs: builddir codecs_table codecs_callback
 
