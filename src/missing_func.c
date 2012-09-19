@@ -29,15 +29,5 @@ int mkstemp(char *tmpl){
 	ret=open(tmpl,O_RDWR|O_BINARY|O_CREAT|O_EXCL);
 	return ret;
 }
-
-char *index(char *s, int c){
-	while(*s){
-		if(*s==c)
-			return s;
-		s+=1;
-	}
-	return NULL;
-}
-
 #endif
 

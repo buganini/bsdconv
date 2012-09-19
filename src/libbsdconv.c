@@ -591,10 +591,10 @@ printf("%d\t%d\t%s\n", i, ins->phase[i].type, opipe[i]);
 	for(i=1;i<=ins->phasen;++i){
 		t=opipe[i];
 		for(j=0;j<=ins->phase[i].codecn;++j){
-			while(index(" \r\n\t\f", t[0])!=NULL)
+			while(strchr(" \r\n\t\f", t[0])!=NULL)
 				t+=1;
 			ins->phase[i].codec[j].desc=strdup(strsep(&t, ","));
-			for(f=strlen(ins->phase[i].codec[j].desc)-1;index(" \r\n\t\f", ins->phase[i].codec[j].desc[f])!=NULL;f-=1)
+			for(f=strlen(ins->phase[i].codec[j].desc)-1;strchr(" \r\n\t\f", ins->phase[i].codec[j].desc[f])!=NULL;f-=1)
 				ins->phase[i].codec[j].desc[f]=0;
 			if(ins->phase[i].codec[j].desc[0]==0){
 				for(;j>=0;--j){
