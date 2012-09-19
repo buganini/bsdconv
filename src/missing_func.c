@@ -23,16 +23,6 @@ char * strndup(const char *str, size_t len){
 	return r;
 }
 
-char * getwd(char *buf){
-	char b[512], *r;
-	int l;
-	getcwd(b,512);
-	l=strlen(b);
-	r=malloc(l);
-	memcpy(r,b,l);
-	return r;
-}
-
 int mkstemp(char *tmpl){
 	int ret;
 	mktemp(tmpl);
