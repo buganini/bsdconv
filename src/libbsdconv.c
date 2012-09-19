@@ -38,6 +38,12 @@
 #define MAP_PREFAULT_READ 0
 #endif
 
+#ifdef WIN32
+#define CODECS_SUBPATH "codecs"
+#else
+#define CODECS_SUBPATH "share/bsdconv"
+#endif
+
 static void strtoupper(char *s){
 	char *c;
 	for(c=s;*c;++c){
@@ -161,11 +167,7 @@ int loadcodec(struct bsdconv_codec_t *cd, int type){
 	}else{
 		chdir(BSDCONV_PATH);
 	}
-#ifdef WIN32
-	chdir("codecs");
-#else
-	chdir("share/bsdconv");
-#endif
+	chdir(CODECS_SUBPATH);
 	switch(type){
 		case FROM:
 			chdir("from");
@@ -566,6 +568,8 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 	ins->phase[0].type=INPUT;
 
 	for(i=1;i<=ins->phasen;++i){
+printf("%d\t%d\t%s\n", i, ins->phase[i].type, opipe[i]);
+
 		if(*opipe[i]){
 			ins->phase[i].codecn=1;
 			for(t=(char *)opipe[i];*t;t++){
@@ -1354,7 +1358,7 @@ int bsdconv_codec_check(int type, const char *_codec){
 		chdir(BSDCONV_PATH);
 	}
 
-	chdir("share/bsdconv");
+	chdir(CODECS_SUBPATH);
 	switch(type){
 		case FROM:
 			chdir("from");
@@ -1398,7 +1402,7 @@ char ** bsdconv_codecs_list(int phase_type){
 		chdir(BSDCONV_PATH);
 	}
 	list[0]=NULL;
-	chdir("share/bsdconv");
+	chdir(CODECS_SUBPATH);
 	switch(phase_type){
 		case FROM:
 			type="from";
