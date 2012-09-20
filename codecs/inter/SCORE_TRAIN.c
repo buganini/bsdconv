@@ -68,11 +68,12 @@ void cbconv(struct bsdconv_instance *ins){
 			ucs|=data[i];
 		}
 		fseek(fp, ucs*sizeof(unsigned char), SEEK_SET);
-//		fread(&v, sizeof(unsigned char), 1, fp);
-//		if(v<3){
+		fread(&v, sizeof(unsigned char), 1, fp);
+		if(v<3){
 			v+=1;
+			fseek(fp, ucs*sizeof(unsigned char), SEEK_SET);
 			fwrite(&v, sizeof(unsigned char), 1, fp);
-//		}
+		}
 	}
 
 	this_phase->state.status=NEXTPHASE;
