@@ -2,6 +2,7 @@
 	fix for MinGW
 	export bsdconv_malloc/bsdconv_free
 	add {from,to}/CCCII
+	bugfixes
 
 8.0:
 	add flush function into callback interface
