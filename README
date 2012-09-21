@@ -70,9 +70,10 @@ Maintain inter map:
 --
 WINDOWS:
 http://github.com/buganini/bsdconv/downloads
-Download and extract it, then goto build/ and run mk_table.bat
-then copy everythings in build/ to c:\bsdconv\
+Download and extract it, then copy everythings in build/ to c:\bsdconv\
+the path of the executable will be c:\bsdconv\bsdconv.exe
 
---
 If you want to install to directory other than default path
-set BSDCONV_PATH environment variable to your path
+set BSDCONV_PATH environment variable to your path.
+
+Run setEnvVar.bat as administrator could help you set proper environment variables.
