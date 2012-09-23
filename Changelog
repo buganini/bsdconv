@@ -1,7 +1,8 @@
-8.1:
+9.0:
 	fix for MinGW
 	export bsdconv_malloc/bsdconv_free
 	add {from,to}/CCCII
+	internal API changes for use of bsdconv_ctl in wrappers
 	bugfixes
 
 8.0:
