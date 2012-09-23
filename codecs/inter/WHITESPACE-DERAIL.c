@@ -28,7 +28,13 @@ struct my_s{
 };
 
 void cbcreate(struct bsdconv_instance *ins){
-	struct my_s *t=bsdconv_hash(ins, HASHKEY, sizeof(struct my_s));
+	struct my_s *t;
+	if(bsdconv_hash_has(ins, HASHKEY)){
+		t=bsdconv_hash_get(ins, HASHKEY);
+	}else{
+		t=malloc(sizeof(struct my_s));
+		bsdconv_hash_set(ins, HASHKEY, t);
+	}
 	t->queue=NULL;
 	CURRENT_CODEC(ins)->priv=t;
 }
