@@ -271,7 +271,6 @@ void bsdconv_hash_del(struct bsdconv_instance *ins, const char *key){
 	while(p!=NULL){
 		if(strcmp(p->key, key)==0){
 			free(p->key);
-			free(p->ptr);
 			*q=p->next;
 			free(p);
 			return;
@@ -813,7 +812,6 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 	free(ins->phase);
 	while(ins->hash){
 		free(ins->hash->key);
-		free(ins->hash->ptr);
 		ins->hash=ins->hash->next;
 	}
 	free(ins);

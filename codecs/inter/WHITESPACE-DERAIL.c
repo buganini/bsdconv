@@ -64,7 +64,8 @@ void cbdestroy(struct bsdconv_instance *ins){
 			t->queue=t->queue->next;
 			DATA_FREE(q);
 		}
-		bsdconv_hash_delete(ins, HASHKEY);
+		free(t);
+		bsdconv_hash_del(ins, HASHKEY);
 	}
 }
 

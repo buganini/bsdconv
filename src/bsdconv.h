@@ -223,7 +223,7 @@ char * bsdconv_error(void);
 void bsdconv_hash_set(struct bsdconv_instance *, const char *, void *);
 void * bsdconv_hash_get(struct bsdconv_instance *, const char *);
 int bsdconv_hash_has(struct bsdconv_instance *, const char *);
-void bsdconv_hash_delete(struct bsdconv_instance *, const char *);
+void bsdconv_hash_del(struct bsdconv_instance *, const char *);
 char * bsdconv_solve_alias(int, char *);
 int bsdconv_codec_check(int, const char *);
 char ** bsdconv_codecs_list(int);
