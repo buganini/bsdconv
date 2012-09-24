@@ -93,7 +93,7 @@ void cbconv(struct bsdconv_instance *ins){
 		fread(&v, sizeof(unsigned char), 1, r->score);
 		if(v==0 && r->list){
 			ucs4=htonl(ucs);
-			fwrite(&ucs4, 4, 1, r->list);
+			fwrite(&ucs4, sizeof(uint32_t), 1, r->list);
 		}
 		if(v<3){
 			v+=1;
