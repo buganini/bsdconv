@@ -36,17 +36,10 @@ void cbcreate(struct bsdconv_instance *ins){
 
 void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
 	switch(ctl){
-		case BSDCONV_SCORE_ATTACH:
-			if(CURRENT_CODEC(ins)->priv)
-				fclose(CURRENT_CODEC(ins)->priv);
+		case BSDCONV_ATTACH_SCORE:
 			CURRENT_CODEC(ins)->priv=ptr;
 			break;
 	}
-}
-
-void cbdestroy(struct bsdconv_instance *ins){
-	if(CURRENT_CODEC(ins)->priv)
-		fclose(CURRENT_CODEC(ins)->priv);
 }
 
 struct interval {

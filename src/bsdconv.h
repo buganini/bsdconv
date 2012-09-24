@@ -230,6 +230,7 @@ char ** bsdconv_codecs_list(int);
 char *bsdconv_pack(struct bsdconv_instance *);
 void *bsdconv_malloc(size_t);
 void bsdconv_free(void *);
+int bsdconv_mkstemp(char *);
 
 //Callback function interface
 void cbconv(struct bsdconv_instance *);
@@ -240,9 +241,10 @@ void cbctl(struct bsdconv_instance *, int, void *, size_t);
 void cbdestroy(struct bsdconv_instance *);
 
 //CTL Action
-#define BSDCONV_SCORE_ATTACH 0
+#define BSDCONV_ATTACH_SCORE 0
 #define BSDCONV_SET_WIDE_AMBI 1
 #define BSDCONV_SET_TRIM_WIDTH 2
+#define BSDCONV_ATTACH_OUTPUT_FILE 3
 
 //Binary
 #define bb00000011 0x03

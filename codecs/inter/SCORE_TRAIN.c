@@ -18,43 +18,65 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#ifdef WIN32
+#include <winsock2.h>
+#else
+#include <netinet/in.h>
+#endif
 #include "../../src/bsdconv.h"
 
+struct my_s{
+	FILE *bak;
+	FILE *score;
+	FILE *list;
+};
+
 void cbcreate(struct bsdconv_instance *ins){
+	struct my_s *r=malloc(sizeof(struct my_s));
 	char buf[256]={0};
-	FILE *fp;
 	char *p=getenv("BSDCONV_SCORE");
 	if(p==NULL){
 		strcpy(buf,getenv("HOME"));
 		strcat(buf,"/.bsdconv.score");
 		p=buf;
+		r->bak=r->score=fopen(p,"r+");
+	}else{
+		r->bak=NULL;
 	}
-	fp=fopen(p,"r+");
-	CURRENT_CODEC(ins)->priv=fp;
-}
-
-void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
-	switch(ctl){
-		case BSDCONV_SCORE_ATTACH:
-			if(CURRENT_CODEC(ins)->priv)
-				fclose(CURRENT_CODEC(ins)->priv);
-			CURRENT_CODEC(ins)->priv=ptr;
-			break;
-	}
+	r->score=fopen(p,"r+");
+	r->list=NULL;
+	CURRENT_CODEC(ins)->priv=r;
+	
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	fclose(CURRENT_CODEC(ins)->priv);
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	if(r->bak)
+		fclose(r->bak);
+	free(r);
+}
+
+void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	switch(ctl){
+		case BSDCONV_ATTACH_SCORE:
+			r->score=ptr;
+			break;
+		case BSDCONV_ATTACH_OUTPUT_FILE:
+			r->list=ptr;
+			break;
+	}
 }
 
 void cbconv(struct bsdconv_instance *ins){
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	FILE *fp=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	data=this_phase->curr->data;
 	unsigned char v=0;
 	int i;
 	int ucs=0;
+	uint32_t ucs4;
 
 	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
@@ -67,12 +89,16 @@ void cbconv(struct bsdconv_instance *ins){
 			ucs<<=8;
 			ucs|=data[i];
 		}
-		fseek(fp, ucs*sizeof(unsigned char), SEEK_SET);
-		fread(&v, sizeof(unsigned char), 1, fp);
+		fseek(r->score, ucs*sizeof(unsigned char), SEEK_SET);
+		fread(&v, sizeof(unsigned char), 1, r->score);
+		if(v==0 && r->list){
+			ucs4=htonl(ucs);
+			fwrite(&ucs4, sizeof(uint32_t), 1, r->list);
+		}
 		if(v<3){
 			v+=1;
-			fseek(fp, ucs*sizeof(unsigned char), SEEK_SET);
-			fwrite(&v, sizeof(unsigned char), 1, fp);
+			fseek(r->score, ucs*sizeof(unsigned char), SEEK_SET);
+			fwrite(&v, sizeof(unsigned char), 1, r->score);
 		}
 	}
 
