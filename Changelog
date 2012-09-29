@@ -2,6 +2,7 @@
 	fix for MinGW
 	export bsdconv_malloc/bsdconv_free
 	add {from,to}/CCCII
+	add inter/ZH-STRINGS
 	internal API changes for use of bsdconv_ctl in wrappers
 	bugfixes
 

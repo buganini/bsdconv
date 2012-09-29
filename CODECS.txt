@@ -340,6 +340,11 @@ inter/NL2BR
 	> perl -e 'print "a\nb"'|bsdconv utf-8:nl2br:utf-8
 	a<br />b
 
+inter/ZH-STRINGS
+	> echo echo abd測試efg功能，hij | bsdconv utf-8:zh-strings:utf-8
+	測試
+	功能
+
 inter/ZHCN
 	> echo 測試 | bsdconv utf-8:zhcn:utf-8
 	测试
