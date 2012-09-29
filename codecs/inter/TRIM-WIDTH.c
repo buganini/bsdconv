@@ -51,11 +51,10 @@ void cbcreate(struct bsdconv_instance *ins){
 	r->q->next=NULL;
 }
 
-void cbinit(struct bsdconv_instance *inst){
-	struct my_s *r=CURRENT_CODEC(inst)->priv;
-	struct bsdconv_instance *ins=r->ins;
+void cbinit(struct bsdconv_instance *ins){
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	struct data_rt *t;
-	bsdconv_init(ins);
+	bsdconv_init(r->ins);
 	while(r->q->next){
 		t=r->q->next->next;
 		DATA_FREE(r->q->next);
