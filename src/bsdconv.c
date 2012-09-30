@@ -37,7 +37,7 @@ void bsdconv_file(struct bsdconv_instance *ins, FILE *in, FILE *out, const char 
 	}while(ins->flush==0);
 
 	if(filename && (ins->ierr || ins->oerr || ins->full || ins->half || ins->ambi || ins->score))
-		fprintf(stderr, "File: %s\n", filename);
+		fprintf(stderr, "\nFile: %s\n", filename);
 	if(ins->ierr || ins->oerr){
 		fprintf(stderr, "Decoding failure: %u\n", ins->ierr);
 		fprintf(stderr, "Encoding failure: %u\n", ins->oerr);
