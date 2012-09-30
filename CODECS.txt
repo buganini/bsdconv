@@ -432,7 +432,7 @@ inter/SCORE_TRAIN
 	#specify score data path in C
 	bsdconv_ctl(
 		struct bsdconv_instance *, /*conversion instance*/
-		BSDCONV_SCORE_ATTACH, /* Magic constant*/
+		BSDCONV_ATTACH_SCORE, /* Ctl constant*/
 		FILE *, /* File pointer to the score data*/
 		0 /* unused argument */
 	);
