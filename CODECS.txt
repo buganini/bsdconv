@@ -11,6 +11,10 @@ to/BIG5-5C
 	> echo 功能|bsdconv utf-8:big5-5c,big5|hexdump -C
 	00000000  a5 5c 5c af e0 0a                                 |.\\...|
 
+from/CCCII
+to/CCCII
+	#just CCCII, it's incompatible with ASCII
+
 from/_CP950
 from/_UAO241
 from/_UAO250
@@ -63,6 +67,11 @@ to/_CP1251
 from/_CP1252
 to/_CP1252
 	#latin alphabet
+	#ascii is excluded, use same name without '_' prefixed to get ascii involved
+
+from/_CP1253
+to/_CP1253
+	#greek alphabet
 	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 
 from/_CP874
@@ -300,6 +309,13 @@ inter/CNS11643
 	> echo -n 測試 | bsdconv utf-8:cns11643:bsdconv_stdout
 	02016041
 	0201665C
+
+inter/TRIM-WIDTH:
+	> echo ˋˊ這是個很長的字串啊啊啊 | env BSDCONV_WIDE_AMBI=1 BSDCONV_TRIM_WIDTH=22 bsdconv utf-8:trim-width:utf-8
+	ˋˊ這是個很長的字串啊
+	> echo ˋˊ這是個很長的字串啊啊啊 | env BSDCONV_TRIM_WIDTH=22 bsdconv utf-8:trim-width:utf-8
+	ˋˊ這是個很長的字串啊啊
+
 
 inter/UNICODE
 	#for internal use
