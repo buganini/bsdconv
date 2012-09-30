@@ -22,10 +22,9 @@
 
 struct my_s{
 	struct bsdconv_instance *ins;
-	struct data_rt *q, *qt;
 	char ambi_width;
 	size_t width;
-	size_t remain;
+	long remain;
 };
 
 void cbcreate(struct bsdconv_instance *ins){
@@ -34,7 +33,7 @@ void cbcreate(struct bsdconv_instance *ins){
 
 	r->ambi_width=1;
 
-	p=getenv("BSDCONV_SET_WIDE_AMBI");
+	p=getenv("BSDCONV_WIDE_AMBI");
 	if(p){
 		r->ambi_width=2;
 	}
@@ -47,20 +46,11 @@ void cbcreate(struct bsdconv_instance *ins){
 	}
 
 	r->ins=bsdconv_create("WIDTH");
-	r->q=malloc(sizeof(struct data_rt));
-	r->q->next=NULL;
 }
 
 void cbinit(struct bsdconv_instance *ins){
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
-	struct data_rt *t;
 	bsdconv_init(r->ins);
-	while(r->q->next){
-		t=r->q->next->next;
-		DATA_FREE(r->q->next);
-		r->q->next=t;
-	}
-	r->qt=r->q;
 	r->remain=r->width;
 }
 
@@ -77,15 +67,8 @@ void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct data_rt *t;
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	bsdconv_destroy(r->ins);
-	while(r->q->next){
-		t=r->q->next->next;
-		DATA_FREE(r->q->next);
-		r->q->next=t;
-	}
-	free(r->q);
 	free(r);
 }
 
@@ -99,20 +82,17 @@ void cbconv(struct bsdconv_instance *ins){
 	r->ins->input.next=NULL;
 	r->ins->flush=1;
 	bsdconv(r->ins);
-
 	int w=r->ins->full*2 + r->ins->half + r->ins->ambi*r->ambi_width;
 	if(r->remain >= w){
-		r->qt->next=r->ins->phase[r->ins->phasen].data_head->next;
-		r->qt=r->qt->next;
+		this_phase->data_tail->next=r->ins->phase[r->ins->phasen].data_head->next;
+		while(this_phase->data_tail->next){
+			this_phase->data_tail=this_phase->data_tail->next;
+		}
 		r->ins->phase[r->ins->phasen].data_head->next=NULL;
+		r->ins->phase[r->ins->phasen].data_tail=r->ins->phase[r->ins->phasen].data_head;
 		r->remain -= w;
 	}else{
 		r->remain=-1;
-		if(r->q->next){
-			this_phase->data_tail->next=r->q->next;
-			r->q->next=NULL;
-			r->qt=r->q;
-		}
 	}
 
 	this_phase->state.status=NEXTPHASE;
