@@ -33,13 +33,12 @@ void cbcreate(struct bsdconv_instance *ins){
 	char buf[256]={0};
 	char *p=getenv("BSDCONV_SCORE");
 	if(p==NULL){
+		//try default score file
 		strcpy(buf,getenv("HOME"));
 		strcat(buf,"/.bsdconv.score");
 		p=buf;
 		r->bak=r->score=fopen(p,"r+");
-	}else{
-		r->bak=NULL;
-		r->score=fopen(p,"r");
+		//if default score file is not available, it will fallback to builtin score table
 	}
 	CURRENT_CODEC(ins)->priv=r;
 }
@@ -88,7 +87,8 @@ static const struct interval scoreboard[] = {
 void cbconv(struct bsdconv_instance *ins){
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	FILE *fp=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	FILE *fp=r->score;
 	data=this_phase->curr->data;
 	int i;
 	int max=sizeof(scoreboard) / sizeof(struct interval) - 1;

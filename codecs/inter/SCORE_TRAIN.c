@@ -39,11 +39,10 @@ void cbcreate(struct bsdconv_instance *ins){
 		strcpy(buf,getenv("HOME"));
 		strcat(buf,"/.bsdconv.score");
 		p=buf;
-		r->bak=r->score=fopen(p,"r+");
-	}else{
-		r->bak=NULL;
-		r->score=fopen(p,"r+");
 	}
+	r->bak=fopen(p,"a"); //ensure file existence
+	fclose(r->bak);
+	r->bak=r->score=fopen(p,"r+");
 	r->list=NULL;
 	CURRENT_CODEC(ins)->priv=r;
 	
@@ -51,8 +50,7 @@ void cbcreate(struct bsdconv_instance *ins){
 
 void cbdestroy(struct bsdconv_instance *ins){
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
-	if(r->bak)
-		fclose(r->bak);
+	fclose(r->bak);
 	free(r);
 }
 
