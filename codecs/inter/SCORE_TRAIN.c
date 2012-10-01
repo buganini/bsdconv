@@ -42,8 +42,8 @@ void cbcreate(struct bsdconv_instance *ins){
 		r->bak=r->score=fopen(p,"r+");
 	}else{
 		r->bak=NULL;
+		r->score=fopen(p,"r+");
 	}
-	r->score=fopen(p,"r+");
 	r->list=NULL;
 	CURRENT_CODEC(ins)->priv=r;
 	
