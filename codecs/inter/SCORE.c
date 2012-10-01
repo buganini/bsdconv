@@ -45,9 +45,10 @@ void cbcreate(struct bsdconv_instance *ins){
 }
 
 void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	switch(ctl){
 		case BSDCONV_ATTACH_SCORE:
-			CURRENT_CODEC(ins)->priv=ptr;
+			r->score=ptr;
 			break;
 	}
 }
