@@ -23,15 +23,25 @@
 #include <string.h>
 #include "../../src/bsdconv.h"
 
+struct my_s{
+	FILE *bak;
+	FILE *score;
+};
+
 void cbcreate(struct bsdconv_instance *ins){
+	struct my_s *r=malloc(sizeof(struct my_s));
 	char buf[256]={0};
 	char *p=getenv("BSDCONV_SCORE");
 	if(p==NULL){
 		strcpy(buf,getenv("HOME"));
 		strcat(buf,"/.bsdconv.score");
 		p=buf;
+		r->bak=r->score=fopen(p,"r+");
+	}else{
+		r->bak=NULL;
 	}
-	CURRENT_CODEC(ins)->priv=fopen(p,"r");
+	r->score=fopen(p,"r");
+	CURRENT_CODEC(ins)->priv=r;
 }
 
 void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
@@ -40,6 +50,13 @@ void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
 			CURRENT_CODEC(ins)->priv=ptr;
 			break;
 	}
+}
+
+void cbdestroy(struct bsdconv_instance *ins){
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	if(r->bak)
+		fclose(r->bak);
+	free(r);
 }
 
 struct interval {
