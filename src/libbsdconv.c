@@ -252,7 +252,7 @@ int bsdconv_hash_has(struct bsdconv_instance *ins, const char *key){
 	void *tp;
 	struct hash_entry *p=ins->hash;
 	while(p!=NULL){
-		if(strcmp(p->key, key)==0)
+		if(strcmp(p->key, key)==0){
 			tk=p->key;
 			tp=p->ptr;
 			p->key=ins->hash->key;
@@ -260,6 +260,7 @@ int bsdconv_hash_has(struct bsdconv_instance *ins, const char *key){
 			ins->hash->key=tk;
 			ins->hash->ptr=tp;
 			return 1;
+		}
 		p=p->next;
 	}
 	return 0;
