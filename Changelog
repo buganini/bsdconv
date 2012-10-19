@@ -1,3 +1,5 @@
+	use system-provided PATH_MAX (thanks to PkmX)
+
 9.0:
 	fix for MinGW
 	export bsdconv_malloc/bsdconv_free
@@ -58,7 +60,7 @@
 	improve inter/{zh_decomp,zh_comp}
 
 6.1:
-	mac os compatible
+	mac os compatible (thanks to godfat)
 	improve inter/ZHTW_WORDS
 	improve inter/ZH_DECOMP and inter/ZH_COMP
 
