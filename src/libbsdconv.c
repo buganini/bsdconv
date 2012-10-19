@@ -160,7 +160,7 @@ char * bsdconv_solve_alias(int type, char *_codec){
 int loadcodec(struct bsdconv_codec_t *cd, int type){
 	char *cwd;
 	char *c;
-	char buf[PATH_BUF_SIZE];
+	char buf[PATH_MAX];
 	cwd=getcwd(NULL, 0);
 	if((c=getenv("BSDCONV_PATH"))){
 		chdir(c);

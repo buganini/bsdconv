@@ -149,8 +149,6 @@ struct bsdconv_codec_t {
 	void *priv;
 };
 
-#define PATH_BUF_SIZE 512
-
 #ifndef EDOOFUS
 #define EDOOFUS 88
 #endif
@@ -160,7 +158,7 @@ struct bsdconv_codec_t {
 #define ENOMEM ERROR_NOT_ENOUGH_MEMORY
 #define EINVAL ERROR_BAD_COMMAND
 #define SHLIBEXT "dll"
-#define REALPATH(path, buf) GetFullPathName(path, PATH_BUF_SIZE, buf, NULL)
+#define REALPATH(path, buf) GetFullPathName(path, PATH_MAX, buf, NULL)
 char * strsep(char **, const char *);
 char * index(const char *, int);
 char * getwd(char *);
