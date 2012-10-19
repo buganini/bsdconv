@@ -158,7 +158,7 @@ struct bsdconv_codec_t {
 #define ENOMEM ERROR_NOT_ENOUGH_MEMORY
 #define EINVAL ERROR_BAD_COMMAND
 #define SHLIBEXT "dll"
-#define REALPATH(path, buf) GetFullPathName(path, PATH_MAX, buf, NULL)
+#define REALPATH(path, buf) GetFullPathName(path, PATH_MAX+1, buf, NULL)
 char * strsep(char **, const char *);
 char * index(const char *, int);
 char * getwd(char *);
