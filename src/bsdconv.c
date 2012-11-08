@@ -17,6 +17,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef WIN32
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
 #include "bsdconv.h"
 
 #define IBUFLEN 1024
@@ -106,7 +111,13 @@ int main(int argc, char *argv[]){
 				fprintf(stderr, "Unable to open output file %s\n", argv[i]);
 				bsdconv_destroy(ins);
 				exit(1);
-			}			
+			}
+#ifndef WIN32
+			struct stat stat;
+			fstat(fileno(inf), &stat);
+			fchown(fileno(otf), stat.st_uid, stat.st_gid);
+			fchmod(fileno(otf), stat.st_mode);
+#endif
 			bsdconv_file(ins, inf, otf, argv[i]);
 			fclose(inf);
 			fclose(otf);
