@@ -1,4 +1,5 @@
 	use system-provided PATH_MAX (thanks to PkmX)
+	sync data from project chvar
 
 9.0:
 	fix for MinGW
