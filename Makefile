@@ -194,7 +194,7 @@ TODO_CODECS_EXTRA_CALLBACK=
 TODO_CODECS_EXTRA_CALLBACK+=from/_CNS11643
 TODO_CODECS_EXTRA_CALLBACK+=to/_CNS11643
 
-all: libbsdconv bsdconv_mktable meta bsdconv codecs
+all: libbsdconv bsdconv_mktable bsdconv_completion meta bsdconv codecs
 
 alias:
 	python tools/mkalias.py codecs/from/alias codecs/inter/FROM_ALIAS.txt
@@ -225,8 +225,11 @@ libbsdconv: builddir src/libbsdconv.c src/bsdconv.h
 bsdconv: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
 	$(CC) ${CFLAGS} src/bsdconv.c -L./build/lib/ -o build/bin/bsdconv -lbsdconv ${LIBS}
 
-bsdconv_mktable: builddir src/bsdconv.h
+bsdconv_mktable: builddir src/bsdconv.h src/bsdconv_mktable.c
 	$(CC) ${CFLAGS} -DUSE_FMALLOC src/libfmalloc.c src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
+
+bsdconv_completion: builddir src/bsdconv.h src/bsdconv_completion.c
+	$(CC) ${CFLAGS} src/bsdconv_completion.c -L./build/lib -o build/bin/bsdconv_completion -lbsdconv ${LIBS}
 
 bsdconv_dbg: builddir src/libbsdconv.c src/bsdconv.h src/bsdconv_dbg.c
 	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv_dbg.c -o build/bin/bsdconv_dbg
@@ -272,6 +275,7 @@ install: installdir install_main install_basic install_extra
 install_main:
 	install -m 555 build/bin/bsdconv ${PREFIX}/bin
 	install -m 555 build/bin/bsdconv_mktable ${PREFIX}/bin
+	install -m 555 build/bin/bsdconv_completion ${PREFIX}/bin
 	install -m 444 build/include/bsdconv.h ${PREFIX}/include
 	install -m 444 build/lib/${SHLIBNAME} ${PREFIX}/lib
 	install -m 444 build/share/bsdconv/from/alias ${PREFIX}/share/bsdconv/from/alias
