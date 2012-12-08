@@ -26,6 +26,31 @@
 
 #define IBUFLEN 1024
 
+#define LIST_CODECS(type) do{ \
+	list=bsdconv_codecs_list(type); \
+	p=list; \
+	while(*p!=NULL){ \
+		printf("\t%s\n", *p); \
+		bsdconv_free(*p); \
+		p+=1; \
+	} \
+	bsdconv_free(list); \
+}while(0);
+
+void list_codecs(){
+	char **list;
+	char **p;
+	
+	printf("[From]\n");
+	LIST_CODECS(FROM);
+	printf("[Inter]\n");
+	LIST_CODECS(INTER);
+	printf("[To]\n");
+	LIST_CODECS(TO);
+
+	exit(0);
+}
+
 void bsdconv_file(struct bsdconv_instance *ins, FILE *in, FILE *out, const char *filename){
 	char *ib;
 	bsdconv_init(ins);
@@ -66,14 +91,19 @@ int main(int argc, char *argv[]){
 	int i;
 
 	if(argc<2){
-		fprintf(stderr, "Usage:\n\t %s conversion [-iq] [file] [...]\n\t\t-i:\tsave in-place\n", argv[0]);
+		fprintf(stderr, "Usage:\n\t %s conversion [-il] [file] [...]\n\t\t-i:\tsave in-place\n\t\t-l:\tlist codecs\n", argv[0]);
 		exit(1);
 	}
 	i=2;
 
+	if(strcmp(argv[1],"-l")==0)
+		list_codecs();
+
 	if(argc>2) while(i<argc){
 		if(strcmp(argv[i],"-i")==0)
 			inplace=1;
+		else if(strcmp(argv[i],"-l")==0)
+			list_codecs();
 		else
 			break;
 		i+=1;
