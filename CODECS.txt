@@ -212,6 +212,9 @@ from/ESCAPE
 	測試功能
 	> echo '%u6e2c%b8%d5&#x529F;能' | bsdconv 'escape,ascii-numeric-html-entity,utf-8:unicode,byte|skip,big5:utf-8'
 	測試功能
+	> echo '\346\270\254\350\251\246' | bsdconv 'escape:unicode,byte|skip,utf-8:utf-8'
+	測試
+
 to/ASCII-ESCAPED-UNICODE
 	> echo -n test測試 | bsdconv utf-8:ascii,ascii-escaped-unicode
 	test\u6e2c\u8a66
