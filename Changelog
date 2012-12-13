@@ -1,3 +1,7 @@
+	bash completion script (buggy)
+	extend from/ESCAPE to support \uUUUU \xXX \OOO
+	add bsdconv -l
+	chown/chmod for created file
 	use system-provided PATH_MAX (thanks to PkmX)
 	sync data from project chvar
 
