@@ -73,6 +73,8 @@ void cbconv(struct bsdconv_instance *ins){
 				}else if(d=='\\'){
 					t->status=11;
 					continue;
+				}else{
+					DEADEND();
 				}
 			case 10:
 				if(d=='u'){
@@ -145,6 +147,8 @@ void cbconv(struct bsdconv_instance *ins){
 				}else{
 					t->buf[0]*=8;
 					t->buf[0]+=oct[(unsigned char)d];
+					if(t->buf[0]>377)
+						DEADEND();
 					DATA_MALLOC(this_phase->data_tail->next);
 					this_phase->data_tail=this_phase->data_tail->next;
 					this_phase->data_tail->next=NULL;
