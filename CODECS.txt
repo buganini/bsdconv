@@ -313,13 +313,6 @@ inter/CNS11643
 	02016041
 	0201665C
 
-inter/TRIM-WIDTH:
-	> echo ˋˊ這是個很長的字串啊啊啊 | env BSDCONV_WIDE_AMBI=1 BSDCONV_TRIM_WIDTH=22 bsdconv utf-8:trim-width:utf-8
-	ˋˊ這是個很長的字串啊
-	> echo ˋˊ這是個很長的字串啊啊啊 | env BSDCONV_TRIM_WIDTH=22 bsdconv utf-8:trim-width:utf-8
-	ˋˊ這是個很長的字串啊啊
-
-
 inter/UNICODE
 	#for internal use
 	> echo 02016041,0201665C | bsdconv bsdconv:unicode:bsdconv_stdout
@@ -447,6 +440,10 @@ inter/SPLIT
 	016E2C,018A66,010A,
 
 inter/TRIM-WIDTH
+	> echo ˋˊ這是個很長的字串啊啊啊 | env BSDCONV_WIDE_AMBI=1 BSDCONV_TRIM_WIDTH=22 bsdconv utf-8:trim-width:utf-8
+	ˋˊ這是個很長的字串啊
+	> echo ˋˊ這是個很長的字串啊啊啊 | env BSDCONV_TRIM_WIDTH=22 bsdconv utf-8:trim-width:utf-8
+	ˋˊ這是個很長的字串啊啊
 	> echo 三長兩短ˊˋ3長2短|env BSDCONV_TRIM_WIDTH=10 BSDCONV_SET_WIDE_AMBI= bsdconv utf-8:trim-width:utf-8
 	#set parameters in C
 	bsdconv_ctl(struct bsdconv_instance *, BSDCONV_SET_WIDE_AMBI, NULL, 0);
