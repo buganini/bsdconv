@@ -120,23 +120,23 @@ TODO_CODECS_BASIC_TABLE+=to/UTF-32BE
 TODO_CODECS_BASIC_TABLE+=to/UTF-32LE
 TODO_CODECS_BASIC_TABLE+=to/_UTF-8
 
-TODO_CODECS_EXTRA_TABLE=
-TODO_CODECS_EXTRA_TABLE+=from/CCCII
-TODO_CODECS_EXTRA_TABLE+=from/_CNS11643
-TODO_CODECS_EXTRA_TABLE+=from/_CP936
-TODO_CODECS_EXTRA_TABLE+=from/_CP950
-TODO_CODECS_EXTRA_TABLE+=from/_GB2312
-TODO_CODECS_EXTRA_TABLE+=from/_UAO241
-TODO_CODECS_EXTRA_TABLE+=inter/CHEWING
-TODO_CODECS_EXTRA_TABLE+=inter/CNS11643
-TODO_CODECS_EXTRA_TABLE+=inter/HAN_PINYIN
-TODO_CODECS_EXTRA_TABLE+=inter/UNICODE
-TODO_CODECS_EXTRA_TABLE+=inter/ZH_COMP
-TODO_CODECS_EXTRA_TABLE+=inter/ZH_DECOMP
-TODO_CODECS_EXTRA_TABLE+=to/CCCII
-TODO_CODECS_EXTRA_TABLE+=to/_CNS11643
-TODO_CODECS_EXTRA_TABLE+=to/_GB2312
-TODO_CODECS_EXTRA_TABLE+=to/_UAO241
+TODO_CODECS_CHINESE_TABLE=
+TODO_CODECS_CHINESE_TABLE+=from/CCCII
+TODO_CODECS_CHINESE_TABLE+=from/_CNS11643
+TODO_CODECS_CHINESE_TABLE+=from/_CP936
+TODO_CODECS_CHINESE_TABLE+=from/_CP950
+TODO_CODECS_CHINESE_TABLE+=from/_GB2312
+TODO_CODECS_CHINESE_TABLE+=from/_UAO241
+TODO_CODECS_CHINESE_TABLE+=inter/CHEWING
+TODO_CODECS_CHINESE_TABLE+=inter/CNS11643
+TODO_CODECS_CHINESE_TABLE+=inter/HAN_PINYIN
+TODO_CODECS_CHINESE_TABLE+=inter/UNICODE
+TODO_CODECS_CHINESE_TABLE+=inter/ZH_COMP
+TODO_CODECS_CHINESE_TABLE+=inter/ZH_DECOMP
+TODO_CODECS_CHINESE_TABLE+=to/CCCII
+TODO_CODECS_CHINESE_TABLE+=to/_CNS11643
+TODO_CODECS_CHINESE_TABLE+=to/_GB2312
+TODO_CODECS_CHINESE_TABLE+=to/_UAO241
 
 TODO_CODECS_BASIC_CALLBACK=
 TODO_CODECS_BASIC_CALLBACK+=from/3F
@@ -190,9 +190,9 @@ TODO_CODECS_BASIC_CALLBACK+=to/UTF-32LE
 TODO_CODECS_BASIC_CALLBACK+=to/_GB18030
 TODO_CODECS_BASIC_CALLBACK+=to/_UTF-8
 
-TODO_CODECS_EXTRA_CALLBACK=
-TODO_CODECS_EXTRA_CALLBACK+=from/_CNS11643
-TODO_CODECS_EXTRA_CALLBACK+=to/_CNS11643
+TODO_CODECS_CHINESE_CALLBACK=
+TODO_CODECS_CHINESE_CALLBACK+=from/_CNS11643
+TODO_CODECS_CHINESE_CALLBACK+=to/_CNS11643
 
 all: libbsdconv bsdconv_mktable meta bsdconv_completion bsdconv codecs
 
@@ -244,19 +244,19 @@ codecs_basic_callback: builddir libbsdconv
 		$(CC) ${CFLAGS} codecs/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; \
 	done
 
-codecs_extra_table: builddir bsdconv_mktable
-	for item in ${TODO_CODECS_EXTRA_TABLE} ; do \
+codecs_chinese_table: builddir bsdconv_mktable
+	for item in ${TODO_CODECS_CHINESE_TABLE} ; do \
 		./build/bin/bsdconv_mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
 	done
 
-codecs_extra_callback: builddir libbsdconv
-	for item in ${TODO_CODECS_EXTRA_CALLBACK} ; do \
+codecs_chinese_callback: builddir libbsdconv
+	for item in ${TODO_CODECS_CHINESE_CALLBACK} ; do \
 		$(CC) ${CFLAGS} codecs/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; \
 	done
 
-codecs: codecs_basic codecs_extra
+codecs: codecs_basic codecs_chinese
 codecs_basic: codecs_basic_table codecs_basic_callback
-codecs_extra: codecs_extra_table codecs_extra_callback
+codecs_chinese: codecs_chinese_table codecs_chinese_callback
 
 meta: libbsdconv
 	if [ ${SHLIBNAME} != libbsdconv.so ]; then \
@@ -270,7 +270,7 @@ meta: libbsdconv
 clean:
 	rm -rf build
 
-install: installdir install_main install_basic install_extra
+install: installdir install_main install_basic install_chinese
 
 install_main:
 	install -m 555 build/bin/bsdconv ${PREFIX}/bin
@@ -293,11 +293,11 @@ install_basic:
 		install -m 444 build/share/bsdconv/$${item}.so ${PREFIX}/share/bsdconv/$${item}.so ; \
 	done
 
-install_extra:
-	for item in ${TODO_CODECS_EXTRA_TABLE} ; do \
+install_chinese:
+	for item in ${TODO_CODECS_CHINESE_TABLE} ; do \
 		install -m 444 build/share/bsdconv/$${item} ${PREFIX}/share/bsdconv/$${item} ; \
 	done
-	for item in ${TODO_CODECS_EXTRA_CALLBACK} ; do \
+	for item in ${TODO_CODECS_CHINESE_CALLBACK} ; do \
 		install -m 444 build/share/bsdconv/$${item}.so ${PREFIX}/share/bsdconv/$${item}.so ; \
 	done
 
@@ -316,11 +316,11 @@ plist:
 	@for item in ${TODO_CODECS_BASIC_CALLBACK} ; do \
 		echo %%DATADIR%%/$${item}.so ; \
 	done
-	@for item in ${TODO_CODECS_EXTRA_TABLE} ; do \
-		echo %%EXTRA%%%%DATADIR%%/$${item} ; \
+	@for item in ${TODO_CODECS_CHINESE_TABLE} ; do \
+		echo %%CHINESE%%%%DATADIR%%/$${item} ; \
 	done
-	@for item in ${TODO_CODECS_EXTRA_CALLBACK} ; do \
-		echo %%EXTRA%%%%DATADIR%%/$${item}.so ; \
+	@for item in ${TODO_CODECS_CHINESE_CALLBACK} ; do \
+		echo %%CHINESE%%%%DATADIR%%/$${item}.so ; \
 	done
 	@echo @dirrmtry %%DATADIR%%/to
 	@echo @dirrmtry %%DATADIR%%/inter
