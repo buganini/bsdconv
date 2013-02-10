@@ -231,8 +231,8 @@ bsdconv_mktable: builddir src/bsdconv.h src/bsdconv_mktable.c
 bsdconv_completion: builddir libbsdconv src/bsdconv.h src/bsdconv_completion.c
 	$(CC) ${CFLAGS} src/bsdconv_completion.c -L./build/lib -o build/bin/bsdconv_completion -lbsdconv ${LIBS}
 
-bsdconv_dbg: builddir src/libbsdconv.c src/bsdconv.h src/bsdconv_dbg.c
-	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv_dbg.c -o build/bin/bsdconv_dbg
+bsdconv_dbg: builddir libbsdconv src/libbsdconv.c src/bsdconv.h src/bsdconv_dbg.c
+	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv_dbg.c -o build/bin/bsdconv_dbg ${LIBS}
 
 codecs_basic_table: builddir bsdconv_mktable
 	for item in ${TODO_CODECS_BASIC_TABLE} ; do \
