@@ -62,8 +62,10 @@ int main(int argc, char *argv[]){
 	}
 
 	cd.desc=argv[2];
-	loadcodec(&cd, type);
-
+	if(!loadcodec(&cd, type)){
+		fprintf(stderr, "Failed opening codec %s.\n", argv[2]);
+		exit(0);
+	}
 
 	struct state_rt state;
 	offset_t offset;
