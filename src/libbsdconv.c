@@ -911,7 +911,6 @@ void bsdconv(struct bsdconv_instance *ins){
 
 								ins->phase_index+=1;
 								goto phase_begin;
-
 							case SUBMATCH:
 								this_phase->match=1;
 								this_phase->match_data=this_phase->state.data;
@@ -976,7 +975,7 @@ void bsdconv(struct bsdconv_instance *ins){
 		case INTER:
 			while(this_phase->curr->next){
 				this_phase->curr=this_phase->curr->next;
-				this_phase->state.status=DUMMY;
+				this_phase->state.status=NOMATCH;
 				for(this_phase->i=0;this_phase->i<this_phase->curr->len;this_phase->i+=1){
 					c=UCP(this_phase->curr->data)[this_phase->i];
 					if(c>=this_phase->state.beg && c<this_phase->state.end)
@@ -995,7 +994,7 @@ void bsdconv(struct bsdconv_instance *ins){
 				}
 				inter_x:
 				switch(this_phase->state.status){
-					case DUMMY:
+					case NOMATCH:
 						ins->phase_index+=1;
 						goto phase_begin;
 					case DEADEND:
@@ -1102,7 +1101,7 @@ void bsdconv(struct bsdconv_instance *ins){
 		case TO:
 			while(this_phase->curr->next){
 				this_phase->curr=this_phase->curr->next;
-				this_phase->state.status=DUMMY;
+				this_phase->state.status=NOMATCH;
 				for(this_phase->i=0;this_phase->i<this_phase->curr->len;this_phase->i+=1){
 					c=UCP(this_phase->curr->data)[this_phase->i];
 					if(c>=this_phase->state.beg && c<this_phase->state.end)
@@ -1121,7 +1120,7 @@ void bsdconv(struct bsdconv_instance *ins){
 				}
 				to_x:
 				switch(this_phase->state.status){
-					case DUMMY:
+					case NOMATCH:
 						continue;
 					case DEADEND:
 						to_deadend:

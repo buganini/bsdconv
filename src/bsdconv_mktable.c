@@ -153,7 +153,7 @@ uintptr_t hash_callback(int *p, uintptr_t l){
 		hash_q=hash_q->sub[p[i]];
 	}
 	if(hash_q->v==0){
-		state_t->n=state_new(DUMMY);
+		state_t->n=state_new(NOMATCH);
 		state_t=state_t->n;
 		state_t->beg=0;
 		state_t->end=256+1;
@@ -312,7 +312,7 @@ int main(int argc, char *argv[]){
 					if(todo_item->state->base[c]){
 						if(todo_item->state->base[c]->status==MATCH){
 							todo_item->state->base[c]->status=SUBMATCH;
-						}else if(todo_item->state->base[c]->status==DUMMY){
+						}else if(todo_item->state->base[c]->status==NOMATCH){
 							todo_item->state->base[c]=state_t->n=state_new(SUBROUTINE);
 							state_t=state_t->n;
 						}
@@ -383,7 +383,7 @@ int main(int argc, char *argv[]){
 //									printf("Duplicated key: %s dropping data: %s\n", of, ot);
 									continue;
 								}else{
-									if(todo_item->state->base[c]->status==DUMMY){
+									if(todo_item->state->base[c]->status==NOMATCH){
 										todo_item->state->base[c]=state_t->n=state_new(MATCH);
 										state_t=state_t->n;
 									}else if(todo_item->state->base[c]->status==CONTINUE || todo_item->state->base[c]->status==SUBROUTINE){
@@ -510,7 +510,7 @@ int main(int argc, char *argv[]){
 			dstate.data=(struct data_st *)(uintptr_t)hash_p->offset;
 		else
 			dstate.data=NULL;
-		if(state_t->status==DUMMY){
+		if(state_t->status==NOMATCH){
 			state_t->status=SUBROUTINE;
 		}
 		if(state_t->status==SUBROUTINE){
