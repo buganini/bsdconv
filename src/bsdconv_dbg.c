@@ -20,7 +20,7 @@ void print_state(struct state_rt *state){
 		case SUBROUTINE: s="SUBROUTINE"; break;
 		case NEXTPHASE: s="NEXTPHASE"; break;
 		case PASSTHRU: s="PASSTHRU"; break;
-		case DUMMY: s="DUMMY"; break;
+		case NOMATCH: s="NOMATCH"; break;
 		case NOOP: s="NOOP"; break;
 	}
 	printf("State: %s\n", s);
