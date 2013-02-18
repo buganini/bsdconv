@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 Kuan-Chung Chiu <buganini@gmail.com>
+ * Copyright (c) 2009-2013 Kuan-Chung Chiu <buganini@gmail.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -96,6 +96,8 @@ uintptr_t hash(int *p, uintptr_t l){
 	int i;
 	struct hash *hash_p=datalist_hash;
 	struct hash *hash_q=data_hash;
+	if(l==0)
+		return 0;
 	for(i=l-1;i>=0;--i){
 		if(hash_p->sub==NULL)
 			hash_p->sub=calloc(257, sizeof(struct hash *));
@@ -135,10 +137,9 @@ struct hash *callback_hash;
 
 uintptr_t hash_callback(int *p, uintptr_t l){
 	int i;
-	struct hash *hash_p=datalist_hash;
 	struct hash *hash_q=callback_hash;
+	struct m_state_st *state;
 	for(i=l-1;i>=0;--i){
-		hash_p=hash_p->sub[p[i]];
 		if(hash_q->sub==NULL)
 			hash_q->sub=calloc(257, sizeof(struct hash *));
 		if(hash_q->sub[p[i]]==NULL){
@@ -152,8 +153,21 @@ uintptr_t hash_callback(int *p, uintptr_t l){
 		}
 		hash_q=hash_q->sub[p[i]];
 	}
+	if(hash_q->v!=0){
+		state=(void *)hash_q->v;
+		for(i=0;i<=256;++i){
+			if(state->base[i]!=state){
+				hash_q->v=0;
+				break;
+			}
+		}
+		if(state->status!=SUBROUTINE || state->data!=0){
+			hash_q->v=0;
+		}
+		
+	}
 	if(hash_q->v==0){
-		state_t->n=state_new(NOMATCH);
+		state_t->n=state_new(SUBROUTINE);
 		state_t=state_t->n;
 		state_t->beg=0;
 		state_t->end=256+1;
@@ -172,7 +186,7 @@ int main(int argc, char *argv[]){
 	char inbuf[1024], *f, *t, *tmp, *of, *ot;
 	int dat[1024];
 	offset_t sub[257];
-	uintptr_t l,ret,callback_state=0;
+	uintptr_t l;
 	struct m_data_st *data_r=NULL, *data_p=NULL, *data_q=NULL, *data_t=NULL;
 	struct states *todo=NULL, *newtodo, *newtodo_tail, *todo_item;
 	struct state_st dstate;
@@ -310,32 +324,26 @@ int main(int argc, char *argv[]){
 					if(todo_item->state->base==NULL)
 						todo_item->state->base=calloc(257, sizeof(struct m_state_st *));
 					if(todo_item->state->base[c]){
-						if(todo_item->state->base[c]->status==MATCH){
-							todo_item->state->base[c]->status=SUBMATCH;
-						}else if(todo_item->state->base[c]->status==NOMATCH){
-							todo_item->state->base[c]=state_t->n=state_new(SUBROUTINE);
+						if(todo_item->state->base[c]==todo_item->state){
+							todo_item->state->status=SUBMATCH_SUBROUTINE;
+							state_t->n=todo_item->state->base[c]=state_new(CONTINUE);
 							state_t=state_t->n;
+						}else if(todo_item->state->base[c]->status==MATCH){
+							todo_item->state->base[c]->status=SUBMATCH;
 						}
-						newtodo_tail->n=malloc(sizeof(struct states));
-						newtodo_tail=newtodo_tail->n;
-						newtodo_tail->state=todo_item->state->base[c];
-						newtodo_tail->lower_bound=cl;
-						newtodo_tail->upper_bound=cu;
-						newtodo_tail->level=todo_item->level+level;
-						newtodo_tail->n=NULL;
 					}else{
 						//printf("%u[%X]=%u\n", todo_item->state, c, offset);
+
 						state_t->n=todo_item->state->base[c]=state_new(CONTINUE);
 						state_t=state_t->n;
-
-						newtodo_tail->n=malloc(sizeof(struct states));
-						newtodo_tail=newtodo_tail->n;
-						newtodo_tail->n=NULL;
-						newtodo_tail->state=todo_item->state->base[c];
-						newtodo_tail->lower_bound=cl;
-						newtodo_tail->upper_bound=cu;
-						newtodo_tail->level=todo_item->level+level;
 					}
+					newtodo_tail->n=malloc(sizeof(struct states));
+					newtodo_tail=newtodo_tail->n;
+					newtodo_tail->state=todo_item->state->base[c];
+					newtodo_tail->lower_bound=cl;
+					newtodo_tail->upper_bound=cu;
+					newtodo_tail->level=todo_item->level+level;
+					newtodo_tail->n=NULL;
 				}
 				todo=todo->n;
 				free(todo_item);
@@ -357,9 +365,6 @@ int main(int argc, char *argv[]){
 		}
 		while(1){
 			if(*t==0){
-				ret=hash(dat,l);
-				if(callback)
-					callback_state=hash_callback(dat, l);
 				if(k){
 					k=0;
 					while(todo){
@@ -378,31 +383,25 @@ int main(int argc, char *argv[]){
 								todo_item->state->end=c+1;
 							if(todo_item->state->base==NULL)
 								todo_item->state->base=calloc(257, sizeof(struct m_state_st *));
+							if(todo_item->state->base[c]==todo_item->state){
+								todo_item->state->base[c]=0;
+							}
 							if(todo_item->state->base[c]){
-								if((todo_item->state->base[c]->status==MATCH || todo_item->state->base[c]->status==SUBMATCH) && (level+todo_item->level) <= todo_item->state->base[c]->level){
+								if((todo_item->state->base[c]->status==MATCH || todo_item->state->base[c]->status==SUBMATCH || ((todo_item->state->base[c]->status==SUBROUTINE || todo_item->state->base[c]->status==SUBMATCH_SUBROUTINE) && callback)) && (level+todo_item->level) <= todo_item->state->base[c]->level){
 //									printf("Duplicated key: %s dropping data: %s\n", of, ot);
 									continue;
-								}else{
-									if(todo_item->state->base[c]->status==NOMATCH){
-										todo_item->state->base[c]=state_t->n=state_new(MATCH);
-										state_t=state_t->n;
-									}else if(todo_item->state->base[c]->status==CONTINUE || todo_item->state->base[c]->status==SUBROUTINE){
-										todo_item->state->base[c]->status=SUBMATCH;
-									}else{
-										todo_item->state->base[c]->status=MATCH;
-									}
+								}else if(todo_item->state->base[c]->status==CONTINUE){
+									todo_item->state->base[c]->status=SUBMATCH;
+								}else if(!callback){
+									todo_item->state->base[c]->status=MATCH;
 								}
 							}else if(callback){
-								todo_item->state->base[c]=(struct m_state_st *) callback_state;
+								todo_item->state->base[c]=(struct m_state_st *) hash_callback(dat, l);
 							}else{
 								todo_item->state->base[c]=state_t->n=state_new(MATCH);
 								state_t=state_t->n;
 							}
-							if(l){
-								todo_item->state->base[c]->data=(struct m_data_st *)ret;
-							}else{
-								todo_item->state->base[c]->data=0;
-							}
+							todo_item->state->base[c]->data=(struct m_data_st *)hash(dat,l);
 							todo_item->state->base[c]->level=level+todo_item->level;
 						}
 						todo=todo->n;
@@ -544,6 +543,11 @@ int main(int argc, char *argv[]){
 		fwrite((void *)&dstate, sizeof(struct state_st), 1, fp);
 		if(state_t->base)
 			free(state_t->base);
+		state_t=state_t->n;
+	}
+
+	state_t=state_r;
+	while(state_t){
 		tofree=state_t;
 		state_t=state_t->n;
 		FFREE(tofree);

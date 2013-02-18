@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 Kuan-Chung Chiu <buganini@gmail.com>
+ * Copyright (c) 2009-2013 Kuan-Chung Chiu <buganini@gmail.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -921,6 +921,7 @@ void bsdconv(struct bsdconv_instance *ins){
 								this_phase->pend=1;
 								break;
 							case SUBROUTINE:
+							case SUBMATCH_SUBROUTINE:
 								this_phase->codec[this_phase->index].cbconv(ins);
 								goto from_x;
 							case NEXTPHASE:
@@ -988,6 +989,7 @@ void bsdconv(struct bsdconv_instance *ins){
 							goto inter_deadend;
 							break;
 						case SUBROUTINE:
+						case SUBMATCH_SUBROUTINE:
 							goto inter_callback;
 							break;
 					}
@@ -1069,6 +1071,7 @@ void bsdconv(struct bsdconv_instance *ins){
 						this_phase->pend=1;
 						break;
 					case SUBROUTINE:
+					case SUBMATCH_SUBROUTINE:
 						inter_callback:
 						this_phase->codec[this_phase->index].cbconv(ins);
 						goto inter_x;
@@ -1114,6 +1117,7 @@ void bsdconv(struct bsdconv_instance *ins){
 							goto to_deadend;
 							break;
 						case SUBROUTINE:
+						case SUBMATCH_SUBROUTINE:
 							this_phase->data_head->len=1;
 							break;
 					}
@@ -1192,6 +1196,7 @@ void bsdconv(struct bsdconv_instance *ins){
 						this_phase->pend=1;
 						break;
 					case SUBROUTINE:
+					case SUBMATCH_SUBROUTINE:
 						to_callback:
 						this_phase->data_head->len=0;
 						this_phase->codec[this_phase->index].cbconv(ins);
