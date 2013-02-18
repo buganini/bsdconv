@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2011-2013 Kuan-Chung Chiu <buganini@gmail.com>
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF MIND, USE, DATA OR PROFITS, WHETHER
+ * IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
+ * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include "bsdconv.h"
@@ -18,12 +34,13 @@ void print_state(struct state_rt *state){
 		case MATCH: s="MATCH"; break;
 		case SUBMATCH: s="SUBMATCH"; break;
 		case SUBROUTINE: s="SUBROUTINE"; break;
+		case SUBMATCH_SUBROUTINE: s="SUBMATCH_SUBROUTINE"; break;
 		case NEXTPHASE: s="NEXTPHASE"; break;
 		case PASSTHRU: s="PASSTHRU"; break;
 		case NOMATCH: s="NOMATCH"; break;
 		case NOOP: s="NOOP"; break;
 	}
-	printf("State: %s\n", s);
+	printf("State: %s @ %p\n", s, state);
 	printf("Data:");
 	print_data((uintptr_t)state->data);
 }
