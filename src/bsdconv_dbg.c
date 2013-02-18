@@ -40,7 +40,7 @@ void print_state(struct state_rt *state){
 		case NOMATCH: s="NOMATCH"; break;
 		case NOOP: s="NOOP"; break;
 	}
-	printf("State: %s @ %p\n", s, state);
+	printf("State: %s\n", s);
 	printf("Data:");
 	print_data((uintptr_t)state->data);
 }
@@ -85,13 +85,13 @@ int main(int argc, char *argv[]){
 	}
 
 	struct state_rt state;
-	offset_t offset;
+	offset_t offset=0;
 	char op[16];
 	unsigned char c;
 	uintptr_t val;
 	memcpy(&state, cd.z, sizeof(struct state_rt));
 	while(!feof(stdin)){
-		printf("bsdconv_dbg> ");
+		printf("bsdconv_dbg@%x> ", offset);
 		scanf("%s %p", op, (void **) &val);
 		if(strcmp(op, "input")==0){
 			c=val;
