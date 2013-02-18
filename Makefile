@@ -138,6 +138,14 @@ TODO_CODECS_CHINESE_TABLE+=to/_CNS11643
 TODO_CODECS_CHINESE_TABLE+=to/_GB2312
 TODO_CODECS_CHINESE_TABLE+=to/_UAO241
 
+TODO_CODECS_EBCDIC_TABLE=
+TODO_CODECS_EBCDIC_TABLE+=from/IBM-37
+TODO_CODECS_EBCDIC_TABLE+=from/IBM-930
+TODO_CODECS_EBCDIC_TABLE+=from/IBM-933
+TODO_CODECS_EBCDIC_TABLE+=from/IBM-935
+TODO_CODECS_EBCDIC_TABLE+=from/IBM-937
+TODO_CODECS_EBCDIC_TABLE+=from/IBM-939
+
 TODO_CODECS_BASIC_CALLBACK=
 TODO_CODECS_BASIC_CALLBACK+=from/3F
 TODO_CODECS_BASIC_CALLBACK+=from/ANSI-CONTROL
@@ -193,6 +201,13 @@ TODO_CODECS_BASIC_CALLBACK+=to/_UTF-8
 TODO_CODECS_CHINESE_CALLBACK=
 TODO_CODECS_CHINESE_CALLBACK+=from/_CNS11643
 TODO_CODECS_CHINESE_CALLBACK+=to/_CNS11643
+
+TODO_CODECS_EBCDIC_CALLBACK=
+TODO_CODECS_EBCDIC_CALLBACK+=from/IBM-930
+TODO_CODECS_EBCDIC_CALLBACK+=from/IBM-933
+TODO_CODECS_EBCDIC_CALLBACK+=from/IBM-935
+TODO_CODECS_EBCDIC_CALLBACK+=from/IBM-937
+TODO_CODECS_EBCDIC_CALLBACK+=from/IBM-939
 
 all: libbsdconv bsdconv_mktable meta bsdconv_completion bsdconv codecs
 
@@ -254,9 +269,20 @@ codecs_chinese_callback: builddir libbsdconv
 		$(CC) ${CFLAGS} codecs/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; \
 	done
 
-codecs: codecs_basic codecs_chinese
+codecs_ebcdic_table: builddir bsdconv_mktable
+	for item in ${TODO_CODECS_EBCDIC_TABLE} ; do \
+		./build/bin/bsdconv_mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
+	done
+
+codecs_ebcdic_callback: builddir libbsdconv
+	for item in ${TODO_CODECS_EBCDIC_CALLBACK} ; do \
+		$(CC) ${CFLAGS} codecs/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; \
+	done
+
+codecs: codecs_basic codecs_chinese codecs_ebcdic
 codecs_basic: codecs_basic_table codecs_basic_callback
 codecs_chinese: codecs_chinese_table codecs_chinese_callback
+codecs_ebcdic: codecs_ebcdic_table codecs_ebcdic_callback
 
 meta: libbsdconv
 	if [ ${SHLIBNAME} != libbsdconv.so ]; then \
@@ -270,7 +296,7 @@ meta: libbsdconv
 clean:
 	rm -rf build
 
-install: installdir install_main install_basic install_chinese
+install: installdir install_main install_basic install_chinese install_ebcdic
 
 install_main:
 	install -m 555 build/bin/bsdconv ${PREFIX}/bin
@@ -301,6 +327,14 @@ install_chinese:
 		install -m 444 build/share/bsdconv/$${item}.so ${PREFIX}/share/bsdconv/$${item}.so ; \
 	done
 
+install_ebcdic:
+	for item in ${TODO_CODECS_EBCDIC_TABLE} ; do \
+		install -m 444 build/share/bsdconv/$${item} ${PREFIX}/share/bsdconv/$${item} ; \
+	done
+	for item in ${TODO_CODECS_EBCDIC_CALLBACK} ; do \
+		install -m 444 build/share/bsdconv/$${item}.so ${PREFIX}/share/bsdconv/$${item}.so ; \
+	done
+
 plist:
 	@echo bin/bsdconv
 	@echo bin/bsdconv_mktable
@@ -321,6 +355,12 @@ plist:
 	done
 	@for item in ${TODO_CODECS_CHINESE_CALLBACK} ; do \
 		echo %%CHINESE%%%%DATADIR%%/$${item}.so ; \
+	done
+	@for item in ${TODO_CODECS_EBCDIC_TABLE} ; do \
+		echo %%EBCDIC%%%%DATADIR%%/$${item} ; \
+	done
+	@for item in ${TODO_CODECS_EBCDIC_CALLBACK} ; do \
+		echo %%EBCDIC%%%%DATADIR%%/$${item}.so ; \
 	done
 	@echo @dirrmtry %%DATADIR%%/to
 	@echo @dirrmtry %%DATADIR%%/inter
