@@ -391,7 +391,16 @@ int main(int argc, char *argv[]){
 //									printf("Duplicated key: %s dropping data: %s\n", of, ot);
 									continue;
 								}else if(todo_item->state->base[c]->status==CONTINUE){
-									todo_item->state->base[c]->status=SUBMATCH;
+									if(callback){
+										todo_item->state->base[c]->status=SUBMATCH_SUBROUTINE;
+										if(todo_item->state->base[c]->base==NULL)
+											todo_item->state->base[c]->base=calloc(257, sizeof(struct m_state_st *));
+										for(i=0;i<=256;++i)
+											if(todo_item->state->base[c]->base[i]==0)
+												todo_item->state->base[c]->base[i]=todo_item->state->base[c];
+									}else{
+										todo_item->state->base[c]->status=SUBMATCH;
+									}
 								}else if(!callback){
 									todo_item->state->base[c]->status=MATCH;
 								}
@@ -509,18 +518,6 @@ int main(int argc, char *argv[]){
 			dstate.data=(struct data_st *)(uintptr_t)hash_p->offset;
 		else
 			dstate.data=NULL;
-		if(state_t->status==NOMATCH){
-			state_t->status=SUBROUTINE;
-		}
-		if(state_t->status==SUBROUTINE){
-			state_t->beg=0;
-			state_t->end=256+1;
-			if(state_t->base==NULL)
-				state_t->base=calloc(257, sizeof(struct m_state_st *));
-			for(i=0;i<=256;++i)
-				if(state_t->base[i]==0)
-					state_t->base[i]=state_t;
-		}
 		dstate.status=state_t->status;
 		dstate.beg=state_t->beg;
 		dstate.end=state_t->end;
