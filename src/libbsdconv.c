@@ -1091,6 +1091,9 @@ void bsdconv(struct bsdconv_instance *ins){
 					case CONTINUE:
 						this_phase->pend=1;
 						break;
+					case NOOP:
+						goto phase_begin;
+
 				}
 				if(256<this_phase->state.end)
 					memcpy(&offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (256 - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
@@ -1244,6 +1247,8 @@ void bsdconv(struct bsdconv_instance *ins){
 					case CONTINUE:
 						this_phase->pend=1;
 						break;
+					case NOOP:
+						goto phase_begin;
 				}
 				if(256<this_phase->state.end)
 					memcpy(&offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (256 - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
