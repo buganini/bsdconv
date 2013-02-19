@@ -1,4 +1,4 @@
-10.0:
+9.1:
 	bash completion script (buggy)
 	extend from/ESCAPE to support \uUUUU \xXX \OOO
 	add bsdconv -l
@@ -6,7 +6,7 @@
 	use system-provided PATH_MAX (thanks to PkmX)
 	sync data from project chvar
 	add support for EBCDIC decoding: 37, 930, 933, 935, 937, 939
-	add new state status: SUBMATCH_SUBROUTINE, API changed
+	add new state status: SUBMATCH_SUBROUTINE
 
 9.0:
 	fix for MinGW
