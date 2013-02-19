@@ -1,3 +1,4 @@
+# Source: http://www.opensource.apple.com/source/ICU/ICU-491.11.1/icuSources/data/mappings/ibm-37_P100-1995.ucm?txt
 01	0101
 02	0102
 03	0103
