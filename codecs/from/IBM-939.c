@@ -17,11 +17,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../../src/bsdconv.h"
-#ifdef WIN32
-#include <winsock2.h>
-#else
-#include <netinet/in.h>
-#endif
 
 struct my_s{
 	int status;
