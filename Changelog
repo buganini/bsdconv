@@ -5,7 +5,7 @@
 	chown/chmod for created file
 	use system-provided PATH_MAX (thanks to PkmX)
 	sync data from project chvar
-	add support for EBCDIC decoding: 37, 930, 933, 935, 937, 939
+	add EBCDIC codecs: 37, 930, 933, 935, 937, 939
 	add new state status: SUBMATCH_SUBROUTINE
 
 9.0:
