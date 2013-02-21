@@ -37,7 +37,7 @@ void cbcreate(struct bsdconv_instance *ins){
 		strcpy(buf,getenv("HOME"));
 		strcat(buf,"/.bsdconv.score");
 		p=buf;
-		r->bak=r->score=fopen(p,"r+");
+		r->bak=r->score=fopen(p,"rb+");
 		//if default score file is not available, it will fallback to builtin score table
 	}
 	CURRENT_CODEC(ins)->priv=r;

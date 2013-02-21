@@ -121,7 +121,7 @@ int main(int argc, char *argv[]){
 		bsdconv_file(ins, stdin, stdout, NULL);
 	}else for(;i<argc;++i){
 		if(inplace){
-			inf=fopen(argv[i],"r");
+			inf=fopen(argv[i],"rb");
 			if(inf==NULL){
 				fprintf(stderr, "Failed opening file %s.\n", argv[i]);
 				bsdconv_destroy(ins);
@@ -136,7 +136,7 @@ int main(int argc, char *argv[]){
 				bsdconv_destroy(ins);
 				exit(1);
 			}
-			otf=fdopen(fd,"w");
+			otf=fdopen(fd,"wb");
 			if(!otf){
 				fprintf(stderr, "Unable to open output file %s\n", argv[i]);
 				bsdconv_destroy(ins);
@@ -156,7 +156,7 @@ int main(int argc, char *argv[]){
 			free(tmp);
 
 		}else{
-			inf=fopen(argv[i],"r");
+			inf=fopen(argv[i],"rb");
 			if(inf==NULL){
 				fprintf(stderr, "Failed opening file %s.\n", argv[i]);
 				bsdconv_destroy(ins);

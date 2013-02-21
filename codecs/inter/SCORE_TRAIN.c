@@ -42,7 +42,7 @@ void cbcreate(struct bsdconv_instance *ins){
 	}
 	r->bak=fopen(p,"a"); //ensure file existence
 	fclose(r->bak);
-	r->bak=r->score=fopen(p,"r+");
+	r->bak=r->score=fopen(p,"rb+");
 	r->list=NULL;
 	CURRENT_CODEC(ins)->priv=r;
 	
