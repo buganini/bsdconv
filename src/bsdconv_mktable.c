@@ -155,13 +155,7 @@ uintptr_t hash_callback(int *p, uintptr_t l){
 	}
 	if(hash_q->v!=0){
 		state=(void *)hash_q->v;
-		for(i=0;i<=256;++i){
-			if(state->base[i]!=state){
-				hash_q->v=0;
-				break;
-			}
-		}
-		if(state->status!=SUBROUTINE || state->data!=0){
+		if(state->status!=SUBROUTINE || state->data!=0 || state->beg!=0 || state->end!=~0 || state->base[i]){
 			hash_q->v=0;
 		}
 		
@@ -169,12 +163,6 @@ uintptr_t hash_callback(int *p, uintptr_t l){
 	if(hash_q->v==0){
 		state_t->n=state_new(SUBROUTINE);
 		state_t=state_t->n;
-		state_t->beg=0;
-		state_t->end=256+1;
-		state_t->base=calloc(257, sizeof(struct m_state_st *));
-		for(i=0;i<=256;++i){
-			state_t->base[i]=state_t;
-		}
 		hash_q->v=(uintptr_t) state_t;
 	}
 	return hash_q->v;
@@ -324,10 +312,8 @@ int main(int argc, char *argv[]){
 					if(todo_item->state->base==NULL)
 						todo_item->state->base=calloc(257, sizeof(struct m_state_st *));
 					if(todo_item->state->base[c]){
-						if(todo_item->state->base[c]==todo_item->state){
-							todo_item->state->status=SUBMATCH_SUBROUTINE;
-							state_t->n=todo_item->state->base[c]=state_new(CONTINUE);
-							state_t=state_t->n;
+						if(todo_item->state->base[c]->status==SUBROUTINE){
+							todo_item->state->base[c]->status=SUBMATCH_SUBROUTINE;
 						}else if(todo_item->state->base[c]->status==MATCH){
 							todo_item->state->base[c]->status=SUBMATCH;
 						}
@@ -393,11 +379,6 @@ int main(int argc, char *argv[]){
 								}else if(todo_item->state->base[c]->status==CONTINUE){
 									if(callback){
 										todo_item->state->base[c]->status=SUBMATCH_SUBROUTINE;
-										if(todo_item->state->base[c]->base==NULL)
-											todo_item->state->base[c]->base=calloc(257, sizeof(struct m_state_st *));
-										for(i=0;i<=256;++i)
-											if(todo_item->state->base[c]->base[i]==0)
-												todo_item->state->base[c]->base[i]=todo_item->state->base[c];
 									}else{
 										todo_item->state->base[c]->status=SUBMATCH;
 									}
@@ -518,6 +499,15 @@ int main(int argc, char *argv[]){
 			dstate.data=(struct data_st *)(uintptr_t)hash_p->offset;
 		else
 			dstate.data=NULL;
+		if(state_t->status==SUBROUTINE || state_t->status==SUBMATCH_SUBROUTINE){
+			state_t->beg=0;
+			state_t->end=256+1;
+			if(state_t->base==NULL)
+				state_t->base=calloc(257, sizeof(struct m_state_st *));
+			for(i=0;i<=256;++i)
+				if(state_t->base[i]==0)
+					state_t->base[i]=state_t;
+		}
 		dstate.status=state_t->status;
 		dstate.beg=state_t->beg;
 		dstate.end=state_t->end;
