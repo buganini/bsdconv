@@ -327,7 +327,7 @@ void bsdconv_init(struct bsdconv_instance *ins){
 
 int bsdconv_get_phase_index(struct bsdconv_instance *ins, int phasen){
 	/*
-	 * phase[0] is a place holder for INPUT
+	 * phase[0] is a place holder for _INPUT
 	 * real phases range is [1,len]=[1,phasen]
 	 */
 	/* logical new index = len */
@@ -601,7 +601,7 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 		ins->phase[i-f].type=FROM;
 		ins->phase[i-1].type=TO;
 	}
-	ins->phase[0].type=INPUT;
+	ins->phase[0].type=_INPUT;
 
 	for(i=1;i<=ins->phasen;++i){
 		if(*opipe[i]){

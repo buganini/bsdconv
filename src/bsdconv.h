@@ -35,7 +35,7 @@ extern "C" {
 typedef uint32_t offset_t;
 
 enum bsdconv_phase_type {
-	INPUT,
+	_INPUT,
 	FROM,
 	INTER,
 	TO
