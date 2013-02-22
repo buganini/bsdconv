@@ -21,6 +21,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#else
+#include <fcntl.h>
 #endif
 #include "bsdconv.h"
 

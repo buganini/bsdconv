@@ -1,9 +1,10 @@
+#ifdef WIN32
+
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#ifdef WIN32
 char * strsep(char **stringp, const char *delim){
 	char *r=*stringp;
 	if(!**stringp) return NULL;
