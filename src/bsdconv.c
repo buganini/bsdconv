@@ -109,6 +109,12 @@ int main(int argc, char *argv[]){
 		i+=1;
 	}
 
+	
+#ifdef WIN32
+	setmode(STDIN_FILENO, O_BINARY);
+	setmode(STDOUT_FILENO, O_BINARY);
+#endif
+
 	ins=bsdconv_create(argv[1]);
 	if(!ins){
 		t=bsdconv_error();
