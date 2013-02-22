@@ -135,6 +135,13 @@ to/3F
 	> echo -n test測試test |bsdconv utf-8:ascii,3f
 	test??test
 
+from/SUB
+	#error counter is increased
+	echo 陶喆測試|bsdconv utf-8:uao250|bsdconv cp950,3f:utf-8
+	陶?穘?試
+	echo 陶喆測試|bsdconv utf-8:uao250|bsdconv cp950,sub:utf-8
+	陶�穘�試
+
 from/ANSI-CONTROL
 	#used in https://github.com/buganini/bug5
 	#used with inter/BIG5-DEFRAG
