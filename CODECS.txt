@@ -102,6 +102,20 @@ from/_UTF-8
 to/_UTF-8
 	#ascii is excluded, use same name without '_' prefixed to get ascii involved
 
+from/IBM-37
+from/IBM-930
+from/IBM-933
+from/IBM-935
+from/IBM-937
+from/IBM-939
+to/IBM-37
+to/IBM-930
+to/IBM-933
+to/IBM-935
+to/IBM-937
+to/IBM-939
+	#EBCDIC codecs
+
 from/_CNS11643
 to/_CNS11643
 	#http://www.cns11643.gov.tw
