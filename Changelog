@@ -8,6 +8,7 @@
 	add EBCDIC codecs: 37, 930, 933, 935, 937, 939
 	add new state status: SUBMATCH_SUBROUTINE
 	fix line separator issue on windows (thanks to roytam1)
+	improve bsdconv_mktable, significantly reduce some output file size
 
 9.0:
 	fix for MinGW
