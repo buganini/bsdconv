@@ -5,7 +5,7 @@
 	chown/chmod for created file
 	use system-provided PATH_MAX (thanks to PkmX)
 	sync data from project chvar
-	add EBCDIC codecs: 37, 930, 933, 935, 937, 939
+	add EBCDIC codecs: 37, 930, 933, 935, 937, 939 (as roytam1's request)
 	add new state status: SUBMATCH_SUBROUTINE
 	fix line separator issue on windows (thanks to roytam1)
 	improve bsdconv_mktable, significantly reduce some output file size
@@ -13,7 +13,7 @@
 9.0:
 	fix for MinGW
 	export bsdconv_malloc/bsdconv_free
-	add {from,to}/CCCII
+	add {from,to}/CCCII (as Thomas-Tsai's request)
 	add inter/ZH-STRINGS
 	internal API changes for use of bsdconv_ctl in wrappers
 	bugfixes
