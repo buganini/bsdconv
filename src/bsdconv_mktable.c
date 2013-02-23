@@ -27,6 +27,12 @@
 #include <errno.h>
 #endif
 
+#ifdef DEBUG
+#define DPRINTF(fmt, ...) do { fprintf(stderr, fmt , ## __VA_ARGS__); } while (0);
+#else
+#define DPRINTF(fmt, ...) do { } while (0);
+#endif
+
 #ifdef USE_FMALLOC
 extern const char *fmalloc_template;
 #endif
@@ -138,7 +144,6 @@ struct hash *callback_hash;
 uintptr_t hash_callback(int *p, uintptr_t l){
 	int i;
 	struct hash *hash_q=callback_hash;
-	struct m_state_st *state;
 	for(i=l-1;i>=0;--i){
 		if(hash_q->sub==NULL)
 			hash_q->sub=calloc(257, sizeof(struct hash *));
@@ -152,13 +157,6 @@ uintptr_t hash_callback(int *p, uintptr_t l){
 			hash_q->sub[p[i]]->sub=NULL;
 		}
 		hash_q=hash_q->sub[p[i]];
-	}
-	if(hash_q->v!=0){
-		state=(void *)hash_q->v;
-		if(state->status!=SUBROUTINE || state->data!=0 || state->beg!=0 || state->end!=~0 || state->base[i]){
-			hash_q->v=0;
-		}
-		
 	}
 	if(hash_q->v==0){
 		state_t->n=state_new(SUBROUTINE);
@@ -305,24 +303,30 @@ int main(int argc, char *argv[]){
 					}else{
 						continue;
 					}
-					if(c < todo_item->state->beg)
-						todo_item->state->beg=c;
-					if(c >= todo_item->state->end)
-						todo_item->state->end=c+1;
 					if(todo_item->state->base==NULL)
 						todo_item->state->base=calloc(257, sizeof(struct m_state_st *));
 					if(todo_item->state->base[c]){
 						if(todo_item->state->base[c]->status==SUBROUTINE){
-							todo_item->state->base[c]->status=SUBMATCH_SUBROUTINE;
+							state_t->n=state_new(SUBMATCH_SUBROUTINE);
+							state_t=state_t->n;
+							state_t->data=todo_item->state->base[c]->data;
+							state_t->level=todo_item->state->base[c]->level;
+DPRINTF("%p SUBROUTINE -> SUBMATCH_SUBROUTINE: %p\n", todo_item->state->base[c], state_t);
+							todo_item->state->base[c]=state_t;
 						}else if(todo_item->state->base[c]->status==MATCH){
 							todo_item->state->base[c]->status=SUBMATCH;
+DPRINTF("%p MATCH -> SUBMATCH\n", todo_item->state);
 						}
 					}else{
-						//printf("%u[%X]=%u\n", todo_item->state, c, offset);
 
 						state_t->n=todo_item->state->base[c]=state_new(CONTINUE);
 						state_t=state_t->n;
+DPRINTF("%p[%X]=%p\n", todo_item->state, c, state_t);
 					}
+					if(c < todo_item->state->beg)
+						todo_item->state->beg=c;
+					if(c >= todo_item->state->end)
+						todo_item->state->end=c+1;
 					newtodo_tail->n=malloc(sizeof(struct states));
 					newtodo_tail=newtodo_tail->n;
 					newtodo_tail->state=todo_item->state->base[c];
@@ -340,70 +344,16 @@ int main(int argc, char *argv[]){
 			++f;
 		}
 
-		//process todo list, associate leaves with output sequence's hash id
+		//parse output data
 		j=0;
 		l=0;
-		k=1;
 		callback=0;
 		if(*t=='?'){
 			t+=1;
 			callback=1;
 		}
-		while(1){
-			if(*t==0){
-				if(k){
-					k=0;
-					while(todo){
-						todo_item=todo;
-						for(c=0;c<=256;++c){
-							if(c>=todo_item->lower_bound && c<=todo_item->upper_bound){
-								level=1;
-							}else if(case_insensitive && ci_table[c] && ci_table[c]>=todo_item->lower_bound && ci_table[c]<=todo_item->upper_bound){
-								level=0;
-							}else{
-								continue;
-							}
-							if(c < todo_item->state->beg)
-								todo_item->state->beg=c;
-							if(c >= todo_item->state->end)
-								todo_item->state->end=c+1;
-							if(todo_item->state->base==NULL)
-								todo_item->state->base=calloc(257, sizeof(struct m_state_st *));
-							if(todo_item->state->base[c]==todo_item->state){
-								todo_item->state->base[c]=0;
-							}
-							if(todo_item->state->base[c]){
-								if((todo_item->state->base[c]->status==MATCH || todo_item->state->base[c]->status==SUBMATCH || ((todo_item->state->base[c]->status==SUBROUTINE || todo_item->state->base[c]->status==SUBMATCH_SUBROUTINE) && callback)) && (level+todo_item->level) <= todo_item->state->base[c]->level){
-//									printf("Duplicated key: %s dropping data: %s\n", of, ot);
-									continue;
-								}else if(todo_item->state->base[c]->status==CONTINUE){
-									if(callback){
-										todo_item->state->base[c]->status=SUBMATCH_SUBROUTINE;
-									}else{
-										todo_item->state->base[c]->status=SUBMATCH;
-									}
-								}else if(!callback){
-									todo_item->state->base[c]->status=MATCH;
-								}
-							}else if(callback){
-								todo_item->state->base[c]=(struct m_state_st *) hash_callback(dat, l);
-							}else{
-								todo_item->state->base[c]=state_t->n=state_new(MATCH);
-								state_t=state_t->n;
-							}
-							todo_item->state->base[c]->data=(struct m_data_st *)hash(dat,l);
-							todo_item->state->base[c]->level=level+todo_item->level;
-						}
-						todo=todo->n;
-						free(todo_item);
-					}
-				}
-				l=0;
-				if(*t==0){
-					data_p=NULL;
-					break;
-				}
-			}else if(*t==','){
+		while(*t){
+			if(*t==','){
 				dat[l]=256;
 				++l;
 			}else if(j==0){
@@ -417,6 +367,79 @@ int main(int argc, char *argv[]){
 				++l;
 			}
 			++t;
+		}
+
+		//process todo list, associate leaves with output sequence's hash id
+		while(todo){
+			todo_item=todo;
+			for(c=0;c<=256;++c){
+				if(c>=todo_item->lower_bound && c<=todo_item->upper_bound){
+					level=1;
+				}else if(case_insensitive && ci_table[c] && ci_table[c]>=todo_item->lower_bound && ci_table[c]<=todo_item->upper_bound){
+					level=0;
+				}else{
+					continue;
+				}
+				if(c < todo_item->state->beg)
+					todo_item->state->beg=c;
+				if(c >= todo_item->state->end)
+					todo_item->state->end=c+1;
+				if(todo_item->state->base==NULL)
+					todo_item->state->base=calloc(257, sizeof(struct m_state_st *));
+				if(todo_item->state->base[c]){
+					if(
+						(
+							todo_item->state->base[c]->status==MATCH
+							||
+							todo_item->state->base[c]->status==SUBMATCH
+							||
+							(
+								(
+								todo_item->state->base[c]->status==SUBROUTINE
+								||
+								todo_item->state->base[c]->status==SUBMATCH_SUBROUTINE
+								)
+								&&
+								callback
+							)
+						)
+						&&
+						(level+todo_item->level) <= todo_item->state->base[c]->level
+					){
+						DPRINTF("Already has data at %p for %s, dropping %s\n", todo_item->state->base[c], of, ot);
+						continue;
+					}else if(todo_item->state->base[c]->status==CONTINUE){
+						if(callback){
+							todo_item->state->base[c]->status=SUBMATCH_SUBROUTINE;
+							DPRINTF("%p CONTINUE -> SUBMATCH_SUBROUTINE\n", todo_item->state->base[c]);
+						}else{
+							todo_item->state->base[c]->status=SUBMATCH;
+							DPRINTF("%p CONTINUE -> SUBMATCH\n", todo_item->state->base[c]);
+						}
+					}else if(!callback){
+						if(todo_item->state->base[c]->status==SUBROUTINE){
+							state_t->n=state_new(MATCH);
+							state_t=state_t->n;
+							state_t->data=todo_item->state->base[c]->data;
+							state_t->level=todo_item->state->base[c]->level;
+							DPRINTF("%p SUBROUTINE -> MATCH: %p\n", todo_item->state->base[c], state_t);
+							todo_item->state->base[c]=state_t;
+						}else{
+							DPRINTF("%p %d -> MATCH for %s\n", todo_item->state->base[c], todo_item->state->base[c]->status, ot);
+							todo_item->state->base[c]->status=MATCH;
+						}
+					}
+				}else if(callback){
+					todo_item->state->base[c]=(struct m_state_st *) hash_callback(dat, l);
+				}else{
+					todo_item->state->base[c]=state_t->n=state_new(MATCH);
+					state_t=state_t->n;
+				}
+				todo_item->state->base[c]->data=(struct m_data_st *)hash(dat,l);
+				todo_item->state->base[c]->level=level+todo_item->level;
+			}
+			todo=todo->n;
+			free(todo_item);
 		}
 		todo=NULL;
 	}
@@ -439,6 +462,7 @@ int main(int argc, char *argv[]){
 		exit(1);
 	}
 	state_t=state_r;
+	data_p=NULL;
 	while(state_t){
 		hash_p=(struct hash *)state_t->data;
 		k=1;	//begin of data cell
