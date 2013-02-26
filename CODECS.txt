@@ -137,9 +137,9 @@ to/3F
 
 from/SUB
 	#error counter is increased
-	echo 陶喆測試|bsdconv utf-8:uao250|bsdconv cp950,3f:utf-8
+	> echo 陶喆測試|bsdconv utf-8:uao250|bsdconv cp950,3f:utf-8
 	陶?穘?試
-	echo 陶喆測試|bsdconv utf-8:uao250|bsdconv cp950,sub:utf-8
+	> echo 陶喆測試|bsdconv utf-8:uao250|bsdconv cp950,sub:utf-8
 	陶�穘�試
 
 from/ANSI-CONTROL
@@ -178,7 +178,7 @@ to/BSDCONV_RAW
 	> echo 測 | bsdconv utf-8:bsdconv_raw|hexdump -C
 	00000000  01 6e 2c 01 0a                                    |.n,..|
 
-to/RAW	
+to/RAW
 	> echo 測試 | bsdconv utf-8:raw|hexdump -C
 	00000000  6e 2c 8a 66 0a                                    |n,.f.|
 
@@ -209,7 +209,7 @@ from/BSDCONV_LOG
 	0A
 to/BSDCONV_LOG
 	> echo 測試 | env BSDCONV_TO_LOG=/tmp/bsdconv.log bsdconv utf-8:bsdconv_log
-	> cat /tmp/bsdconv.log 
+	> cat /tmp/bsdconv.log
 	016E2C ( FREE )
 	018A66 ( FREE )
 	010A
@@ -281,7 +281,7 @@ to/NULL
 
 inter/AMBIGUOUS-PAD
 	#used in https://github.com/buganini/bug5
-	> echo БИ 2 | bsdconv utf-8:ambiguous-pad:utf-8 
+	> echo БИ 2 | bsdconv utf-8:ambiguous-pad:utf-8
 	Б И  2
 	> echo БИ 2 | bsdconv utf-8:ambiguous-pad:utf-8 | hexdump -C
 	00000000  d0 91 c2 a0 d0 98 c2 a0  20 32 0a                 |........ 2.|
@@ -374,7 +374,7 @@ inter/NL2BR
 	a<br />b
 
 inter/ZH-STRINGS
-	> echo echo abd測試efg功能，hij | bsdconv utf-8:zh-strings:utf-8
+	> echo abd測試efg功能，hij | bsdconv utf-8:zh-strings:utf-8
 	測試
 	功能
 
@@ -383,11 +383,11 @@ inter/ZHCN
 	测试
 
 inter/ZHTW
-	> echo 測試之后|bsdconv utf-8:zhtw:utf-8
+	> echo 测试之后|bsdconv utf-8:zhtw:utf-8
 	測試之后
 
 inter/ZHTW_WORDS
-	> echo 測試之后 | bsdconv utf-8:zhtw:zhtw_words:utf-8
+	> echo 测试之后 | bsdconv utf-8:zhtw:zhtw_words:utf-8
 	測試之後
 
 inter/WHITESPACE-DERAIL
