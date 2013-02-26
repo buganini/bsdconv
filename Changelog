@@ -9,6 +9,7 @@
 	add new state status: SUBMATCH_SUBROUTINE
 	fix line separator issue on windows (thanks to roytam1)
 	improve bsdconv_mktable, significantly reduce some output file size
+	add testsuite
 
 9.0:
 	fix for MinGW
