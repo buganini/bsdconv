@@ -77,6 +77,10 @@ iotest=[
 	["utf-8:gb18030|gb18030:utf-8","标准码編碼表ドラえもん","标准码編碼表ドラえもん"],
 ]
 
+infotest=[
+	["utf-8:width:null","123Б測試",{"full":2,"ambi":1,"half":3}]
+]
+
 for c, i, o in iotest:
 	p=bsdconv.Bsdconv(c)
 	if not p:
@@ -92,3 +96,23 @@ for c, i, o in iotest:
 		del p
 		sys.exit()
 	del p
+
+for c, d, i in infotest:
+	p=bsdconv.Bsdconv(c)
+	if not p:
+		print(bsdconv.error())
+		print("Test failed at %s" % repr([c, i, o]))
+		del p
+		sys.exit()
+	p.conv(d)
+	r=p.info()
+	for k in i:
+		if i[k] != r[k]:
+			print("Test failed at %s" % repr([c, d, i]))
+			print("expected: %s" % repr(i))
+			print("result: %s" % repr(r))
+			del p
+			sys.exit()
+	del p
+
+print("All tests passed.")
