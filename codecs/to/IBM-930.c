@@ -37,7 +37,7 @@ void cbflush(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_s *t=CURRENT_CODEC(ins)->priv;
 
-	this_phase->pend=0;
+	this_phase->flags &= ~F_PENDING;
 	if(t->status!=0){
 		t->status=0;
 
@@ -70,7 +70,7 @@ void cbconv(struct bsdconv_instance *ins){
 
 	if(data.len>1 && t->status==0){
 		t->status=1;
-		this_phase->pend=1;
+		this_phase->flags |= F_PENDING;
 
 		DATA_MALLOC(this_phase->data_tail->next);
 		this_phase->data_tail=this_phase->data_tail->next;
@@ -81,7 +81,7 @@ void cbconv(struct bsdconv_instance *ins){
 		*CP(this_phase->data_tail->data)='\x0E';
 	}else if(data.len==1 && t->status!=0){
 		t->status=0;
-		this_phase->pend=0;
+		this_phase->flags &= ~F_PENDING;
 
 		DATA_MALLOC(this_phase->data_tail->next);
 		this_phase->data_tail=this_phase->data_tail->next;
@@ -96,9 +96,8 @@ void cbconv(struct bsdconv_instance *ins){
 		LISTCPY(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
 
 		this_phase->data_head->len=0;
-		this_phase->match=1;
+		this_phase->flags |= (F_MATCH | F_PENDING);
 		this_phase->match_data=NULL;
-		this_phase->pend=1;
 
 		this_phase->bak=this_phase->curr->next;
 		LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);

@@ -29,8 +29,13 @@ extern "C" {
 #endif
 
 //struct data_rt.flags
-#define F_FREE 0x1
-#define F_SKIP 0x10
+#define F_FREE 1
+#define F_SKIP 2
+
+//struct bsdconv_phase.flags
+#define F_MATCH 1
+#define F_PENDING 2
+#define F_LOOPBACK 4
 
 typedef uint32_t offset_t;
 
@@ -121,11 +126,11 @@ struct bsdconv_phase{
 	struct state_rt state;
 	int index;
 	unsigned int i;
-	char pend;
-	char match;
-	char type;
 	struct bsdconv_codec_t *codec;
 	int codecn;
+	offset_t offset;	
+	char flags;
+	char type;
 };
 
 struct bsdconv_codec_t {
@@ -193,6 +198,7 @@ char * getwd(char *);
 
 #define RESET(X) do{	\
 	ins->phase[X].index=0;	\
+	ins->phase[X].offset=0;	\
 	memcpy(&ins->phase[X].state, ins->phase[X].codec[ins->phase[X].index].z, sizeof(struct state_st));	\
 }while(0)
 

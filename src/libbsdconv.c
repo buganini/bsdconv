@@ -301,7 +301,8 @@ void bsdconv_init(struct bsdconv_instance *ins){
 
 	for(i=0;i<=ins->phasen;++i){
 		ins->phase_index=i;
-		ins->phase[i].pend=0;
+		ins->phase[i].flags=0;
+		ins->phase[i].offset=0;
 		while(ins->phase[i].data_head->next){
 			data_ptr=ins->phase[i].data_head->next;
 			ins->phase[i].data_head->next=ins->phase[i].data_head->next->next;
@@ -311,7 +312,6 @@ void bsdconv_init(struct bsdconv_instance *ins){
 		}
 		ins->phase[i].data_tail=ins->phase[i].data_head;
 		ins->phase[i].data_head->len=0;
-		ins->phase[i].match=0;
 		ins->phase[i].match_data=NULL;
 		if(i>0){
 			ins->phase[i].curr=ins->phase[i-1].data_head;
@@ -819,7 +819,6 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 }
 
 void bsdconv(struct bsdconv_instance *ins){
-	offset_t offset;
 	uintptr_t i;
 	struct data_rt *data_ptr;
 	char *ptr;
@@ -850,21 +849,20 @@ void bsdconv(struct bsdconv_instance *ins){
 				while(this_phase->curr->next){
 					if(this_phase->curr == prev_phase->data_head) this_phase->i=this_phase->data_head->len;
 					else this_phase->i=0;
-					fflush(stdout);
 					this_phase->curr=this_phase->curr->next;
 					while(this_phase->i<this_phase->curr->len){
 						c=UCP(this_phase->curr->data)[this_phase->i];
 						if(c>=this_phase->state.beg && c<this_phase->state.end)
-							memcpy(&offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (c - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
-						else
-							offset=0;
-						memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + offset, sizeof(struct state_st));
+							memcpy(&this_phase->offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (c - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
+						else if(!(this_phase->flags & F_LOOPBACK))
+							this_phase->offset=0;
+						memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + this_phase->offset, sizeof(struct state_st));
 						from_x:
 						switch(this_phase->state.status){
 							case DEADEND:
 								from_deadend:
-								this_phase->pend=0;
-								if(this_phase->match){
+								this_phase->flags &= ~(F_PENDING | F_LOOPBACK);
+								if(this_phase->flags & F_MATCH){
 									if(this_phase->match_data){
 										LISTCPY(this_phase->data_tail, this_phase->match_data, this_phase->codec[this_phase->index].data_z);
 
@@ -874,7 +872,7 @@ void bsdconv(struct bsdconv_instance *ins){
 									}else if(this_phase->codec[this_phase->index].cbflush){
 										this_phase->codec[this_phase->index].cbflush(ins);
 									}
-									this_phase->match=0;
+									this_phase->flags &= ~F_MATCH;
 									RESET(ins->phase_index);
 									goto phase_begin;
 								}else if(this_phase->index < this_phase->codecn){
@@ -896,9 +894,8 @@ void bsdconv(struct bsdconv_instance *ins){
 								}
 								break;
 							case MATCH:
-								this_phase->match=0;
+								this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 								this_phase->match_data=NULL;
-								this_phase->pend=0;
 
 								LISTCPY(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
 
@@ -912,22 +909,20 @@ void bsdconv(struct bsdconv_instance *ins){
 								ins->phase_index+=1;
 								goto phase_begin;
 							case SUBMATCH:
-								this_phase->match=1;
+								this_phase->flags |= (F_MATCH | F_PENDING);
 								this_phase->match_data=this_phase->state.data;
 
 								this_phase->bak=this_phase->curr;
 								this_phase->data_head->len=this_phase->i+1;
-
-								this_phase->pend=1;
 								break;
 							case SUBROUTINE:
 							case SUBMATCH_SUBROUTINE:
 								this_phase->codec[this_phase->index].cbconv(ins);
+								this_phase->flags |= F_LOOPBACK;
 								goto from_x;
 							case NEXTPHASE:
-								this_phase->match=0;
+								this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 								this_phase->match_data=NULL;
-								this_phase->pend=0;
 
 								this_phase->bak=this_phase->curr;
 								LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
@@ -956,14 +951,13 @@ void bsdconv(struct bsdconv_instance *ins){
 								this_phase->data_head->len=0;
 								this_phase->curr=prev_phase->data_head;
 
-								this_phase->match=0;
 								this_phase->match_data=NULL;
-								this_phase->pend=0;
+								this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 								RESET(ins->phase_index);
 								ins->phase_index+=1;
 								goto phase_begin;
 							case CONTINUE:
-								this_phase->pend=1;
+								this_phase->flags |= F_PENDING;
 								break;
 							case NOOP:
 								goto phase_begin;
@@ -979,18 +973,19 @@ void bsdconv(struct bsdconv_instance *ins){
 				this_phase->state.status=NOMATCH;
 				for(this_phase->i=0;this_phase->i<this_phase->curr->len;this_phase->i+=1){
 					c=UCP(this_phase->curr->data)[this_phase->i];
-					if(c>=this_phase->state.beg && c<this_phase->state.end)
-						memcpy(&offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (c - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
-					else
-						offset=0;
-					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + offset, sizeof(struct state_st));
+					if(c>=this_phase->state.beg && c<this_phase->state.end){
+						memcpy(&this_phase->offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (c - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
+					}else if(!(this_phase->flags & F_LOOPBACK)){
+						this_phase->offset=0;
+					}
+					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + this_phase->offset, sizeof(struct state_st));
 					switch(this_phase->state.status){
 						case DEADEND:
 							goto inter_deadend;
 							break;
 						case SUBROUTINE:
 						case SUBMATCH_SUBROUTINE:
-							goto inter_callback;
+							this_phase->flags |= F_LOOPBACK;
 							break;
 					}
 				}
@@ -1001,8 +996,8 @@ void bsdconv(struct bsdconv_instance *ins){
 						goto phase_begin;
 					case DEADEND:
 						inter_deadend:
-						this_phase->pend=0;
-						if(this_phase->match){
+						this_phase->flags &= ~(F_PENDING | F_LOOPBACK);
+						if(this_phase->flags & F_MATCH){
 							if(this_phase->match_data){
 								LISTCPY(this_phase->data_tail, this_phase->match_data, this_phase->codec[this_phase->index].data_z);
 
@@ -1012,7 +1007,7 @@ void bsdconv(struct bsdconv_instance *ins){
 								this_phase->codec[this_phase->index].cbflush(ins);
 							}
 
-							this_phase->match=0;
+							this_phase->flags &= ~F_MATCH;
 							RESET(ins->phase_index);
 							goto phase_begin;
 						}else if(this_phase->index < this_phase->codecn){
@@ -1039,9 +1034,8 @@ void bsdconv(struct bsdconv_instance *ins){
 						}
 						break;
 					case MATCH:
-						this_phase->match=0;
+						this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 						this_phase->match_data=NULL;
-						this_phase->pend=0;
 
 						LISTCPY(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
 
@@ -1054,7 +1048,7 @@ void bsdconv(struct bsdconv_instance *ins){
 						ins->phase_index+=1;
 						goto phase_begin;
 					case SUBMATCH:
-						this_phase->match=1;
+						this_phase->flags |= (F_MATCH | F_PENDING);
 						this_phase->match_data=this_phase->state.data;
 
 						if(this_phase->curr->next){
@@ -1068,17 +1062,14 @@ void bsdconv(struct bsdconv_instance *ins){
 							prev_phase->data_tail->flags=0;
 						}
 
-						this_phase->pend=1;
 						break;
 					case SUBROUTINE:
 					case SUBMATCH_SUBROUTINE:
-						inter_callback:
 						this_phase->codec[this_phase->index].cbconv(ins);
 						goto inter_x;
 					case NEXTPHASE:
-						this_phase->match=0;
+						this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 						this_phase->match_data=NULL;
-						this_phase->pend=0;
 
 						this_phase->bak=this_phase->curr->next;
 						LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
@@ -1089,17 +1080,18 @@ void bsdconv(struct bsdconv_instance *ins){
 						ins->phase_index+=1;
 						goto phase_begin;
 					case CONTINUE:
-						this_phase->pend=1;
+						this_phase->flags |= F_PENDING;
+						this_phase->flags &= ~F_LOOPBACK;
 						break;
 					case NOOP:
 						goto phase_begin;
 
 				}
 				if(256<this_phase->state.end)
-					memcpy(&offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (256 - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
-				else
-					offset=0;
-				memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + offset, sizeof(struct state_st));
+					memcpy(&this_phase->offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (256 - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
+				else if(!(this_phase->flags & F_LOOPBACK))
+					this_phase->offset=0;
+				memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + this_phase->offset, sizeof(struct state_st));
 				if(this_phase->state.status==DEADEND){ goto inter_deadend;}
 			}
 			break;
@@ -1111,17 +1103,17 @@ void bsdconv(struct bsdconv_instance *ins){
 				for(this_phase->i=0;this_phase->i<this_phase->curr->len;this_phase->i+=1){
 					c=UCP(this_phase->curr->data)[this_phase->i];
 					if(c>=this_phase->state.beg && c<this_phase->state.end)
-						memcpy(&offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (c - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
-					else
-						offset=0;
-					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + offset, sizeof(struct state_st));
+						memcpy(&this_phase->offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (c - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
+					else if(!(this_phase->flags & F_LOOPBACK))
+						this_phase->offset=0;
+					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + this_phase->offset, sizeof(struct state_st));
 					switch(this_phase->state.status){
 						case DEADEND:
 							goto to_deadend;
 							break;
 						case SUBROUTINE:
 						case SUBMATCH_SUBROUTINE:
-							this_phase->data_head->len=1;
+							this_phase->flags |= F_LOOPBACK;
 							break;
 					}
 				}
@@ -1131,11 +1123,8 @@ void bsdconv(struct bsdconv_instance *ins){
 						continue;
 					case DEADEND:
 						to_deadend:
-						if(this_phase->data_head->len){
-							goto to_callback;
-						}
-						this_phase->pend=0;
-						if(this_phase->match){
+						this_phase->flags &= ~(F_PENDING | F_LOOPBACK);
+						if(this_phase->flags & F_MATCH){
 							if(this_phase->match_data){
 								LISTCPY(this_phase->data_tail, this_phase->match_data, this_phase->codec[this_phase->index].data_z);
 
@@ -1145,7 +1134,7 @@ void bsdconv(struct bsdconv_instance *ins){
 								this_phase->codec[this_phase->index].cbflush(ins);
 							}
 
-							this_phase->match=0;
+							this_phase->flags &= ~F_MATCH;
 							RESET(ins->phase_index);
 							ins->phase_index+=1;
 							goto phase_begin;
@@ -1167,10 +1156,8 @@ void bsdconv(struct bsdconv_instance *ins){
 						}
 						break;
 					case MATCH:
-						this_phase->data_head->len=0;
-						this_phase->match=0;
+						this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 						this_phase->match_data=NULL;
-						this_phase->pend=0;
 
 						LISTCPY(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
 
@@ -1182,8 +1169,7 @@ void bsdconv(struct bsdconv_instance *ins){
 						ins->phase_index+=1;
 						goto phase_begin;
 					case SUBMATCH:
-						this_phase->data_head->len=0;
-						this_phase->match=1;
+						this_phase->flags |= (F_MATCH | F_PENDING);
 						this_phase->match_data=this_phase->state.data;
 						if(this_phase->curr->next){
 							this_phase->bak=this_phase->curr->next;
@@ -1196,19 +1182,14 @@ void bsdconv(struct bsdconv_instance *ins){
 							prev_phase->data_tail->flags=0;
 						}
 
-						this_phase->pend=1;
 						break;
 					case SUBROUTINE:
 					case SUBMATCH_SUBROUTINE:
-						to_callback:
-						this_phase->data_head->len=0;
 						this_phase->codec[this_phase->index].cbconv(ins);
 						goto to_x;
 					case NEXTPHASE:
-						this_phase->data_head->len=0;
-						this_phase->match=0;
+						this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 						this_phase->match_data=NULL;
-						this_phase->pend=0;
 
 						this_phase->bak=this_phase->curr->next;
 						LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
@@ -1234,27 +1215,25 @@ void bsdconv(struct bsdconv_instance *ins){
 						this_phase->data_tail->flags |= F_SKIP;
 						this_phase->data_tail->next=NULL;
 
-						this_phase->data_head->len=0;
 						this_phase->curr=prev_phase->data_head;
 
-						this_phase->data_head->len=0;
-						this_phase->match=0;
+						this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 						this_phase->match_data=NULL;
-						this_phase->pend=0;
 						RESET(ins->phase_index);
 						ins->phase_index+=1;
 						goto phase_begin;
 					case CONTINUE:
-						this_phase->pend=1;
+						this_phase->flags|=F_PENDING;
+						this_phase->flags &= ~F_LOOPBACK;
 						break;
 					case NOOP:
 						goto phase_begin;
 				}
 				if(256<this_phase->state.end)
-					memcpy(&offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (256 - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
-				else
-					offset=0;
-				memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + offset, sizeof(struct state_st));
+					memcpy(&this_phase->offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (256 - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
+				else if(!(this_phase->flags & F_LOOPBACK))
+					this_phase->offset=0;
+				memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + this_phase->offset, sizeof(struct state_st));
 				if(this_phase->state.status==DEADEND){ goto to_deadend;}
 			}
 			break;
@@ -1272,7 +1251,7 @@ void bsdconv(struct bsdconv_instance *ins){
 	//flush
 	if(ins->flush){
 		for(ins->phase_index=1;ins->phase_index<=ins->phasen;++(ins->phase_index)){
-			if(ins->phase[ins->phase_index].pend){
+			if(ins->phase[ins->phase_index].flags & F_PENDING){
 				this_phase=&ins->phase[ins->phase_index];
 				prev_phase=&ins->phase[ins->phase_index-1];
 				switch(this_phase->type){

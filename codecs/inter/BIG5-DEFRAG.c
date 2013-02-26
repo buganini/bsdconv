@@ -51,12 +51,13 @@ void cbconv(struct bsdconv_instance *ins){
 			DATA_MALLOC(r->p);
 			*(r->p)=*(this_phase->curr);
 			this_phase->curr->flags &= ~F_FREE;
-			this_phase->state.status=CONTINUE;
+			this_phase->state.status=SUBMATCH;
 			return;
 		}else{
 			DATA_MALLOC(this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			*(this_phase->data_tail)=*(this_phase->curr);
+			this_phase->data_tail->next=NULL;
 			this_phase->curr->flags &= ~F_FREE;
 			this_phase->state.status=NEXTPHASE;
 			return;
@@ -65,10 +66,11 @@ void cbconv(struct bsdconv_instance *ins){
 		if(data[0]==0x1b){
 			DATA_MALLOC(*(r->r));
 			**(r->r)=*(this_phase->curr);
+			(*(r->r))->next=NULL;
 			this_phase->curr->flags &= ~F_FREE;
 			r->r=&((*(r->r))->next);
 
-			this_phase->state.status=CONTINUE;
+			this_phase->state.status=SUBMATCH;
 			return;
 		}else{
 			r->f=0;

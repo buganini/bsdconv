@@ -111,13 +111,11 @@ void cbconv(struct bsdconv_instance *ins){
 	}
 
 	if(t->queue){
-		this_phase->match=1;
+		this_phase->flags |= (F_MATCH | F_PENDING);
 		this_phase->match_data=t->queue->data;
-		this_phase->pend=1;
 	}else{
-		this_phase->match=0;
+		this_phase->flags &= ~(F_MATCH | F_PENDING);
 		this_phase->match_data=NULL;
-		this_phase->pend=0;
 	}
 
 	return;

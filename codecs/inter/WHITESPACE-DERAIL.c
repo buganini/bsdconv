@@ -100,9 +100,8 @@ void cbconv(struct bsdconv_instance *ins){
 			this_phase->curr->flags &= ~F_FREE;
 			q->len=t->offsetA;
 
-			t->rerail->match=1;
+			t->rerail->flags |= (F_MATCH | F_PENDING);
 			t->rerail->match_data=t->queue->data;
-			t->rerail->pend=1;
 
 			return;
 		}

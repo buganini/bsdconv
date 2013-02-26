@@ -62,8 +62,8 @@ void cbconv(struct bsdconv_instance *ins){
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
 	char d=CP(this_phase->curr->data)[this_phase->i];
 	if(hex[(unsigned char)d]==-1){
-		if(this_phase->match){
-			this_phase->pend=0;
+		if(this_phase->flags & F_MATCH){
+			this_phase->flags &= ~(F_PENDING | F_MATCH | F_LOOPBACK);
 
 			DATA_MALLOC(this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
@@ -75,7 +75,6 @@ void cbconv(struct bsdconv_instance *ins){
 			LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
 			this_phase->curr=prev_phase->data_head;
 			this_phase->i=this_phase->data_head->len;
-			this_phase->match=0;
 			RESET(ins->phase_index);
 
 			this_phase->state.status=NOOP;
