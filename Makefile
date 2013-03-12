@@ -1,6 +1,6 @@
 PREFIX?=/usr/local
 BSDCONV_PATH?=${PREFIX}
-CFLAGS+=-g -Wall -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
+CFLAGS+=-Wall -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
 SHLIBVER=9
 
 UNAME_S=$(shell uname -s)
@@ -350,6 +350,7 @@ install_ebcdic:
 
 plist:
 	@echo bin/bsdconv
+	@echo bin/bsdconv_completion
 	@echo bin/bsdconv_mktable
 	@echo include/bsdconv.h
 	@echo lib/libbsdconv.so
