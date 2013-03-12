@@ -145,10 +145,12 @@ void cbconv(struct bsdconv_instance *ins){
 				if(oct[(unsigned char)d]==-1){
 					DEADEND();
 				}else{
-					t->buf[0]*=8;
-					t->buf[0]+=oct[(unsigned char)d];
-					if(t->buf[0]>377)
+					i=t->buf[0];
+					i*=8;
+					i+=oct[(unsigned char)d];
+					if(i>377)
 						DEADEND();
+					i=t->buf[0];
 					DATA_MALLOC(this_phase->data_tail->next);
 					this_phase->data_tail=this_phase->data_tail->next;
 					this_phase->data_tail->next=NULL;
