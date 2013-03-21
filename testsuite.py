@@ -12,6 +12,7 @@ iotest=[
 	["utf-8:_uao250,ascii","喆","\x95\xed"],
 	["utf-8:big5,cp950_trans","测试","\xb4\xfa\xb8\xd5"],
 	["ascii,3f:ascii","test測試test","test??????test"],
+	["ascii,any#0137:ascii","test測試test","test777777test"],
 	["utf-8:ascii,3f","test測試test","test??test"],
 	["utf-8:uao250|cp950,3f:utf-8","陶喆測試","陶?穘?試"],
 	["utf-8:uao250|cp950,sub:utf-8","陶喆測試","陶�穘�試"],

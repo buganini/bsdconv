@@ -61,7 +61,7 @@ inline void _cbcreate(struct bsdconv_instance *ins, int p, int c){
 		argv=strdup("");
 	char *cur=argv;
 	char *k;
-	struct hash_entry *arg=NULL;
+	struct hash_entry *arg=NULL, *tmp;
 	struct hash_entry **last=&arg;
 	if(*cur){
 		while((k=strsep(&cur, "&"))!=NULL){
@@ -77,8 +77,39 @@ inline void _cbcreate(struct bsdconv_instance *ins, int p, int c){
 		}		
 	}
 
-	ins->phase[p].codec[c].cbcreate(ins, NULL);
+	ins->phase[p].codec[c].cbcreate(ins, arg);
 	free(argv);
+	while(arg){
+		tmp=arg->next;
+		free(arg);
+		arg=tmp;
+	}
+}
+
+void str2data(const char *s, struct data_st *d){
+	d->data=NULL;
+	d->len=0;
+	if(!s || !*s)
+		return;
+	d->data=malloc(strlen(s)/2);
+	char f=0;
+	while(*s){
+		if(hex[(unsigned char) *s]<0)
+			return;
+		switch(f){
+			case 0:
+				f=1;
+				d->data[d->len]=hex[(unsigned char)*s];
+				break;
+			case 1:
+				f=0;
+				d->data[d->len]*=16;
+				d->data[d->len]+=hex[(unsigned char)*s];
+				d->len+=1;
+				break;
+		}
+		s+=1;
+	}
 }
 
 int _loadcodec(struct bsdconv_codec_t *cd, char *path){
