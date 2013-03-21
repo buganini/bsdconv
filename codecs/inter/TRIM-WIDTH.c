@@ -27,7 +27,7 @@ struct my_s{
 	long remain;
 };
 
-void cbcreate(struct bsdconv_instance *ins){
+void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	char *p;
 	struct my_s *r=CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));	
 

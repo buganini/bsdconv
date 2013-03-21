@@ -1,3 +1,6 @@
+10.0:
+	support "codec#key&key=value" style argument
+
 9.1:
 	bash completion script (buggy)
 	extend from/ESCAPE to support \uUUUU \xXX \OOO

@@ -26,7 +26,7 @@ struct my_s{
 	struct bsdconv_instance *uni;
 };
 
-void cbcreate(struct bsdconv_instance *ins){
+void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	r->uni=bsdconv_create("UNICODE");
 	CURRENT_CODEC(ins)->priv=r;

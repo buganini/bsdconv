@@ -143,12 +143,13 @@ struct bsdconv_codec_t {
 	size_t maplen;
 	void *dl;
 #endif
+	char *argv;
 	char *z;
 	char *data_z;
 	char *desc;
 	void (*cbconv)(struct bsdconv_instance *);
 	void (*cbflush)(struct bsdconv_instance *);
-	void (*cbcreate)(struct bsdconv_instance *);
+	void (*cbcreate)(struct bsdconv_instance *, struct hash_entry *arg);
 	void (*cbinit)(struct bsdconv_instance *);
 	void (*cbctl)(struct bsdconv_instance *, int, void *, size_t);
 	void (*cbdestroy)(struct bsdconv_instance *);
@@ -240,7 +241,7 @@ int bsdconv_mkstemp(char *);
 //Callback function interface
 void cbconv(struct bsdconv_instance *);
 void cbflush(struct bsdconv_instance *);
-void cbcreate(struct bsdconv_instance *);
+void cbcreate(struct bsdconv_instance *, struct hash_entry *arg);
 void cbinit(struct bsdconv_instance *);
 void cbctl(struct bsdconv_instance *, int, void *, size_t);
 void cbdestroy(struct bsdconv_instance *);

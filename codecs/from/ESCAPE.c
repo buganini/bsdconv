@@ -32,7 +32,7 @@ struct my_s{
 	char unicode;
 };
 
-void cbcreate(struct bsdconv_instance *ins){
+void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
 }
 

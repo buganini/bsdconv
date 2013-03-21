@@ -20,7 +20,7 @@
 #include "../../src/bsdconv.h"
 
 
-void cbcreate(struct bsdconv_instance *ins){
+void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	CURRENT_CODEC(ins)->priv=bsdconv_create("ASCII:PASS");
 }
 
