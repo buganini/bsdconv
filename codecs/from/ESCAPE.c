@@ -150,7 +150,7 @@ void cbconv(struct bsdconv_instance *ins){
 					i+=oct[(unsigned char)d];
 					if(i>377)
 						DEADEND();
-					i=t->buf[0];
+					t->buf[0]=i;
 					DATA_MALLOC(this_phase->data_tail->next);
 					this_phase->data_tail=this_phase->data_tail->next;
 					this_phase->data_tail->next=NULL;
