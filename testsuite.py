@@ -14,6 +14,7 @@ iotest=[
 	["ascii,3f:ascii","test測試test","test??????test"],
 	["ascii,any#0137:ascii","test測試test","test777777test"],
 	["utf-8:ascii,3f","test測試test","test??test"],
+	["utf-8:ascii,any#38","test測試test","test88test"],
 	["utf-8:uao250|cp950,3f:utf-8","陶喆測試","陶?穘?試"],
 	["utf-8:uao250|cp950,sub:utf-8","陶喆測試","陶�穘�試"],
 	["ansi-control,utf-8:split:bsdconv_keyword,bsdconv","a\033[1mb","0161,1B5B316D,0162,"],

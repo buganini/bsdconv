@@ -1,5 +1,7 @@
 10.0:
 	support "codec#key&key=value" style argument
+	replace from/3f and from/sub with from/any
+	replace to/3f with to/any
 
 9.1:
 	bash completion script (buggy)

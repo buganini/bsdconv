@@ -127,20 +127,19 @@ to/_CNS11643
 	#by design, to/_CNS11643 should only output plane switching sequence when needed,
 	#but in implementation, it appears all the time.
 
-from/3F
-to/3F
+from/ANY
+to/ANY
 	#error counter is increased
-	> echo test測試test | bsdconv ascii,3f:ascii
+	> echo test測試test | bsdconv ascii,any#013f:ascii
 	test??????test
-	> echo -n test測試test |bsdconv utf-8:ascii,3f
-	test??test
-
-from/SUB
-	#error counter is increased
-	> echo 陶喆測試|bsdconv utf-8:uao250|bsdconv cp950,3f:utf-8
+	> echo 陶喆測試|bsdconv utf-8:uao250|bsdconv cp950,3f:utf-8 #alias
 	陶?穘?試
-	> echo 陶喆測試|bsdconv utf-8:uao250|bsdconv cp950,sub:utf-8
+	> echo 陶喆測試|bsdconv utf-8:uao250|bsdconv cp950,any#01fffd:utf-8
 	陶�穘�試
+	> echo 陶喆測試|bsdconv utf-8:uao250|bsdconv cp950,sub:utf-8 #alias
+	陶�穘�試
+	> echo -n test測試test |bsdconv utf-8:ascii,any#3f
+	test??test
 
 from/ANSI-CONTROL
 	#used in https://github.com/buganini/bug5
