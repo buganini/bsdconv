@@ -80,6 +80,7 @@ iotest=[
 	["utf-8:ascii,escape#mode=unicode&prefix=25","測a試b好","%6E2Ca%8A66b%597D"],
 	["utf-8:big5|ascii,byte:ascii,escape#mode=hex&prefix=5c78","測a試b好","\\xB4\\xFAa\\xB8\\xD5b\\xA6n"],
 	["utf-8:big5|ascii,byte:ascii,escape#mode=oct&prefix=5c","測a試b好","\\264\\372a\\270\\325b\\246n"],
+	["utf-8:big5,unicode|skip,ascii,byte:ascii,url","測test喆試","%B4%FAtest%u5586%B8%D5"],
 ]
 
 infotest=[
