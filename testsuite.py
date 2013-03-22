@@ -77,6 +77,9 @@ iotest=[
 	["utf-8:ibm-937|ibm-937:utf-8","編碼表","編碼表"],
 	["utf-8:ibm-939|ibm-939:utf-8","ドラえもん","ドラえもん"],
 	["utf-8:gb18030|gb18030:utf-8","标准码編碼表ドラえもん","标准码編碼表ドラえもん"],
+	["utf-8:ascii,escape#mode=unicode&prefix=25","測a試b好","%6E2Ca%8A66b%597D"],
+	["utf-8:big5|ascii,byte:ascii,escape#mode=hex&prefix=5c78","測a試b好","\\xB4\\xFAa\\xB8\\xD5b\\xA6n"],
+	["utf-8:big5|ascii,byte:ascii,escape#mode=oct&prefix=5c","測a試b好","\\264\\372a\\270\\325b\\246n"],
 ]
 
 infotest=[

@@ -235,6 +235,12 @@ from/ESCAPE
 	> echo '\346\270\254\350\251\246' | bsdconv 'escape:unicode,byte|skip,utf-8:utf-8'
 	測試
 
+to/ESCAPE
+	> echo 測test試 | bsdconv 'utf-8:ascii,url' #URL === ESCAPE#MODE=UNICODE&PREFIX=2575,ESCAPE#MODE=16&PREFIX=25
+	%u6E2Ctest%u8A66
+	> echo 測test試 | bsdconv 'utf-8:big5|ascii,byte:ascii,url'
+	%B4%FAtest%B8%D5
+
 to/ASCII-ESCAPED-UNICODE
 	> echo -n test測試 | bsdconv utf-8:ascii,ascii-escaped-unicode
 	test\u6e2c\u8a66
