@@ -14,6 +14,9 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#define USE_HEX_MAP
+#define USE_DEC_MAP
+
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>

@@ -14,6 +14,8 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#define USE_HEX_MAP
+
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>

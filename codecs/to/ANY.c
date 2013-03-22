@@ -15,6 +15,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include "../../src/bsdconv.h"
 
 void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
