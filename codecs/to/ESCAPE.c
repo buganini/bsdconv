@@ -35,8 +35,10 @@ void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	r->suffix.len=0;
 	while(arg){
 		if(strcmp(arg->key, "PREFIX")==0){
+			free(r->prefix.data);
 			str2data(arg->ptr, &(r->prefix));
 		}else if(strcmp(arg->key, "SUFFIX")==0){
+			free(r->suffix.data);
 			str2data(arg->ptr, &(r->suffix));
 		}else if(strcmp(arg->key, "MODE")==0){
 			if(strcmp(arg->ptr, "HEX")==0 || strcmp(arg->ptr, "16")==0){
