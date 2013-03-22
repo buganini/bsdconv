@@ -743,16 +743,12 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 	for(i=1;i<=ins->phasen;++i){
 		t=opipe[i];
 		for(j=0;j<=ins->phase[i].codecn;++j){
-			while(strchr(" \r\n\t\f", t[0])!=NULL)
-				t+=1;
 			ins->phase[i].codec[j].desc=strdup(strsep(&t, ","));
 			ins->phase[i].codec[j].argv=strchr(ins->phase[i].codec[j].desc, '#');
 			if(ins->phase[i].codec[j].argv){
 				*(ins->phase[i].codec[j].argv)=0;
 				ins->phase[i].codec[j].argv+=1;
 			}
-			for(f=strlen(ins->phase[i].codec[j].desc)-1;strchr(" \r\n\t\f", ins->phase[i].codec[j].desc[f])!=NULL;f-=1)
-				ins->phase[i].codec[j].desc[f]=0;
 			if(ins->phase[i].codec[j].desc[0]==0){
 				for(;j>=0;--j){
 					free(ins->phase[i].codec[j].desc);
@@ -774,9 +770,26 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 struct bsdconv_instance *bsdconv_create(const char *_conversion){
 	int fail=0;
 	struct bsdconv_instance *ins=NULL;
-	char *conversion=strdup(_conversion);
+	char *conversion=malloc(strlen(_conversion)+1);
 	int i, j;
 	char *c;
+	const char *d;
+	char whitespace[256]={0};
+	whitespace['\r']=1;
+	whitespace['\n']=1;
+	whitespace['\t']=1;
+	whitespace['\f']=1;
+	whitespace[' ']=1;
+	d=_conversion;
+	c=conversion;
+	while(*d){
+		if(whitespace[*UCP(d)]==0){
+			*c=*d;
+			c+=1;
+		}
+		d+=1;
+	}
+	*c=0;
 
 	i=0;
 	while(i==0 || i<=ins->phasen){
