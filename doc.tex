@@ -1,20 +1,25 @@
-\documentclass{report}    
+\documentclass{article}
+\usepackage{float}
 \usepackage{tikz}
 \usetikzlibrary{decorations.pathreplacing}
-
+\usetikzlibrary{positioning}
+\title{BSDCONV}
+\date{}
 \begin{document}
-	\chapter{Syntax}
-		\section{Phases \& Cascade}
-			\begin{figure}[h!]
+	\maketitle
+	\tableofcontents
+	\section{Syntax}
+		\subsection{Phases \& Cascade}
+			\begin{figure}[H]
 				\centering
-				\begin{tikzpicture}[auto]
+				\begin{tikzpicture}[auto,node distance=0,on grid=false]
 
 				    % Place nodes
 				    \node (d0) {};
-				    \node [right of=d0](from) {ISO-8859-1};
-				    \node [right of=from](d1) {:};
-				    \node [right of=d1] (to) {UTF-8};
-				    \node [right of=to] (d2) {};
+				    \node [right=of d0](from) {ISO-8859-1};
+				    \node [right=of from](d1) {:};
+				    \node [right=of d1] (to) {UTF-8};
+				    \node [right=of to] (d2) {};
 					
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
 (d0)--(d1)  node  [black,midway,yshift=-1cm] { from };
@@ -26,17 +31,17 @@
 				\caption{Basic two phases conversion}
 			\end{figure}
 			
-			\begin{figure}[h!]
+			\begin{figure}[H]
 				\centering
-				\begin{tikzpicture}[auto]			
+				\begin{tikzpicture}[auto,node distance=0,on grid=false]			
 				    % Place nodes
 				    \node (d0) {};
-				    \node [right of=d0](from) {UTF-8};
-				    \node [right of=from](d1) {:};
-				    \node [right of=d1] (inter) {UPPER};
-				    \node [right of=inter](d2) {:};
-				    \node [right of=d2] (to) {UTF-8};
-				    \node [right of=to] (d3) {};			
+				    \node [right=of d0](from) {UTF-8};
+				    \node [right=of from](d1) {:};
+				    \node [right=of d1] (inter) {UPPER};
+				    \node [right=of inter](d2) {:};
+				    \node [right=of d2] (to) {UTF-8};
+				    \node [right=of to] (d3) {};			
 					
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
 	(d0) -- (d1) node [black,midway,yshift=-1cm] { from };
@@ -50,19 +55,19 @@
 				\caption{Conversion with inter-mapping phase}
 			\end{figure}
 			
-			\begin{figure}[h!]
+			\begin{figure}[H]
 				\centering
-				\begin{tikzpicture}[auto]
+				\begin{tikzpicture}[auto,node distance=0,on grid=false]
 				    % Place nodes
 				    \node (d0) {};
-				    \node [right of=d0](from) {UTF-8};
-				    \node [right of=from](d1) {:};
-				    \node [right of=d1] (inter) {UPPER};
-				    \node [right of=inter](d2) {:};
-				    \node [right of=d2] (inter2) {FULL};
-				    \node [right of=inter2](d3) {:};
-				    \node [right of=d3] (to) {UTF-8};
-				    \node [right of=to] (d4) {};			
+				    \node [right=of d0](from) {UTF-8};
+				    \node [right=of from](d1) {:};
+				    \node [right=of d1] (inter) {UPPER};
+				    \node [right=of inter](d2) {:};
+				    \node [right=of d2] (inter2) {FULL};
+				    \node [right=of inter2](d3) {:};
+				    \node [right=of d3] (to) {UTF-8};
+				    \node [right=of to] (d4) {};			
 					
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
 	(d0) -- (d1) node [black,midway,yshift=-1cm] { from };
@@ -80,19 +85,19 @@
 				\caption{Conversion with multiple inter-mapping phases}
 			\end{figure}
 	
-			\begin{figure}[h!]
+			\begin{figure}[H]
 				\centering
-				\begin{tikzpicture}[auto]
+				\begin{tikzpicture}[auto,node distance=0,on grid=false]
 				    % Place nodes
 				    \node (d0) {};
-				    \node [right of=d0] (from) {UTF-8};
-				    \node [right of=from] (d1) {:};
-				    \node [right of=d1] (to) {BIG5};
-				    \node [right of=to] (d2) {$|$};
-				    \node [right of=d2] (from2) {BIG5};
-				    \node [right of=from2](d3) {:};
-				    \node [right of=d3](to2) {UTF-8};
-				    \node [right of=to2] (d4) {};
+				    \node [right=of d0] (from) {UTF-8};
+				    \node [right=of from] (d1) {:};
+				    \node [right=of d1] (to) {BIG5};
+				    \node [right=of to] (d2) {$|$};
+				    \node [right=of d2] (from2) {BIG5};
+				    \node [right=of from2](d3) {:};
+				    \node [right=of d3](to2) {UTF-8};
+				    \node [right=of to2] (d4) {};
 					
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d0) -- (d1) node [black,midway,yshift=-1cm] { from };
 				
@@ -106,18 +111,18 @@
 				\caption{Cascaded conversions}
 			\end{figure}
 		
-		\section{Codecs \& Fallback}
-			\begin{figure}[h!]
+		\subsection{Codecs \& Fallback}
+			\begin{figure}[H]
 				\centering
-				\begin{tikzpicture}[auto]
+				\begin{tikzpicture}[auto,node distance=0,on grid=false]
 				    % Place nodes
 				    \node (d0) {};
-				    \node [right of=d0] (from) {UTF-8};
-				    \node [right of=from] (d1) {:};
-				    \node [right of=d1] (to) {ASCII};
-				    \node [right of=to] (d2) {,};
-				    \node [right of=d2] (from2) {3F};
-				    \node [right of=from2] (d3) {};
+				    \node [right=of d0] (from) {UTF-8};
+				    \node [right=of from] (d1) {:};
+				    \node [right=of d1] (to) {ASCII};
+				    \node [right=of to] (d2) {,};
+				    \node [right=of d2] (from2) {3F};
+				    \node [right=of from2] (d3) {};
 					
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d0) -- (d1) node [black,midway,yshift=-1cm] { from };
 				
@@ -126,54 +131,56 @@
 				\end{tikzpicture}
 				\caption{Fallback codec}
 			\end{figure}
-		\section{Codec argument}
-			\begin{figure}[h!]
+			
+		\subsection{Codec argument}
+			\begin{figure}[H]	
 				\centering
-				\begin{tikzpicture}[auto]
+				\begin{tikzpicture}[auto,node distance=0,on grid=false]
 				    % Place nodes
 				    \node (d0) {};
-				    \node [right of=d0] (from) {UTF-8};
-				    \node [right of=from] (d1) {:};
-				    \node [right of=d1] (to) {ASCII};
-				    \node [right of=to] (d2) {,};
-				    \node [right of=d2] (to2) {ANY\#3F};
-				    \node [right of=from2] (d3) {};
+				    \node [right=of d0] (from) {UTF-8};
+				    \node [right=of from] (d1) {:};
+				    \node [right=of d1] (to) {ASCII};
+				    \node [right=of to] (d2) {,};
+				    \node [right=of d2] (to2) {ANY\#3F};
+				    \node [right=of from2] (d3) {};
 				
 				\end{tikzpicture}
 				\caption{Passing argument to codec}
 			\end{figure}
-			\begin{figure}[h!]
+			
+			\begin{figure}[H]
 				\centering
-				\begin{tikzpicture}[auto]
+				\begin{tikzpicture}[auto,node distance=0,on grid=false]
 				    % Place nodes
 				    \node (d0) {};
-				    \node [right of=d0](from) {UTF-8};
-				    \node [right of=from](d1) {:};
-				    \node [right of=d1] (to) {ASCII};
-				    \node [right of=to] (d2) {,};
-				    \node [right of=d2] (to2) {ESCAPE\#PREFIX=2575};
-				    \node [right of=from2] (d3) {};
+				    \node [right=of d0](from) {UTF-8};
+				    \node [right=of from](d1) {:};
+				    \node [right=of d1] (to) {ASCII};
+				    \node [right=of to] (d2) {,};
+				    \node [right=of d2] (to2) {ESCAPE\#PREFIX=2575};
+				    \node [right=of to2] (d3) {};
 				
 				\end{tikzpicture}
 				\caption{Passing argument to codec in key=value form}
 			\end{figure}
-			\begin{figure}[h!]
+			
+			\begin{figure}[H]
 				\centering
-				\begin{tikzpicture}[auto]
+				\begin{tikzpicture}[auto,node distance=0,on grid=false,node distance=0,on grid=false]
 				    % Place nodes
 				    \node (d0) {};
-				    \node [right of=d0](from) {UTF-8};
-				    \node [right of=from](d1) {:};
-				    \node [right of=d1] (to) {ASCII};
-				    \node [right of=to] (d2) {,};
-				    \node [right of=d2] (to2) {ESCAPE\#PREFIX=262378\&SUFFIX=3B};
-				    \node [right of=from2] (d3) {};
+				    \node [right=of d0](from) {UTF-8};
+				    \node [right=of from](d1) {:};
+				    \node [right=of d1] (to) {ASCII};
+				    \node [right=of to] (d2) {,};
+				    \node [right=of d2] (to2) {ESCAPE\#PREFIX=262378\&SUFFIX=3B};
+				    \node [right=of to2] (d3) {};
 				
 				\end{tikzpicture}
 				\caption{Passing multiple arguments to codec}
 			\end{figure}
 
-	\chapter{Type \& Flag}
-
+	\section{Type \& Flag}
 
 \end{document}
