@@ -167,7 +167,7 @@
 			
 			\begin{figure}[H]
 				\centering
-				\begin{tikzpicture}[auto,node distance=0,on grid=false,node distance=0,on grid=false]
+				\begin{tikzpicture}[auto,node distance=0,on grid=false]
 				    % Place nodes
 				    \node (d0) {};
 				    \node [right=of d0](from) {UTF-8};
@@ -182,5 +182,26 @@
 			\end{figure}
 
 	\section{Type \& Flag}
-
+		\subsection{Type}
+			\paragraph{}
+				\begin{table}[H]
+					\centering
+					\begin{tabular}{|c | l | c | c|}
+						\hline
+						ID & Description & Provider(from) & Consumer(to)\\
+						\hline
+						00 & Bsdconv special characters & BSDCONV\_KEYWORD & BSDCONV\_KEYWORD\\
+						01 & Unicode & Most decoder & Most encoder\\
+						02 & CNS11643 & CNS11643 & CNS11643\\
+						03 & Byte & BYTE; ESCAPE & BYTE; ESCAPE\#MODE=\{8,16\}\\
+						04 & Chinese components & inter/ZH\_DECOMP & inter/ZH\_COMP\\
+						1B & ANSI control sequence & ANSI-CONTROL & -\\
+						\hline
+					\end{tabular}
+					\caption{Types and its provider/consumer (just to name a few)}
+				\end{table}
+			\paragraph{}
+				As for the intersection of CNS11643 and Unicode, from/CNS11643 does conversion to unicode type if possible. Vice versa, to/CNS11643 does conversion from unicode type if possible.
+			\paragraph{}
+				
 \end{document}
