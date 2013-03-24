@@ -184,6 +184,10 @@
 			\end{figure}
 	\clearpage
 	\section{Type \& Flag}
+		\tikzstyle{data} = [rectangle, draw, text width=2em, text centered]
+		\tikzstyle{type} = [rectangle, draw, fill=blue!30, text width=2em, text centered]
+		\tikzstyle{flag} = [rectangle, fill=yellow, text width=2em, text centered]
+
 		\subsection{Type}
 			\paragraph{}
 				\begin{table}[H]
@@ -211,16 +215,15 @@
 					    \node [below=0 of input] {Input (UTF-8 literal)};
 					    \node [ellipse,draw,right=of input] (decoder) {ASCII,BYTE : ...};
 					    \node [below=0 of decoder] {Decoder};
-						\tikzstyle{data} = [rectangle, draw,    text width=2em, text centered]
 					    \node [rectangle,draw,right=of decoder] (internal) {
 							\begin{tikzpicture}[node distance=3mm]
-								\node [data,fill=blue!30](n0){01};
+								\node [type](n0){01};
 								\node [below=0 of n0,data](n1){41};
-								\node [right=of n0,data,fill=blue!30](n2){03};
+								\node [right=of n0,type](n2){03};
 								\node [below=0 of n2,data](n3){E2};
-								\node [right=of n2,data,fill=blue!30](n4){03};
+								\node [right=of n2,type](n4){03};
 								\node [below=0 of n4,data](n5){88};
-								\node [right=of n4,data,fill=blue!30](n6){03};
+								\node [right=of n4,type](n6){03};
 								\node [below=0 of n6,data](n7){80};
 								\draw [->] (n0) -- (n2);
 								\draw [->] (n2) -- (n4);
@@ -263,5 +266,90 @@
 					\end{tikzpicture}
 					\caption{Fallback \& Type}
 				\end{figure}
+
 		\subsection{Flag}
+			\paragraph{}
+				%ESCAPE:UNICODE,BYTE$|$SKIP,UTF-8:UTF-8
+				\begin{figure}[H]
+					\centering
+					\begin{tikzpicture}[auto,node distance=0.5cm,on grid=false]
+					    % Place nodes
+					    \node [rectangle,draw] (input) {\%u03B1\%CE\%B2};
+					    \node [below=0 of input] {Input (UTF-8 literal)};
+					    \node [ellipse,draw,right=1cm of input] (decoder) {ESCAPE : ...};
+					    \node [below=0 of decoder] {Decoder};
+					    \node [rectangle,draw,right=1cm of decoder] (internal) {
+							\begin{tikzpicture}[node distance=3mm]
+								\node [type](n0){01};
+								\node [below=0 of n0,data](n1){03};
+								\node [below=0 of n1,data](n2){B1};
+								\node [right=of n0,type](n3){03};
+								\node [below=0 of n3,data](n4){CE};
+								\node [right=of n3,type](n5){03};
+								\node [below=0 of n5,data](n6){B2};
+								\draw [->] (n0) -- (n3);
+								\draw [->] (n3) -- (n5);
+							\end{tikzpicture}
+					    };
+					    \node [below=0 of internal] {Internal data};
+					    \node [ellipse,draw,below=3cm of input] (encoder) {... : UNICODE,BYTE};
+					    \node [below=0 of encoder] {Encoder};
+					    					    \node [rectangle,draw,right=of encoder] (internal2) {
+							\begin{tikzpicture}[node distance=3mm]
+								\node [type](n0){01};
+								\node [below=0 of n0,data](n1){03};
+								\node [below=0 of n1,data](n2){B1};
+								\node [below=0 of n2,flag]{SKIP};
+								\node [right=of n0,data](n3){CE};
+								\node [right=of n3,data](n5){B2};
+								\draw [->] (n0) -- (n3);
+								\draw [->] (n3) -- (n5);
+							\end{tikzpicture}
+					    };
+						\node [below=0 of internal2] {Internal data};
+						\node [ellipse,draw,right=of internal2] (decoder2) {SKIP,UTF-8 : ...};
+						\node [below=0 of decoder2] {Decoder};
+					    \node [rectangle,draw,below=3cm of encoder] (internal3) {
+							\begin{tikzpicture}[node distance=3mm]
+								\node [type](n0){01};
+								\node [below=0 of n0,data](n1){03};
+								\node [below=0 of n1,data](n2){B1};
+								\node [below=0 of n2,flag]{SKIP};
+								\node [right=of n0,type](n3){01};
+								\node [below=0 of n3,data](n4){03};
+								\node [below=0 of n4,data](n5){B2};
+								\draw [->] (n0) -- (n3);
+							\end{tikzpicture}
+					    };
+					    \node [below=0 of internal3] {Internal data};
+						\node [ellipse,draw,right=of internal3] (encoder2) {... : UTF-8};
+						\node [below=0 of encoder2] {Encoder};
+					    \node [rectangle,draw,right=of encoder2] (internal4) {
+							\begin{tikzpicture}[node distance=3mm]
+								\node [data](n0){CE};
+								\node [below=0 of n0,data](n1){B1};
+								\node [above=0 of n0]{"$\alpha$"};
+								\node [right=of n0,data](n2){CE};
+								\node [below=0 of n2,data](n3){B2};
+								\node [above=0 of n2]{"$\beta$"};
+								\draw [->] (n0) -- (n2);
+							\end{tikzpicture}
+					    };
+					    \node [below=0 of internal4] {Internal data};
+   					    \node [right=2cm of internal4,rectangle,draw] (output) {$\alpha\beta$};
+					    \node [below=0 of output] {Output (UTF-8 literal)};
+
+						\draw [->] (input) -- (decoder);
+						\draw [->] (decoder) -- (internal);
+						\draw [->] (internal.east) -- ++ (1,0) -- ++ (0,-2) -| (encoder.north);
+						\draw [->] (encoder) -- (internal2);
+						\draw [->] (internal2) -- (decoder2);
+						\draw [->] (decoder2.east) -- ++ (0.3,0) -- ++ (0,-2) -| (internal3.north);
+						\draw [->] (internal3) -- (encoder2);
+						\draw [->] (encoder2) -- (internal4);
+						\draw [->] (internal4) -- (output);
+
+					\end{tikzpicture}
+					\caption{Flag, to/UNICODE \& from/SKIP}
+				\end{figure}
 \end{document}
