@@ -257,10 +257,11 @@
 					
 						\draw [->] (input) -- (decoder);
 						\draw [->] (decoder) -- (internal);
-						\draw [->] (internal.east) -- ++ (1,0) -- ++ (0,-2) -| (encoder.north);
+						\draw [->] (internal.east) -- ++ (0.5,0) -- ++ (0,-2) -| (encoder.north);
 						\draw [->] (encoder) -- (internal2);
 						\draw [->] (internal2) -- (output);
 					\end{tikzpicture}
 					\caption{Fallback \& Type}
 				\end{figure}
+		\subsection{Flag}
 \end{document}

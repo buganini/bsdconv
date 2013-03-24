@@ -22,12 +22,14 @@
 struct my_s{
 	struct data_st prefix;
 	struct data_st suffix;
+	int filter;
 	int mode;
 };
 
 void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	CURRENT_CODEC(ins)->priv=r;
+	r->filter=1;
 	r->mode=16;
 	r->prefix.data=strdup("%");
 	r->prefix.len=1;
@@ -47,8 +49,12 @@ void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 				r->mode=10;
 			}else if(strcmp(arg->ptr, "OCT")==0 || strcmp(arg->ptr, "8")==0){
 				r->mode=8;
-			}else if(strcmp(arg->ptr, "UNICODE")==0){
-				r->mode=0;
+			}
+		}else if(strcmp(arg->key, "FILTER")==0){
+			if(strcmp(arg->ptr, "UNICODE")==0 || strcmp(arg->ptr, "1")==0 || strcmp(arg->ptr, "01")==0){
+				r->filter=1;
+			}else if(strcmp(arg->ptr, "BYTE")==0 || strcmp(arg->ptr, "3" || strcmp(arg->ptr, "03")==0)==0){
+				r->filter=3;
 			}
 		}
 		arg=arg->next;
@@ -68,8 +74,8 @@ void cbconv(struct bsdconv_instance *ins){
 	unsigned int u;
 	char *p;
 
-	if(this_phase->curr->len>1 && UCP(this_phase->curr->data)[0]==1){ //unicode
-		if(t->mode==0){
+	if(t->filter==1 && this_phase->curr->len>1 && UCP(this_phase->curr->data)[0]==1){ //unicode
+		if(t->mode==16){
 			DATA_MALLOC(this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
@@ -106,7 +112,7 @@ void cbconv(struct bsdconv_instance *ins){
 		}else{
 			ins->phase[ins->phase_index].state.status=DEADEND;
 		}
-	}else if(this_phase->curr->len==2 && UCP(this_phase->curr->data)[0]==3){ //byte
+	}else if(t->filter==3 && this_phase->curr->len==2 && UCP(this_phase->curr->data)[0]==3){ //byte
 		if(t->mode==8){
 			DATA_MALLOC(this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;

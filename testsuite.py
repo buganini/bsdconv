@@ -20,7 +20,8 @@ iotest=[
 	["ansi-control,utf-8:split:bsdconv_keyword,bsdconv","a\033[1mb","0161,1B5B316D,0162,"],
 	["ascii-named-html-entity:utf-8","&uuml;","ü"],
 	["ascii-numeric-html-entity:utf-8","&#x6e2c;&#35430;","測試"],
-	["utf-8:ascii-hex-numeric-html-entity","測\n","&#x6E2C;&#xA;"],
+	["utf-8:ascii-hex-numeric-html-entity","測\n","&#x6E2C;&#x0A;"],
+	["utf-8:ascii-dec-numeric-html-entity","測\n","&#28204;&#10;"],
 	["utf-8:ascii-named-html-entity","Ç","&Ccedil;"],
 	["bsdconv:utf-8","016e2c","測"],
 	["bsdconv:utf-8","016e2c,018a66","測試"],
@@ -35,7 +36,7 @@ iotest=[
 	["escape,utf-8:unicode,byte|skip,big5:utf-8","%u6e2c%b8%d5功能","測試功能"],
 	["escape,ascii-numeric-html-entity,utf-8:unicode,byte|skip,big5:utf-8","%u6e2c%b8%d5&#x529F;能","測試功能"],
 	["escape:unicode,byte|skip,utf-8:utf-8","\\346\\270\\254\\350\\251\\246","測試"],
-	["utf-8:ascii,ascii-escaped-unicode","test測試","test\\u6e2c\\u8a66"],
+	["utf-8:ascii,ascii-escaped-unicode","test測試","test\\u6E2C\\u8A66"],
 	["utf-8:ascii-html-cns11643-img","測","<img class=\"cns11643_img\" src=\"http://www.cns11643.gov.tw/AIDB/png.do?page=1&code=6041\" />"],
 	["utf-8:ascii-html-info","測\n","<a href=\"http://www.cns11643.gov.tw/AIDB/query_general_view.do?page=1&code=6041\"><img src=\"http://www.cns11643.gov.tw/AIDB/png.do?page=1&code=6041\" /></a><a href=\"http://www.fileformat.info/info/unicode/char/0A/index.htm\"><img class=\"unicode_img\" src=\"http://www.unicode.org/cgi-bin/refglyph?24-A\" /></a>"],
 	["utf-8:ascii-html-unicode-img","測","<img class=\"unicode_img\" src=\"http://www.unicode.org/cgi-bin/refglyph?24-6E2C\" />"],
@@ -77,11 +78,11 @@ iotest=[
 	["utf-8:ibm-937|ibm-937:utf-8","編碼表","編碼表"],
 	["utf-8:ibm-939|ibm-939:utf-8","ドラえもん","ドラえもん"],
 	["utf-8:gb18030|gb18030:utf-8","标准码編碼表ドラえもん","标准码編碼表ドラえもん"],
-	["utf-8:ascii,escape#mode=unicode&prefix=2575","測a試b好","%u6E2Ca%u8A66b%u597D"],
-	["utf-8:big5|ascii,byte:ascii,escape#mode=hex&prefix=5c78","測a試b好","\\xB4\\xFAa\\xB8\\xD5b\\xA6n"],
-	["utf-8:big5|ascii,byte:ascii,escape#mode=oct&prefix=5c","測a試b好","\\264\\372a\\270\\325b\\246n"],
+	["utf-8:ascii,escape#filter=unicode&mode=16&prefix=2575","測a試b好","%u6E2Ca%u8A66b%u597D"],
+	["utf-8:big5|ascii,byte:ascii,escape#filter=byte&mode=hex&prefix=5c78","測a試b好","\\xB4\\xFAa\\xB8\\xD5b\\xA6n"],
+	["utf-8:big5|ascii,byte:ascii,escape#filter=byte&mode=oct&prefix=5c","測a試b好","\\264\\372a\\270\\325b\\246n"],
 	["utf-8:big5,unicode|skip,ascii,byte:ascii,url","測test喆試","%B4%FAtest%u5586%B8%D5"],
-	["utf-8:ascii,escape#prefix=2623&mode=10&suffix=3b","測test喆試","&#28204;test&#21894;&#35430;"]
+	["utf-8:ascii,escape#filter=unicode&prefix=2623&mode=10&suffix=3b","測test喆試","&#28204;test&#21894;&#35430;"]
 ]
 
 infotest=[

@@ -236,7 +236,7 @@ from/ESCAPE
 	測試
 
 to/ESCAPE
-	> echo 測test試 | bsdconv 'utf-8:ascii,url' #URL === ESCAPE#MODE=UNICODE&PREFIX=2575,ESCAPE#MODE=16&PREFIX=25
+	> echo 測test試 | bsdconv 'utf-8:ascii,url' #URL === ESCAPE#MODE=16&PREFIX=2575,ESCAPE#MODE=16&PREFIX=25
 	%u6E2Ctest%u8A66
 	> echo 測test喆試 | bsdconv 'utf-8:big5,unicode|skip,ascii,byte:ascii,url'
 	%B4%FAtest%u5586%B8%D5
