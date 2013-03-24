@@ -43,6 +43,8 @@ void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 		}else if(strcmp(arg->key, "MODE")==0){
 			if(strcmp(arg->ptr, "HEX")==0 || strcmp(arg->ptr, "16")==0){
 				r->mode=16;
+			}else if(strcmp(arg->ptr, "DEC")==0 || strcmp(arg->ptr, "10")==0){
+				r->mode=10;
 			}else if(strcmp(arg->ptr, "OCT")==0 || strcmp(arg->ptr, "8")==0){
 				r->mode=8;
 			}else if(strcmp(arg->ptr, "UNICODE")==0){
@@ -59,81 +61,93 @@ void cbdestroy(struct bsdconv_instance *ins){
 	free(r);
 }
 
-
-#define TAILIZE(p) while(*p){ p++ ;}
-
-#define prefix() do{ \
-	if(*(t->prefix.data)){ \
-		DATA_MALLOC(this_phase->data_tail->next); \
-		this_phase->data_tail=this_phase->data_tail->next; \
-		this_phase->data_tail->next=NULL; \
-		this_phase->data_tail->flags=0; \
-		\
-		this_phase->data_tail->len=t->prefix.len; \
-		this_phase->data_tail->data=t->prefix.data; \
-	} \
-}while(0)
-
-#define suffix() do{ \
-	if(*(t->suffix.data)){ \
-		DATA_MALLOC(this_phase->data_tail->next); \
-		this_phase->data_tail=this_phase->data_tail->next; \
-		this_phase->data_tail->next=NULL; \
-		this_phase->data_tail->flags=0; \
-		\
-		this_phase->data_tail->len=t->suffix.len; \
-		this_phase->data_tail->data=t->suffix.data; \
-	} \
-}while(0)
-
 void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_s *t=CURRENT_CODEC(ins)->priv;
 	int i;
+	unsigned int u;
 	char *p;
 
-	if(this_phase->curr->len>1 && UCP(this_phase->curr->data)[0]==1 && t->mode==0){ //unicode
-		prefix();
-		DATA_MALLOC(this_phase->data_tail->next);
-		this_phase->data_tail=this_phase->data_tail->next;
-		this_phase->data_tail->next=NULL;
-		this_phase->data_tail->flags=F_FREE;
+	if(this_phase->curr->len>1 && UCP(this_phase->curr->data)[0]==1){ //unicode
+		if(t->mode==0){
+			DATA_MALLOC(this_phase->data_tail->next);
+			this_phase->data_tail=this_phase->data_tail->next;
+			this_phase->data_tail->next=NULL;
+			this_phase->data_tail->flags=F_FREE;
+			this_phase->data_tail->len=(this_phase->curr->len-1)*2+t->prefix.len + t->suffix.len;
+			this_phase->data_tail->data=malloc(this_phase->data_tail->len+1);
+			memcpy(this_phase->data_tail->data, t->prefix.data, t->prefix.len);
+			p=this_phase->data_tail->data+t->prefix.len;
 
-		this_phase->data_tail->len=(this_phase->curr->len-1)*2;
-		p=this_phase->data_tail->data=malloc(this_phase->data_tail->len+1);
-		for(i=1;i<this_phase->curr->len;++i){
-			sprintf(p,"%02X", UCP(this_phase->curr->data)[i]);
-			TAILIZE(p);
+			for(i=1;i<this_phase->curr->len;++i){
+				p+=sprintf(p,"%02X", UCP(this_phase->curr->data)[i]);
+			}
+			memcpy(p, t->suffix.data, t->suffix.len);
+			ins->phase[ins->phase_index].state.status=NEXTPHASE;
+		}else if(t->mode==10){
+			DATA_MALLOC(this_phase->data_tail->next);
+			this_phase->data_tail=this_phase->data_tail->next;
+			this_phase->data_tail->next=NULL;
+			this_phase->data_tail->flags=F_FREE;
+			this_phase->data_tail->len=(this_phase->curr->len-1)*3+t->prefix.len + t->suffix.len;
+			this_phase->data_tail->data=malloc(this_phase->data_tail->len+1);
+			memcpy(this_phase->data_tail->data, t->prefix.data, t->prefix.len);
+			p=this_phase->data_tail->data+t->prefix.len;
+
+			u=0;
+			for(i=1;i<this_phase->curr->len;++i){
+				u*=256;
+				u+=UCP(this_phase->curr->data)[i];
+			}
+			p+=sprintf(p, "%u", u);
+			memcpy(p, t->suffix.data, t->suffix.len);
+			this_phase->data_tail->len=(p+t->suffix.len)-CP(this_phase->data_tail->data);
+			ins->phase[ins->phase_index].state.status=NEXTPHASE;
+		}else{
+			ins->phase[ins->phase_index].state.status=DEADEND;
 		}
-		suffix();
-		ins->phase[ins->phase_index].state.status=NEXTPHASE;
 	}else if(this_phase->curr->len==2 && UCP(this_phase->curr->data)[0]==3){ //byte
 		if(t->mode==8){
-			prefix();
 			DATA_MALLOC(this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
 			this_phase->data_tail->flags=F_FREE;
-			this_phase->data_tail->len=3;
-			this_phase->data_tail->data=malloc(3);
+			this_phase->data_tail->len=3+t->prefix.len + t->suffix.len;
+			this_phase->data_tail->data=malloc(this_phase->data_tail->len+1);
+			memcpy(this_phase->data_tail->data, t->prefix.data, t->prefix.len);
+			p=this_phase->data_tail->data+t->prefix.len;
 			i=UCP(this_phase->curr->data)[1];
-			UCP(this_phase->data_tail->data)[2]=i%8+'0';
+			*UCP(p+2)=i%8+'0';
 			i/=8;
-			UCP(this_phase->data_tail->data)[1]=i%8+'0';
+			*UCP(p+1)=i%8+'0';
 			i/=8;
-			UCP(this_phase->data_tail->data)[0]=i+'0';
-			suffix();
+			*UCP(p)=i+'0';
+			memcpy(p+3, t->suffix.data, t->suffix.len);
+			ins->phase[ins->phase_index].state.status=NEXTPHASE;
+		}else if(t->mode==10){
+			DATA_MALLOC(this_phase->data_tail->next);
+			this_phase->data_tail=this_phase->data_tail->next;
+			this_phase->data_tail->next=NULL;
+			this_phase->data_tail->flags=F_FREE;
+			this_phase->data_tail->len=3+t->prefix.len + t->suffix.len;
+			this_phase->data_tail->data=malloc(this_phase->data_tail->len+1);
+			memcpy(this_phase->data_tail->data, t->prefix.data, t->prefix.len);
+			p=this_phase->data_tail->data+t->prefix.len;
+			p+=sprintf(p, "%d", UCP(this_phase->curr->data)[1]);
+			memcpy(p, t->suffix.data, t->suffix.len);
+			this_phase->data_tail->len=(p+t->suffix.len)-CP(this_phase->data_tail->data);
 			ins->phase[ins->phase_index].state.status=NEXTPHASE;
 		}else if(t->mode==16){
-			prefix();
 			DATA_MALLOC(this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
 			this_phase->data_tail->flags=F_FREE;
-			this_phase->data_tail->len=2;
-			this_phase->data_tail->data=malloc(3);
-			sprintf(this_phase->data_tail->data, "%02X", UCP(this_phase->curr->data)[1]);
-			suffix();
+			this_phase->data_tail->len=2+t->prefix.len + t->suffix.len;
+			this_phase->data_tail->data=malloc(this_phase->data_tail->len+1);
+			memcpy(this_phase->data_tail->data, t->prefix.data, t->prefix.len);
+			p=this_phase->data_tail->data+t->prefix.len;
+			p+=sprintf(p, "%02X", UCP(this_phase->curr->data)[1]);
+			memcpy(p, t->suffix.data, t->suffix.len);
 			ins->phase[ins->phase_index].state.status=NEXTPHASE;
 		}else{
 			ins->phase[ins->phase_index].state.status=DEADEND;
