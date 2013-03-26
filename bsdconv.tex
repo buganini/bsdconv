@@ -225,6 +225,7 @@
 
 		\subsection{Type}
 			\paragraph{}
+				A code point packet note its type at first byte.
 				\begin{table}[H]
 					\centering
 					\begin{tabular}{|>{\columncolor{blue!30}}c | l | c | c|}
@@ -301,10 +302,13 @@
 					\end{tikzpicture}
 					\caption{Fallback \& Type}
 				\end{figure}
-
+		\clearpage
+		
 		\subsection{Flag}
 			\paragraph{}
-				%ESCAPE:UNICODE,BYTE$|$SKIP,UTF-8:UTF-8
+			A code point packet carries its own flags. Currently there are two types of flag, \textbf{FREE} and \textbf{SKIP}. Flag \textbf{FREE} indicates that the packet buffer needs to be recycled or released, this is used only when programming is involved. Flag \textbf{SKIP} is (currently only) added by codec to/UNICODE and used by codec from/SKIP to identify which packets have already been decoded and needs to be passed through in \textbf{from} phase. 
+			\paragraph{}
+			The code point packets structure is retained, including flags, within cascaded conversions, but not for shell pipe. Figure 11 demonstrate the flow of converion "ESCAPE:UNICODE,BYTE$|$SKIP,UTF-8:UTF-8".
 				\begin{figure}[H]
 					\centering
 					\begin{tikzpicture}[auto,node distance=0.5cm,on grid=false]
@@ -387,4 +391,8 @@
 					\end{tikzpicture}
 					\caption{Flag, to/UNICODE \& from/SKIP}
 				\end{figure}
+				
+		\subsection{Helper codecs}
+			\paragraph{}
+			Codec from/bsdconv can be used to input internal data structure, and codec to/bsdconv\_stdout can be used to inspect type and flags.
 \end{document}
