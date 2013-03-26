@@ -12,6 +12,10 @@
 	\tableofcontents
 	\section{Syntax}
 		\subsection{Phases \& Cascade}
+			\paragraph{}
+			There are three types of co1nversion phases defined in bsdconv: \textbf{from}, \textbf{inter}, \textbf{to}. The \textbf{from} phase takes byte sequence and decodes it into a list of code points, on the other hand, the \textbf{to} phase encodes the list of code points back to byte sequence. The \textbf{inter} phase does code point to code point mapping.
+			\paragraph{}
+			A basic conversion consists of \textbf{from} and \textbf{to} phases. Search of codec name is case insensitive.
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
@@ -33,6 +37,8 @@
 				\caption{Basic two phases conversion}
 			\end{figure}
 			
+			\paragraph{}
+			Between \textbf{from} and \textbf{to} phases, we can have a \textbf{inter} phase.
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]			
@@ -57,6 +63,8 @@
 				\caption{Conversion with inter-mapping phase}
 			\end{figure}
 			
+			\paragraph{}
+			There can be more than one \textbf{inter} phases.
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
@@ -86,7 +94,26 @@
 				\end{tikzpicture}
 				\caption{Conversion with multiple inter-mapping phases}
 			\end{figure}
-	
+
+			\paragraph{}
+			A \textbf{inter} phase can be used standalonely, mostly in programmatic way.
+			\begin{figure}[H]
+				\centering
+				\begin{tikzpicture}[auto,node distance=0,on grid=false]
+
+				    % Place nodes
+				    \node (d0) {};
+				    \node [right=of d0](inter) {HALF};
+				    \node [right=of inter] (d1) {};
+					
+					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
+(d0)--(d1)  node  [black,midway,yshift=-1cm] { inter };
+				\end{tikzpicture}
+				\caption{Standalone inter-mapping phase}
+			\end{figure}
+			
+			\paragraph{}
+			Conversions can be cascaded with pipe symbol. In most cases it is equivalent to shell pipe unless the use of codecs manipulating flag (described in section 2.1).
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
@@ -114,6 +141,8 @@
 			\end{figure}
 		
 		\subsection{Codecs \& Fallback}
+			\paragraph{}
+			A phase consists of one or more codecs, separated by comma. The latter codecs will be utilized if and only if the former codecs fail to consume the incoming data, once a codec finish its task, the first codec will be up again for upcoming data.
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
@@ -135,7 +164,9 @@
 			\end{figure}
 			
 		\subsection{Codec argument}
-			\begin{figure}[H]	
+			\paragraph{}
+			Some codecs take arguments, after the hash symbol.
+			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
 				    % Place nodes
@@ -151,6 +182,8 @@
 				\caption{Passing argument to codec}
 			\end{figure}
 			
+			\paragraph{}
+			Some codecs take arguments in key-value form. Argument name and value consist of numbers, alphabets, hyphen and underscore, binary data are represented in hexadecimal form. 
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
@@ -164,9 +197,11 @@
 				    \node [right=of to2] (d3) {};
 				
 				\end{tikzpicture}
-				\caption{Passing argument to codec in key=value form}
+				\caption{Passing argument to codec in key-value form}
 			\end{figure}
-			
+
+			\paragraph{}
+			Multiple arguments can be passed by being concatenated with ampersand.
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
