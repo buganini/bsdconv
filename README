@@ -5,23 +5,6 @@ Documentation:
 http://www.slideshare.net/Buganini/bsdconv
 
 --
-Table format:
-from<tab>to
-
-Internal encoding:
-* Should be as unicoded as possible
-* BSDCONV special chars are prefixed with 00
-* UNICODE is prefixed with 01
-* CNS11643 is prefixed with 02
-* BYTE is prefixed with 03
-* Chinese components is prefixed with 04
-* ANSI control sequence is prefixed with 1b
-
-NOTICE:
-ASCII-compatible codecs are excluded the ascii part and named as _codec,
-with alias codec => _codec,ascii or ascii,_codec
-
---
 Compiling & Installation (FreeBSD):
 make
 sudo make install
