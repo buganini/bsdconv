@@ -2,10 +2,17 @@
 \usepackage{float}
 \usepackage{tikz}
 \usepackage{colortbl}
+\usepackage{listings}
+\lstloadlanguages{C}
+\lstset{
+language=C,
+basicstyle=\ttfamily
+}
 \usetikzlibrary{decorations.pathreplacing}
 \usetikzlibrary{positioning}
 \usetikzlibrary{shapes}
 \title{BSDCONV}
+\author{Kuan-Chung Chiu\\(buganini at gmail dot com)}
 \date{}
 \begin{document}
 	\maketitle
@@ -397,4 +404,118 @@
 		\subsection{Helper codecs}
 			\paragraph{}
 			Codec from/bsdconv can be used to input internal data structure, and codec to/bsdconv\_stdout can be used to inspect type and flags.
+
+	\section{C Programming guide}
+		\subsection{Conversion instance lifecycle}
+			\paragraph{}
+				\begin{figure}[H]
+					\centering
+					\begin{tikzpicture}[auto,node distance=0.5cm,on grid=false]
+						\tikzstyle{phase} = [rectangle, text centered]
+						\node [phase](create){bsdconv\_create()};
+						\node [phase,below=of create](init) {bsdconv\_init()};
+						\node [phase,below=of init](parameter){set input/output parameters};
+						\node [diamond,draw,below=of parameter](is_last){is last chunk};
+						\node [phase,right=of is_last](flush){set flush flag};
+						\node [phase,below=of is_last](conv){bsdconv()};
+						\node [phase,below=of conv](output){collect output};
+						\node [diamond,draw,below=of output](has_next){has next chunk};
+						\node [phase,below=of has_next](destroy){bsdconv\_destroy()};
+						\draw [->] (create) -- (init);
+						\draw [->] (init) -- (parameter);
+						\draw [->] (parameter) -- (is_last);
+						\draw [->] (is_last) -- (flush)  node[midway,above]{yes};
+						\draw [->] (is_last) -- (conv)  node[midway,right]{no};
+						\draw [->] (conv) -- (output);
+						\draw [->] (flush) -- (conv);
+						\draw [->] (output) -- (has_next);
+						\draw [->] (has_next) -- (destroy) node[near start,right]{no};
+						\draw [->] (has_next.west) -- node[near start,above]{yes} ++ (-2, 0) |- (parameter.west) node[pos=0.25,left]{next chunk};
+						\draw [->] (has_next.east) -- node[near start,above]{no} ++ (3, 0) |- (init.east) node[pos=0.25,right]{reuse instance};
+					\end{tikzpicture}
+					\caption{Conversion instance lifecycle}
+				\end{figure}
+		\clearpage
+		\subsection{Skeleton}
+			\begin{lstlisting}
+#include <bsdconv.h>
+
+bsdconv_instance *ins;
+char *buf;
+size_t len;
+ins=bsdconv_create("UTF-8:UPSIDEDOWN:UTF-8");
+bsdconv_init(ins);
+do{
+	buf=bsdconv_malloc(BUFSIZ);
+	/*
+	 * fill data into buf
+	 * len=filled data length
+	 */
+	ins->input.data=buf;
+	ins->input.len=len;
+	ins->input.flags|=F_FREE;
+	if(ins->input.len==0)
+	{ // last chunk
+		ins->flush=1;
+	}
+	/*
+ 	 * set output parameter (see section 3.3)
+ 	 */
+	bsdconv(ins);
+	/*
+	 * collect output (see section 3.3)
+	 */
+}while(ins->flush==0);
+bsdconv_destroy(ins);
+			\end{lstlisting}
+			\paragraph{}
+				For chunked conversion, input buffer should be allocated for each input to prevent content change during conversion. Output buffer with flag \textbf{FREE} is safe to be reused.
+		\subsection{Output mode}
+			\begin{tabular}{|l|l|}
+				\hline
+				ins -$>$ output\_mode & Description \\
+				\hline
+				BSDCONV\_HOLD & Hold output in memory \\
+				BSDCONV\_AUTOMALLOC & Return output buffer which should be free() after use\\
+				BSDCONV\_PREMALLOCED & Fill output into given buffer\\
+				BSDCONV\_FILE & Write output into (FILE *) stream file \\
+				BSDCONV\_FD & Write output into (int) file descriptor \\
+				BSDCONV\_NULL & Discard output \\
+				\hline
+			\end{tabular}
+			\subsubsection{BSDCONV\_HOLD}
+				\paragraph{}
+				This is default output mode after bsdconv\_init(). Usually used with BSDCONV\_AUTOMALLOC or BSDCONV\_PREMALLOCED to get squeezed output.
+			\subsubsection{BSDCONV\_AUTOMALLOC}
+				\paragraph{}
+				Output buffer will be allocated dynamically, the actual buffer size will be ins-$>$output.len + output content length, it is useful when you need to have terminating null byte.
+			\subsubsection{BSDCONV\_PREMALLOCED}
+				\paragraph{}
+				If ins-$>$output.data is NULL, the total length of content to be output will be put to ins-$>$output.len, but output will still be hold in memory. Otherwise, bsdconv() will fill as much unfragmented data as possible within the buffer size limit specified at ins-$>$output.len.
+			\subsubsection{BSDCONV\_FILE}
+				\paragraph{}
+				Output will be fwrite() to the given FILE * at ins-$>$output.data.
+			\subsubsection{BSDCONV\_FD}
+				\paragraph{}
+				Output will be write() to the given (int) file descriptor at ins-$>$output.data. Casting to \textbf{intptr\_t} (defined in $<$stdint.h$>$) is needed to eliminate compiler warning.
+			\subsubsection{BSDCONV\_NULL}
+				\paragraph{}
+				Output will be discard. This is usually used with evaluating conversion (see section 3.4).
+
+		\subsection{Counters}
+			\begin{tabular}{|c|l|c|}
+				\hline
+				ins-$>$* & Number of & Provider \\
+				\hline
+				ierr & Decoding errors & -\\
+				oerr & Encoding errors & -\\
+				full & Fullwidth code points & inter/WIDTH \\
+				half & Halfwidth code points & inter/WIDTH \\
+				ambi & Ambiguous width code points & inter/WIDTH\\
+				score & Score (according to score table) & inter/SCORE\\
+				\hline
+			\end{tabular}
+		\subsection{Memory pool issue}
+			\paragraph{}
+			In case libbsdconv and your program uses different memory pools, bsdconv\_malloc() and bsdconv\_free() should be used to replace malloc() and free().
 \end{document}
