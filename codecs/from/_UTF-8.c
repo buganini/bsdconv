@@ -23,10 +23,11 @@ struct my_s{
 	char *p, f;
 };
 
-void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	r->buf=malloc(8);
 	CURRENT_CODEC(ins)->priv=r;
+	return 1;
 }
 
 void cbinit(struct bsdconv_instance *ins){
@@ -185,7 +186,7 @@ struct my_s{
 	} ucs4;
 };
 
-void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_s *r=malloc(sizeof(struct my_s));
 	CURRENT_CODEC(ins)->priv=r;

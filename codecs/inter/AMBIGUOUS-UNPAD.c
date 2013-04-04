@@ -77,8 +77,9 @@ static const struct interval ambiguous[] = {
 	{ 0xFFFD, 0xFFFD }, { 0xF0000, 0xFFFFD }, { 0x100000, 0x10FFFD }
 };
 
-void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	CURRENT_CODEC(ins)->priv=malloc(sizeof(char));
+	return 1;
 }
 
 void cbinit(struct bsdconv_instance *ins){

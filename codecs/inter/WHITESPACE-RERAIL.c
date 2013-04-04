@@ -27,7 +27,7 @@ struct my_s{
 	size_t offsetB;
 };
 
-void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	struct my_s *t;
 	if(bsdconv_hash_has(ins, HASHKEY)){
 		t=bsdconv_hash_get(ins, HASHKEY);
@@ -37,6 +37,7 @@ void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	}
 	t->queue=NULL;
 	CURRENT_CODEC(ins)->priv=t;
+	return 1;
 }
 
 void cbinit(struct bsdconv_instance *ins){

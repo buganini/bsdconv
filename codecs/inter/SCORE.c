@@ -28,7 +28,7 @@ struct my_s{
 	FILE *score;
 };
 
-void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	char buf[256]={0};
 	char *p=getenv("BSDCONV_SCORE");
@@ -41,6 +41,7 @@ void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 		//if default score file is not available, it will fallback to builtin score table
 	}
 	CURRENT_CODEC(ins)->priv=r;
+	return 1;
 }
 
 void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){

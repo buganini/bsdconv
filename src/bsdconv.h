@@ -149,7 +149,7 @@ struct bsdconv_codec_t {
 	char *desc;
 	void (*cbconv)(struct bsdconv_instance *);
 	void (*cbflush)(struct bsdconv_instance *);
-	void (*cbcreate)(struct bsdconv_instance *, struct hash_entry *arg);
+	int (*cbcreate)(struct bsdconv_instance *, struct hash_entry *arg);
 	void (*cbinit)(struct bsdconv_instance *);
 	void (*cbctl)(struct bsdconv_instance *, int, void *, size_t);
 	void (*cbdestroy)(struct bsdconv_instance *);
@@ -242,7 +242,7 @@ void str2data(const char *, struct data_st *);
 //Callback function interface
 void cbconv(struct bsdconv_instance *);
 void cbflush(struct bsdconv_instance *);
-void cbcreate(struct bsdconv_instance *, struct hash_entry *arg);
+int cbcreate(struct bsdconv_instance *, struct hash_entry *arg);
 void cbinit(struct bsdconv_instance *);
 void cbctl(struct bsdconv_instance *, int, void *, size_t);
 void cbdestroy(struct bsdconv_instance *);

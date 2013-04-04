@@ -27,7 +27,7 @@ struct my_s{
 	long remain;
 };
 
-void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	char *p;
 	struct my_s *r=CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));	
 
@@ -46,6 +46,8 @@ void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	}
 
 	r->ins=bsdconv_create("WIDTH");
+	
+	return 1;
 }
 
 void cbinit(struct bsdconv_instance *ins){

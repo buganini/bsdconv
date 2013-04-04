@@ -26,7 +26,7 @@ struct my_s{
 	int mode;
 };
 
-void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	CURRENT_CODEC(ins)->priv=r;
 	r->filter=1;
@@ -53,12 +53,15 @@ void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 		}else if(strcmp(arg->key, "FILTER")==0){
 			if(strcmp(arg->ptr, "UNICODE")==0 || strcmp(arg->ptr, "1")==0 || strcmp(arg->ptr, "01")==0){
 				r->filter=1;
-			}else if(strcmp(arg->ptr, "BYTE")==0 || strcmp(arg->ptr, "3" || strcmp(arg->ptr, "03")==0)==0){
+			}else if(strcmp(arg->ptr, "BYTE")==0 || strcmp(arg->ptr, "3")==0 || strcmp(arg->ptr, "03")==0){
 				r->filter=3;
 			}
+		}else{
+			return 0;
 		}
 		arg=arg->next;
 	}
+	return 1;
 }
 void cbdestroy(struct bsdconv_instance *ins){
 	struct my_s *r=CURRENT_CODEC(ins)->priv;

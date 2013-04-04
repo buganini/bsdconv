@@ -19,8 +19,9 @@
 #include "../../src/bsdconv.h"
 
 
-void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	CURRENT_CODEC(ins)->priv=bsdconv_create("ASCII:PASS");
+	return 1;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){

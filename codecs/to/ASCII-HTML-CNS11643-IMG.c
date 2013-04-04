@@ -23,8 +23,9 @@
 
 #define TAILIZE(p) while(*p){ p++ ;}
 
-void cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	CURRENT_CODEC(ins)->priv=bsdconv_create("CNS11643");
+	return 1;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
