@@ -55,7 +55,8 @@ inline void strtoupper(char *s){
 	}
 }
 
-inline void _cbcreate(struct bsdconv_instance *ins, int p, int c){
+inline int _cbcreate(struct bsdconv_instance *ins, int p, int c){
+	int r;
 	char *argv;
 	if(ins->phase[p].codec[c].argv)
 		argv=strdup(ins->phase[p].codec[c].argv);
@@ -79,13 +80,14 @@ inline void _cbcreate(struct bsdconv_instance *ins, int p, int c){
 		}		
 	}
 
-	ins->phase[p].codec[c].cbcreate(ins, arg);
+	r=ins->phase[p].codec[c].cbcreate(ins, arg);
 	free(argv);
 	while(arg){
 		tmp=arg->next;
 		free(arg);
 		arg=tmp;
 	}
+	return r;
 }
 
 void str2data(const char *s, struct data_st *d){
