@@ -256,7 +256,15 @@ basicstyle=\ttfamily
 					\centering
 					\begin{tikzpicture}[auto,node distance=1cm,on grid=false]
 					    % Place nodes
-					    \node [rectangle,draw] (input) {A$\forall$};
+					    \node (table){\begin{tabular}{|c|c|c|}
+					    	\hline
+					    	Entity & Unicode & UTF-8 Hex \\
+					    	\hline
+					    	A & U+0041 & 41 \\
+					    	$\forall$ & U+2200 & E28880 \\
+					    	\hline
+						    \end{tabular}};
+					    \node [below=1 of table,rectangle,draw] (input) {A$\forall$};
 					    \node [below=0 of input] {Input (UTF-8 literal)};
 					    \node [ellipse,draw,right=of input] (decoder) {ASCII,BYTE : ...};
 					    \node [below=0 of decoder] {Decoder};
@@ -322,7 +330,15 @@ basicstyle=\ttfamily
 					\centering
 					\begin{tikzpicture}[auto,node distance=0.5cm,on grid=false]
 					    % Place nodes
-					    \node [rectangle,draw] (input) {\%u03B1\%CE\%B2};
+						\node (table){\begin{tabular}{|c|c|c|}
+					    	\hline
+					    	Entity & Unicode & UTF-8 Hex \\
+					    	\hline
+					    	$\alpha$ & U+03B1 & CEB1 \\
+					    	$\beta$ & U+03B2 & CEB2 \\
+					    	\hline
+						    \end{tabular}};
+					    \node [below=1 of table,rectangle,draw] (input) {\%u03B1\%CE\%B2};
 					    \node [below=0 of input] {Input (UTF-8 literal)};
 					    \node [ellipse,draw,right=1cm of input] (decoder) {ESCAPE : ...};
 					    \node [below=0 of decoder] {Decoder};
