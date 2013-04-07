@@ -20,7 +20,7 @@ basicstyle=\ttfamily
 	\section{Syntax}
 		\subsection{Phases \& Cascade}
 			\paragraph{}
-			There are three types of conversion phases defined in bsdconv: \textbf{from}, \textbf{inter}, \textbf{to}. The \textbf{from} phase takes byte sequence and decodes it into a list of code points, on the other hand, the \textbf{to} phase encodes the list of code points back to byte sequence. The \textbf{inter} phase does code point to code point mapping.
+			There are three types of conversion phases defined in bsdconv: \textbf{from}, \textbf{inter}, \textbf{to}. The \textbf{from} phase takes byte sequence and decodes it into a list of code points (except for from/PASS), on the other hand, the \textbf{to} phase encodes the list of code points back to byte sequence. The \textbf{inter} phase does code point to code point mapping.
 			\paragraph{}
 			A basic conversion consists of \textbf{from} and \textbf{to} phases. Search of codec name is case insensitive.
 			\begin{figure}[H]
@@ -228,9 +228,9 @@ basicstyle=\ttfamily
 			\end{figure}
 	\clearpage
 	\section{Type \& Flag}
-		\tikzstyle{data} = [rectangle, draw, text width=2em, text centered]
-		\tikzstyle{type} = [rectangle, draw, fill=blue!30, text width=2em, text centered]
-		\tikzstyle{flag} = [rectangle, fill=yellow, text width=2em, text centered]
+		\tikzstyle{data} = [rectangle, draw, text width=3em, text centered]
+		\tikzstyle{type} = [rectangle, draw, fill=blue!30, text width=3em, text centered]
+		\tikzstyle{flag} = [rectangle, fill=yellow, text width=3em, text centered]
 
 		\subsection{Type}
 			\paragraph{}
@@ -244,7 +244,7 @@ basicstyle=\ttfamily
 						00 & Bsdconv special characters & BSDCONV\_KEYWORD & BSDCONV\_KEYWORD\\
 						01 & Unicode & Most decoder & Most encoder\\
 						02 & CNS11643\footnotemark[1] & CNS11643 & CNS11643\\
-						03 & Byte & BYTE; ESCAPE & BYTE; ESCAPE\#FILTER=BYTE\\
+						03 & Byte & BYTE; ESCAPE & BYTE; ESCAPE\#FOR=BYTE\\
 						04 & Chinese components & inter/ZH\_DECOMP & inter/ZH\_COMP\\
 						1B & ANSI control sequence & ANSI-CONTROL & -\\
 						\hline
@@ -254,7 +254,7 @@ basicstyle=\ttfamily
 				\footnotetext[1]{As for the intersection of CNS11643 and Unicode, from/CNS11643 does conversion to unicode type if possible. Vice versa, to/CNS11643 does conversion from unicode type if possible.}
 				\begin{figure}[H]
 					\centering
-					\begin{tikzpicture}[auto,node distance=1cm,on grid=false]
+					\begin{tikzpicture}[auto,node distance=0.5cm,on grid=false]
 					    % Place nodes
 					    \node (table){\begin{tabular}{|c|c|c|}
 					    	\hline
@@ -324,9 +324,9 @@ basicstyle=\ttfamily
 		
 		\subsection{Flag}
 			\paragraph{}
-			A code point packet carries its own flags. Currently there are two types of flag, \textbf{FREE} and \textbf{SKIP}. Flag \textbf{FREE} indicates that the packet buffer needs to be recycled or released, this is used only when programming is involved. Flag \textbf{SKIP} is (currently only) added by codec to/UNICODE and used by codec from/SKIP to identify which packets have already been decoded and needs to be passed through in \textbf{from} phase. 
+			A code point packet carries its own flags. Currently there are two types of flag, \textbf{FREE} and \textbf{MARK}. Flag \textbf{FREE} indicates that the packet buffer needs to be recycled or released, this is used only when programming is involved. Flag \textbf{MARK} is (currently only) added by codec to/PASS\#MARK and used by codec from/PASS\#UNMARK to identify which packets have already been decoded and needs to be passed through in \textbf{from} phase. 
 			\paragraph{}
-			The code point packets structure is retained, including flags, within cascaded conversions, but not for shell pipe. Figure 11 demonstrate the flow of conversion "ESCAPE:UNICODE,BYTE$|$SKIP,UTF-8:UTF-8".
+			The code point packets structure is retained, including flags, within cascaded conversions, but not for shell pipe. Figure 11 demonstrate the flow of conversion "ESCAPE:PASS\#MARK\&FOR=1,BYTE$|$PASS\#UNMARK,UTF-8:UTF-8".
 				\begin{figure}[H]
 					\centering
 					\begin{tikzpicture}[auto,node distance=0.5cm,on grid=false]
@@ -339,11 +339,11 @@ basicstyle=\ttfamily
 					    	$\beta$ & U+03B2 & CEB2 \\
 					    	\hline
 						    \end{tabular}};
-					    \node [below=1 of table,rectangle,draw] (input) {\%u03B1\%CE\%B2};
+					    \node [below=0.5cm of table,rectangle,draw] (input) {\%u03B1\%CE\%B2};
 					    \node [below=0 of input] {Input (UTF-8 literal)};
-					    \node [ellipse,draw,right=1cm of input] (decoder) {ESCAPE : ...};
+					    \node [ellipse,draw,right=of input] (decoder) {ESCAPE : ...};
 					    \node [below=0 of decoder] {Decoder};
-					    \node [rectangle,draw,right=1cm of decoder] (internal) {
+					    \node [rectangle,draw,right=of decoder] (internal) {
 							\begin{tikzpicture}[node distance=3mm]
 								\node [type](n0){01};
 								\node [below=0 of n0,data](n1){03};
@@ -357,14 +357,14 @@ basicstyle=\ttfamily
 							\end{tikzpicture}
 					    };
 					    \node [below=0 of internal] {Internal data};
-					    \node [ellipse,draw,below=3cm of input] (encoder) {... : UNICODE,BYTE};
+					    \node [ellipse,draw,below=2cm of input] (encoder) {... : PASS\#MARK\&FOR=1,BYTE};
 					    \node [below=0 of encoder] {Encoder};
-					    					    \node [rectangle,draw,right=of encoder] (internal2) {
+					    					    \node [rectangle,draw,right=1cm of encoder] (internal2) {
 							\begin{tikzpicture}[node distance=3mm]
 								\node [type](n0){01};
 								\node [below=0 of n0,data](n1){03};
 								\node [below=0 of n1,data](n2){B1};
-								\node [below=0 of n2,flag]{SKIP};
+								\node [below=0 of n2,flag]{MARK};
 								\node [right=of n0,data](n3){CE};
 								\node [right=of n3,data](n5){B2};
 								\draw [->] (n0) -- (n3);
@@ -372,14 +372,13 @@ basicstyle=\ttfamily
 							\end{tikzpicture}
 					    };
 						\node [below=0 of internal2] {Internal data};
-						\node [ellipse,draw,right=of internal2] (decoder2) {SKIP,UTF-8 : ...};
+						\node [ellipse,draw,below=2cm of encoder] (decoder2) {PASS\#UNMARK,UTF-8 : ...};
 						\node [below=0 of decoder2] {Decoder};
-					    \node [rectangle,draw,below=2.5cm of encoder] (internal3) {
+					    \node [rectangle,draw,right=of decoder2] (internal3) {
 							\begin{tikzpicture}[node distance=3mm]
 								\node [type](n0){01};
 								\node [below=0 of n0,data](n1){03};
 								\node [below=0 of n1,data](n2){B1};
-								\node [below=0 of n2,flag]{SKIP};
 								\node [right=of n0,type](n3){01};
 								\node [below=0 of n3,data](n4){03};
 								\node [below=0 of n4,data](n5){B2};
@@ -389,7 +388,7 @@ basicstyle=\ttfamily
 					    \node [below=0 of internal3] {Internal data};
 						\node [ellipse,draw,right=of internal3] (encoder2) {... : UTF-8};
 						\node [below=0 of encoder2] {Encoder};
-					    \node [rectangle,draw,right=of encoder2] (internal4) {
+					    \node [rectangle,draw,below=1.5cm of decoder2] (internal4) {
 							\begin{tikzpicture}[node distance=3mm]
 								\node [data](n0){CE};
 								\node [below=0 of n0,data](n1){B1};
@@ -406,12 +405,12 @@ basicstyle=\ttfamily
 
 						\draw [->] (input) -- (decoder);
 						\draw [->] (decoder) -- (internal);
-						\draw [->] (internal.east) -- ++ (1,0) -- ++ (0,-2) -| (encoder.north);
+						\draw [->] (internal.east) -- ++ (0.5,0) -- ++ (0,-1.35) -| (encoder.north);
 						\draw [->] (encoder) -- (internal2);
-						\draw [->] (internal2) -- (decoder2);
-						\draw [->] (decoder2.east) -- ++ (0.3,0) -- ++ (0,-2) -| (internal3.north);
+						\draw [->] (internal2.east) -- ++ (1,0) -- ++ (0,-1.55) -| (decoder2.north);
+						\draw [->] (decoder2) -- (internal3);
 						\draw [->] (internal3) -- (encoder2);
-						\draw [->] (encoder2) -- (internal4);
+						\draw [->] (encoder2.east)  -- ++ (0.5,0) -- ++ (0,-1.55) -|  (internal4.north);
 						\draw [->] (internal4) -- (output);
 
 					\end{tikzpicture}
