@@ -235,7 +235,7 @@ char *bsdconv_pack(struct bsdconv_instance *);
 void *bsdconv_malloc(size_t);
 void bsdconv_free(void *);
 int bsdconv_mkstemp(char *);
-void str2data(const char *, struct data_st *);
+int str2data(const char *, struct data_st *);
 
 //Callback function interface
 void cbconv(struct bsdconv_instance *);

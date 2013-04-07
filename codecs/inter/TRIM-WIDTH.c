@@ -47,7 +47,7 @@ int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 
 	r->ins=bsdconv_create("WIDTH");
 	
-	return 1;
+	return 0;
 }
 
 void cbinit(struct bsdconv_instance *ins){

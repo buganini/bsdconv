@@ -90,16 +90,19 @@ inline int _cbcreate(struct bsdconv_instance *ins, int p, int c){
 	return r;
 }
 
-void str2data(const char *s, struct data_st *d){
+int str2data(const char *s, struct data_st *d){
 	d->data=NULL;
 	d->len=0;
 	if(!s || !*s)
-		return;
+		return EINVAL;
 	d->data=malloc(strlen(s)/2);
 	char f=0;
 	while(*s){
-		if(hex[(unsigned char) *s]<0)
-			return;
+		if(hex[(unsigned char) *s]<0){
+			free(d->data);
+			d->data=NULL;
+			return EINVAL;			
+		}
 		switch(f){
 			case 0:
 				f=1;
@@ -114,6 +117,7 @@ void str2data(const char *s, struct data_st *d){
 		}
 		s+=1;
 	}
+	return 0;
 }
 
 int _loadcodec(struct bsdconv_codec_t *cd, char *path){
@@ -770,7 +774,7 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 }
 
 struct bsdconv_instance *bsdconv_create(const char *_conversion){
-	int fail=0;
+	int e=0;
 	struct bsdconv_instance *ins=NULL;
 	char *conversion=malloc(strlen(_conversion)+1);
 	int i, j;
@@ -808,7 +812,7 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 					c=ins->phase[i].codec[j].desc;
 					ins->phase[i].codec[j].desc=bsdconv_solve_alias(ins->phase[i].type, ins->phase[i].codec[j].desc);
 					if(strcmp(c, ins->phase[i].codec[j].desc)==0)
-						fail=1;
+						e=1;
 					free(conversion);
 					conversion=bsdconv_pack(ins);
 					free(c);
@@ -820,7 +824,7 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 					}
 					free(ins->phase);
 					free(ins);
-					if(fail){
+					if(e){
 						SetLastError(EOPNOTSUPP);
 						free(conversion);
 						return NULL;
@@ -833,6 +837,14 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 	for(i=1;i<=ins->phasen;++i){
 		for(j=0;j<=ins->phase[i].codecn;++j){
 			if(!loadcodec(&ins->phase[i].codec[j], ins->phase[i].type)){
+				free(ins->phase[i].codec[j].desc);
+				j-=1;
+				for(;i>=1;j=ins->phase[--i].codecn){
+					for(;j>=0;--j){
+						free(ins->phase[i].codec[j].desc);
+						unloadcodec(&ins->phase[i].codec[j]);
+					}
+				}
 				goto bsdconv_create_error;
 			}
 		}
@@ -848,7 +860,25 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 			if(ins->phase[i].codec[j].cbcreate){
 				ins->phase_index=i;
 				ins->phase[i].index=j;
-				_cbcreate(ins, i, j);
+				e=_cbcreate(ins, i, j);
+				if(e){
+					for(j=j-1;j>=0;j-=1){
+						ins->phase[i].codec[j].cbdestroy(ins);
+					}
+					for(i=i-1;i>=1;i-=1){
+						for(j=0;j<=ins->phase[i].codecn;++j){
+							ins->phase[i].codec[j].cbdestroy(ins);
+						}
+					}
+					for(i=1;i<=ins->phasen;++i){
+						for(j=0;j<=ins->phase[i].codecn;++j){
+							free(ins->phase[i].codec[j].desc);
+							unloadcodec(&ins->phase[i].codec[j]);
+						}
+					}
+					SetLastError(e);
+					goto bsdconv_create_error;
+				}
 			}
 		}
 	}
@@ -862,15 +892,6 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 	return ins;
 
 bsdconv_create_error:
-	free(ins->phase[i].codec[j].desc);
-	j-=1;
-	for(;i>=1;j=ins->phase[--i].codecn){
-		for(;j>=0;--j){
-			free(ins->phase[i].codec[j].desc);
-			unloadcodec(&ins->phase[i].codec[j]);
-		}
-	}
-
 	for(i=1;i<=ins->phasen;++i){
 		free(ins->phase[i].codec);
 	}

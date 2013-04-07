@@ -22,7 +22,7 @@
 
 int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	CURRENT_CODEC(ins)->priv=bsdconv_create("CNS11643");
-	return 1;
+	return 0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){

@@ -14,6 +14,7 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,6 +29,7 @@ struct my_s{
 
 int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
+	int e;
 	CURRENT_CODEC(ins)->priv=r;
 	r->filter=1;
 	r->mode=16;
@@ -38,10 +40,20 @@ int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	while(arg){
 		if(strcmp(arg->key, "PREFIX")==0){
 			free(r->prefix.data);
-			str2data(arg->ptr, &(r->prefix));
+			e=str2data(arg->ptr, &(r->prefix));
+			if(e){
+				free(r->suffix.data);				
+				free(r);
+				return e;
+			}
 		}else if(strcmp(arg->key, "SUFFIX")==0){
 			free(r->suffix.data);
-			str2data(arg->ptr, &(r->suffix));
+			e=str2data(arg->ptr, &(r->suffix));
+			if(e){
+				free(r->prefix.data);				
+				free(r);
+				return e;
+			}
 		}else if(strcmp(arg->key, "MODE")==0){
 			if(strcmp(arg->ptr, "HEX")==0 || strcmp(arg->ptr, "16")==0){
 				r->mode=16;
@@ -49,19 +61,26 @@ int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 				r->mode=10;
 			}else if(strcmp(arg->ptr, "OCT")==0 || strcmp(arg->ptr, "8")==0){
 				r->mode=8;
+			}else{
+				free(r);
+				return EINVAL;
 			}
 		}else if(strcmp(arg->key, "FOR")==0){
 			if(strcmp(arg->ptr, "UNICODE")==0 || strcmp(arg->ptr, "1")==0 || strcmp(arg->ptr, "01")==0){
 				r->filter=1;
 			}else if(strcmp(arg->ptr, "BYTE")==0 || strcmp(arg->ptr, "3")==0 || strcmp(arg->ptr, "03")==0){
 				r->filter=3;
+			}else{
+				free(r);
+				return EINVAL;
 			}
 		}else{
-			return 0;
+			free(r);
+			return EINVAL;
 		}
 		arg=arg->next;
 	}
-	return 1;
+	return 0;
 }
 void cbdestroy(struct bsdconv_instance *ins){
 	struct my_s *r=CURRENT_CODEC(ins)->priv;

@@ -45,7 +45,7 @@ int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	r->bak=r->score=fopen(p,"rb+");
 	r->list=NULL;
 	CURRENT_CODEC(ins)->priv=r;
-	return 1;	
+	return 0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){

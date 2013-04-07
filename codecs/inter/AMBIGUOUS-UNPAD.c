@@ -79,7 +79,7 @@ static const struct interval ambiguous[] = {
 
 int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	CURRENT_CODEC(ins)->priv=malloc(sizeof(char));
-	return 1;
+	return 0;
 }
 
 void cbinit(struct bsdconv_instance *ins){

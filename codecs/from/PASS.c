@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../../src/bsdconv.h"
@@ -24,13 +25,17 @@ int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 				r->filter=3;
 			}else if(strcmp(arg->ptr, "ANSI")==0 || strcmp(arg->ptr, "1B")==0){
 				r->filter=0x1b;
+			}else{
+				free(r);
+				return EINVAL;
 			}
 		}else{
-			return 0;
+			free(r);
+			return EINVAL;
 		}
 		arg=arg->next;
 	}
-	return 1;
+	return 0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){

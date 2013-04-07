@@ -41,7 +41,7 @@ int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 		//if default score file is not available, it will fallback to builtin score table
 	}
 	CURRENT_CODEC(ins)->priv=r;
-	return 1;
+	return 0;
 }
 
 void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){

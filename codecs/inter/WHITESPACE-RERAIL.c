@@ -37,7 +37,7 @@ int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	}
 	t->queue=NULL;
 	CURRENT_CODEC(ins)->priv=t;
-	return 1;
+	return 0;
 }
 
 void cbinit(struct bsdconv_instance *ins){

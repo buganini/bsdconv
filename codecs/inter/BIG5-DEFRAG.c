@@ -25,7 +25,7 @@ struct my_s{
 
 int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
-	return 1;
+	return 0;
 }
 
 void cbinit(struct bsdconv_instance *ins){

@@ -20,14 +20,19 @@
 
 int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	struct data_st *r=malloc(sizeof(struct data_st));
+	int e;
 	if(arg){
-		str2data(arg->key, r);
+		e=str2data(arg->key, r);
+		if(e){
+			free(r);
+			return e;			
+		}
 	}else{
 		r->len=2;
 		r->data=strdup("\x01\x3f");
 	}
 	CURRENT_CODEC(ins)->priv=r;
-	return 1;
+	return 0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){

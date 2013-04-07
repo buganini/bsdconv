@@ -48,7 +48,7 @@ int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	DATA_MALLOC(r->qh);
 	r->qh->flags=0;
 	r->qh->next=NULL;
-	return 1;
+	return 0;
 }
 
 void cbinit(struct bsdconv_instance *ins){
