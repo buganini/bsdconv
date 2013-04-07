@@ -14,7 +14,7 @@ int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	while(arg){
 		if(strcmp(arg->key, "MARK")==0){
 			r->mark=1;
-		}else if(strcmp(arg->key, "FILTER")==0){
+		}else if(strcmp(arg->key, "FOR")==0){
 			if(strcmp(arg->ptr, "UNICODE")==0 || strcmp(arg->ptr, "1")==0 || strcmp(arg->ptr, "01")==0){
 				r->filter=1;
 			}else if(strcmp(arg->ptr, "CNS11643")==0 || strcmp(arg->ptr, "2")==0 || strcmp(arg->ptr, "02")==0){
