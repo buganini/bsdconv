@@ -213,7 +213,6 @@ char * getwd(char *);
 
 //API
 struct bsdconv_instance *bsdconv_create(const char *);
-struct bsdconv_instance *bsdconv_duplicate(struct bsdconv_instance *);
 int bsdconv_get_phase_index(struct bsdconv_instance *, int);
 int bsdconv_get_codec_index(struct bsdconv_instance *, int, int);
 int bsdconv_insert_phase(struct bsdconv_instance *, const char *, int, int);
