@@ -42,7 +42,7 @@ void cbconv(struct bsdconv_instance *ins){
 	if(this_phase->curr->flags){
 		fprintf(fp," (");
 		if(this_phase->curr->flags & F_FREE) fprintf(fp, " FREE");
-		if(this_phase->curr->flags & F_SKIP) fprintf(fp, " SKIP");
+		if(this_phase->curr->flags & F_MARK) fprintf(fp, " MARK");
 		fprintf(fp," )");
 	}
 	fprintf(fp,"\n");

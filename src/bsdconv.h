@@ -30,7 +30,7 @@ extern "C" {
 
 //struct data_rt.flags
 #define F_FREE 1
-#define F_SKIP 2
+#define F_MARK 2
 
 //struct bsdconv_phase.flags
 #define F_MATCH 1
@@ -54,7 +54,6 @@ enum bsdconv_status{
 	SUBROUTINE,
 	SUBMATCH_SUBROUTINE,
 	NEXTPHASE,
-	PASSTHRU,
 	NOMATCH,
 	NOOP
 };

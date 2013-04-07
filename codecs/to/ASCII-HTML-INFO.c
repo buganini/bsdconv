@@ -48,7 +48,7 @@ void cbconv(struct bsdconv_instance *ins){
 				bsdconv_init(cns);
 				cns->input.data=data;
 				cns->input.len=this_phase->curr->len;
-				cns->input.flags=F_SKIP;
+				cns->input.flags=0;
 				cns->input.next=NULL;
 				cns->flush=1;
 				bsdconv(cns);

@@ -78,7 +78,7 @@ void cbconv(struct bsdconv_instance *ins){
 				bsdconv_init(uni);
 				uni->input.data=t->buf;
 				uni->input.len=4;
-				uni->input.flags=F_SKIP;
+				uni->input.flags=0;
 				uni->input.next=NULL;
 				uni->flush=1;
 				bsdconv(uni);

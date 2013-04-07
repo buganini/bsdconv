@@ -1071,29 +1071,6 @@ void bsdconv(struct bsdconv_instance *ins){
 
 								ins->phase_index+=1;
 								goto phase_begin;
-							case PASSTHRU:
-								this_phase->bak=this_phase->curr->next;
-								while(prev_phase->data_head->next!=this_phase->curr){
-									data_ptr=prev_phase->data_head->next->next;
-									DATA_FREE(prev_phase->data_head->next);
-									prev_phase->data_head->next=data_ptr;
-								}
-								this_phase->data_tail->next=prev_phase->data_head->next;
-								if(prev_phase->data_tail==prev_phase->data_head->next){
-									prev_phase->data_tail=prev_phase->data_head;
-								}
-								prev_phase->data_head->next=prev_phase->data_head->next->next;
-								this_phase->data_tail=this_phase->data_tail->next;
-								this_phase->data_tail->next=NULL;
-
-								this_phase->data_head->len=0;
-								this_phase->curr=prev_phase->data_head;
-
-								this_phase->match_data=NULL;
-								this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
-								RESET(ins->phase_index);
-								ins->phase_index+=1;
-								goto phase_begin;
 							case CONTINUE:
 								this_phase->flags |= F_PENDING;
 								break;
@@ -1335,29 +1312,6 @@ void bsdconv(struct bsdconv_instance *ins){
 
 						RESET(ins->phase_index);
 
-						ins->phase_index+=1;
-						goto phase_begin;
-					case PASSTHRU:
-						this_phase->bak=this_phase->curr->next;
-						while(prev_phase->data_head->next!=this_phase->curr){
-							data_ptr=prev_phase->data_head->next->next;
-							DATA_FREE(prev_phase->data_head->next);
-							prev_phase->data_head->next=data_ptr;
-						}
-						this_phase->data_tail->next=prev_phase->data_head->next;
-						if(prev_phase->data_tail==prev_phase->data_head->next){
-							prev_phase->data_tail=prev_phase->data_head;
-						}
-						prev_phase->data_head->next=prev_phase->data_head->next->next;
-						this_phase->data_tail=this_phase->data_tail->next;
-						this_phase->data_tail->flags |= F_SKIP;
-						this_phase->data_tail->next=NULL;
-
-						this_phase->curr=prev_phase->data_head;
-
-						this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
-						this_phase->match_data=NULL;
-						RESET(ins->phase_index);
 						ins->phase_index+=1;
 						goto phase_begin;
 					case CONTINUE:

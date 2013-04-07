@@ -30,7 +30,7 @@ void cbconv(struct bsdconv_instance *ins){
 	if(ins->phase[ins->phase_index].curr->flags){
 		printf(" (");
 		if(ins->phase[ins->phase_index].curr->flags & F_FREE) printf(" FREE");
-		if(ins->phase[ins->phase_index].curr->flags & F_SKIP) printf(" SKIP");
+		if(ins->phase[ins->phase_index].curr->flags & F_MARK) printf(" MARK");
 		printf(" )");
 	}
 	printf("\n");
