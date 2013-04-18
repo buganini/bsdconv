@@ -1,0 +1,7 @@
+DESC	Translate chinese to bopomofo
+
+INPUT
+	TYPE	Unicode
+
+OUTPUT
+	TYPE	Unicode

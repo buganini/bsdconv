@@ -1,0 +1,23 @@
+INPUT
+	DESC	Any byte
+	EXAMPLE	*
+
+OUTPUT
+	TYPE	Sepcified by argument
+	DESC	Sepcified by argument
+
+ARGUMENT
+	PREFIX
+		FORMAT	Hex
+		DESC	Output prefix
+		EXAMPLE	013F
+	SUFFIX
+		FORMAT	Hex
+		DESC	Output suffix
+		EXAMPLE	013F
+	MODE
+		FORMAT	ENUM{hex,16,dec,10,oct,8}
+		DESC	Escape mode
+	FOR
+		FORMAT	ENUM{UNICODE,1,BYTE,3}
+		DESC	Input type whitelist

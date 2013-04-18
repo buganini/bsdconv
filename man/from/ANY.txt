@@ -1,0 +1,13 @@
+INPUT
+	DESC	Any byte
+	EXAMPLE	*
+
+OUTPUT
+	TYPE	Sepcified by argument
+	DESC	Sepcified by argument
+
+ARGUMENT
+	(IMMEDIATE)
+		FORMAT	Hex
+		DESC	Output value
+		EXAMPLE	013F
