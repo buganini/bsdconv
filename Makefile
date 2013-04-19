@@ -147,7 +147,7 @@ TODO_CODECS_EBCDIC+=to/IBM-935
 TODO_CODECS_EBCDIC+=to/IBM-937
 TODO_CODECS_EBCDIC+=to/IBM-939
 
-all: libbsdconv bsdconv_mktable meta bsdconv_man bsdconv_completion bsdconv codecs
+all: libbsdconv bsdconv-mktable meta bsdconv-man bsdconv-completion bsdconv codecs
 
 alias:
 	python tools/mkalias.py codecs/from/alias codecs/inter/FROM_ALIAS.txt
@@ -178,35 +178,35 @@ libbsdconv: builddir src/libbsdconv.c src/bsdconv.h
 bsdconv: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
 	$(CC) ${CFLAGS} src/bsdconv.c -L./build/lib/ -o build/bin/bsdconv -lbsdconv ${LIBS}
 
-bsdconv_mktable: builddir src/bsdconv.h src/bsdconv_mktable.c
-	$(CC) ${CFLAGS} -DUSE_FMALLOC src/libfmalloc.c src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
+bsdconv-mktable: builddir src/bsdconv.h src/bsdconv-mktable.c
+	$(CC) ${CFLAGS} -DUSE_FMALLOC src/libfmalloc.c src/bsdconv-mktable.c -o build/bin/bsdconv-mktable
 
-bsdconv_man: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
+bsdconv-man: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
 	$(CC) ${CFLAGS} src/bsdconv-man.c -L./build/lib/ -o build/bin/bsdconv-man -lbsdconv ${LIBS}
 
-bsdconv_completion: builddir libbsdconv src/bsdconv.h src/bsdconv_completion.c
-	$(CC) ${CFLAGS} src/bsdconv_completion.c -L./build/lib -o build/bin/bsdconv_completion -lbsdconv ${LIBS}
+bsdconv-completion: builddir libbsdconv src/bsdconv.h src/bsdconv-completion.c
+	$(CC) ${CFLAGS} src/bsdconv-completion.c -L./build/lib -o build/bin/bsdconv-completion -lbsdconv ${LIBS}
 
 bsdconv_dbg: builddir libbsdconv src/libbsdconv.c src/bsdconv.h src/bsdconv_dbg.c
 	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv_dbg.c -o build/bin/bsdconv_dbg ${LIBS}
 
-codecs_basic: builddir bsdconv_mktable
+codecs_basic: builddir bsdconv-mktable
 	for item in ${TODO_CODECS_BASIC} ; do \
-		./build/bin/bsdconv_mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
+		./build/bin/bsdconv-mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
 		if [ -e codecs/$${item}.man ]; then cp codecs/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
 		if [ -e codecs/$${item}.c ]; then $(CC) ${CFLAGS} codecs/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
 	done
 
-codecs_chinese: builddir bsdconv_mktable
+codecs_chinese: builddir bsdconv-mktable
 	for item in ${TODO_CODECS_CHINESE} ; do \
-		./build/bin/bsdconv_mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
+		./build/bin/bsdconv-mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
 		if [ -e codecs/$${item}.man ]; then cp codecs/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
 		if [ -e codecs/$${item}.c ]; then $(CC) ${CFLAGS} codecs/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
 	done
 
-codecs_ebcdic: builddir bsdconv_mktable
+codecs_ebcdic: builddir bsdconv-mktable
 	for item in ${TODO_CODECS_EBCDIC} ; do \
-		./build/bin/bsdconv_mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
+		./build/bin/bsdconv-mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
 		if [ -e codecs/$${item}.man ]; then cp codecs/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
 		if [ -e codecs/$${item}.c ]; then $(CC) ${CFLAGS} codecs/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
 	done
@@ -230,8 +230,8 @@ install: installdir install_main install_basic install_chinese install_ebcdic
 install_main:
 	install -m 555 build/bin/bsdconv ${PREFIX}/bin
 	install -m 555 build/bin/bsdconv-man ${PREFIX}/bin
-	install -m 555 build/bin/bsdconv_mktable ${PREFIX}/bin
-	install -m 555 build/bin/bsdconv_completion ${PREFIX}/bin
+	install -m 555 build/bin/bsdconv-mktable ${PREFIX}/bin
+	install -m 555 build/bin/bsdconv-completion ${PREFIX}/bin
 	install -m 444 build/include/bsdconv.h ${PREFIX}/include
 	install -m 444 build/lib/${SHLIBNAME} ${PREFIX}/lib
 	install -m 444 build/share/bsdconv/from/alias ${PREFIX}/share/bsdconv/from/alias
@@ -267,9 +267,9 @@ install_ebcdic:
 
 plist:
 	@echo bin/bsdconv
-	@echo bin/bsdconv_completion
+	@echo bin/bsdconv-completion
 	@echo bin/bsdconv-man
-	@echo bin/bsdconv_mktable
+	@echo bin/bsdconv-mktable
 	@echo include/bsdconv.h
 	@echo lib/libbsdconv.so
 	@echo lib/${SHLIBNAME}
