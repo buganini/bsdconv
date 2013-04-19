@@ -90,6 +90,17 @@ inline int _cbcreate(struct bsdconv_instance *ins, int p, int c){
 	return r;
 }
 
+char * getCodecDir(){
+	char *c;
+	char *b;
+	if((c=getenv("BSDCONV_PATH"))==NULL){
+		c=BSDCONV_PATH;
+	}
+	b=malloc(strlen(c)+strlen(CODECS_SUBPATH)+2);
+	sprintf(b, "%s/%s", c, CODECS_SUBPATH);
+	return b;
+}
+
 int str2data(const char *s, struct data_st *d){
 	d->data=NULL;
 	d->len=0;

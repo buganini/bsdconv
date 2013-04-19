@@ -236,6 +236,7 @@ void *bsdconv_malloc(size_t);
 void bsdconv_free(void *);
 int bsdconv_mkstemp(char *);
 int str2data(const char *, struct data_st *);
+char * getCodecDir();
 
 //Callback function interface
 void cbconv(struct bsdconv_instance *);
