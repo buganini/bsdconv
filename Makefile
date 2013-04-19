@@ -210,7 +210,7 @@ TODO_CODECS_EBCDIC_CALLBACK+=to/IBM-935
 TODO_CODECS_EBCDIC_CALLBACK+=to/IBM-937
 TODO_CODECS_EBCDIC_CALLBACK+=to/IBM-939
 
-all: libbsdconv bsdconv_mktable meta bsdconv_completion bsdconv codecs
+all: libbsdconv bsdconv_mktable meta bsdconv_man bsdconv_completion bsdconv codecs
 
 alias:
 	python tools/mkalias.py codecs/from/alias codecs/inter/FROM_ALIAS.txt
@@ -243,6 +243,9 @@ bsdconv: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
 
 bsdconv_mktable: builddir src/bsdconv.h src/bsdconv_mktable.c
 	$(CC) ${CFLAGS} -DUSE_FMALLOC src/libfmalloc.c src/bsdconv_mktable.c -o build/bin/bsdconv_mktable
+
+bsdconv_man: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
+	$(CC) ${CFLAGS} src/bsdconv-man.c -L./build/lib/ -o build/bin/bsdconv-man -lbsdconv ${LIBS}
 
 bsdconv_completion: builddir libbsdconv src/bsdconv.h src/bsdconv_completion.c
 	$(CC) ${CFLAGS} src/bsdconv_completion.c -L./build/lib -o build/bin/bsdconv_completion -lbsdconv ${LIBS}
@@ -307,6 +310,7 @@ install: installdir install_main install_basic install_chinese install_ebcdic
 
 install_main:
 	install -m 555 build/bin/bsdconv ${PREFIX}/bin
+	install -m 555 build/bin/bsdconv-man ${PREFIX}/bin
 	install -m 555 build/bin/bsdconv_mktable ${PREFIX}/bin
 	install -m 555 build/bin/bsdconv_completion ${PREFIX}/bin
 	install -m 444 build/include/bsdconv.h ${PREFIX}/include
@@ -351,6 +355,7 @@ install_ebcdic:
 plist:
 	@echo bin/bsdconv
 	@echo bin/bsdconv_completion
+	@echo bin/bsdconv-man
 	@echo bin/bsdconv_mktable
 	@echo include/bsdconv.h
 	@echo lib/libbsdconv.so
