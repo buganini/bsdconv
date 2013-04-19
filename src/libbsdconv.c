@@ -874,11 +874,19 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 				e=_cbcreate(ins, i, j);
 				if(e){
 					for(j=j-1;j>=0;j-=1){
-						ins->phase[i].codec[j].cbdestroy(ins);
+						if(ins->phase[i].codec[j].cbdestroy){
+							ins->phase_index=i;
+							ins->phase[i].index=j;
+							ins->phase[i].codec[j].cbdestroy(ins);
+						}
 					}
 					for(i=i-1;i>=1;i-=1){
 						for(j=0;j<=ins->phase[i].codecn;++j){
-							ins->phase[i].codec[j].cbdestroy(ins);
+							if(ins->phase[i].codec[j].cbdestroy){
+								ins->phase_index=i;
+								ins->phase[i].index=j;
+								ins->phase[i].codec[j].cbdestroy(ins);
+							}
 						}
 					}
 					for(i=1;i<=ins->phasen;++i){
