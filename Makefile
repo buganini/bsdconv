@@ -206,8 +206,9 @@ codecs_chinese: builddir bsdconv_mktable
 
 codecs_ebcdic: builddir bsdconv_mktable
 	for item in ${TODO_CODECS_EBCDIC} ; do \
-		if [ -e codecs/$${item}.man ]; then cp codecs/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
 		./build/bin/bsdconv_mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
+		if [ -e codecs/$${item}.man ]; then cp codecs/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
+		if [ -e codecs/$${item}.c ]; then $(CC) ${CFLAGS} codecs/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
 	done
 
 codecs: codecs_basic codecs_chinese codecs_ebcdic
@@ -258,7 +259,7 @@ install_chinese:
 	done
 
 install_ebcdic:
-	for item in ${TODO_CODECS_CHINESE} ; do \
+	for item in ${TODO_CODECS_EBCDIC} ; do \
 		install -m 444 build/share/bsdconv/$${item} ${PREFIX}/share/bsdconv/$${item} ; \
 		if [ -e build/share/bsdconv/$${item}.man ]; then install -m 444 build/share/bsdconv/$${item}.man ${PREFIX}/share/bsdconv/$${item}.man ; fi ; \
 		if [ -e build/share/bsdconv/$${item}.so ]; then install -m 444 build/share/bsdconv/$${item}.so ${PREFIX}/share/bsdconv/$${item}.so ; fi ; \
