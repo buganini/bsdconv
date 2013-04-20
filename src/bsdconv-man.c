@@ -30,6 +30,9 @@ int main(int argc, char *argv[]){
 	if(argc==2){
 		codec=phase=strdup(argv[1]);
 		strsep(&codec, "/");
+		if(codec==NULL){
+			usage(argv[0]);
+		}
 		codec=strdup(codec);
 	}else if(argc==3){
 		phase=strdup(argv[1]);
