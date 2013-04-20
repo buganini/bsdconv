@@ -26,6 +26,7 @@ int main(int argc, char *argv[]){
 	const char *conv;
 	struct bsdconv_instance *ins;
 	size_t len;
+	FILE *fp;
 
 	if(argc==2){
 		codec=phase=strdup(argv[1]);
