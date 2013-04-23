@@ -17,6 +17,8 @@ iotest=[
 	["utf-8:ascii,any#38","test測試test","test88test"],
 	["utf-8:uao250|cp950,3f:utf-8","陶喆測試","陶?穘?試"],
 	["utf-8:uao250|cp950,sub:utf-8","陶喆測試","陶�穘�試"],
+	["cns11643:utf-8","1234\x00\x01\x60\x41\x00\x01\x66\x5cabcd","1234測試abcd"],
+	["utf-8:cns11643","1234測試abcd","1234\x00\x01\x60\x41\x00\x01\x66\x5cabcd"],
 	["ansi-control,utf-8:split:bsdconv_keyword,bsdconv","a\033[1mb","0161,1B5B316D,0162,"],
 	["ascii-named-html-entity:utf-8","&uuml;","ü"],
 	["ascii-numeric-html-entity:utf-8","&#x6e2c;&#35430;","測試"],
