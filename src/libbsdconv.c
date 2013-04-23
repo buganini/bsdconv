@@ -46,6 +46,9 @@
 #define CODECS_SUBPATH "share/bsdconv"
 #endif
 
+struct bsdconv_instance *bsdconv_unpack(const char *);
+char *bsdconv_pack(struct bsdconv_instance *);
+
 inline void strtoupper(char *s){
 	char *c;
 	for(c=s;*c;++c){
@@ -435,75 +438,58 @@ int bsdconv_get_codec_index(struct bsdconv_instance *ins, int phasen, int codecn
 	}
 }
 
-int bsdconv_insert_phase(struct bsdconv_instance *ins, const char *codec, int phase_type, int ophasen){
-	int i,len;
-	const char *c;
-	char *t, *cd=strdup(codec), *cd2;
+char * bsdconv_insert_phase(const char *conversion, const char *codec, int phase_type, int ophasen){
+	struct bsdconv_instance *ins;
+	int i,j;
+	char *ret;
+
+	ins=bsdconv_unpack(conversion);
+	if(!ins){
+		return NULL;
+	}
 
 	int phasen=bsdconv_get_phase_index(ins, ophasen);
 
-	strtoupper(cd);
-	len=1;
-	for(c=codec;*c;++c) if(*c==',') ++len;
-
-	cd2=strdup(cd);
-	t=cd2;
-	for(i=0;i<len;++i){
-		if(!bsdconv_codec_check(phase_type, strsep(&t,","))){
-			free(cd);
-			free(cd2);
-			return -1;
-		}
-	}
-	free(cd2);
-
-	++ins->phasen;
+	ins->phasen+=1;
 	ins->phase=realloc(ins->phase, sizeof(struct bsdconv_phase) * (ins->phasen+1));
 
 	for(i=ins->phasen /* shifted index */;i>phasen;--i){
 		ins->phase[i]=ins->phase[i-1];
 	}
 	ins->phase[phasen].type=phase_type;
-	ins->phase[phasen].codec=malloc(sizeof(struct bsdconv_codec_t)*len);
-	ins->phase[phasen].codecn=len-1 /* trimmed length */;
+	ins->phase[phasen].codec=malloc(sizeof(struct bsdconv_codec_t));
+	ins->phase[phasen].codecn=0 /* trimmed length */;
 
-	ins->phase[phasen].data_head=malloc(sizeof(struct data_rt));
-	ins->phase[phasen].data_head->next=NULL;
-	ins->phase[phasen].data_head->flags=0;
+	ins->phase[phasen].codec[0].desc=strdup(codec);
+	strtoupper(ins->phase[phasen].codec[0].desc);
+	ins->phase[phasen].codec[0].argv=NULL;
 
-	t=cd;
-	for(i=0;i<len;++i){
-		ins->phase[phasen].codec[i].desc=strdup(strsep(&t,","));
-		ins->phase[phasen].codec[i].argv=strchr(ins->phase[phasen].codec[i].desc, '#');
-		if(ins->phase[phasen].codec[i].argv){
-			*(ins->phase[phasen].codec[i].argv)=0;
-			ins->phase[phasen].codec[i].argv+=1;
+	ret=bsdconv_pack(ins);
+
+	for(i=1;i<=ins->phasen;++i){
+		for(j=0;j<=ins->phase[i].codecn;++j){
+			free(ins->phase[i].codec[j].desc);
 		}
-
-		if(!loadcodec(&ins->phase[phasen].codec[i], phase_type)){
-			free(cd);
-			free(cd2);
-			return -1;
-		}
-		ins->phase_index=phasen;
-		ins->phase[phasen].index=i;
-		if(ins->phase[phasen].codec[i].cbcreate)
-			_cbcreate(ins, phasen, i);
+		free(ins->phase[i].codec);
 	}
-	free(cd);
+	free(ins->phase);
+	free(ins);
 
-	return phasen;
+	return ret;
 }
 
-int bsdconv_insert_codec(struct bsdconv_instance *ins, const char *codec, int ophasen, int ocodecn){
-	int i;
+char * bsdconv_insert_codec(const char *conversion, const char *codec, int ophasen, int ocodecn){
+	struct bsdconv_instance *ins;
+	int i,j;
+	char *ret;
+
+	ins=bsdconv_unpack(conversion);
+	if(!ins){
+		return NULL;
+	}
 
 	int phasen=bsdconv_get_phase_index(ins, ophasen);
 	int codecn=bsdconv_get_codec_index(ins, ophasen, ocodecn);
-
-	if(!bsdconv_codec_check(ins->phase[phasen].type, codec)){
-		return -1;
-	}
 
 	++ins->phase[phasen].codecn;
 	ins->phase[phasen].codec=realloc(ins->phase[phasen].codec, sizeof(struct bsdconv_codec_t)*(ins->phase[phasen].codecn+1));
@@ -513,109 +499,88 @@ int bsdconv_insert_codec(struct bsdconv_instance *ins, const char *codec, int op
 	}
 	ins->phase[phasen].codec[codecn].desc=strdup(codec);
 	strtoupper(ins->phase[phasen].codec[codecn].desc);
-	ins->phase[phasen].codec[codecn].argv=strchr(ins->phase[phasen].codec[codecn].desc, '#');
-	if(ins->phase[phasen].codec[codecn].argv){
-		*(ins->phase[phasen].codec[codecn].argv)=0;
-		ins->phase[phasen].codec[codecn].argv+=1;
-	}
+	ins->phase[phasen].codec[codecn].argv=NULL;
 
-	if(!loadcodec(&ins->phase[phasen].codec[codecn], ins->phase[phasen].type)){
-		return -1;
+	ret=bsdconv_pack(ins);
+
+	for(i=1;i<=ins->phasen;++i){
+		for(j=0;j<=ins->phase[i].codecn;++j){
+			free(ins->phase[i].codec[j].desc);
+		}
+		free(ins->phase[i].codec);
 	}
-	ins->phase_index=phasen;
-	ins->phase[phasen].index=codecn;
-	if(ins->phase[phasen].codec[codecn].cbcreate)
-		_cbcreate(ins, phasen, codecn);
-	return codecn;
+	free(ins->phase);
+	free(ins);
+
+	return ret;
 }
 
-int bsdconv_replace_phase(struct bsdconv_instance *ins, const char *codec, int phase_type, int ophasen){
-	int i,len;
-	const char *c;
-	char *t, *cd=strdup(codec), *cd2;
+char * bsdconv_replace_phase(const char *conversion, const char *codec, int phase_type, int ophasen){
+	struct bsdconv_instance *ins;
+	int i,j;
+	char *ret;
+
+	ins=bsdconv_unpack(conversion);
+	if(!ins){
+		return NULL;
+	}
 
 	int phasen=bsdconv_get_phase_index(ins, ophasen);
 
-	strtoupper(cd);
-	len=1;
-	for(c=codec;*c;++c) if(*c==',') ++len;
-
-	cd2=strdup(cd);
-	t=cd2;
-	for(i=0;i<len;++i){
-		if(!bsdconv_codec_check(phase_type, strsep(&t,","))){
-			free(cd);
-			free(cd2);
-			return -1;
-		}
-	}
-	free(cd2);
-
-	for(i=0;i<=ins->phase[phasen].codecn;++i){
-		free(ins->phase[phasen].codec[i].desc);
-		if(ins->phase[phasen].codec[i].cbdestroy){
-			ins->phase[phasen].codec[i].cbdestroy(ins->phase[phasen].codec[i].priv);
-		}
-		unloadcodec(&ins->phase[phasen].codec[i]);
+	for(j=0;j<=ins->phase[phasen].codecn;++j){
+		free(ins->phase[phasen].codec[j].desc);
 	}
 
 	ins->phase[phasen].type=phase_type;
-	ins->phase[phasen].codec=realloc(ins->phase[phasen].codec, sizeof(struct bsdconv_codec_t)*len);
-	ins->phase[phasen].codecn=len-1 /* trimmed length */;
+	ins->phase[phasen].codecn=0 /* trimmed length */;
+	ins->phase[phasen].codec[0].desc=strdup(codec);
+	strtoupper(ins->phase[phasen].codec[0].desc);
+	ins->phase[phasen].codec[0].argv=NULL;
 
-	t=cd;
-	for(i=0;i<len;++i){
-		ins->phase[phasen].codec[i].desc=strdup(strsep(&t,","));
-		ins->phase[phasen].codec[i].argv=strchr(ins->phase[phasen].codec[i].desc, '#');
-		if(ins->phase[phasen].codec[i].argv){
-			*(ins->phase[phasen].codec[i].argv)=0;
-			ins->phase[phasen].codec[i].argv+=1;
-		}
+	ret=bsdconv_pack(ins);
 
-		if(!loadcodec(&ins->phase[phasen].codec[i], phase_type)){
-			free(cd);
-			return -1;
+	for(i=1;i<=ins->phasen;++i){
+		for(j=0;j<=ins->phase[i].codecn;++j){
+			free(ins->phase[i].codec[j].desc);
 		}
-		ins->phase_index=phasen;
-		ins->phase[phasen].index=i;
-		if(ins->phase[phasen].codec[i].cbcreate)
-			_cbcreate(ins, phasen, i);
+		free(ins->phase[i].codec);
 	}
-	free(cd);
+	free(ins->phase);
+	free(ins);
 
-	return phasen;
+	return ret;
 }
 
-int bsdconv_replace_codec(struct bsdconv_instance *ins, const char *codec, int ophasen, int ocodecn){
+char * bsdconv_replace_codec(const char *conversion, const char *codec, int ophasen, int ocodecn){
+	struct bsdconv_instance *ins;
+	int i,j;
+	char *ret;
+
+	ins=bsdconv_unpack(conversion);
+	if(!ins){
+		return NULL;
+	}
+
 	int phasen=bsdconv_get_phase_index(ins, ophasen);
 	int codecn=bsdconv_get_codec_index(ins, ophasen, ocodecn);
 
-	if(!bsdconv_codec_check(ins->phase[phasen].type, codec)){
-		return -1;
-	}
-
 	free(ins->phase[phasen].codec[codecn].desc);
-	if(ins->phase[phasen].codec[codecn].cbdestroy){
-		ins->phase[phasen].codec[codecn].cbdestroy(ins->phase[phasen].codec[codecn].priv);
-	}
-	unloadcodec(&ins->phase[phasen].codec[codecn]);
-
 	ins->phase[phasen].codec[codecn].desc=strdup(codec);
 	strtoupper(ins->phase[phasen].codec[codecn].desc);
-	ins->phase[phasen].codec[codecn].argv=strchr(ins->phase[phasen].codec[codecn].desc, '#');
-	if(ins->phase[phasen].codec[codecn].argv){
-		*(ins->phase[phasen].codec[codecn].argv)=0;
-		ins->phase[phasen].codec[codecn].argv+=1;
-	}
+	ins->phase[phasen].codec[codecn].argv=NULL;
 
-	if(!loadcodec(&ins->phase[phasen].codec[codecn], ins->phase[phasen].type)){
-		return -1;
+	ret=bsdconv_pack(ins);
+
+	for(i=1;i<=ins->phasen;++i){
+		for(j=0;j<=ins->phase[i].codecn;++j){
+			free(ins->phase[i].codec[j].desc);
+		}
+		free(ins->phase[i].codec);
 	}
-	ins->phase_index=phasen;
-	ins->phase[phasen].index=codecn;
-	if(ins->phase[phasen].codec[codecn].cbcreate)
-		_cbcreate(ins, phasen, codecn);
-	return codecn;
+	free(ins->phase);
+	free(ins);
+
+	return ret;
 }
 
 void bsdconv_ctl(struct bsdconv_instance *ins, int ctl, void *p, int v){

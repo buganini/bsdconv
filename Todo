@@ -1,4 +1,3 @@
 test CNS11643
-stringify bsdconv_{insert,replace}_{phase,codec}
 update score table
 unorm

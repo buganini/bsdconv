@@ -123,4 +123,4 @@ for c, d, i in infotest:
 			sys.exit()
 	del p
 
-print("All tests passed.")
+print("Conversion tests passed.")

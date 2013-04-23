@@ -224,6 +224,7 @@ meta: libbsdconv
 
 clean:
 	rm -rf build
+	rm -rf testsuite/api
 
 install: installdir install_main install_basic install_chinese install_ebcdic
 
@@ -264,6 +265,11 @@ install_ebcdic:
 		if [ -e build/share/bsdconv/$${item}.man ]; then install -m 444 build/share/bsdconv/$${item}.man ${PREFIX}/share/bsdconv/$${item}.man ; fi ; \
 		if [ -e build/share/bsdconv/$${item}.so ]; then install -m 444 build/share/bsdconv/$${item}.so ${PREFIX}/share/bsdconv/$${item}.so ; fi ; \
 	done
+
+test:
+	@python testsuite/conversion.py
+	@$(CC) ${CFLAGS} testsuite/api.c -L./build/lib/ -o testsuite/api -lbsdconv ${LIBS}
+	@./testsuite/api
 
 plist:
 	@echo bin/bsdconv
