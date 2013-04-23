@@ -309,7 +309,7 @@ basicstyle=\ttfamily
 							\end{tikzpicture}
 					    };
 					    \node [below=0 of internal2] {Internal data};
-					    \node [rectangle,draw,right=of internal2] (output) {A\%E2\%88\%80};
+					    \node [rectangle,draw,right=1 of internal2] (output) {A\%E2\%88\%80};
 					    \node [below=0 of output] {Output (UTF-8 literal)};
 					
 						\draw [->] (input) -- (decoder);
