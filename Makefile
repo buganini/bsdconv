@@ -284,21 +284,18 @@ plist:
 	@echo %%DATADIR%%/to/alias
 	@for item in ${TODO_CODECS_BASIC} ; do \
 		echo %%DATADIR%%/$${item} ; \
-	done
-	@for item in ${TODO_CODECS_BASIC_CALLBACK} ; do \
-		echo %%DATADIR%%/$${item}.so ; \
+		if [ -e codecs/$${item}.man ]; then echo %%DATADIR%%/$${item}.man ; fi ; \
+		if [ -e codecs/$${item}.c ]; then echo %%DATADIR%%/$${item}.so ; fi ; \
 	done
 	@for item in ${TODO_CODECS_CHINESE} ; do \
 		echo %%CHINESE%%%%DATADIR%%/$${item} ; \
-	done
-	@for item in ${TODO_CODECS_CHINESE_CALLBACK} ; do \
-		echo %%CHINESE%%%%DATADIR%%/$${item}.so ; \
+		if [ -e codecs/$${item}.man ]; then echo %%CHINESE%%%%DATADIR%%/$${item}.man ; fi ; \
+		if [ -e codecs/$${item}.c ]; then echo %%CHINESE%%%%DATADIR%%/$${item}.so ; fi ; \
 	done
 	@for item in ${TODO_CODECS_EBCDIC} ; do \
 		echo %%EBCDIC%%%%DATADIR%%/$${item} ; \
-	done
-	@for item in ${TODO_CODECS_EBCDIC_CALLBACK} ; do \
-		echo %%EBCDIC%%%%DATADIR%%/$${item}.so ; \
+		if [ -e codecs/$${item}.man ]; then echo %%EBCDIC%%%%DATADIR%%/$${item}.man ; fi ; \
+		if [ -e codecs/$${item}.c ]; then echo %%EBCDIC%%%%DATADIR%%/$${item}.so ; fi ; \
 	done
 	@echo @dirrmtry %%DATADIR%%/to
 	@echo @dirrmtry %%DATADIR%%/inter
