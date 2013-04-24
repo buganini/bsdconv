@@ -17,11 +17,11 @@ void usage(char *a0){
 }
 
 int main(int argc, char *argv[]){
-	char *phase;
-	char *codec;
-	char *codec_filename;
+	char *phase=NULL;
+	char *codec=NULL;
+	char *codec_filename=NULL;
 	char *path;
-	char *phase_dir;
+	char *phase_dir=NULL;
 	char buf[BUFSIZ];
 	const char *conv;
 	struct bsdconv_instance *ins;
