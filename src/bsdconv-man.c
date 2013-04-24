@@ -2,7 +2,7 @@
 #include <string.h>
 #include "bsdconv.h"
 
-inline void strtoupper(char *s){
+static inline void strtoupper(char *s){
 	char *c;
 	for(c=s;*c;++c){
 		if(*c>='a' && *c<='z'){

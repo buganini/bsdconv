@@ -49,7 +49,7 @@
 struct bsdconv_instance *bsdconv_unpack(const char *);
 char *bsdconv_pack(struct bsdconv_instance *);
 
-inline void strtoupper(char *s){
+static inline void strtoupper(char *s){
 	char *c;
 	for(c=s;*c;++c){
 		if(*c>='a' && *c<='z'){
@@ -58,7 +58,7 @@ inline void strtoupper(char *s){
 	}
 }
 
-inline int _cbcreate(struct bsdconv_instance *ins, int p, int c){
+static inline int _cbcreate(struct bsdconv_instance *ins, int p, int c){
 	int r;
 	char *argv;
 	if(ins->phase[p].codec[c].argv)
