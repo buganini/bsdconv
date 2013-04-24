@@ -23,7 +23,7 @@ int main(int argc, char *argv[]){
 	char *path;
 	char *phase_dir=NULL;
 	char buf[BUFSIZ];
-	const char *conv;
+	const char *conv=NULL;
 	struct bsdconv_instance *ins;
 	size_t len;
 	FILE *fp;
