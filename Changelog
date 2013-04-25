@@ -8,6 +8,9 @@
 	replace to/ASCII-HEX-HTML-ENTITY with alias to ESCAPE#...
 	add to/ASCII-DEC-HTML-ENTITY alias to ESCAPE#...
 	deprecate bsdconv_duplicate()
+	add bsdconv-man and some manpages
+	add document
+	API change for bsdconv_{insert,replace}_{phase,codec}
 
 9.1:
 	bash completion script (buggy)
