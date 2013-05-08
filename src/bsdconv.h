@@ -251,6 +251,7 @@ void cbdestroy(struct bsdconv_instance *);
 #define BSDCONV_SET_WIDE_AMBI 1
 #define BSDCONV_SET_TRIM_WIDTH 2
 #define BSDCONV_ATTACH_OUTPUT_FILE 3
+#define BSDCONV_AMBIGUOUS_PAD 4
 
 //Binary
 #define bb00000011 0x03

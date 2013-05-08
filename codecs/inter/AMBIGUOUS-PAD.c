@@ -77,11 +77,38 @@ static const struct interval ambiguous[] = {
 	{ 0xFFFD, 0xFFFD }, { 0xF0000, 0xFFFFD }, { 0x100000, 0x10FFFD }
 };
 
+int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+	CURRENT_CODEC(ins)->priv=malloc(sizeof(int));
+
+	return 0;
+}
+
+void cbinit(struct bsdconv_instance *ins){
+	int *r=CURRENT_CODEC(ins)->priv;
+	*r=1;
+}
+
+void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
+	int *r=CURRENT_CODEC(ins)->priv;
+	switch(ctl){
+			break;
+		case BSDCONV_AMBIGUOUS_PAD:
+			*r=v;
+			break;
+	}
+}
+
+void cbdestroy(struct bsdconv_instance *ins){
+	int *r=CURRENT_CODEC(ins)->priv;
+	free(r);
+}
 void cbconv(struct bsdconv_instance *ins){
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	int *dopad=CURRENT_CODEC(ins)->priv;
 	data=this_phase->curr->data;
 	int pad;
+
 	int max=sizeof(ambiguous) / sizeof(struct interval) - 1;
 	int min = 0;
 	int mid;
@@ -114,7 +141,7 @@ void cbconv(struct bsdconv_instance *ins){
 					break;
 				}
 		}
-		if(pad){
+		if(pad && *dopad){
 			DATA_MALLOC(this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->len=2;

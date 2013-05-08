@@ -77,14 +77,30 @@ static const struct interval ambiguous[] = {
 	{ 0xFFFD, 0xFFFD }, { 0xF0000, 0xFFFFD }, { 0x100000, 0x10FFFD }
 };
 
+struct my_s{
+	char s;
+	int dopad;
+};
+
 int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
-	CURRENT_CODEC(ins)->priv=malloc(sizeof(char));
+	CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
 	return 0;
 }
 
 void cbinit(struct bsdconv_instance *ins){
-	char *r=CURRENT_CODEC(ins)->priv;
-	*r=0;
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	r->s=0;
+	r->dopad=1;
+}
+
+void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	switch(ctl){
+			break;
+		case BSDCONV_AMBIGUOUS_PAD:
+			r->dopad=v;
+			break;
+	}
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
@@ -94,7 +110,7 @@ void cbdestroy(struct bsdconv_instance *ins){
 void cbconv(struct bsdconv_instance *ins){
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	char *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	data=this_phase->curr->data;
 	int pad;
 	int max=sizeof(ambiguous) / sizeof(struct interval) - 1;
@@ -105,8 +121,8 @@ void cbconv(struct bsdconv_instance *ins){
 	this_phase->state.status=NEXTPHASE;
 
 	if(this_phase->curr->len>1 && data[0]==0x1){
-		if(*r==1 && data[1]==0xA0){
-			*r=0;
+		if(r->s==1 && data[1]==0xA0){
+			r->s=0;
 			return;
 		}else{
 			for(pad=1;pad<this_phase->curr->len;++pad){
@@ -128,8 +144,8 @@ void cbconv(struct bsdconv_instance *ins){
 						break;
 					}
 			}
-			if(pad){
-				*r=1;
+			if(pad && r->dopad){
+				r->s=1;
 			}
 		}
 		DATA_MALLOC(this_phase->data_tail->next);
@@ -138,7 +154,7 @@ void cbconv(struct bsdconv_instance *ins){
 		this_phase->curr->flags &= ~F_FREE;
 		this_phase->data_tail->next=NULL;
 	}else{
-		*r=0;
+		r->s=0;
 	}
 
 	return;
