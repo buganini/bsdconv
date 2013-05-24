@@ -1,0 +1,16 @@
+DESC	Pad ambiguous width characters
+
+INPUT
+	TYPE	Unicode
+
+OUTPUT
+	TYPE	Unicode
+	DESC	Append U+000A after ambiguous characters
+
+CTL
+	BSDCONV_AMBIGUOUS_PAD
+		PTR
+			don't care
+		INT
+			1	Enable
+			2	Disable
