@@ -1,3 +1,6 @@
+10.1:
+	add man page for inter/AMBIGUOUS-PAD and inter/AMBIGUOUS-UNPAD
+
 10.0:
 	support "codec#key&key=value" style argument
 	replace from/3f and from/sub with from/any
@@ -176,7 +179,7 @@
 	Support callback in codecs
 
 0.2:
-	Make hibernating works (for multiple-cycle conversion)	
+	Make hibernating works (for multiple-cycle conversion)
 
 0.1:
 	First tag, conversion format: from:inter:to
