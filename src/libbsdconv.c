@@ -80,7 +80,7 @@ static inline int _cbcreate(struct bsdconv_instance *ins, int p, int c){
 			}
 			(*last)->next=NULL;
 			last=&((*last)->next);
-		}		
+		}
 	}
 
 	r=ins->phase[p].codec[c].cbcreate(ins, arg);
@@ -115,7 +115,7 @@ int str2data(const char *s, struct data_st *d){
 		if(hex[(unsigned char) *s]<0){
 			free(d->data);
 			d->data=NULL;
-			return EINVAL;			
+			return EINVAL;
 		}
 		switch(f){
 			case 0:
@@ -643,7 +643,7 @@ char *bsdconv_pack(struct bsdconv_instance *ins){
 					end=",";
 					*cur=0;
 				}else{
-					end="";					
+					end="";
 				}
 				strcat(ret, t);
 				if(ins->phase[i].codec[j].argv && *(ins->phase[i].codec[j].argv)){
@@ -1515,6 +1515,8 @@ char ** bsdconv_codecs_list(int phase_type){
 	fp=fopen("alias","rb");
 	if(fp!=NULL){
 		while(fgets(buf, sizeof(buf), fp)!=NULL){
+			if(buf[0]=='#')
+				continue;
 			if(length>=size){
 				size+=8;
 				list=realloc(list, sizeof(char *) * size);
