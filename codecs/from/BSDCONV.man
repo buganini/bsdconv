@@ -1,0 +1,6 @@
+INPUT
+	DESC	internal format in hexadecimal form
+	EXAMPLE	019644
+
+OUTPUT
+	DESC	binary form of input

@@ -1,0 +1,9 @@
+DESC
+	Usually used for maintain bsdconv inter-mapping tables
+
+INPUT
+	DESC	Control characters for bsdconv table format
+	EXAMPLE	\n\t,?\\
+
+OUTPUT
+	DESC	Properly escaped form for to/BSDCONV_KEYWORD

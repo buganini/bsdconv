@@ -1,0 +1,6 @@
+INPUT
+	DESC	URL escaped or C-style escaped sequence
+	EXAMPLE	%XX %uUUUU \uUUUU \xXX \OOO
+
+OUTPUT
+	TYPE	Unicode (for %uUUUU and \uUUUU) or Byte (others)

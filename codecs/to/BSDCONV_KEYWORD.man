@@ -1,0 +1,5 @@
+INPUT
+	DESC	Products of from/BSDCONV_KEYWORD
+
+OUTPUT
+	DESC	Original form of data from from/BSDCONV_KEYWORD
