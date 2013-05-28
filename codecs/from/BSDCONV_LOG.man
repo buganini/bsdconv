@@ -1,0 +1,9 @@
+INPUT
+	DESC	Any
+
+OUTPUT
+	DESC	None, data is written into log file
+
+ENV
+	BSDCONV_FROM_LOG	log file
+
