@@ -1,0 +1,10 @@
+INPUT
+	TYPE	Any
+
+OUTPUT
+	TYPE	Any
+	DESC	Append ',' (in term of bsdconv_keyword)
+
+EXAMPLE:
+	printf test|bsdconv utf-8:split:bsdconv_keyword,utf-8
+	t,e,s,t,
