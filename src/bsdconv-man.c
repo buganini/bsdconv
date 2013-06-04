@@ -22,6 +22,7 @@ int main(int argc, char *argv[]){
 	char *codec_filename=NULL;
 	char *path;
 	char *phase_dir=NULL;
+	int iphase=0;
 	char buf[BUFSIZ];
 	const char *conv=NULL;
 	struct bsdconv_instance *ins;
@@ -47,12 +48,15 @@ int main(int argc, char *argv[]){
 	if(strcmp(phase, "FROM")==0){
 		conv="ASCII:FROM_ALIAS:ASCII";
 		phase_dir="from";
+		iphase=FROM;
 	}else if(strcmp(phase, "INTER")==0){
 		conv="ASCII:INTER_ALIAS:ASCII";
 		phase_dir="inter";
+		iphase=INTER;
 	}else if(strcmp(phase, "TO")==0){
 		conv="ASCII:TO_ALIAS:ASCII";
 		phase_dir="to";
+		iphase=TO;
 	}else{
 		free(phase);
 		free(codec);
@@ -94,6 +98,8 @@ int main(int argc, char *argv[]){
 	if(strcmp(ins->output.data, codec)!=0){
 		printf("%s/%s:\n", phase, codec);
 		printf("Alias to %s\n", CP(ins->output.data));
+	}else if(bsdconv_codec_check(iphase, codec)){
+		printf("No man page for such codec\n");
 	}else{
 		printf("No such codec\n");
 	}
