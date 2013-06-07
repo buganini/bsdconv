@@ -24,8 +24,6 @@ int main(int argc, char *argv[]){
 	char *phase_dir=NULL;
 	int iphase=0;
 	char buf[BUFSIZ];
-	const char *conv=NULL;
-	struct bsdconv_instance *ins;
 	size_t len;
 	FILE *fp;
 
@@ -46,17 +44,14 @@ int main(int argc, char *argv[]){
 	strtoupper(codec);
 
 	if(strcmp(phase, "FROM")==0){
-		conv="ASCII:FROM_ALIAS:ASCII";
-		phase_dir="from";
 		iphase=FROM;
+		phase_dir="from";
 	}else if(strcmp(phase, "INTER")==0){
-		conv="ASCII:INTER_ALIAS:ASCII";
-		phase_dir="inter";
 		iphase=INTER;
+		phase_dir="inter";
 	}else if(strcmp(phase, "TO")==0){
-		conv="ASCII:TO_ALIAS:ASCII";
-		phase_dir="to";
 		iphase=TO;
+		phase_dir="to";
 	}else{
 		free(phase);
 		free(codec);
@@ -85,26 +80,16 @@ int main(int argc, char *argv[]){
 	}
 	free(codec_filename);
 
-	ins=bsdconv_create(conv);
-	bsdconv_init(ins);
-	ins->input.data=codec;
-	ins->input.len=strlen(codec);
-	ins->flush=1;
-	bsdconv(ins);
-	ins->output_mode=BSDCONV_AUTOMALLOC;
-	ins->output.len=1;
-	bsdconv(ins);
-	UCP(ins->output.data)[ins->output.len]=0;
-	if(strcmp(ins->output.data, codec)!=0){
+	char *a=bsdconv_solve_alias(iphase, codec);
+	if(a!=NULL){
 		printf("%s/%s:\n", phase, codec);
-		printf("Alias to %s\n", CP(ins->output.data));
+		printf("Alias to %s\n", a);
+		free(a);
 	}else if(bsdconv_codec_check(iphase, codec)){
 		printf("No man page for such codec\n");
 	}else{
 		printf("No such codec\n");
 	}
-	free(ins->output.data);
-	bsdconv_destroy(ins);
 
 	free(phase);
 	free(codec);

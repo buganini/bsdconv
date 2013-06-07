@@ -208,13 +208,13 @@ char * bsdconv_solve_alias(int type, char *_codec){
 	struct bsdconv_instance *ins;
 	switch(type){
 		case FROM:
-			ins=bsdconv_create("ASCII:FROM_ALIAS:ASCII");
+			ins=bsdconv_create("ASCII:FROM_ALIAS,ERROR:ASCII");
 			break;
 		case INTER:
-			ins=bsdconv_create("ASCII:INTER_ALIAS:ASCII");
+			ins=bsdconv_create("ASCII:INTER_ALIAS,ERROR:ASCII");
 			break;
 		case TO:
-			ins=bsdconv_create("ASCII:TO_ALIAS:ASCII");
+			ins=bsdconv_create("ASCII:TO_ALIAS,ERROR:ASCII");
 			break;
 		default:
 			return NULL;
@@ -234,6 +234,10 @@ char * bsdconv_solve_alias(int type, char *_codec){
 	bsdconv(ins);
 	ret=ins->output.data;
 	ret[ins->output.len]=0;
+	if(ins->ierr!=0 || ins->oerr!=0){
+		free(ret);
+		ret=NULL;
+	}
 	bsdconv_destroy(ins);
 	return ret;
 }
@@ -785,13 +789,17 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 		for(i=1;i<=ins->phasen;++i){
 			for(j=0;j<=ins->phase[i].codecn;++j){
 				if(!bsdconv_codec_check(ins->phase[i].type, ins->phase[i].codec[j].desc)){
-					c=ins->phase[i].codec[j].desc;
-					ins->phase[i].codec[j].desc=bsdconv_solve_alias(ins->phase[i].type, ins->phase[i].codec[j].desc);
-					if(strcmp(c, ins->phase[i].codec[j].desc)==0)
+					c=bsdconv_solve_alias(ins->phase[i].type, ins->phase[i].codec[j].desc);
+					if(c==NULL){
 						e=1;
+					}else{
+						if(strcmp(c, ins->phase[i].codec[j].desc)==0)
+							e=1;
+						free(ins->phase[i].codec[j].desc);
+						ins->phase[i].codec[j].desc=c;
+					}
 					free(conversion);
 					conversion=bsdconv_pack(ins);
-					free(c);
 					for(i=1;i<=ins->phasen;++i){
 						for(j=0;j<=ins->phase[i].codecn;++j){
 							free(ins->phase[i].codec[j].desc);
