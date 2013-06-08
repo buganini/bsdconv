@@ -18,18 +18,31 @@
 #include <string.h>
 #include "../../src/bsdconv.h"
 
+ struct my_st {
+ 	struct data_st data;
+ 	int error;
+ };
+
 int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
-	struct data_st *r=malloc(sizeof(struct data_st));
+	struct my_st *r=malloc(sizeof(struct my_st));
+	char *bak;
 	int e;
-	if(arg){
-		e=str2data(arg->key, r);
-		if(e){
-			free(r);
-			return e;			
+	r->error=0;
+	r->data.len=2;
+	r->data.data=strdup("\x3f");
+	while(arg){
+		if(strcmp(arg->key, "ERROR")==0){
+			r->error=1;
+		}else{
+			bak=r->data.data;
+			e=str2data(arg->key, &(r->data));
+			free(bak);
+			if(e){
+				free(r);
+				return e;
+			}
 		}
-	}else{
-		r->len=2;
-		r->data=strdup("\x01\x3f");
+		arg=arg->next;
 	}
 	CURRENT_CODEC(ins)->priv=r;
 	return 0;
@@ -37,23 +50,24 @@ int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 
 void cbdestroy(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct data_st *r=this_phase->codec[this_phase->index].priv;
-	free(r->data);
+	struct my_st *r=this_phase->codec[this_phase->index].priv;
+	free(r->data.data);
 	free(r);
 }
 
 void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct data_st *d=this_phase->codec[this_phase->index].priv;
+	struct my_st *r=this_phase->codec[this_phase->index].priv;
+
 	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
 	this_phase->data_tail->next=NULL;
-	this_phase->data_tail->len=d->len;
+	this_phase->data_tail->len=r->data.len;
 	this_phase->data_tail->flags=0;
-	this_phase->data_tail->data=d->data;
+	this_phase->data_tail->data=r->data.data;
 
 	this_phase->state.status=NEXTPHASE;
 
-	ins->oerr+=1;
+	ins->oerr+=r->error;
 	return;
 }

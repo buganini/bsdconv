@@ -129,8 +129,8 @@ to/_CNS11643
 
 from/ANY
 to/ANY
-	#error counter is increased
-	> echo test測試test | bsdconv ascii,any#013f:ascii
+	#error counter is increased optionally
+	> echo test測試test | bsdconv ascii,any#013f&error:ascii
 	test??????test
 	> echo 陶喆測試|bsdconv utf-8:uao250|bsdconv cp950,3f:utf-8 #alias
 	陶?穘?試
@@ -194,11 +194,11 @@ to/BSDCONV_KEYWORD
 	016E2C,018A66	016D4B,018BD5
 	> printf "測,試\t测,试\n" | bsdconv bsdconv_keyword,utf-8:bsdconv_keyword,bsdconv | bsdconv bsdconv_keyword,bsdconv:bsdconv_keyword,utf-8
 	測,試	测,试
-	
+
 from/BSDCONV_LOG
 	#background debug tool
 	> echo 測試 | env BSDCONV_FROM_LOG=/tmp/bsdconv.log bsdconv bsdconv_log:utf-8
-	> cat /tmp/bsdconv.log 
+	> cat /tmp/bsdconv.log
 	E6
 	B8
 	AC
@@ -217,7 +217,7 @@ from/BYTE
 to/BYTE
 	> perl -e 'print "\xaa\xbb\xcc\xdd"' | bsdconv byte:byte|hexdump -C
 	00000000  aa bb cc dd                                       |....|
-	
+
 from/ESCAPE
 	> echo %u6e2c | bsdconv escape:utf-8
 	測
@@ -274,7 +274,7 @@ to/ASCII-HTML-CNS11643-IMG
 to/ASCII-HTML-INFO
 	> echo 測 | bsdconv utf-8:ascii-html-info
 	<a href="http://www.cns11643.gov.tw/AIDB/query_general_view.do?page=1&code=6041"><img src="http://www.cns11643.gov.tw/AIDB/png.do?page=1&code=6041" /></a><a href="http://www.fileformat.info/info/unicode/char/0A/index.htm"><img class="unicode_img" src="http://www.unicode.org/cgi-bin/refglyph?24-A" /></a>
-	
+
 to/ASCII-HTML-UNICODE-IMG
 	> echo 測 | bsdconv utf-8:ascii-html-unicode-img
 	<img class="unicode_img" src="http://www.unicode.org/cgi-bin/refglyph?24-6E2C" /><img class="unicode_img" src="http://www.unicode.org/cgi-bin/refglyph?24-A" />

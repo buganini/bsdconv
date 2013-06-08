@@ -11,4 +11,4 @@ ARGUMENT
 		DESC	Increase error counter
 	$HexValue
 		DESC	Output value
-		EXAMPLE	013F
+		EXAMPLE	3F
