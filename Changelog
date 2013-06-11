@@ -1,5 +1,6 @@
 10.1:
 	add man page for inter/AMBIGUOUS-PAD and inter/AMBIGUOUS-UNPAD
+	add inter/{NFC,NFD,NFKC,NFKD}
 
 10.0:
 	support "codec#key&key=value" style argument
