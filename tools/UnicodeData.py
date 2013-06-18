@@ -9,10 +9,10 @@ def bsdconv01(dt):
 		return "01"+dt
 
 
-nfc=open("../codecs/inter/NFC.txt", "w")
-nfd=open("../codecs/inter/NFD.txt", "w")
-nfkc=open("../codecs/inter/NFKC.txt", "w")
-nfkd=open("../codecs/inter/NFKD.txt", "w")
+nfc=open("../codecs/inter/_NFC.txt", "w")
+nfd=open("../codecs/inter/_NFD.txt", "w")
+nfkc=open("../codecs/inter/_NFKC.txt", "w")
+nfkd=open("../codecs/inter/_NFKD.txt", "w")
 
 nfcm={}
 nfdm={}
