@@ -84,7 +84,13 @@ iotest=[
 	["utf-8:big5|ascii,byte:ascii,escape#for=byte&mode=hex&prefix=5c78","測a試b好","\\xB4\\xFAa\\xB8\\xD5b\\xA6n"],
 	["utf-8:big5|ascii,byte:ascii,escape#for=byte&mode=oct&prefix=5c","測a試b好","\\264\\372a\\270\\325b\\246n"],
 	["utf-8:big5,pass#for=unicode&mark|pass#unmark,ascii,byte:ascii,url","測test喆試","%B4%FAtest%u5586%B8%D5"],
-	["utf-8:ascii,escape#for=unicode&prefix=2623&mode=10&suffix=3b","測test喆試","&#28204;test&#21894;&#35430;"]
+	["utf-8:ascii,escape#for=unicode&prefix=2623&mode=10&suffix=3b","測test喆試","&#28204;test&#21894;&#35430;"],
+	["utf-8:upper:utf-8","aăǅбᾥⅷⓐ","AĂǄБᾭⅧⒶ"],
+	["utf-8:lower:utf-8","AĂǄБᾭⅧⒶ","aăǆбᾥⅷⓐ"],
+	["utf-8:nfd:utf-8","ăǅⓐ","ăǅⓐ"],
+	["utf-8:nfc:utf-8","ăǅⓐ","ăǅⓐ"],
+	["utf-8:nfkd:utf-8","ăǅⓐ","ăDža"],
+	["utf-8:nfkc:utf-8","ăǅⓐ","ª̆ǅⓐ"],
 ]
 
 infotest=[
