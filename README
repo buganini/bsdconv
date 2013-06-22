@@ -27,7 +27,7 @@ Convert simplified chinese to traditional chinese
 ignoring whitespaces mixed in words
 > bsdconv utf-8:whitespace-derail:zhtw:zhtw_words:whitespace-rerail:utf-8
 
-Convert big5 data, traditional chinese to simplified chinese, 
+Convert big5 data, traditional chinese to simplified chinese,
 CRLF/CR/LF to CRLF, to big5 data, translate simplified chinese words, which are
 not in big5, to HTML entities, and uppercase the ascii characters.
 > bsdconv big5:zhcn:win:upper:big5,htmlentity in.txt > out.txt
@@ -41,6 +41,9 @@ Recover from mis-decoding/encoding (mistreated big5 as iso-8859-1 and converted 
 Decode javascript escaped data (byte/unicode mixed) like %u9644%20
 > bsdconv 'escape,byte:unicode,byte|skip,ascii:utf-8'
 
+Generate string for fuzzy comparison
+> echo ¼ℌăǅⓐ灣湾ド | bsdconv UTF-8:ZH_FUZZY_TW:KANA_PHONETIC:LOWER:NFKC:NFKD:UTF-8
+1⁄4Hădža灣灣do
 
 More example:
 > bsdconv big5:nl2br:ascii,html-img in.txt > out.htm
