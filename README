@@ -42,8 +42,8 @@ Decode javascript escaped data (byte/unicode mixed) like %u9644%20
 > bsdconv 'escape,byte:unicode,byte|skip,ascii:utf-8'
 
 Generate string for fuzzy comparison #collation is still required
-> echo ¼ℌăǅⓐ⁹灣湾ド鬒鬒æß | bsdconv UTF-8:ZH_FUZZY_TW:KANA_PHONETIC:LOWER:NFC:NFD:NFKC:NFKD:UTF-8
-1⁄4Hădža9灣灣do鬒鬒æß
+> echo ¼ℌăǅⓐ⁹灣湾ド鬒鬒æß | bsdconv UTF-8:ZH_FUZZY_TW:KANA_PHONETIC:NFC:NFD:NFKC:NFKD:LOWER:UTF-8
+1⁄4hădža9灣灣do鬒鬒æß
 
 More example:
 > bsdconv big5:nl2br:ascii,html-img in.txt > out.htm
