@@ -123,7 +123,7 @@ to/_CNS11643
 	#but in implementation, ascii characters appers in ASCII,
 	#so you should use ascii,_cns11643 for decoding,
 	#and ascii,_cns11643 for encoding,
-	#or use cns11643 directly in both decoding and encoding, try are properly associated aliases.
+	#or use cns11643 directly in both decoding and encoding, they are properly associated aliases.
 	#by design, to/_CNS11643 should only output plane switching sequence when needed,
 	#but in implementation, it appears all the time.
 
