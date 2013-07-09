@@ -189,27 +189,27 @@ bsdconv-mktable: builddir src/bsdconv.h src/bsdconv-mktable.c
 bsdconv-man: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
 	$(CC) ${CFLAGS} src/bsdconv-man.c -L./build/lib/ -o build/bin/bsdconv-man -lbsdconv ${LIBS}
 
-bsdconv-completion: builddir libbsdconv src/bsdconv.h src/bsdconv-completion.c
+bsdconv-completion: builddir libbsdconv meta src/bsdconv.h src/bsdconv-completion.c
 	$(CC) ${CFLAGS} src/bsdconv-completion.c -L./build/lib -o build/bin/bsdconv-completion -lbsdconv ${LIBS}
 
 bsdconv_dbg: builddir libbsdconv src/libbsdconv.c src/bsdconv.h src/bsdconv_dbg.c
 	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv_dbg.c -o build/bin/bsdconv_dbg ${LIBS}
 
-codecs_basic: builddir bsdconv-mktable
+codecs_basic: builddir bsdconv-mktable libbsdconv meta
 	for item in ${TODO_CODECS_BASIC} ; do \
 		./build/bin/bsdconv-mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
 		if [ -e codecs/$${item}.man ]; then cp codecs/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
 		if [ -e codecs/$${item}.c ]; then $(CC) ${CFLAGS} codecs/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
 	done
 
-codecs_chinese: builddir bsdconv-mktable
+codecs_chinese: builddir bsdconv-mktable libbsdconv meta
 	for item in ${TODO_CODECS_CHINESE} ; do \
 		./build/bin/bsdconv-mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
 		if [ -e codecs/$${item}.man ]; then cp codecs/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
 		if [ -e codecs/$${item}.c ]; then $(CC) ${CFLAGS} codecs/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
 	done
 
-codecs_ebcdic: builddir bsdconv-mktable
+codecs_ebcdic: builddir bsdconv-mktable libbsdconv meta
 	for item in ${TODO_CODECS_EBCDIC} ; do \
 		./build/bin/bsdconv-mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
 		if [ -e codecs/$${item}.man ]; then cp codecs/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
