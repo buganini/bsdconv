@@ -120,8 +120,7 @@ void cbconv(struct bsdconv_instance *ins){
 					else if (ucs < scoreboard[mid].first)
 						max = mid - 1;
 					else{
-						if(ins->score+scoreboard[mid].score < INT_MAX)
-							ins->score+=scoreboard[mid].score;
+						ins->score+=scoreboard[mid].score;
 						break;
 					}
 			}
