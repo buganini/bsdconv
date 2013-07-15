@@ -114,15 +114,15 @@ void cbconv(struct bsdconv_instance *ins){
 			if (ucs < scoreboard[0].first || ucs > scoreboard[max].last){
 				//noop
 			}else while (max >= min) {
-					mid = (min + max) / 2;
-					if (ucs > scoreboard[mid].last)
-						min = mid + 1;
-					else if (ucs < scoreboard[mid].first)
-						max = mid - 1;
-					else{
-						ins->score+=scoreboard[mid].score;
-						break;
-					}
+				mid = (min + max) / 2;
+				if (ucs > scoreboard[mid].last)
+					min = mid + 1;
+				else if (ucs < scoreboard[mid].first)
+					max = mid - 1;
+				else{
+					ins->score+=scoreboard[mid].score;
+					break;
+				}
 			}
 		}else{
 			fseek(fp, ucs*sizeof(unsigned char), SEEK_SET);
