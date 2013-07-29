@@ -38,6 +38,7 @@ extern "C" {
 #define F_LOOPBACK 4
 
 typedef uint32_t offset_t;
+typedef size_t counter_t;
 
 enum bsdconv_phase_type {
 	_INPUT,
@@ -96,26 +97,32 @@ struct state_rt{
 	offset_t base;
 };
 
-struct hash_entry{
+struct bsdconv_hash_entry{
 	char *key;
 	void *ptr;
-	struct hash_entry *next;
+	struct bsdconv_hash_entry *next;
+};
+
+struct bsdconv_counter_entry{
+	char *key;
+	counter_t val;
+	struct bsdconv_counter_entry *next;
 };
 
 struct bsdconv_instance{
 	int output_mode;
-	
+
 	struct data_rt input, output;
 
 	char flush;
 
 	struct bsdconv_phase *phase;
 	int phasen, phase_index;
-	struct hash_entry *hash;
+	struct bsdconv_hash_entry *hash;
+	struct bsdconv_counter_entry *counter;
 
-	unsigned int ierr, oerr;
-	unsigned int full, half, ambi;
-	double score;
+	counter_t *ierr;
+	counter_t *oerr;
 
 	struct data_rt *pool;
 };
@@ -127,7 +134,7 @@ struct bsdconv_phase{
 	unsigned int i;
 	struct bsdconv_codec_t *codec;
 	int codecn;
-	offset_t offset;	
+	offset_t offset;
 	char flags;
 	char type;
 };
@@ -148,7 +155,7 @@ struct bsdconv_codec_t {
 	char *desc;
 	void (*cbconv)(struct bsdconv_instance *);
 	void (*cbflush)(struct bsdconv_instance *);
-	int (*cbcreate)(struct bsdconv_instance *, struct hash_entry *arg);
+	int (*cbcreate)(struct bsdconv_instance *, struct bsdconv_hash_entry *arg);
 	void (*cbinit)(struct bsdconv_instance *);
 	void (*cbctl)(struct bsdconv_instance *, int, void *, size_t);
 	void (*cbdestroy)(struct bsdconv_instance *);
@@ -202,8 +209,8 @@ char * getwd(char *);
 	memcpy(&ins->phase[X].state, ins->phase[X].codec[ins->phase[X].index].z, sizeof(struct state_st));	\
 }while(0)
 
-#define CP(X) ((char *)(X)) 
-#define UCP(X) ((unsigned char *)(X)) 
+#define CP(X) ((char *)(X))
+#define UCP(X) ((unsigned char *)(X))
 
 #define DATA_MALLOC(X) do{if(ins->pool){(X)=ins->pool; ins->pool=ins->pool->next;}else{(X)=malloc(sizeof(struct data_rt));}}while(0)
 #define DATA_FREE(X) do{ if((X)->flags & F_FREE) free((X)->data); (X)->next=ins->pool; ins->pool=(X);}while(0)
@@ -224,6 +231,7 @@ void bsdconv_ctl(struct bsdconv_instance *, int, void *, int);
 void bsdconv_destroy(struct bsdconv_instance *);
 void bsdconv(struct bsdconv_instance *);
 char * bsdconv_error(void);
+counter_t * bsdconv_counter(struct bsdconv_instance *, const char *);
 void bsdconv_hash_set(struct bsdconv_instance *, const char *, void *);
 void * bsdconv_hash_get(struct bsdconv_instance *, const char *);
 int bsdconv_hash_has(struct bsdconv_instance *, const char *);
@@ -241,7 +249,7 @@ char * getCodecDir();
 //Callback function interface
 void cbconv(struct bsdconv_instance *);
 void cbflush(struct bsdconv_instance *);
-int cbcreate(struct bsdconv_instance *, struct hash_entry *arg);
+int cbcreate(struct bsdconv_instance *, struct bsdconv_hash_entry *arg);
 void cbinit(struct bsdconv_instance *);
 void cbctl(struct bsdconv_instance *, int, void *, size_t);
 void cbdestroy(struct bsdconv_instance *);

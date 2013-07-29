@@ -1,7 +1,7 @@
 PREFIX?=/usr/local
 BSDCONV_PATH?=${PREFIX}
 CFLAGS+=-Wall -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
-SHLIBVER=10
+SHLIBVER=11
 
 UNAME_S=$(shell uname -s)
 ifeq (${UNAME_S}, Darwin)

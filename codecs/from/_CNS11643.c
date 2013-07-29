@@ -26,7 +26,7 @@ struct my_s{
 	struct bsdconv_instance *uni;
 };
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	r->uni=bsdconv_create("UNICODE");
 	CURRENT_CODEC(ins)->priv=r;
@@ -70,7 +70,7 @@ void cbconv(struct bsdconv_instance *ins){
 			case 1:
 				t->status=0;
 				t->buf[3]=d;
-				
+
 				if(uni==NULL){
 					this_phase->state.status=DEADEND;
 					return;

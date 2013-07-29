@@ -23,7 +23,7 @@ struct my_s{
 	char f;
 };
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
 	return 0;
 }

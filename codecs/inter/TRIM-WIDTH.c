@@ -25,11 +25,14 @@ struct my_s{
 	char ambi_width;
 	size_t width;
 	long remain;
+	counter_t *full;
+	counter_t *half;
+	counter_t *ambi;
 };
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	char *p;
-	struct my_s *r=CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));	
+	struct my_s *r=CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
 
 	r->ambi_width=1;
 
@@ -46,7 +49,9 @@ int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	}
 
 	r->ins=bsdconv_create("WIDTH");
-	
+	r->full=bsdconv_counter(r->ins, "FULL");
+	r->half=bsdconv_counter(r->ins, "HALF");
+	r->ambi=bsdconv_counter(r->ins, "AMBI");
 	return 0;
 }
 
@@ -84,7 +89,7 @@ void cbconv(struct bsdconv_instance *ins){
 	r->ins->input.next=NULL;
 	r->ins->flush=1;
 	bsdconv(r->ins);
-	int w=r->ins->full*2 + r->ins->half + r->ins->ambi*r->ambi_width;
+	int w=*(r->full)*2 + *(r->half) + *(r->ambi) * r->ambi_width;
 	if(r->remain >= w){
 		this_phase->data_tail->next=r->ins->phase[r->ins->phasen].data_head->next;
 		while(this_phase->data_tail->next){

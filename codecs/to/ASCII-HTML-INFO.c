@@ -23,7 +23,7 @@
 
 #define TAILIZE(p) while(*p){ p++; }
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	CURRENT_CODEC(ins)->priv=bsdconv_create("CNS11643");
 	return 0;
 }
@@ -117,7 +117,7 @@ void cbconv(struct bsdconv_instance *ins){
 			for(i=1;i<len;i++){
 				sprintf(p,"%02X", (unsigned char)data[i]);
 				TAILIZE(p);
-			}			
+			}
 			sprintf(p,"\"><img src=\"http://www.cns11643.gov.tw/AIDB/png.do?page=");
 			TAILIZE(p);
 			if(0<len){

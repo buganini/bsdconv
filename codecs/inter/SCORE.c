@@ -26,9 +26,10 @@
 struct my_s{
 	FILE *bak;
 	FILE *score;
+	counter_t *counter;
 };
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	char buf[256]={0};
 	char *p=getenv("BSDCONV_SCORE");
@@ -40,6 +41,7 @@ int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 		r->bak=r->score=fopen(p,"rb+");
 		//if default score file is not available, it will fallback to builtin score table
 	}
+	r->counter=bsdconv_counter(ins, "SCORE");
 	CURRENT_CODEC(ins)->priv=r;
 	return 0;
 }
@@ -120,14 +122,14 @@ void cbconv(struct bsdconv_instance *ins){
 				else if (ucs < scoreboard[mid].first)
 					max = mid - 1;
 				else{
-					ins->score+=scoreboard[mid].score;
+					*(r->counter)+=scoreboard[mid].score;
 					break;
 				}
 			}
 		}else{
 			fseek(fp, ucs*sizeof(unsigned char), SEEK_SET);
 			fread(&v, sizeof(unsigned char), 1, fp);
-			ins->score+=v;
+			*(r->counter)+=v;
 		}
 	}
 

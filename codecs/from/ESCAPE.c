@@ -34,7 +34,7 @@ struct my_s{
 	char buf[4];
 };
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
 	return 0;
 }
@@ -127,7 +127,7 @@ void cbconv(struct bsdconv_instance *ins){
 					p[1]=t->buf[0];
 					this_phase->state.status=NEXTPHASE;
 					t->status=0;
-					return;				
+					return;
 				}
 				break;
 			case 31:
@@ -160,7 +160,7 @@ void cbconv(struct bsdconv_instance *ins){
 					p[1]=t->buf[0];
 					this_phase->state.status=NEXTPHASE;
 					t->status=0;
-					return;				
+					return;
 				}
 				break;
 			case 40:
@@ -211,7 +211,7 @@ void cbconv(struct bsdconv_instance *ins){
 					}
 					this_phase->state.status=NEXTPHASE;
 					t->status=0;
-					return;				
+					return;
 				}
 				break;
 		}

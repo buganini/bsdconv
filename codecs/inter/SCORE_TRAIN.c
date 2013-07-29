@@ -31,7 +31,7 @@ struct my_s{
 	FILE *list;
 };
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	char buf[256]={0};
 	char *p=getenv("BSDCONV_SCORE");

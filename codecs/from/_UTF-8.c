@@ -23,7 +23,7 @@ struct my_s{
 	char *p, f;
 };
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	r->buf=malloc(8);
 	CURRENT_CODEC(ins)->priv=r;
@@ -186,7 +186,7 @@ struct my_s{
 	} ucs4;
 };
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_s *r=malloc(sizeof(struct my_s));
 	CURRENT_CODEC(ins)->priv=r;
@@ -266,7 +266,7 @@ void cbconv(struct bsdconv_instance *ins){
 				if((d & bb11000000) != bb10000000){
 					DEADEND();
 				}
-				t->ucs4.ucs4 <<= 6;	
+				t->ucs4.ucs4 <<= 6;
 				t->w-=1;
 				t->ucs4.ucs4 |= d & bb00111111;
 				if(t->w==0){
@@ -280,4 +280,4 @@ void cbconv(struct bsdconv_instance *ins){
 	this_phase->state.status=CONTINUE;
 	return;
 }
-#endif	
+#endif

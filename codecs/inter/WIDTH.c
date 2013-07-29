@@ -395,7 +395,23 @@ static const struct width_interval width_table[] = {
 	{0xE0001, 0xE007F, HALF},
 };
 
+struct my_s{
+	counter_t *full;
+	counter_t *half;
+	counter_t *ambi;
+};
+
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
+	struct my_s *r=CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
+
+	r->full=bsdconv_counter(ins, "FULL");
+	r->half=bsdconv_counter(ins, "HALF");
+	r->ambi=bsdconv_counter(ins, "AMBI");
+	return 0;
+}
+
 void cbconv(struct bsdconv_instance *ins){
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	data=this_phase->curr->data;
@@ -427,13 +443,13 @@ void cbconv(struct bsdconv_instance *ins){
 			else{
 				switch(width_table[mid].width){
 					case FULL:
-						ins->full+=1;
+						*(r->full)+=1;
 						break;
 					case HALF:
-						ins->half+=1;
+						*(r->half)+=1;
 						break;
 					case AMBI:
-						ins->ambi+=1;
+						*(r->ambi)+=1;
 						break;
 				}
 				break;

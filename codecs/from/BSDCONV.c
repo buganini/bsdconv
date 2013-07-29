@@ -13,7 +13,7 @@
  * IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
- 
+
 #define USE_HEX_MAP
 
 #include <stdlib.h>
@@ -31,7 +31,7 @@ struct my_s {
 	char flag;
 };
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	r->data.data=NULL;
 	CURRENT_CODEC(ins)->priv=r;

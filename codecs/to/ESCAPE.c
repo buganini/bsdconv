@@ -27,7 +27,7 @@ struct my_s{
 	int mode;
 };
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	int e;
 	CURRENT_CODEC(ins)->priv=r;
@@ -42,7 +42,7 @@ int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 			free(r->prefix.data);
 			e=str2data(arg->ptr, &(r->prefix));
 			if(e){
-				free(r->suffix.data);				
+				free(r->suffix.data);
 				free(r);
 				return e;
 			}
@@ -50,7 +50,7 @@ int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 			free(r->suffix.data);
 			e=str2data(arg->ptr, &(r->suffix));
 			if(e){
-				free(r->prefix.data);				
+				free(r->prefix.data);
 				free(r);
 				return e;
 			}

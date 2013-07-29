@@ -35,7 +35,7 @@ struct my_s{
 	uint32_t ucs;
 };
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	CURRENT_CODEC(ins)->priv=r;
 	return 0;

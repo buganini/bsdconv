@@ -27,7 +27,7 @@ struct my_s{
 	size_t offsetB;
 };
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *t;
 	if(bsdconv_hash_has(ins, HASHKEY)){
 		t=bsdconv_hash_get(ins, HASHKEY);

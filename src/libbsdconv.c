@@ -67,11 +67,11 @@ static inline int _cbcreate(struct bsdconv_instance *ins, int p, int c){
 		argv=strdup("");
 	char *cur=argv;
 	char *k;
-	struct hash_entry *arg=NULL, *tmp;
-	struct hash_entry **last=&arg;
+	struct bsdconv_hash_entry *arg=NULL, *tmp;
+	struct bsdconv_hash_entry **last=&arg;
 	if(*cur){
 		while((k=strsep(&cur, "&"))!=NULL){
-			*last=malloc(sizeof(struct hash_entry));
+			*last=malloc(sizeof(struct bsdconv_hash_entry));
 			(*last)->key=k;
 			(*last)->ptr=strchr(k, '=');
 			if((*last)->ptr){
@@ -234,7 +234,7 @@ char * bsdconv_solve_alias(int type, char *_codec){
 	bsdconv(ins);
 	ret=ins->output.data;
 	ret[ins->output.len]=0;
-	if(ins->ierr!=0 || ins->oerr!=0){
+	if(*(ins->ierr)!=0 || *(ins->oerr)!=0){
 		free(ret);
 		ret=NULL;
 	}
@@ -289,10 +289,38 @@ void unloadcodec(struct bsdconv_codec_t *cd){
 #endif
 }
 
+counter_t * bsdconv_counter(struct bsdconv_instance *ins, const char *key){
+	struct bsdconv_counter_entry *p=ins->counter;
+	struct bsdconv_counter_entry *t;
+	if(p==NULL){
+		ins->counter=malloc(sizeof(struct bsdconv_counter_entry));
+		ins->counter->key=strdup(key);
+		strtoupper(ins->counter->key);
+		ins->counter->val=0;
+		ins->counter->next=0;
+		return &ins->counter->val;
+	}else{
+		do{
+			t=p;
+			if(strcmp(p->key, key)==0){
+				return &p->val;
+			}
+			p=p->next;
+		}while(p!=NULL);
+		t->next=malloc(sizeof(struct bsdconv_counter_entry));
+		t=t->next;
+		t->key=strdup(key);
+		strtoupper(t->key);
+		t->val=0;
+		t->next=0;
+		return &t->val;
+	}
+}
+
 void bsdconv_hash_set(struct bsdconv_instance *ins, const char *key, void *ptr){
 	char *tk;
 	void *tp;
-	struct hash_entry *p=ins->hash;
+	struct bsdconv_hash_entry *p=ins->hash;
 	while(p!=NULL){
 		if(strcmp(p->key, key)==0){
 			tp=ptr;
@@ -305,7 +333,7 @@ void bsdconv_hash_set(struct bsdconv_instance *ins, const char *key, void *ptr){
 		}
 		p=p->next;
 	}
-	p=malloc(sizeof(struct hash_entry));
+	p=malloc(sizeof(struct bsdconv_hash_entry));
 	p->next=ins->hash;
 	ins->hash=p;
 	p->key=strdup(key);
@@ -316,7 +344,7 @@ void bsdconv_hash_set(struct bsdconv_instance *ins, const char *key, void *ptr){
 void *bsdconv_hash_get(struct bsdconv_instance *ins, const char *key){
 	char *tk;
 	void *tp;
-	struct hash_entry *p=ins->hash;
+	struct bsdconv_hash_entry *p=ins->hash;
 	while(p!=NULL){
 		if(strcmp(p->key, key)==0){
 			tk=p->key;
@@ -335,7 +363,7 @@ void *bsdconv_hash_get(struct bsdconv_instance *ins, const char *key){
 int bsdconv_hash_has(struct bsdconv_instance *ins, const char *key){
 	char *tk;
 	void *tp;
-	struct hash_entry *p=ins->hash;
+	struct bsdconv_hash_entry *p=ins->hash;
 	while(p!=NULL){
 		if(strcmp(p->key, key)==0){
 			tk=p->key;
@@ -352,8 +380,8 @@ int bsdconv_hash_has(struct bsdconv_instance *ins, const char *key){
 }
 
 void bsdconv_hash_del(struct bsdconv_instance *ins, const char *key){
-	struct hash_entry *p=ins->hash;
-	struct hash_entry **q=&ins->hash;
+	struct bsdconv_hash_entry *p=ins->hash;
+	struct bsdconv_hash_entry **q=&ins->hash;
 	while(p!=NULL){
 		if(strcmp(p->key, key)==0){
 			free(p->key);
@@ -376,13 +404,6 @@ void bsdconv_init(struct bsdconv_instance *ins){
 	ins->output.data=NULL;
 	ins->output.len=0;
 	ins->output_mode=BSDCONV_HOLD;
-
-	ins->ierr=0;
-	ins->oerr=0;
-	ins->score=0;
-	ins->full=0;
-	ins->half=0;
-	ins->ambi=0;
 
 	for(i=0;i<=ins->phasen;++i){
 		ins->phase_index=i;
@@ -836,6 +857,9 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 
 	ins->pool=NULL;
 	ins->hash=NULL;
+	ins->counter=NULL;
+	ins->ierr=bsdconv_counter(ins, "IERR");
+	ins->oerr=bsdconv_counter(ins, "OERR");
 	ins->input.flags=0;
 	ins->output.flags=0;
 
@@ -996,7 +1020,7 @@ void bsdconv(struct bsdconv_instance *ins){
 									this_phase->i=this_phase->data_head->len;
 									continue;
 								}else{
-									ins->ierr++;
+									*(ins->ierr)+=1;
 
 									RESET(ins->phase_index);
 
@@ -1235,7 +1259,7 @@ void bsdconv(struct bsdconv_instance *ins){
 							this_phase->curr=prev_phase->data_head;
 							continue;
 						}else{
-							ins->oerr++;
+							*(ins->oerr)+=1;
 
 							RESET(ins->phase_index);
 

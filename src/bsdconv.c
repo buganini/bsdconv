@@ -42,7 +42,7 @@
 void list_codecs(){
 	char **list;
 	char **p;
-	
+
 	printf("[From]\n");
 	LIST_CODECS(FROM);
 	printf("[Inter]\n");
@@ -68,19 +68,19 @@ void bsdconv_file(struct bsdconv_instance *ins, FILE *in, FILE *out, const char 
 		bsdconv(ins);
 	}while(ins->flush==0);
 
-	if(filename && (ins->ierr || ins->oerr || ins->full || ins->half || ins->ambi || ins->score))
-		fprintf(stderr, "\nFile: %s\n", filename);
-	if(ins->ierr || ins->oerr){
-		fprintf(stderr, "Decoding failure: %u\n", ins->ierr);
-		fprintf(stderr, "Encoding failure: %u\n", ins->oerr);
+	struct bsdconv_counter_entry *c=ins->counter;
+	char f=0;
+	while(c!=NULL){
+		if(c->val){
+			if(!f){
+				f=1;
+				if(filename)
+					fprintf(stderr, "\nFile: %s\n", filename);
+			}
+			fprintf(stderr, "%s: %zu\n", c->key, c->val);
+		}
+		c=c->next;
 	}
-	if(ins->full || ins->half || ins->ambi){
-		fprintf(stderr, "Full width: %u\n", ins->full);
-		fprintf(stderr, "Half width: %u\n", ins->half);
-		fprintf(stderr, "Ambi width: %u\n", ins->ambi);
-	}
-	if(ins->score)
-		fprintf(stderr, "Score: %lf\n", ins->score);
 }
 
 int main(int argc, char *argv[]){
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]){
 		i+=1;
 	}
 
-	
+
 #ifdef WIN32
 	setmode(STDIN_FILENO, O_BINARY);
 	setmode(STDOUT_FILENO, O_BINARY);
@@ -178,4 +178,3 @@ int main(int argc, char *argv[]){
 
 	return 0;
 }
-

@@ -20,7 +20,7 @@
 
 #define TAILIZE(p) while(*p){ p++ ;}
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	CURRENT_CODEC(ins)->priv=fopen(getenv("BSDCONV_TO_LOG"),"a");
 	return 0;
 }

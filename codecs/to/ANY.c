@@ -23,7 +23,7 @@
  	int error;
  };
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_st *r=malloc(sizeof(struct my_st));
 	char *bak;
 	int e;
