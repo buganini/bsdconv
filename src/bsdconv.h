@@ -232,6 +232,7 @@ void bsdconv_destroy(struct bsdconv_instance *);
 void bsdconv(struct bsdconv_instance *);
 char * bsdconv_error(void);
 counter_t * bsdconv_counter(struct bsdconv_instance *, const char *);
+void bsdconv_counter_reset(struct bsdconv_instance *);
 void bsdconv_hash_set(struct bsdconv_instance *, const char *, void *);
 void * bsdconv_hash_get(struct bsdconv_instance *, const char *);
 int bsdconv_hash_has(struct bsdconv_instance *, const char *);

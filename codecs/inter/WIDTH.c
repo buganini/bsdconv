@@ -460,3 +460,9 @@ void cbconv(struct bsdconv_instance *ins){
 	this_phase->state.status=NEXTPHASE;
 	return;
 }
+
+
+void cbdestroy(struct bsdconv_instance *ins){
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	free(r);
+}

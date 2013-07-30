@@ -858,8 +858,6 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 	ins->pool=NULL;
 	ins->hash=NULL;
 	ins->counter=NULL;
-	ins->ierr=bsdconv_counter(ins, "IERR");
-	ins->oerr=bsdconv_counter(ins, "OERR");
 	ins->input.flags=0;
 	ins->output.flags=0;
 
@@ -904,6 +902,9 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 		ins->phase[i].data_head->flags=0;
 	}
 
+	ins->ierr=bsdconv_counter(ins, "IERR");
+	ins->oerr=bsdconv_counter(ins, "OERR");
+
 	free(conversion);
 	return ins;
 
@@ -921,6 +922,7 @@ bsdconv_create_error:
 void bsdconv_destroy(struct bsdconv_instance *ins){
 	int i,j;
 	struct data_rt *data_ptr;
+	void *p;
 
 	for(i=0;i<=ins->phasen;++i){
 		if(i>0){
@@ -952,6 +954,12 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 	while(ins->hash){
 		free(ins->hash->key);
 		ins->hash=ins->hash->next;
+	}
+	while(ins->counter){
+		free(ins->counter->key);
+		p=ins->counter->next;
+		free(ins->counter);
+		ins->counter=p;
 	}
 	free(ins);
 }
