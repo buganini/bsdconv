@@ -194,9 +194,6 @@ int _loadcodec(struct bsdconv_codec_t *cd, char *path){
 		cd->cbinit=dlsym(cd->dl,"cbinit");
 		cd->cbctl=dlsym(cd->dl,"cbctl");
 		cd->cbdestroy=dlsym(cd->dl,"cbdestroy");
-		if(cd->cbcreate && cd->cbdestroy==NULL){
-			fprintf(stderr,"Possible memory leak in %s\n", path);
-		}
 	}
 #endif
 	return 1;
