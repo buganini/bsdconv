@@ -291,13 +291,14 @@ void unloadcodec(struct bsdconv_codec_t *cd){
 #endif
 }
 
-counter_t * bsdconv_counter(struct bsdconv_instance *ins, const char *key){
+counter_t * bsdconv_counter(struct bsdconv_instance *ins, const char *_key){
 	struct bsdconv_counter_entry *p=ins->counter;
 	struct bsdconv_counter_entry *t;
+	char *key=strdup(_key);
+	strtoupper(key);
 	if(p==NULL){
 		ins->counter=malloc(sizeof(struct bsdconv_counter_entry));
-		ins->counter->key=strdup(key);
-		strtoupper(ins->counter->key);
+		ins->counter->key=key;
 		ins->counter->val=0;
 		ins->counter->next=0;
 		return &ins->counter->val;
@@ -305,14 +306,14 @@ counter_t * bsdconv_counter(struct bsdconv_instance *ins, const char *key){
 		do{
 			t=p;
 			if(strcmp(p->key, key)==0){
+				free(key);
 				return &p->val;
 			}
 			p=p->next;
 		}while(p!=NULL);
 		t->next=malloc(sizeof(struct bsdconv_counter_entry));
 		t=t->next;
-		t->key=strdup(key);
-		strtoupper(t->key);
+		t->key=key;
 		t->val=0;
 		t->next=0;
 		return &t->val;
