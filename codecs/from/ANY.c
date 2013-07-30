@@ -18,21 +18,24 @@
 #include <string.h>
 #include "../../src/bsdconv.h"
 
- struct my_st {
- 	struct data_st data;
- 	int error;
- };
+struct my_st {
+	struct data_st data;
+	counter_t *counter;
+};
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_st *r=malloc(sizeof(struct my_st));
 	char *bak;
 	int e;
-	r->error=0;
 	r->data.len=2;
 	r->data.data=strdup("\x01\x3f");
+	r->counter=NULL;
 	while(arg){
 		if(strcmp(arg->key, "ERROR")==0){
-			r->error=1;
+			if(arg->ptr)
+				r->counter=bsdconv_counter(ins, arg->ptr);
+			else
+				r->counter=bsdconv_counter(ins, "IERR");
 		}else{
 			bak=r->data.data;
 			e=str2data(arg->key, &(r->data));
@@ -68,6 +71,7 @@ void cbconv(struct bsdconv_instance *ins){
 
 	this_phase->state.status=NEXTPHASE;
 
-	ins->ierr+=r->error;
+	if(r->counter)
+		*(r->counter)+=1;
 	return;
 }
