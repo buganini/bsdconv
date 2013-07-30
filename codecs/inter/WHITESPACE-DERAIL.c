@@ -36,6 +36,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 		bsdconv_hash_set(ins, HASHKEY, t);
 	}
 	t->queue=NULL;
+	t->rerail=NULL;
 	CURRENT_CODEC(ins)->priv=t;
 	return 0;
 }
@@ -101,8 +102,10 @@ void cbconv(struct bsdconv_instance *ins){
 			this_phase->curr->flags &= ~F_FREE;
 			q->len=t->offsetA;
 
-			t->rerail->flags |= (F_MATCH | F_PENDING);
-			t->rerail->match_data=t->queue->data;
+			if(t->rerail){
+				t->rerail->flags |= (F_MATCH | F_PENDING);
+				t->rerail->match_data=t->queue->data;
+			}
 
 			return;
 		}
