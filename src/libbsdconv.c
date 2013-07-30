@@ -953,7 +953,9 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 	free(ins->phase);
 	while(ins->hash){
 		free(ins->hash->key);
-		ins->hash=ins->hash->next;
+		p=ins->hash->next;
+		free(ins->hash);
+		ins->hash=p;
 	}
 	while(ins->counter){
 		free(ins->counter->key);
