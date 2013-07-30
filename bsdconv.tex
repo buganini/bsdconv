@@ -519,18 +519,16 @@ bsdconv_destroy(ins);
 				Output will be discard. This is usually used with evaluating conversion (see section 3.4).
 
 		\subsection{Counters}
-			\begin{tabular}{|c|l|c|}
-				\hline
-				ins-$>$* & Number of & Provider \\
-				\hline
-				ierr & Decoding errors & -\\
-				oerr & Encoding errors & -\\
-				full & Fullwidth code points & inter/WIDTH \\
-				half & Halfwidth code points & inter/WIDTH \\
-				ambi & Ambiguous width code points & inter/WIDTH\\
-				score & Score (according to score table) & inter/SCORE\\
-				\hline
-			\end{tabular}
+			Counters are listed in ins-$>$counters in linked-list with following structure.
+			\begin{lstlisting}
+struct bsdconv_counter_entry{
+	char *key;
+	counter_t val;
+	struct bsdconv_counter_entry *next;
+};
+			\end{lstlisting}
+			Counter IERR/OERR are default error counters.
+			
 		\subsection{Memory pool issue}
 			\paragraph{}
 			In case libbsdconv and your program uses different memory pools, bsdconv\_malloc() and bsdconv\_free() should be used to replace malloc() and free().
