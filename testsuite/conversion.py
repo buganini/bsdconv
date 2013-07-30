@@ -93,8 +93,8 @@ iotest=[
 	["utf-8:nfkc:utf-8","ăǅⓐ","ª̆ǅⓐ"],
 ]
 
-infotest=[
-	["utf-8:width:null","123Б測試",{"full":2,"ambi":1,"half":3}]
+countertest=[
+	["utf-8:width:null","123Б測試",{"FULL":2,"AMBI":1,"HALF":3}]
 ]
 
 for c, i, o in iotest:
@@ -113,7 +113,7 @@ for c, i, o in iotest:
 		sys.exit()
 	del p
 
-for c, d, i in infotest:
+for c, d, i in countertest:
 	p=bsdconv.Bsdconv(c)
 	if not p:
 		print(bsdconv.error())
@@ -121,7 +121,7 @@ for c, d, i in infotest:
 		del p
 		sys.exit()
 	p.conv(d)
-	r=p.info()
+	r=p.counter()
 	for k in i:
 		if i[k] != r[k]:
 			print("Test failed at %s" % repr([c, d, i]))
