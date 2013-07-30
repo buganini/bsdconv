@@ -17,11 +17,21 @@
 
 #include "../../src/bsdconv.h"
 
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
+	char *key="COUNT";
+	while(arg){
+		key=arg->key;
+		arg=arg->next;
+	}
+	CURRENT_CODEC(ins)->priv=bsdconv_counter(ins, key);
+	return 0;
+}
+
 void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	counter_t *ct=this_phase->codec[this_phase->index].priv;
 
-	*(ins->ierr)+=1;
-	*(ins->oerr)+=1;
+	*ct+=1;
 
 	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;

@@ -206,15 +206,16 @@ char * bsdconv_solve_alias(int type, char *_codec){
 	char *ret;
 	char *codec;
 	struct bsdconv_instance *ins;
+	counter_t *ct;
 	switch(type){
 		case FROM:
-			ins=bsdconv_create("ASCII:FROM_ALIAS,ERROR:ASCII");
+			ins=bsdconv_create("ASCII:FROM_ALIAS,COUNT#ERR:ASCII");
 			break;
 		case INTER:
-			ins=bsdconv_create("ASCII:INTER_ALIAS,ERROR:ASCII");
+			ins=bsdconv_create("ASCII:INTER_ALIAS,COUNT#ERR:ASCII");
 			break;
 		case TO:
-			ins=bsdconv_create("ASCII:TO_ALIAS,ERROR:ASCII");
+			ins=bsdconv_create("ASCII:TO_ALIAS,COUNT#ERR:ASCII");
 			break;
 		default:
 			return NULL;
@@ -234,7 +235,8 @@ char * bsdconv_solve_alias(int type, char *_codec){
 	bsdconv(ins);
 	ret=ins->output.data;
 	ret[ins->output.len]=0;
-	if(*(ins->ierr)!=0 || *(ins->oerr)!=0){
+	ct=bsdconv_counter(ins, "ERR");
+	if(*ct>0){
 		free(ret);
 		ret=NULL;
 	}
