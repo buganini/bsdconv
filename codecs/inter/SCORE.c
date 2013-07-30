@@ -26,7 +26,7 @@
 struct my_s{
 	FILE *bak;
 	FILE *score;
-	counter_t *counter;
+	bsdconv_counter_t *counter;
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){

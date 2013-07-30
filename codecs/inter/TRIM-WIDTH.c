@@ -25,9 +25,9 @@ struct my_s{
 	char ambi_width;
 	size_t width;
 	long remain;
-	counter_t *full;
-	counter_t *half;
-	counter_t *ambi;
+	bsdconv_counter_t *full;
+	bsdconv_counter_t *half;
+	bsdconv_counter_t *ambi;
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){

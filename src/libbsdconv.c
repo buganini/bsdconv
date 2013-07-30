@@ -203,7 +203,7 @@ char * bsdconv_solve_alias(int type, char *_codec){
 	char *ret;
 	char *codec;
 	struct bsdconv_instance *ins;
-	counter_t *ct;
+	bsdconv_counter_t *ct;
 	switch(type){
 		case FROM:
 			ins=bsdconv_create("ASCII:FROM_ALIAS,COUNT#ERR:ASCII");
@@ -288,7 +288,7 @@ void unloadcodec(struct bsdconv_codec_t *cd){
 #endif
 }
 
-counter_t * bsdconv_counter(struct bsdconv_instance *ins, const char *_key){
+bsdconv_counter_t * bsdconv_counter(struct bsdconv_instance *ins, const char *_key){
 	struct bsdconv_counter_entry *p=ins->counter;
 	struct bsdconv_counter_entry *t;
 	char *key=strdup(_key);
@@ -314,6 +314,14 @@ counter_t * bsdconv_counter(struct bsdconv_instance *ins, const char *_key){
 		t->val=0;
 		t->next=0;
 		return &t->val;
+	}
+}
+
+void bsdconv_counter_reset(struct bsdconv_instance *ins){
+	struct bsdconv_counter_entry *p=ins->counter;
+	while(p){
+		p->val=0;
+		p=p->next;
 	}
 }
 

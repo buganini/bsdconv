@@ -29,7 +29,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 
 void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	counter_t *ct=this_phase->codec[this_phase->index].priv;
+	bsdconv_counter_t *ct=this_phase->codec[this_phase->index].priv;
 
 	*ct+=1;
 

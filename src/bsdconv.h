@@ -38,7 +38,7 @@ extern "C" {
 #define F_LOOPBACK 4
 
 typedef uint32_t offset_t;
-typedef size_t counter_t;
+typedef size_t bsdconv_counter_t;
 
 enum bsdconv_phase_type {
 	_INPUT,
@@ -105,7 +105,7 @@ struct bsdconv_hash_entry{
 
 struct bsdconv_counter_entry{
 	char *key;
-	counter_t val;
+	bsdconv_counter_t val;
 	struct bsdconv_counter_entry *next;
 };
 
@@ -121,8 +121,8 @@ struct bsdconv_instance{
 	struct bsdconv_hash_entry *hash;
 	struct bsdconv_counter_entry *counter;
 
-	counter_t *ierr;
-	counter_t *oerr;
+	bsdconv_counter_t *ierr;
+	bsdconv_counter_t *oerr;
 
 	struct data_rt *pool;
 };
@@ -231,7 +231,7 @@ void bsdconv_ctl(struct bsdconv_instance *, int, void *, int);
 void bsdconv_destroy(struct bsdconv_instance *);
 void bsdconv(struct bsdconv_instance *);
 char * bsdconv_error(void);
-counter_t * bsdconv_counter(struct bsdconv_instance *, const char *);
+bsdconv_counter_t * bsdconv_counter(struct bsdconv_instance *, const char *);
 void bsdconv_counter_reset(struct bsdconv_instance *);
 void bsdconv_hash_set(struct bsdconv_instance *, const char *, void *);
 void * bsdconv_hash_get(struct bsdconv_instance *, const char *);
