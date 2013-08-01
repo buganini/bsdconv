@@ -1,7 +1,10 @@
-10.1:
+11.0:
 	add man page for inter/AMBIGUOUS-PAD and inter/AMBIGUOUS-UNPAD
 	add inter/{NFC,NFD,NFKC,NFKD} #UnicodeData
 	improve inter/{UPPER,LOWER} #UnicodeData
+	add inter/PASS
+	add unified counter interface
+	replace inter/ERROR with newly added inter/COUNT
 
 10.0:
 	support "codec#key&key=value" style argument
