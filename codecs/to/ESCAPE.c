@@ -40,7 +40,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	while(arg){
 		if(strcmp(arg->key, "PREFIX")==0){
 			free(r->prefix.data);
-			e=str2data(arg->ptr, &(r->prefix));
+			e=str2datum(arg->ptr, &(r->prefix));
 			if(e){
 				free(r->suffix.data);
 				free(r);
@@ -48,7 +48,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 			}
 		}else if(strcmp(arg->key, "SUFFIX")==0){
 			free(r->suffix.data);
-			e=str2data(arg->ptr, &(r->suffix));
+			e=str2datum(arg->ptr, &(r->suffix));
 			if(e){
 				free(r->prefix.data);
 				free(r);

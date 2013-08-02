@@ -82,7 +82,6 @@ static inline int _cbcreate(struct bsdconv_instance *ins, int p, int c){
 			last=&((*last)->next);
 		}
 	}
-
 	r=ins->phase[p].codec[c].cbcreate(ins, arg);
 	free(argv);
 	while(arg){
@@ -104,10 +103,20 @@ char * getCodecDir(){
 	return b;
 }
 
-int str2data(const char *s, struct data_st *d){
+void free_data_st(struct data_st *p){
+	struct data_st *t;
+	while(p){
+		t=p->next;
+		free(p->data);
+		free(p);
+		p=t;
+	}
+}
+
+int str2datum(const char *s, struct data_st *d){
 	d->data=NULL;
 	d->len=0;
-	if(!s || !*s)
+	if(!s)
 		return EINVAL;
 	d->data=malloc(strlen(s)/2);
 	char f=0;
@@ -132,6 +141,48 @@ int str2data(const char *s, struct data_st *d){
 		s+=1;
 	}
 	return 0;
+}
+
+struct data_st * str2data(const char *s, int *r){
+	struct data_st ph;
+	struct data_st *t=&ph;
+	ph.next=NULL;
+	if(!s){
+		*r=EINVAL;
+		return NULL;
+	}
+	if(!*s){
+		*r=0;
+		return NULL;
+	}
+	t->next=malloc(sizeof(struct data_st));
+	t=t->next;
+	t->next=NULL;
+	t->len=0;
+	t->data=malloc(strlen(s)/2);
+	char f=0;
+	while(*s){
+		if(hex[(unsigned char) *s]<0){
+			free_data_st(ph.next);
+			*r=EINVAL;
+			return NULL;
+		}
+		switch(f){
+			case 0:
+				f=1;
+				t->data[t->len]=hex[(unsigned char)*s];
+				break;
+			case 1:
+				f=0;
+				t->data[t->len]*=16;
+				t->data[t->len]+=hex[(unsigned char)*s];
+				t->len+=1;
+				break;
+		}
+		s+=1;
+	}
+	*r=0;
+	return ph.next;
 }
 
 int _loadcodec(struct bsdconv_codec_t *cd, char *path){

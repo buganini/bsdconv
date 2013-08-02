@@ -19,16 +19,15 @@
 #include "../../src/bsdconv.h"
 
 struct my_st {
-	struct data_st data;
+	struct data_st *data;
 	bsdconv_counter_t *counter;
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_st *r=malloc(sizeof(struct my_st));
-	char *bak;
+	struct data_st *bak;
 	int e;
-	r->data.len=2;
-	r->data.data=strdup("\x3f");
+	r->data=str2data("3F", &e);
 	r->counter=NULL;
 	while(arg){
 		if(strcmp(arg->key, "ERROR")==0){
@@ -37,10 +36,11 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 			else
 				r->counter=bsdconv_counter(ins, "OERR");
 		}else{
-			bak=r->data.data;
-			e=str2data(arg->key, &(r->data));
-			free(bak);
+			bak=r->data;
+			r->data=str2data(arg->key, &e);
+			free_data_st(bak);
 			if(e){
+				free_data_st(r->data);
 				free(r);
 				return e;
 			}
@@ -54,20 +54,16 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 void cbdestroy(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_st *r=this_phase->codec[this_phase->index].priv;
-	free(r->data.data);
+	free_data_st(r->data);
 	free(r);
 }
 
 void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_st *r=this_phase->codec[this_phase->index].priv;
+	struct data_st *data_ptr;
 
-	DATA_MALLOC(this_phase->data_tail->next);
-	this_phase->data_tail=this_phase->data_tail->next;
-	this_phase->data_tail->next=NULL;
-	this_phase->data_tail->len=r->data.len;
-	this_phase->data_tail->flags=0;
-	this_phase->data_tail->data=r->data.data;
+	LISTCPY(this_phase->data_tail, r->data, 0);
 
 	this_phase->state.status=NEXTPHASE;
 

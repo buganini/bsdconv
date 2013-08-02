@@ -9,6 +9,6 @@ OUTPUT
 ARGUMENT
 	ERROR
 		DESC	Increase counter (OERR if no counter name specified)
-	$HexValue
+	$HexValueList
 		DESC	Output value
 		EXAMPLE	3F

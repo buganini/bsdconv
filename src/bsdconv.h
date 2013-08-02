@@ -188,9 +188,9 @@ char * getwd(char *);
 	DATA_MALLOC((X)->next);	\
 	(X)=(X)->next;	\
 	memcpy((X), (char *)((Z)+(uintptr_t)data_ptr), sizeof(struct data_st));	\
-	data_ptr=(X)->next;	\
+	data_ptr=(void *)((X)->next);	\
 	(X)->next=NULL;	\
-	(X)->data=((Z)+(uintptr_t)(X)->data);	\
+	(X)->data=(char *)((Z)+(uintptr_t)(X)->data);	\
 	(X)->flags=0; \
 }
 
@@ -244,7 +244,9 @@ char *bsdconv_pack(struct bsdconv_instance *);
 void *bsdconv_malloc(size_t);
 void bsdconv_free(void *);
 int bsdconv_mkstemp(char *);
-int str2data(const char *, struct data_st *);
+int str2datum(const char *, struct data_st *);
+struct data_st * str2data(const char *, int *);
+void free_data_st(struct data_st *);
 char * getCodecDir();
 
 //Callback function interface
