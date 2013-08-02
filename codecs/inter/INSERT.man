@@ -1,0 +1,16 @@
+INPUT
+	TYPE	Any
+
+OUTPUT
+	TYPE	Any
+	DESC	Append ',' (in term of bsdconv_keyword)
+
+ARGUMENT
+	AFTER
+		TYPE	Hex Value List
+	BEFORE
+		TYPE	Hex Value List
+
+EXAMPLE:
+	printf test|bsdconv utf-8:insert#after=002c:bsdconv_keyword,utf-8
+	t,e,s,t,
