@@ -5,6 +5,7 @@
 	add inter/PASS
 	add unified counter interface
 	replace inter/ERROR with newly added inter/COUNT
+	replace inter/SPLIT with newly added inter/INSERT
 
 10.0:
 	support "codec#key&key=value" style argument
