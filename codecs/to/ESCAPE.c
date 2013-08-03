@@ -62,6 +62,8 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 			}else if(strcmp(arg->ptr, "OCT")==0 || strcmp(arg->ptr, "8")==0){
 				r->mode=8;
 			}else{
+				free(r->prefix.data);
+				free(r->suffix.data);
 				free(r);
 				return EINVAL;
 			}
@@ -71,10 +73,14 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 			}else if(strcmp(arg->ptr, "BYTE")==0 || strcmp(arg->ptr, "3")==0 || strcmp(arg->ptr, "03")==0){
 				r->filter=3;
 			}else{
+				free(r->prefix.data);
+				free(r->suffix.data);
 				free(r);
 				return EINVAL;
 			}
 		}else{
+			free(r->prefix.data);
+			free(r->suffix.data);
 			free(r);
 			return EINVAL;
 		}
