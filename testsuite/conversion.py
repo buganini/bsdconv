@@ -95,7 +95,9 @@ iotest=[
 ]
 
 countertest=[
-	["utf-8:width:null","123Б測試",{"FULL":2,"AMBI":1,"HALF":3}]
+	["utf-8:width:null","123Б測試",{"FULL":2,"AMBI":1,"HALF":3}],
+	["utf-8:count:null","123Б測試",{"COUNT":6}],
+	["utf-8:count#blah:null","123Б測試",{"BLAH":6}],
 ]
 
 for c, i, o in iotest:
