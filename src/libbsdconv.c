@@ -143,44 +143,57 @@ int str2datum(const char *s, struct data_st *d){
 	return 0;
 }
 
-struct data_st * str2data(const char *s, int *r){
+struct data_st * str2data(const char *_s, int *r){
 	struct data_st ph;
 	struct data_st *t=&ph;
+	char *k, *cur;
+	char *s;
+	char f;
+
 	ph.next=NULL;
-	if(!s){
+	if(!_s){
 		*r=EINVAL;
 		return NULL;
 	}
-	if(!*s){
+	if(!*_s){
 		*r=0;
 		return NULL;
 	}
-	t->next=malloc(sizeof(struct data_st));
-	t=t->next;
-	t->next=NULL;
-	t->len=0;
-	t->data=malloc(strlen(s)/2);
-	char f=0;
-	while(*s){
-		if(hex[(unsigned char) *s]<0){
-			free_data_st(ph.next);
-			*r=EINVAL;
-			return NULL;
+
+	s=strdup(_s);
+
+	cur=s;
+	while((k=strsep(&cur, "."))!=NULL){
+		t->next=malloc(sizeof(struct data_st));
+		t=t->next;
+		t->next=NULL;
+		t->len=0;
+		t->data=malloc(strlen(k)/2);
+		f=0;
+		while(*k){
+			if(hex[(unsigned char) *k]<0){
+				free_data_st(ph.next);
+				*r=EINVAL;
+				return NULL;
+			}
+			switch(f){
+				case 0:
+					f=1;
+					t->data[t->len]=hex[(unsigned char)*k];
+					break;
+				case 1:
+					f=0;
+					t->data[t->len]*=16;
+					t->data[t->len]+=hex[(unsigned char)*k];
+					t->len+=1;
+					break;
+			}
+			k+=1;
 		}
-		switch(f){
-			case 0:
-				f=1;
-				t->data[t->len]=hex[(unsigned char)*s];
-				break;
-			case 1:
-				f=0;
-				t->data[t->len]*=16;
-				t->data[t->len]+=hex[(unsigned char)*s];
-				t->len+=1;
-				break;
-		}
-		s+=1;
 	}
+
+	free(s);
+
 	*r=0;
 	return ph.next;
 }
