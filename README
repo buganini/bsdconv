@@ -5,8 +5,8 @@ Documentation:
 http://www.slideshare.net/Buganini/bsdconv
 
 --
-Compiling & Installation (FreeBSD):
-make
+Compiling & Installation:
+make PREFIX=/usr # default is /usr/local
 sudo make install
 
 --
