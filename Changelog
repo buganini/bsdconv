@@ -6,6 +6,7 @@
 	add unified counter interface
 	replace inter/ERROR with newly added inter/COUNT
 	replace inter/SPLIT with newly added inter/INSERT
+	support data list for codec argument
 
 10.0:
 	support "codec#key&key=value" style argument
