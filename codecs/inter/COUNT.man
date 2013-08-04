@@ -1,0 +1,9 @@
+INPUT
+	TYPE	Any
+
+OUTPUT
+	TYPE	Any
+	DESC	No content changed, counter increased
+
+ARGUMENT
+	$CounterName

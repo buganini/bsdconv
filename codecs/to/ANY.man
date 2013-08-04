@@ -12,3 +12,4 @@ ARGUMENT
 	$HexValueList
 		DESC	Output value
 		EXAMPLE	3F
+		EXAMPLE	3F.2F
