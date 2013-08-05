@@ -381,11 +381,17 @@ bsdconv_counter_t * bsdconv_counter(struct bsdconv_instance *ins, const char *_k
 	}
 }
 
-void bsdconv_counter_reset(struct bsdconv_instance *ins){
+void bsdconv_counter_reset(struct bsdconv_instance *ins, const char *key){
 	struct bsdconv_counter_entry *p=ins->counter;
-	while(p){
-		p->val=0;
-		p=p->next;
+	bsdconv_counter_t *v;
+	if(key==NULL){
+		while(p){
+			p->val=0;
+			p=p->next;
+		}
+	}else{
+		v=bsdconv_counter(ins, key);
+		*v=0;
 	}
 }
 
