@@ -528,7 +528,16 @@ struct bsdconv_counter_entry{
 };
 			\end{lstlisting}
 			IERR and OERR are mandatory error counters.
-			
+			\newpage\noindent
+			There are two API to get/reset counter(s):
+			\begin{lstlisting}
+bsdconv_counter_t * bsdconv_counter(char *name);
+			\end{lstlisting}
+			Return the pointer to the counter value. bsdconv\_counter\_t is currently defined as size\_t.
+			\begin{lstlisting}
+void bsdconv_counter_reset(char *name);
+			\end{lstlisting}
+			Reset the specified counter, if name is NULL, all counters are reset.
 		\subsection{Memory pool issue}
 			\paragraph{}
 			In case libbsdconv and your program uses different memory pools, bsdconv\_malloc() and bsdconv\_free() should be used to replace malloc() and free().
