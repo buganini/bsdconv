@@ -92,6 +92,8 @@ iotest=[
 	["utf-8:nfkd:utf-8","ăǅⓐ","ăDža"],
 	["utf-8:nfkc:utf-8","ăǅⓐ","ª̆ǅⓐ"],
 	["ascii,any#019644.012F:utf-8","A測B","A附/附/附/B"],
+	["utf-8:pass,zh_decomp:insert#after=002c:bsdconv_keyword,bsdconv","不大不要","014E0D,015927,014E0D,018981,"],
+	["utf-8:pass#limit=2,zh_decomp:insert#after=002c:bsdconv_keyword,bsdconv","不大不要","014E0D,015927,048D,040107,0476,"],
 ]
 
 countertest=[

@@ -9,3 +9,6 @@ ARGUMENT
 	FOR
 		FORMAT	ENUM{UNICODE,1,CNS11643,2,BYTE,3,ANSI,1B}
 		DESC	Input type whitelist
+	LIMIT
+		FORMAT	INTEGER
+		DESC	Limit the number of packets to passed
