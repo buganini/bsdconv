@@ -174,6 +174,7 @@ struct data_st * str2data(const char *_s, int *r){
 			if(hex[(unsigned char) *k]<0){
 				free_data_st(ph.next);
 				*r=EINVAL;
+				free(s);
 				return NULL;
 			}
 			switch(f){
@@ -939,6 +940,9 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 	ins->input.flags=0;
 	ins->output.flags=0;
 
+	ins->ierr=bsdconv_counter(ins, "IERR");
+	ins->oerr=bsdconv_counter(ins, "OERR");
+
 	for(i=1;i<=ins->phasen;++i){
 		for(j=0;j<=ins->phase[i].codecn;++j){
 			if(ins->phase[i].codec[j].cbcreate){
@@ -980,9 +984,6 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 		ins->phase[i].data_head->flags=0;
 	}
 
-	ins->ierr=bsdconv_counter(ins, "IERR");
-	ins->oerr=bsdconv_counter(ins, "OERR");
-
 	free(conversion);
 	return ins;
 
@@ -993,6 +994,20 @@ bsdconv_create_error:
 
 	free(conversion);
 	free(ins->phase);
+
+	void *p;
+	while(ins->hash){
+		free(ins->hash->key);
+		p=ins->hash->next;
+		free(ins->hash);
+		ins->hash=p;
+	}
+	while(ins->counter){
+		free(ins->counter->key);
+		p=ins->counter->next;
+		free(ins->counter);
+		ins->counter=p;
+	}
 	free(ins);
 	return NULL;
 }
