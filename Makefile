@@ -24,8 +24,8 @@ TODO_CODECS_BASIC+=from/ASCII-NUMERIC-HTML-ENTITY
 TODO_CODECS_BASIC+=from/ASCII
 TODO_CODECS_BASIC+=from/BIG5-5C
 TODO_CODECS_BASIC+=from/BSDCONV
-TODO_CODECS_BASIC+=from/BSDCONV_KEYWORD
-TODO_CODECS_BASIC+=from/BSDCONV_LOG
+TODO_CODECS_BASIC+=from/BSDCONV-KEYWORD
+TODO_CODECS_BASIC+=from/BSDCONV-LOG
 TODO_CODECS_BASIC+=from/BYTE
 TODO_CODECS_BASIC+=from/ESCAPE
 TODO_CODECS_BASIC+=from/PASS
@@ -45,24 +45,24 @@ TODO_CODECS_BASIC+=from/_JIS0212
 TODO_CODECS_BASIC+=from/_SHIFT-JIS
 TODO_CODECS_BASIC+=from/_UAO250
 TODO_CODECS_BASIC+=from/_UTF-8
+TODO_CODECS_BASIC+=inter/ALIAS-FROM
+TODO_CODECS_BASIC+=inter/ALIAS-INTER
+TODO_CODECS_BASIC+=inter/ALIAS-TO
 TODO_CODECS_BASIC+=inter/AMBIGUOUS-PAD
 TODO_CODECS_BASIC+=inter/AMBIGUOUS-UNPAD
 TODO_CODECS_BASIC+=inter/BIG5-DEFRAG
 TODO_CODECS_BASIC+=inter/COUNT
-TODO_CODECS_BASIC+=inter/FROM_ALIAS
 TODO_CODECS_BASIC+=inter/FULL
 TODO_CODECS_BASIC+=inter/HALF
 TODO_CODECS_BASIC+=inter/INSERT
-TODO_CODECS_BASIC+=inter/INTER_ALIAS
-TODO_CODECS_BASIC+=inter/KANA_PHONETIC
+TODO_CODECS_BASIC+=inter/KANA-PHONETIC
 TODO_CODECS_BASIC+=inter/LOWER
 TODO_CODECS_BASIC+=inter/MAC
 TODO_CODECS_BASIC+=inter/NOBOM
 TODO_CODECS_BASIC+=inter/NL2BR
 TODO_CODECS_BASIC+=inter/PASS
 TODO_CODECS_BASIC+=inter/SCORE
-TODO_CODECS_BASIC+=inter/SCORE_TRAIN
-TODO_CODECS_BASIC+=inter/TO_ALIAS
+TODO_CODECS_BASIC+=inter/SCORE-TRAIN
 TODO_CODECS_BASIC+=inter/TRIM-WIDTH
 TODO_CODECS_BASIC+=inter/UNIX
 TODO_CODECS_BASIC+=inter/UPPER
@@ -74,9 +74,9 @@ TODO_CODECS_BASIC+=inter/WIN
 TODO_CODECS_BASIC+=inter/ZH-STRINGS
 TODO_CODECS_BASIC+=inter/ZHCN
 TODO_CODECS_BASIC+=inter/ZHTW
-TODO_CODECS_BASIC+=inter/ZHTW_WORDS
-TODO_CODECS_BASIC+=inter/ZH_FUZZY_TW
-TODO_CODECS_BASIC+=inter/ZH_FUZZY_CN
+TODO_CODECS_BASIC+=inter/ZHTW-WORDS
+TODO_CODECS_BASIC+=inter/ZH-FUZZY-TW
+TODO_CODECS_BASIC+=inter/ZH-FUZZY-CN
 TODO_CODECS_BASIC+=inter/_NFC
 TODO_CODECS_BASIC+=inter/_NFD
 TODO_CODECS_BASIC+=inter/_NFKC
@@ -90,19 +90,19 @@ TODO_CODECS_BASIC+=to/ASCII-NAMED-HTML-ENTITY
 TODO_CODECS_BASIC+=to/ASCII
 TODO_CODECS_BASIC+=to/BIG5-5C
 TODO_CODECS_BASIC+=to/BSDCONV
-TODO_CODECS_BASIC+=to/BSDCONV_KEYWORD
-TODO_CODECS_BASIC+=to/BSDCONV_LOG
-TODO_CODECS_BASIC+=to/BSDCONV_STDOUT
+TODO_CODECS_BASIC+=to/BSDCONV-KEYWORD
+TODO_CODECS_BASIC+=to/BSDCONV-LOG
+TODO_CODECS_BASIC+=to/BSDCONV-STDOUT
 TODO_CODECS_BASIC+=to/BYTE
 TODO_CODECS_BASIC+=to/_CP1251
 TODO_CODECS_BASIC+=to/_CP1252
 TODO_CODECS_BASIC+=to/_CP1253
 TODO_CODECS_BASIC+=to/_CP874
 TODO_CODECS_BASIC+=to/_CP936
-TODO_CODECS_BASIC+=to/CP936_TRANS
+TODO_CODECS_BASIC+=to/CP936-TRANS
 TODO_CODECS_BASIC+=to/_CP949
 TODO_CODECS_BASIC+=to/_CP950
-TODO_CODECS_BASIC+=to/CP950_TRANS
+TODO_CODECS_BASIC+=to/CP950-TRANS
 TODO_CODECS_BASIC+=to/ESCAPE
 TODO_CODECS_BASIC+=to/_GB18030
 TODO_CODECS_BASIC+=to/_GBK
@@ -130,10 +130,10 @@ TODO_CODECS_CHINESE+=from/_GB2312
 TODO_CODECS_CHINESE+=from/_UAO241
 TODO_CODECS_CHINESE+=inter/CHEWING
 TODO_CODECS_CHINESE+=inter/CNS11643
-TODO_CODECS_CHINESE+=inter/HAN_PINYIN
+TODO_CODECS_CHINESE+=inter/HAN-PINYIN
 TODO_CODECS_CHINESE+=inter/UNICODE
-TODO_CODECS_CHINESE+=inter/ZH_COMP
-TODO_CODECS_CHINESE+=inter/ZH_DECOMP
+TODO_CODECS_CHINESE+=inter/ZH-COMP
+TODO_CODECS_CHINESE+=inter/ZH-DECOMP
 TODO_CODECS_CHINESE+=to/CCCII
 TODO_CODECS_CHINESE+=to/_CNS11643
 TODO_CODECS_CHINESE+=to/_GB2312
@@ -156,11 +156,11 @@ TODO_CODECS_EBCDIC+=to/IBM-939
 all: libbsdconv bsdconv-mktable meta bsdconv-man bsdconv-completion bsdconv codecs
 
 alias:
-	python tools/mkalias.py codecs/from/alias codecs/inter/FROM_ALIAS.txt
-	@printf "014C,014F,0143,0141,014C,0145\t?\n" >> codecs/inter/FROM_ALIAS.txt
-	python tools/mkalias.py codecs/inter/alias codecs/inter/INTER_ALIAS.txt
-	python tools/mkalias.py codecs/to/alias codecs/inter/TO_ALIAS.txt
-	@printf "014C,014F,0143,0141,014C,0145\t?\n" >> codecs/inter/TO_ALIAS.txt
+	python tools/mkalias.py codecs/from/alias codecs/inter/ALIAS-FROM.txt
+	@printf "014C,014F,0143,0141,014C,0145\t?\n" >> codecs/inter/ALIAS-FROM.txt
+	python tools/mkalias.py codecs/inter/alias codecs/inter/ALIAS-INTER.txt
+	python tools/mkalias.py codecs/to/alias codecs/inter/ALIAS-TO.txt
+	@printf "014C,014F,0143,0141,014C,0145\t?\n" >> codecs/inter/ALIAS-TO.txt
 
 builddir:
 	mkdir -p build/bin
@@ -193,8 +193,8 @@ bsdconv-man: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
 bsdconv-completion: builddir libbsdconv meta src/bsdconv.h src/bsdconv-completion.c
 	$(CC) ${CFLAGS} src/bsdconv-completion.c -L./build/lib -o build/bin/bsdconv-completion -lbsdconv ${LIBS}
 
-bsdconv_dbg: builddir libbsdconv src/libbsdconv.c src/bsdconv.h src/bsdconv_dbg.c
-	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv_dbg.c -o build/bin/bsdconv_dbg ${LIBS}
+bsdconv_dbg: builddir libbsdconv src/libbsdconv.c src/bsdconv.h src/bsdconv-dbg.c
+	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv-dbg.c -o build/bin/bsdconv-dbg ${LIBS}
 
 codecs_basic: builddir bsdconv-mktable libbsdconv meta
 	for item in ${TODO_CODECS_BASIC} ; do \
@@ -312,15 +312,15 @@ URL=	http://cnmc.tw/~buganini/chvar/engine.php?action=dump
 chvar:
 	wget -O codecs/inter/ZHTW.txt "${URL}&mode=norml&for=tw"
 	wget -O codecs/inter/ZHCN.txt "${URL}&mode=norml&for=cn"
-	wget -O codecs/inter/ZH_FUZZY_TW.txt "${URL}&mode=fuzzy&for=tw"
-	wget -O codecs/inter/ZH_FUZZY_CN.txt "${URL}&mode=fuzzy&for=cn"
-	@for file in ZHTW ZHCN ZH_FUZZY_TW ZH_FUZZY_CN; do \
+	wget -O codecs/inter/ZH-FUZZY-TW.txt "${URL}&mode=fuzzy&for=tw"
+	wget -O codecs/inter/ZH-FUZZY-CN.txt "${URL}&mode=fuzzy&for=cn"
+	@for file in ZHTW ZHCN ZH-FUZZY-TW ZH-FUZZY-CN; do \
 		sed -i '' -e 's|^|01|g' "codecs/inter/$${file}.txt" ; \
 		sed -i '' -e 's|	|	01|g' "codecs/inter/$${file}.txt" ; \
 	done
-	wget -O codecs/to/CP950_TRANS.txt "${URL}&mode=trans&for=cp950"
-	wget -O codecs/to/CP936_TRANS.txt "${URL}&mode=trans&for=cp936"
-	@for file in CP950_TRANS CP936_TRANS ; do \
+	wget -O codecs/to/CP950-TRANS.txt "${URL}&mode=trans&for=cp950"
+	wget -O codecs/to/CP936-TRANS.txt "${URL}&mode=trans&for=cp936"
+	@for file in CP950-TRANS CP936-TRANS ; do \
 		sed -i '' -e 's|^|01|g' "codecs/to/$${file}.txt" ; \
 	done
 

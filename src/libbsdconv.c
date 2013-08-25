@@ -271,13 +271,13 @@ char * bsdconv_solve_alias(int type, char *_codec){
 	bsdconv_counter_t *ct;
 	switch(type){
 		case FROM:
-			ins=bsdconv_create("ASCII:FROM_ALIAS,COUNT#ERR:ASCII");
+			ins=bsdconv_create("ASCII:ALIAS-FROM,COUNT#ERR:ASCII");
 			break;
 		case INTER:
-			ins=bsdconv_create("ASCII:INTER_ALIAS,COUNT#ERR:ASCII");
+			ins=bsdconv_create("ASCII:ALIAS-INTER,COUNT#ERR:ASCII");
 			break;
 		case TO:
-			ins=bsdconv_create("ASCII:TO_ALIAS,COUNT#ERR:ASCII");
+			ins=bsdconv_create("ASCII:ALIAS-TO,COUNT#ERR:ASCII");
 			break;
 		default:
 			return NULL;

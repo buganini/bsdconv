@@ -20,12 +20,12 @@ Convert traditional chinese big5 to simplified chinese utf-8
 > bsdconv big5:zhcn:utf-8 -i in.txt #in-place
 
 Convert traditional chinese utf-8 to simplified chinese GB2312 with transliteration
-> bsdconv utf-8:zhcn:cp936,cp936_trans in.txt > out.txt
+> bsdconv utf-8:zhcn:cp936,cp936-trans in.txt > out.txt
 
 Convert simplified chinese to traditional chinese
-> bsdconv utf-8:zhtw:zhtw_words:utf-8
+> bsdconv utf-8:zhtw:zhtw-words:utf-8
 ignoring whitespaces mixed in words
-> bsdconv utf-8:whitespace-derail:zhtw:zhtw_words:whitespace-rerail:utf-8
+> bsdconv utf-8:whitespace-derail:zhtw:zhtw-words:whitespace-rerail:utf-8
 
 Convert big5 data, traditional chinese to simplified chinese,
 CRLF/CR/LF to CRLF, to big5 data, translate simplified chinese words, which are
@@ -42,7 +42,7 @@ Decode javascript escaped data (byte/unicode mixed) like %u9644%20
 > bsdconv 'escape,byte:unicode,byte|skip,ascii:utf-8'
 
 Generate string for fuzzy comparison #collation is still required
-> echo ¼ℌăǅⓐ⁹灣湾ド鬒鬒æß | bsdconv UTF-8:ZH_FUZZY_TW:KANA_PHONETIC:NFKD:NFD:LOWER:UTF-8
+> echo ¼ℌăǅⓐ⁹灣湾ド鬒鬒æß | bsdconv UTF-8:ZH-FUZZY-TW:KANA-PHONETIC:NFKD:NFD:LOWER:UTF-8
 1⁄4hădža9灣灣do鬒鬒æß
 
 More example:
@@ -52,9 +52,9 @@ More example:
 #if you prefer to use glyph image from http://www.cns11643.gov.tw
 
 Maintain inter map:
-> bsdconv bsdconv_keyword,bsdconv:bsdconv_keyword,utf-8 MAP.txt > edit.tmp
+> bsdconv bsdconv-keyword,bsdconv:bsdconv-keyword,utf-8 MAP.txt > edit.tmp
 > vi edit.tmp
-> bsdconv bsdconv_keyword,utf-8:bsdconv_keyword,bsdconv edit.tmp > MAP.txt
+> bsdconv bsdconv-keyword,utf-8:bsdconv-keyword,bsdconv edit.tmp > MAP.txt
 
 --
 WINDOWS:
