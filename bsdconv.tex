@@ -233,7 +233,22 @@ basicstyle=\ttfamily
 				\end{tikzpicture}
 				\caption{Passing multiple arguments to codec}
 			\end{figure}
-	\clearpage
+			\paragraph{}
+			List of data can be passed in dot-separated form.
+			\begin{figure}[H]
+				\centering
+				\begin{tikzpicture}[auto,node distance=0,on grid=false]
+				    % Place nodes
+				    \node (d0) {};
+				    \node [right=of d0](from) {ANY\#013F.0121};
+				    \node [right=of from](d1) {:};
+				    \node [right=of d1] (to) {ASCII};
+				    \node [right=of to] (d2) {};
+				
+				\end{tikzpicture}
+				\caption{Data list}
+			\end{figure}
+
 	\section{Type \& Flag}
 		\tikzstyle{data} = [rectangle, draw, text width=3em, text centered]
 		\tikzstyle{type} = [rectangle, draw, fill=blue!30, text width=3em, text centered]
