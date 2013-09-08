@@ -81,6 +81,7 @@ TODO_CODECS_BASIC+=inter/_NFC
 TODO_CODECS_BASIC+=inter/_NFD
 TODO_CODECS_BASIC+=inter/_NFKC
 TODO_CODECS_BASIC+=inter/_NFKD
+TODO_CODECS_BASIC+=inter/_NF_ORDER
 TODO_CODECS_BASIC+=to/00
 TODO_CODECS_BASIC+=to/ANY
 TODO_CODECS_BASIC+=to/ASCII-HTML-CNS11643-IMG
@@ -324,3 +325,6 @@ chvar:
 		sed -i '' -e 's|^|01|g' "codecs/to/$${file}.txt" ; \
 	done
 
+ucd_url=ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData-6.3.0d3.txt
+unicodedata:
+	python tools/UnicodeData.py ${ucd_url}
