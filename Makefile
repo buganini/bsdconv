@@ -308,18 +308,18 @@ plist:
 	@echo @dirrmtry %%DATADIR%%/from
 	@echo @dirrmtry %%DATADIR%%
 
-URL=	http://cnmc.tw/~buganini/chvar/engine.php?action=dump
+chvar_url=	http://cnmc.tw/~buganini/chvar/engine.php?action=dump
 chvar:
-	wget -O codecs/inter/ZHTW.txt "${URL}&mode=norml&for=tw"
-	wget -O codecs/inter/ZHCN.txt "${URL}&mode=norml&for=cn"
-	wget -O codecs/inter/ZH-FUZZY-TW.txt "${URL}&mode=fuzzy&for=tw"
-	wget -O codecs/inter/ZH-FUZZY-CN.txt "${URL}&mode=fuzzy&for=cn"
+	wget -O codecs/inter/ZHTW.txt "${chvar_url}&mode=norml&for=tw"
+	wget -O codecs/inter/ZHCN.txt "${chvar_url}&mode=norml&for=cn"
+	wget -O codecs/inter/ZH-FUZZY-TW.txt "${chvar_url}&mode=fuzzy&for=tw"
+	wget -O codecs/inter/ZH-FUZZY-CN.txt "${chvar_url}&mode=fuzzy&for=cn"
 	@for file in ZHTW ZHCN ZH-FUZZY-TW ZH-FUZZY-CN; do \
 		sed -i '' -e 's|^|01|g' "codecs/inter/$${file}.txt" ; \
 		sed -i '' -e 's|	|	01|g' "codecs/inter/$${file}.txt" ; \
 	done
-	wget -O codecs/to/CP950-TRANS.txt "${URL}&mode=trans&for=cp950"
-	wget -O codecs/to/CP936-TRANS.txt "${URL}&mode=trans&for=cp936"
+	wget -O codecs/to/CP950-TRANS.txt "${chvar_url}&mode=trans&for=cp950"
+	wget -O codecs/to/CP936-TRANS.txt "${chvar_url}&mode=trans&for=cp936"
 	@for file in CP950-TRANS CP936-TRANS ; do \
 		sed -i '' -e 's|^|01|g' "codecs/to/$${file}.txt" ; \
 	done
