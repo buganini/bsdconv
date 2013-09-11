@@ -169,9 +169,33 @@ for l in nt:
 	c5=bnf(c5)
 
 	nftest=[
+		#NFC
 		[toSRC.conv(c2), toNFC.conv(c1), "c2 == toNFC(c1)"],
-		[toNFC.conv(c1), toNFC.conv(c2),"toNFC(c1) == toNFC(c2)"],
-		[toNFC.conv(c2), toNFC.conv(c3), "toNFC(c2) == toNFC(c3)"]
+		[toNFC.conv(c1), toNFC.conv(c2), "toNFC(c1) == toNFC(c2)"],
+		[toNFC.conv(c2), toNFC.conv(c3), "toNFC(c2) == toNFC(c3)"],
+		[toSRC.conv(c4), toNFC.conv(c4), "c4 == toNFC(c4)"],
+		[toNFC.conv(c4), toNFC.conv(c5), "toNFC(c4) == toNFC(c5)"],
+
+		#NFD
+		[toSRC.conv(c3), toNFD.conv(c1), "c3 == toNFD(c1)"],
+		[toNFD.conv(c1), toNFD.conv(c2), "toNFD(c1) == toNFD(c2)"],
+		[toNFD.conv(c2), toNFD.conv(c3), "toNFD(c2) == toNFD(c3)"],
+		[toSRC.conv(c5), toNFD.conv(c4), "c5 == toNFD(c4)"],
+		[toNFD.conv(c4), toNFD.conv(c5), "toNFD(c4) == toNFD(c5)"],
+
+		#NFKC
+		[toSRC .conv(c4), toNFKC.conv(c1), "c4 == toNFKC(c1)"],
+		[toNFKC.conv(c1), toNFKC.conv(c2), "toNFKC(c1) == toNFKC(c2)"],
+		[toNFKC.conv(c2), toNFKC.conv(c3), "toNFKC(c2) == toNFKC(c3)"],
+		[toNFKC.conv(c3), toNFKC.conv(c4), "toNFKC(c3) == toNFKC(c4)"],
+		[toNFKC.conv(c4), toNFKC.conv(c5), "toNFKC(c4) == toNFKC(c5)"],
+
+		#NFKD
+		[toSRC .conv(c5), toNFKD.conv(c1)," c5 == toNFKD(c1)"],
+		[toNFKD.conv(c1), toNFKD.conv(c2), "toNFKD(c1) == toNFKD(c2)"],
+		[toNFKD.conv(c2), toNFKD.conv(c3), "toNFKD(c2) == toNFKD(c3)"],
+		[toNFKD.conv(c3), toNFKD.conv(c4), "toNFKD(c3) == toNFKD(c4)"],
+		[toNFKD.conv(c4), toNFKD.conv(c5), "toNFKD(c4) == toNFKD(c5)"],
 	]
 	for a,b,desc in nftest:
 		if a!=b:
