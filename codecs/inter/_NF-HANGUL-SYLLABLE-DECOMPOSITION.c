@@ -17,7 +17,7 @@
 
 #include "../../src/bsdconv.h"
 
-static void decomposeHangul(uint32_t ucs, struct bsdconv_instance *ins, struct bsdconv_phase *this_phase);
+static void decomposeHangul(uint32_t ucs, struct bsdconv_instance *ins);
 
 int
 	SBase = 0xAC00,
@@ -41,7 +41,7 @@ void cbconv(struct bsdconv_instance *ins){
 		}
 		int SIndex  = ucs - SBase;
 		if(SIndex >= 0 && SIndex < SCount){
-			decomposeHangul(ucs, ins, this_phase);
+			decomposeHangul(ucs, ins);
 		}else{
 			DATA_MALLOC(this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
@@ -55,17 +55,18 @@ void cbconv(struct bsdconv_instance *ins){
 	return;
 }
 
-static void decomposeHangul(uint32_t ucs, struct bsdconv_instance *ins, struct bsdconv_phase *this_phase){
+static void decomposeHangul(uint32_t ucs, struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	int SIndex  = ucs - SBase;
 	if(SIndex >= 0 && SIndex < SCount){
 		int L = LBase + SIndex / NCount;
 		int V = VBase + (SIndex % NCount) / TCount;
 		int T = TBase + SIndex % TCount;
 
-		decomposeHangul(L, ins, this_phase);
-		decomposeHangul(V, ins, this_phase);
+		decomposeHangul(L, ins);
+		decomposeHangul(V, ins);
 		if(T != TBase)
-			decomposeHangul(T, ins, this_phase);
+			decomposeHangul(T, ins);
 	}else{
 		int i;
 		unsigned char *p;
