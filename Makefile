@@ -79,7 +79,6 @@ TODO_CODECS_BASIC+=inter/ZH-FUZZY-TW
 TODO_CODECS_BASIC+=inter/ZH-FUZZY-CN
 TODO_CODECS_BASIC+=inter/_NFC
 TODO_CODECS_BASIC+=inter/_NFD
-TODO_CODECS_BASIC+=inter/_NFKC
 TODO_CODECS_BASIC+=inter/_NFKD
 TODO_CODECS_BASIC+=inter/_NF-HANGUL-SYLLABLE-DECOMPOSITION
 TODO_CODECS_BASIC+=inter/_NF-ORDER
@@ -330,5 +329,6 @@ chvar:
 	done
 
 ucd_url=ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData-6.3.0d3.txt
+dnp_url=http://www.unicode.org/Public/6.3.0/ucd/DerivedNormalizationProps-6.3.0d11.txt
 unicodedata:
-	python tools/UnicodeData.py ${ucd_url}
+	python tools/UnicodeData.py ${ucd_url} ${dnp_url}

@@ -24,7 +24,7 @@ m_nfd={}
 m_nfkd={}
 
 f_ccc.write("/* Generated from {url}*/\n".format(url=sys.argv[1]));
-for f in [f_nfc, f_nfd, f_nfkc, f_nfkd, f_upper, f_lower]:
+for f in [f_nfc, f_nfd, f_nfkd, f_upper, f_lower]:
 	f.write("Source: {url}\n".format(url=sys.argv[1]))
 
 def lookup(l,m):
@@ -59,6 +59,12 @@ def nf_order(l):
 		for i in range(b,e+1):
 			l[i]=a[i-b]
 	return l
+
+def in_range(s,rs):
+	for r0,r1 in rs:
+		if s>=r0 and s<=r1:
+			return True
+	return False
 
 l_nfd=[]
 l_nfkd=[]
@@ -110,6 +116,22 @@ f_ccc.close()
 f_upper.close()
 f_lower.close()
 
+l_fce=[]
+dnp=urllib.urlopen(sys.argv[2])
+for l in dnp:
+	l=l.strip()
+	if not l:
+		continue
+	if l[0] in "#":
+		continue
+	a=l.split(";")
+	if not a[1].strip().startswith("Full_Composition_Exclusion"):
+		continue
+	r=a[0].strip().split("..")
+	if len(r)==1:
+		r.append(r[0])
+	l_fce.append((bsdconv01(r[0]),bsdconv01(r[1])))
+
 for cp in l_nfd:
 	d=nf_order(lookup(m_nfd[cp], m_nfd))
 	m_nfd[cp]=d
@@ -123,6 +145,8 @@ for cp,tag in l_nfkd:
 f_nfkd.close()
 
 for cp in l_nfd:
+	if in_range(cp, l_fce):
+		continue
 	l=m_nfd[cp]
 	f_nfc.write("{f}\t{t}\n".format(f=",".join(l), t=cp))
 f_nfc.close()
