@@ -1,6 +1,6 @@
 PREFIX?=/usr/local
 BSDCONV_PATH?=${PREFIX}
-CFLAGS+=-g -Wall -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
+CFLAGS+=-Wall -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
 SHLIBVER=11
 
 UNAME_S=$(shell uname -s)
@@ -274,8 +274,9 @@ install_ebcdic:
 		if [ -e build/share/bsdconv/$${item}.so ]; then install -m 444 build/share/bsdconv/$${item}.so ${PREFIX}/share/bsdconv/$${item}.so ; fi ; \
 	done
 
+normalizationtest_url=http://www.unicode.org/Public/6.2.0/ucd/NormalizationTest.txt
 test:
-	@python testsuite/conversion.py
+	@python testsuite/conversion.py ${normalizationtest_url}
 	@$(CC) ${CFLAGS} testsuite/api.c -L./build/lib/ -o testsuite/api -lbsdconv ${LIBS}
 	@./testsuite/api
 

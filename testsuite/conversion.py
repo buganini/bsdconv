@@ -1,7 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import urllib
 import bsdconv
+
+def bsdconv01(dt):
+	dt=dt.lstrip("0").upper()
+	if len(dt) & 1:
+		return "010"+dt
+	else:
+		return "01"+dt
+
+def bnf(s):
+	return ",".join([bsdconv01(x) for x in s.strip().split(" ")])
 
 iotest=[
 	["big5:utf-8","\xa5\x5c\x5c\xaf\xe0","功\能"],
@@ -89,8 +100,8 @@ iotest=[
 	["utf-8:lower:utf-8","AĂǄБᾭⅧⒶ","aăǆбᾥⅷⓐ"],
 	["utf-8:nfd:utf-8","ăǅⓐ","ăǅⓐ"],
 	["utf-8:nfc:utf-8","ăǅⓐ","ăǅⓐ"],
-	["utf-8:nfkd:utf-8","ăǅⓐ","ăDža"],
-	["utf-8:nfkc:utf-8","ăǅⓐ","ª̆ǅⓐ"],
+	["utf-8:nfkd:utf-8","ăǅⓐ","ăDža"],
+	["utf-8:nfkc:utf-8","ăǅⓐ","ăDža"],
 	["ascii,any#019644.012F:utf-8","A測B","A附/附/附/B"],
 	["utf-8:pass,zh-decomp:insert#after=002c:bsdconv-keyword,bsdconv","不大不要","014E0D,015927,014E0D,018981,"],
 	["utf-8:pass#limit=2,zh-decomp:insert#after=002c:bsdconv-keyword,bsdconv","不大不要","014E0D,015927,048D,040107,0476,"],
@@ -104,20 +115,22 @@ countertest=[
 	["utf-8:count#blah:null","123Б測試",{"BLAH":6}],
 ]
 
+passed=True
+
 for c, i, o in iotest:
 	p=bsdconv.Bsdconv(c)
 	if not p:
 		print(bsdconv.error())
 		print("Test failed at %s" % repr([c, i, o]))
 		del p
-		sys.exit()
+		passed=False
+		continue
 	r=p.conv(i)
 	if o != r:
 		print("Test failed at %s" % repr([c, i, o]))
 		print("expected(%d): %s" % (len(o), repr(o)))
 		print("result(%d): %s" % (len(r), repr(r)))
-		del p
-		sys.exit()
+		passed=False
 	del p
 
 for c, d, i in countertest:
@@ -125,8 +138,8 @@ for c, d, i in countertest:
 	if not p:
 		print(bsdconv.error())
 		print("Test failed at %s" % repr([c, i, o]))
-		del p
-		sys.exit()
+		passed=False
+		continue
 	p.conv(d)
 	r=p.counter()
 	for k in i:
@@ -134,8 +147,34 @@ for c, d, i in countertest:
 			print("Test failed at %s" % repr([c, d, i]))
 			print("expected: %s" % repr(i))
 			print("result: %s" % repr(r))
-			del p
-			sys.exit()
+			passed=False
 	del p
 
-print("Conversion tests passed.")
+nt=urllib.urlopen(sys.argv[1])
+toSRC=bsdconv.Bsdconv("bsdconv:insert#after=002c:bsdconv-keyword,bsdconv")
+toNFC=bsdconv.Bsdconv("bsdconv:nfc:insert#after=002c:bsdconv-keyword,bsdconv")
+toNFD=bsdconv.Bsdconv("bsdconv:nfd:insert#after=002c:bsdconv-keyword,bsdconv")
+toNFKC=bsdconv.Bsdconv("bsdconv:nfkc:insert#after=002c:bsdconv-keyword,bsdconv")
+toNFKD=bsdconv.Bsdconv("bsdconv:nfkd:insert#after=002c:bsdconv-keyword,bsdconv")
+for l in nt:
+	if not l:
+		continue
+	if l[0] in "#@":
+		continue
+	c1,c2,c3,c4,c5,comment=l.strip().split(";",5)
+	c1=bnf(c1)
+	c2=bnf(c2)
+	c3=bnf(c3)
+	c4=bnf(c4)
+	c5=bnf(c5)
+
+	nftest=[
+		[toSRC.conv(c2), toNFC.conv(c1), "c2 == toNFC(c1)"],
+		[toNFC.conv(c1), toNFC.conv(c2),"toNFC(c1) == toNFC(c2)"],
+		[toNFC.conv(c2), toNFC.conv(c3), "toNFC(c2) == toNFC(c3)"]
+	]
+	for a,b,desc in nftest:
+		if a!=b:
+			print "Failed: ",desc,a,"!=",b,comment
+
+print("Conversion tests finished.")
