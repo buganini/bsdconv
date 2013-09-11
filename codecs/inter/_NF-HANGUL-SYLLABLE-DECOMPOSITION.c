@@ -74,7 +74,7 @@ static void decomposeHangul(uint32_t ucs, struct bsdconv_instance *ins){
 		int stack_len=0;
 		DATA_MALLOC(this_phase->data_tail->next);
 		this_phase->data_tail=this_phase->data_tail->next;
-		while(ucs){
+		while(ucs && stack_len<sizeof(stack)){
 			stack[stack_len] = ucs & 0xff;
 			ucs >>= 8;
 			stack_len += 1;
