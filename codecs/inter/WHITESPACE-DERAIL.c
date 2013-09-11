@@ -78,7 +78,7 @@ void cbconv(struct bsdconv_instance *ins){
 	struct data_rt *q;
 	data=this_phase->curr->data;
 	int i;
-	int ucs=0;
+	uint32_t ucs=0;
 
 	this_phase->state.status=NEXTPHASE;
 

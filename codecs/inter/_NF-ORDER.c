@@ -73,7 +73,7 @@ void cbconv(struct bsdconv_instance *ins){
 	int max=sizeof(ccc_table) / sizeof(struct ccc_interval) - 1;
 	int min = 0;
 	int mid;
-	int ucs=0;
+	uint32_t ucs=0;
 	int ccc=0;
 
 	if(data[0]==0x1){

@@ -113,7 +113,7 @@ void cbconv(struct bsdconv_instance *ins){
 	int min = 0;
 	int mid;
 	char *space="\x01\xA0";
-	int ucs=0;
+	uint32_t ucs=0;
 
 	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;

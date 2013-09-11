@@ -73,7 +73,7 @@ void cbconv(struct bsdconv_instance *ins){
 	data=this_phase->curr->data;
 	unsigned char v=0;
 	int i;
-	int ucs=0;
+	uint32_t ucs=0;
 	uint32_t ucs4;
 
 	DATA_MALLOC(this_phase->data_tail->next);

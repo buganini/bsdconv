@@ -97,7 +97,7 @@ void cbconv(struct bsdconv_instance *ins){
 	int max=sizeof(scoreboard) / sizeof(struct interval) - 1;
 	int min = 0;
 	int mid;
-	int ucs=0;
+	uint32_t ucs=0;
 	unsigned char v=0;
 
 	DATA_MALLOC(this_phase->data_tail->next);

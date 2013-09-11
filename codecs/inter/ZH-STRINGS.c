@@ -98,7 +98,7 @@ void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	unsigned char *data=data=this_phase->curr->data;
-	int ucs=0;
+	uint32_t ucs=0;
 	int i;
 	int max=sizeof(zhrange) / sizeof(struct range) - 1;
 	int min = 0;
