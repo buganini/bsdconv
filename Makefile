@@ -309,6 +309,8 @@ plist:
 	@echo @dirrmtry %%DATADIR%%/from
 	@echo @dirrmtry %%DATADIR%%
 
+gen: unicodedata chvar
+
 chvar_url=	http://cnmc.tw/~buganini/chvar/engine.php?action=dump
 chvar:
 	wget -O codecs/inter/ZHTW.txt "${chvar_url}&mode=norml&for=tw"
