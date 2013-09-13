@@ -1,3 +1,7 @@
 update score table
 to/ASCII-TRANS
 nobom => remove
+nfc
+casefold
+reverse linked-list in _nf-order
+make fetch
