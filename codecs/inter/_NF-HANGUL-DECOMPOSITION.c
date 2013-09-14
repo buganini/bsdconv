@@ -19,13 +19,15 @@
 
 static void decomposeHangul(uint32_t ucs, struct bsdconv_instance *ins);
 
-int
-	SBase = 0xAC00,
-	LBase = 0x1100, VBase = 0x1161, TBase = 0x11A7,
-	LCount = 19, VCount = 21, TCount = 28,
-	NCount = 588, //VCount * TCount
-	SCount = 11172; //LCount * NCount
-
+#define SBase	0xAC00
+#define LBase	0x1100
+#define VBase	0x1161
+#define TBase	0x11A7
+#define LCount	19
+#define VCount	21
+#define TCount	28
+#define NCount	(VCount * TCount)
+#define SCount	(LCount * NCount)
 
 void cbconv(struct bsdconv_instance *ins){
 	unsigned char *data;
