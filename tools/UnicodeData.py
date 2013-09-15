@@ -12,7 +12,7 @@ def bsdconv01(dt):
 f_ccc=open("codecs/inter/_NF_CCC.h", "w")
 f_nfd=open("codecs/inter/_NFD.txt", "w")
 f_nfkd=open("codecs/inter/_NFKD.txt", "w")
-f_nfc=open("codecs/inter/_NFC.txt", "w")
+f_nfc=open("codecs/inter/_NFC-MAP.txt", "w")
 f_upper=open("codecs/inter/UPPER.txt", "w")
 f_lower=open("codecs/inter/LOWER.txt", "w")
 
@@ -72,7 +72,10 @@ def nf_order(l):
 	return l
 
 def in_range(s,rs):
+	s=int(s[2:], 16)
 	for r0,r1 in rs:
+		r0=int(r0[2:], 16)
+		r1=int(r1[2:], 16)
 		if s>=r0 and s<=r1:
 			return True
 	return False
@@ -114,6 +117,7 @@ for l in ud:
 			m_nfkd[cp]=dt
 			l_nfd.append(cp)
 			m_nfd[cp]=dt
+			m_nfd_raw[cp]=dt
 	if a[12]:
 		dt=bsdconv01(a[12])
 		f_upper.write("{f}\t{t}\n".format(f=cp, t=dt))
@@ -159,6 +163,6 @@ f_nfkd.close()
 for cp in l_nfd:
 	if in_range(cp, l_fce):
 		continue
-	l=m_nfd[cp]
+	l=m_nfd_raw[cp]
 	f_nfc.write("{f}\t{t}\n".format(f=",".join(l), t=cp))
 f_nfc.close()

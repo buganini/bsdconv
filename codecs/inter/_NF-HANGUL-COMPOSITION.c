@@ -1,6 +1,6 @@
 /*
  * Some code and table come from http://www.cl.cam.ac.uk/~mgk25/ucs/wcwidth.c
- * Copyright (c) 2009-2013 Kuan-Chung Chiu <buganini@gmail.com>
+ * Copyright (c) 2013 Kuan-Chung Chiu <buganini@gmail.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -118,9 +118,14 @@ void cbconv(struct bsdconv_instance *ins){
 				}
 				return;
 		}
+	}else{
+		cbflush(ins);
+		DATA_MALLOC(this_phase->data_tail->next);
+		this_phase->data_tail=this_phase->data_tail->next;
+		*(this_phase->data_tail)=*(this_phase->curr);
+		this_phase->curr->flags &= ~F_FREE;
+		this_phase->data_tail->next=NULL;
 	}
-	r->status=0;
-	this_phase->state.status=DEADEND;
 	return;
 }
 

@@ -156,10 +156,14 @@ toNFC=bsdconv.Bsdconv("bsdconv:nfc:insert#after=002c:bsdconv-keyword,bsdconv")
 toNFD=bsdconv.Bsdconv("bsdconv:nfd:insert#after=002c:bsdconv-keyword,bsdconv")
 toNFKC=bsdconv.Bsdconv("bsdconv:nfkc:insert#after=002c:bsdconv-keyword,bsdconv")
 toNFKD=bsdconv.Bsdconv("bsdconv:nfkd:insert#after=002c:bsdconv-keyword,bsdconv")
+print("Normalization Tests")
 for l in nt:
 	if not l:
 		continue
-	if l[0] in "#@":
+	if l[0]=="#":
+		continue
+	if l[0]=="@":
+		print("\t"+l.strip())
 		continue
 	c1,c2,c3,c4,c5,comment=l.strip().split(";",5)
 	c1=bnf(c1)
@@ -199,6 +203,6 @@ for l in nt:
 	]
 	for a,b,desc in nftest:
 		if a!=b:
-			print "Failed: ",desc,a,"!=",b,comment
+			print("Failed: ",desc,a,"!=",b,comment)
 
 print("Conversion tests finished.")
