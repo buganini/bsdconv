@@ -60,6 +60,7 @@ void bsdconv_file(struct bsdconv_instance *ins, FILE *in, FILE *out, const char 
 		ib=bsdconv_malloc(IBUFLEN);
 		ins->input.data=ib;
 		ins->input.flags|=F_FREE;
+		ins->input.next=NULL;
 		if((ins->input.len=fread(ib, 1, IBUFLEN, in))==0){
 			ins->flush=1;
 		}

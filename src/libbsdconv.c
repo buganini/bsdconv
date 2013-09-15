@@ -293,6 +293,7 @@ char * bsdconv_solve_alias(int type, char *_codec){
 	ins->input.data=codec;
 	ins->input.len=strlen(codec);
 	ins->input.flags=F_FREE;
+	ins->input.next=NULL;
 	ins->flush=1;
 	bsdconv(ins);
 	ret=ins->output.data;
@@ -1073,7 +1074,6 @@ void bsdconv(struct bsdconv_instance *ins){
 		DATA_MALLOC(ins->phase[0].data_tail->next);
 		ins->phase[0].data_tail=ins->phase[0].data_tail->next;
 		*(ins->phase[0].data_tail)=ins->input;
-		ins->phase[0].data_tail->next=NULL;
 		ins->input.data=NULL;
 		ins->input.len=0;
 		ins->input.flags=0;

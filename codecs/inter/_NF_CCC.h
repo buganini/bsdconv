@@ -1,4 +1,12 @@
 /* Generated from ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData-6.3.0d3.txt*/
+
+	struct ccc_interval {
+	int beg;
+	int end;
+	int ccc;
+};
+
+static const struct ccc_interval ccc_table[] = {
 {0x300, 0x314, 230},
 {0x315, 0x315, 232},
 {0x316, 0x319, 220},
@@ -287,3 +295,4 @@
 {0x1d18a, 0x1d18b, 220},
 {0x1d1aa, 0x1d1ad, 230},
 {0x1d242, 0x1d244, 230},
+};
