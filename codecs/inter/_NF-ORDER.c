@@ -17,15 +17,7 @@
 
 #include "../../src/bsdconv.h"
 
-struct ccc_interval {
-	int beg;
-	int end;
-	int ccc;
-};
-
-static const struct ccc_interval ccc_table[] = {
-#include "_NF_CCC.inc"
-};
+#include "_NF_CCC.h"
 
 struct ll_s{
 	struct data_rt *p;

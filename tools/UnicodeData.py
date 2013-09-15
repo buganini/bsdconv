@@ -9,7 +9,7 @@ def bsdconv01(dt):
 		return "01"+dt
 
 
-f_ccc=open("codecs/inter/_NF_CCC.inc", "w")
+f_ccc=open("codecs/inter/_NF_CCC.h", "w")
 f_nfd=open("codecs/inter/_NFD.txt", "w")
 f_nfkd=open("codecs/inter/_NFKD.txt", "w")
 f_nfc=open("codecs/inter/_NFC.txt", "w")
@@ -21,11 +21,22 @@ ccc_end=-1
 ccc_value=0
 t_ccc={}
 m_nfd={}
+m_nfd_raw={}
 m_nfkd={}
 
 f_ccc.write("/* Generated from {url}*/\n".format(url=sys.argv[1]));
 for f in [f_nfc, f_nfd, f_nfkd, f_upper, f_lower]:
 	f.write("Source: {url}\n".format(url=sys.argv[1]))
+
+f_ccc.write("""
+	struct ccc_interval {
+	int beg;
+	int end;
+	int ccc;
+};
+
+static const struct ccc_interval ccc_table[] = {
+""");
 
 def lookup(l,m):
 	ret=[]
@@ -111,6 +122,7 @@ for l in ud:
 		f_lower.write("{f}\t{t}\n".format(f=cp, t=dt))
 
 f_ccc.write("{0x%x, 0x%x, %d},\n" % (ccc_start, ccc_end, ccc_value))
+f_ccc.write("};\n")
 f_ccc.close()
 
 f_upper.close()
