@@ -275,12 +275,6 @@ install_ebcdic:
 		if [ -e build/share/bsdconv/$${item}.so ]; then install -m 444 build/share/bsdconv/$${item}.so ${PREFIX}/share/bsdconv/$${item}.so ; fi ; \
 	done
 
-normalizationtest_url=http://www.unicode.org/Public/6.2.0/ucd/NormalizationTest.txt
-test:
-	@python testsuite/conversion.py ${normalizationtest_url}
-	@$(CC) ${CFLAGS} testsuite/api.c -L./build/lib/ -o testsuite/api -lbsdconv ${LIBS}
-	@./testsuite/api
-
 plist:
 	@echo bin/bsdconv
 	@echo bin/bsdconv-completion
@@ -312,6 +306,30 @@ plist:
 	@echo @dirrmtry %%DATADIR%%/from
 	@echo @dirrmtry %%DATADIR%%
 
+ucd_url=ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData-6.3.0d3.txt
+dnp_url=http://www.unicode.org/Public/6.3.0/ucd/DerivedNormalizationProps-6.3.0d11.txt
+normalizationtest_url=http://www.unicode.org/Public/6.2.0/ucd/NormalizationTest.txt
+fetch:
+		mkdir -p tmp
+		if [ ! -e tmp/UnicodeData.txt ]; then \
+			wget -O tmp/UnicodeData.txt ${ucd_url}; \
+		fi ;
+		if [ ! -e tmp/DerivedNormalizationProps.txt ]; then \
+			wget -O tmp/DerivedNormalizationProps.txt ${dnp_url}; \
+		fi ;
+		if [ ! -e tmp/NormalizationTest.txt ]; then \
+			wget -O tmp/NormalizationTest.txt ${normalizationtest_url}; \
+		fi ;
+		cat /dev/null > tmp/map.txt
+		echo "UnicodeData.txt	${ucd_url}" >> tmp/map.txt
+		echo "DerivedNormalizationProps.txt	${dnp_url}" >> tmp/map.txt
+		echo "NormalizationTest.txt	${normalizationtest_url}" >> tmp/map.txt
+
+test:
+	@python testsuite/conversion.py
+	@$(CC) ${CFLAGS} testsuite/api.c -L./build/lib/ -o testsuite/api -lbsdconv ${LIBS}
+	@./testsuite/api
+
 gen: unicodedata chvar
 
 chvar_url=	http://cnmc.tw/~buganini/chvar/engine.php?action=dump
@@ -330,7 +348,5 @@ chvar:
 		sed -i '' -e 's|^|01|g' "codecs/to/$${file}.txt" ; \
 	done
 
-ucd_url=ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData-6.3.0d3.txt
-dnp_url=http://www.unicode.org/Public/6.3.0/ucd/DerivedNormalizationProps-6.3.0d11.txt
-unicodedata:
-	python tools/UnicodeData.py ${ucd_url} ${dnp_url}
+unicodedata: fetch
+	python tools/UnicodeData.py

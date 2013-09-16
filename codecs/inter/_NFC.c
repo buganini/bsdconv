@@ -17,7 +17,7 @@
 
 #include "../../src/bsdconv.h"
 
-#include "_NF_CCC.h"
+#include "_NF-CCC.h"
 
 struct my_s {
 	struct bsdconv_instance *map;

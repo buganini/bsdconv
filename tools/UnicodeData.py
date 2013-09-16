@@ -9,7 +9,7 @@ def bsdconv01(dt):
 		return "01"+dt
 
 
-f_ccc=open("codecs/inter/_NF_CCC.h", "w")
+f_ccc=open("codecs/inter/_NF-CCC.h", "w")
 f_nfd=open("codecs/inter/_NFD.txt", "w")
 f_nfkd=open("codecs/inter/_NFKD.txt", "w")
 f_nfc=open("codecs/inter/_NFC-MAP.txt", "w")
@@ -24,9 +24,17 @@ m_nfd={}
 m_nfd_raw={}
 m_nfkd={}
 
-f_ccc.write("/* Generated from {url}*/\n".format(url=sys.argv[1]));
+m_url={}
+f_map=open("tmp/map.txt")
+for l in f_map:
+	l=l.strip().split("\t")
+	if len(l)==2:
+		m_url[l[0]]=l[1]
+
+
+f_ccc.write("/* Generated from {url}*/\n".format(url=m_url["UnicodeData.txt"]));
 for f in [f_nfc, f_nfd, f_nfkd, f_upper, f_lower]:
-	f.write("Source: {url}\n".format(url=sys.argv[1]))
+	f.write("Source: {url}\n".format(url=m_url["UnicodeData.txt"]))
 
 f_ccc.write("""
 	struct ccc_interval {
@@ -82,7 +90,7 @@ def in_range(s,rs):
 
 l_nfd=[]
 l_nfkd=[]
-ud=urllib.urlopen(sys.argv[1])
+ud=open("tmp/UnicodeData.txt")
 for l in ud:
 	if not l.strip():
 		continue
@@ -133,7 +141,7 @@ f_upper.close()
 f_lower.close()
 
 l_fce=[]
-dnp=urllib.urlopen(sys.argv[2])
+dnp=open("tmp/DerivedNormalizationProps.txt")
 for l in dnp:
 	l=l.strip()
 	if not l:

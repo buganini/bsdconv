@@ -150,13 +150,20 @@ for c, d, i in countertest:
 			passed=False
 	del p
 
-nt=urllib.urlopen(sys.argv[1])
+url=""
+f_map=open("tmp/map.txt")
+for l in f_map:
+	l=l.strip().split("\t")
+	if l[0]=="NormalizationTest.txt":
+		url=l[1]
+		break
+nt=open("tmp/NormalizationTest.txt")
 toSRC=bsdconv.Bsdconv("bsdconv:insert#after=002c:bsdconv-keyword,bsdconv")
 toNFC=bsdconv.Bsdconv("bsdconv:nfc:insert#after=002c:bsdconv-keyword,bsdconv")
 toNFD=bsdconv.Bsdconv("bsdconv:nfd:insert#after=002c:bsdconv-keyword,bsdconv")
 toNFKC=bsdconv.Bsdconv("bsdconv:nfkc:insert#after=002c:bsdconv-keyword,bsdconv")
 toNFKD=bsdconv.Bsdconv("bsdconv:nfkd:insert#after=002c:bsdconv-keyword,bsdconv")
-print("Normalization Tests")
+print("Normalization Tests: #"+url)
 for l in nt:
 	if not l:
 		continue
