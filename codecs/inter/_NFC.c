@@ -90,7 +90,7 @@ void cbconv(struct bsdconv_instance *ins){
 		switch(r->status){
 			case 0:
 				r->ccc=0;
-				if(ccc==0){
+				if(ccc==0){ //first starters
 					if(r->starter){
 						DATA_FREE(r->starter);
 					}
@@ -99,12 +99,12 @@ void cbconv(struct bsdconv_instance *ins){
 					*(r->starter)=*(this_phase->curr);
 					this_phase->curr->flags &= ~F_FREE;
 					this_phase->state.status=SUBMATCH;
-				}else{
+				}else{ //non-starters
 					this_phase->state.status=DEADEND;
 				}
 				return;
 			case 1:
-				if(ccc==0){
+				if(ccc==0){ //following starter
 					r->ccc=0;
 					if(r->pending_head->next==NULL){ //adjacent starters
 						bsdconv_init(r->map);
@@ -129,14 +129,14 @@ void cbconv(struct bsdconv_instance *ins){
 							*(r->starter)=*(this_phase->curr);
 							this_phase->curr->flags &= ~F_FREE;
 						}
-					}else{
+					}else{ //replace first starters
 						cbflush(ins);
 						r->status=1;
 						DATA_MALLOC(r->starter);
 						*(r->starter)=*(this_phase->curr);
 						this_phase->curr->flags &= ~F_FREE;
 					}
-				}else{
+				}else{ //following non-starters
 					if(ccc <= r->ccc){ //blocked
 						r->ccc=ccc;
 						DATA_MALLOC(r->pending_tail->next);
@@ -144,7 +144,7 @@ void cbconv(struct bsdconv_instance *ins){
 						*(r->pending_tail)=*(this_phase->curr);
 						r->pending_tail->next=NULL;
 						this_phase->curr->flags &= ~F_FREE;
-					}else{
+					}else{ //try to combine
 						bsdconv_init(r->map);
 						bsdconv_counter_reset(r->map, NULL);
 						r->map->input=*(r->starter);
@@ -156,7 +156,7 @@ void cbconv(struct bsdconv_instance *ins){
 						r->map->flush=1;
 
 						bsdconv(r->map);
-						if(*(r->err)==0){
+						if(*(r->err)==0){ //combinable
 							DATA_FREE(r->starter);
 							r->status=1;
 							r->starter=r->map->phase[r->map->phasen].data_head->next;
@@ -173,7 +173,7 @@ void cbconv(struct bsdconv_instance *ins){
 								}
 							}
 							r->ccc=0;
-						}else{
+						}else{ //not combinable
 							r->ccc=ccc;
 							DATA_MALLOC(r->pending_tail->next);
 							r->pending_tail=r->pending_tail->next;
@@ -186,7 +186,7 @@ void cbconv(struct bsdconv_instance *ins){
 				this_phase->state.status=SUBMATCH;
 				return;
 		}
-	}else{
+	}else{ //not unicode
 		r->ccc=0;
 		cbflush(ins);
 		DATA_MALLOC(this_phase->data_tail->next);
