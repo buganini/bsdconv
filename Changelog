@@ -1,3 +1,6 @@
+11.1:
+	Correct algorithm for unicode normalization
+
 11.0:
 	add man page for inter/AMBIGUOUS-PAD and inter/AMBIGUOUS-UNPAD
 	add inter/{NFC,NFD,NFKC,NFKD} #UnicodeData
