@@ -3,3 +3,4 @@ to/ASCII-TRANS
 nobom => remove
 casefold
 reverse linked-list in _nf-order
+cross compiling
