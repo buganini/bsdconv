@@ -492,6 +492,7 @@ do{
 	ins->input.data=buf;
 	ins->input.len=len;
 	ins->input.flags|=F_FREE;
+	ins->input.next=NULL;
 	if(ins->input.len==0)
 	{ // last chunk
 		ins->flush=1;
