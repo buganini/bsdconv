@@ -145,9 +145,9 @@ int main(int argc, char *argv[]){
 				bsdconv_destroy(ins);
 				exit(1);
 			}
-			otf=fdopen(fd,"wb");
+			otf=fdopen(fd, "wb");
 			if(!otf){
-				fprintf(stderr, "Unable to open output file %s\n", argv[i]);
+				fprintf(stderr, "Unable to open output file for %s\n", argv[i]);
 				bsdconv_destroy(ins);
 				exit(1);
 			}
