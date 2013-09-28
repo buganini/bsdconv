@@ -2,7 +2,7 @@ import sys
 import urllib
 
 def bsdconv01(dt):
-	dt=dt.lstrip("0").upper()
+	dt=dt.strip().lstrip("0").upper()
 	if len(dt) & 1:
 		return "010"+dt
 	else:
@@ -15,6 +15,7 @@ f_nfkd=open("codecs/inter/_NFKD.txt", "w")
 f_nfc=open("codecs/inter/_NFC-MAP.txt", "w")
 f_upper=open("codecs/inter/UPPER.txt", "w")
 f_lower=open("codecs/inter/LOWER.txt", "w")
+f_casefold=open("codecs/inter/CASEFOLD.txt", "w")
 
 ccc_start=-1
 ccc_end=-1
@@ -35,6 +36,10 @@ for l in f_map:
 f_ccc.write("/* Generated from {url}*/\n".format(url=m_url["UnicodeData.txt"]));
 for f in [f_nfc, f_nfd, f_nfkd, f_upper, f_lower]:
 	f.write("Source: {url}\n".format(url=m_url["UnicodeData.txt"]))
+
+f_upper.write("Source: {url}\n".format(url=m_url["SpecialCasing.txt"]))
+f_lower.write("Source: {url}\n".format(url=m_url["SpecialCasing.txt"]))
+f_casefold.write("Source: {url}\n".format(url=m_url["CaseFolding.txt"]))
 
 f_ccc.write("""
 	struct ccc_interval {
@@ -195,3 +200,18 @@ for cp in l_nfd:
 	l=m_nfd_raw[cp]
 	f_nfc.write("{f}\t{t}\n".format(f=",".join(l), t=cp))
 f_nfc.close()
+
+cf=open("tmp/CaseFolding.txt")
+for l in cf:
+	l=l.strip()
+	if not l:
+		continue
+	if l[0] in "#":
+		continue
+	csm, name = l.split("#")
+	code, status, mapping, null = csm.split(";")
+	code = bsdconv01(code)
+	status=status.strip()
+	mapping = ",".join([bsdconv01(x) for x in mapping.strip().split(" ")])
+	f_casefold.write("{f}\t{t}\n".format(f=code, t=mapping))
+f_casefold.close()

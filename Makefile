@@ -51,6 +51,7 @@ TODO_CODECS_BASIC+=inter/ALIAS-TO
 TODO_CODECS_BASIC+=inter/AMBIGUOUS-PAD
 TODO_CODECS_BASIC+=inter/AMBIGUOUS-UNPAD
 TODO_CODECS_BASIC+=inter/BIG5-DEFRAG
+TODO_CODECS_BASIC+=inter/CASEFOLD
 TODO_CODECS_BASIC+=inter/COUNT
 TODO_CODECS_BASIC+=inter/FULL
 TODO_CODECS_BASIC+=inter/HALF
@@ -310,6 +311,7 @@ UnicodeData=ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData-6.3.0d3.txt
 DerivedNormalizationProps=http://www.unicode.org/Public/6.3.0/ucd/DerivedNormalizationProps-6.3.0d11.txt
 NormalizationTest=http://www.unicode.org/Public/6.2.0/ucd/NormalizationTest.txt
 SpecialCasing=http://www.unicode.org/Public/6.2.0/ucd/SpecialCasing.txt
+CaseFolding=http://www.unicode.org/Public/6.2.0/ucd/CaseFolding.txt
 fetch:
 		mkdir -p tmp
 		if [ ! -e tmp/UnicodeData.txt ]; then \
@@ -324,11 +326,15 @@ fetch:
 		if [ ! -e tmp/SpecialCasing.txt ]; then \
 			wget -O tmp/SpecialCasing.txt ${SpecialCasing}; \
 		fi ;
+		if [ ! -e tmp/CaseFolding.txt ]; then \
+			wget -O tmp/CaseFolding.txt ${CaseFolding}; \
+		fi ;
 		cat /dev/null > tmp/map.txt
 		echo "UnicodeData.txt	${UnicodeData}" >> tmp/map.txt
 		echo "DerivedNormalizationProps.txt	${DerivedNormalizationProps}" >> tmp/map.txt
 		echo "NormalizationTest.txt	${NormalizationTest}" >> tmp/map.txt
 		echo "SpecialCasing.txt	${SpecialCasing}" >> tmp/map.txt
+		echo "CaseFolding.txt	${CaseFolding}" >> tmp/map.txt
 
 test:
 	@python testsuite/conversion.py
