@@ -107,7 +107,7 @@ iotest=[
 	["utf-8:pass#limit=2,zh-decomp:insert#after=002c:bsdconv-keyword,bsdconv","不大不要","014E0D,015927,048D,040107,0476,"],
 	["bsdconv:nfd:_nf-order:insert#after=002c:bsdconv-keyword,bsdconv","011e9b,010323","01017F,010323,010307,"],
 	["utf-8:_nf-hangul-decomposition:utf-8","가","가"],
-	["utf-8:casefold:utf-8","AbяЯß","abяяss"]
+	["utf-8:casefold:utf-8","AbяЯßẞ","abяяssss"]
 ]
 
 countertest=[
