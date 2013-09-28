@@ -137,6 +137,27 @@ f_ccc.write("{0x%x, 0x%x, %d},\n" % (ccc_start, ccc_end, ccc_value))
 f_ccc.write("};\n")
 f_ccc.close()
 
+sc=open("tmp/SpecialCasing.txt")
+for l in sc:
+	l=l.strip()
+	if not l:
+		continue
+	if l[0] in "#":
+		continue
+	d,c=l.split("#")
+	d=d.split(";")
+	code=",".join([bsdconv01(x) for x in d[0].strip().split(" ")])
+	lower=",".join([bsdconv01(x) for x in d[1].strip().split(" ")])
+	title=",".join([bsdconv01(x) for x in d[2].strip().split(" ")])
+	upper=",".join([bsdconv01(x) for x in d[3].strip().split(" ")])
+	cond=d[4].strip()
+	if cond=="":
+		if code!=upper:
+			f_upper.write("{f}\t{t}\n".format(f=code, t=upper))
+		if code!=lower:
+			f_lower.write("{f}\t{t}\n".format(f=code, t=lower))
+
+
 f_upper.close()
 f_lower.close()
 

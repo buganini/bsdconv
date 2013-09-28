@@ -306,31 +306,36 @@ plist:
 	@echo @dirrmtry %%DATADIR%%/from
 	@echo @dirrmtry %%DATADIR%%
 
-ucd_url=ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData-6.3.0d3.txt
-dnp_url=http://www.unicode.org/Public/6.3.0/ucd/DerivedNormalizationProps-6.3.0d11.txt
-normalizationtest_url=http://www.unicode.org/Public/6.2.0/ucd/NormalizationTest.txt
+UnicodeData=ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData-6.3.0d3.txt
+DerivedNormalizationProps=http://www.unicode.org/Public/6.3.0/ucd/DerivedNormalizationProps-6.3.0d11.txt
+NormalizationTest=http://www.unicode.org/Public/6.2.0/ucd/NormalizationTest.txt
+SpecialCasing=http://www.unicode.org/Public/6.2.0/ucd/SpecialCasing.txt
 fetch:
 		mkdir -p tmp
 		if [ ! -e tmp/UnicodeData.txt ]; then \
-			wget -O tmp/UnicodeData.txt ${ucd_url}; \
+			wget -O tmp/UnicodeData.txt ${UnicodeData}; \
 		fi ;
 		if [ ! -e tmp/DerivedNormalizationProps.txt ]; then \
-			wget -O tmp/DerivedNormalizationProps.txt ${dnp_url}; \
+			wget -O tmp/DerivedNormalizationProps.txt ${DerivedNormalizationProps}; \
 		fi ;
 		if [ ! -e tmp/NormalizationTest.txt ]; then \
-			wget -O tmp/NormalizationTest.txt ${normalizationtest_url}; \
+			wget -O tmp/NormalizationTest.txt ${NormalizationTest}; \
+		fi ;
+		if [ ! -e tmp/SpecialCasing.txt ]; then \
+			wget -O tmp/SpecialCasing.txt ${SpecialCasing}; \
 		fi ;
 		cat /dev/null > tmp/map.txt
-		echo "UnicodeData.txt	${ucd_url}" >> tmp/map.txt
-		echo "DerivedNormalizationProps.txt	${dnp_url}" >> tmp/map.txt
-		echo "NormalizationTest.txt	${normalizationtest_url}" >> tmp/map.txt
+		echo "UnicodeData.txt	${UnicodeData}" >> tmp/map.txt
+		echo "DerivedNormalizationProps.txt	${DerivedNormalizationProps}" >> tmp/map.txt
+		echo "NormalizationTest.txt	${NormalizationTest}" >> tmp/map.txt
+		echo "SpecialCasing.txt	${SpecialCasing}" >> tmp/map.txt
 
 test:
 	@python testsuite/conversion.py
 	@$(CC) ${CFLAGS} testsuite/api.c -L./build/lib/ -o testsuite/api -lbsdconv ${LIBS}
 	@./testsuite/api
 
-gen: unicodedata chvar
+gen: unicode_gen chvar
 
 chvar_url=	http://cnmc.tw/~buganini/chvar/engine.php?action=dump
 chvar:
@@ -348,5 +353,5 @@ chvar:
 		sed -i '' -e 's|^|01|g' "codecs/to/$${file}.txt" ; \
 	done
 
-unicodedata: fetch
-	python tools/UnicodeData.py
+unicode_gen: fetch
+	python tools/unicode_gen.py
