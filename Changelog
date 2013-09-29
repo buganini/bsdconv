@@ -1,6 +1,6 @@
 11.2:
-	improve inter/{UPPER,LOWER}
-	add inter/CASEFOLD
+	improve inter/{UPPER,LOWER} (include mapping in SpecialCasing.txt)
+	add inter/CASEFOLD (C/F in CASEFOLD.txt)
 
 11.1:
 	Correct algorithm for unicode normalization
