@@ -41,9 +41,9 @@ Recover from mis-decoding/encoding (mistreated big5 as iso-8859-1 and converted 
 Decode javascript escaped data (byte/unicode mixed) like %u9644%20
 > bsdconv 'escape,byte:unicode,byte|skip,ascii:utf-8'
 
-Generate string for fuzzy comparison #collation is still required
-> echo ¼ℌăǅⓐ⁹灣湾ド鬒鬒æß | bsdconv UTF-8:ZH-FUZZY-TW:KANA-PHONETIC:NFKD:LOWER:UTF-8
-1⁄4hădža9灣灣do鬒鬒æß
+Generate string for fuzzy comparison
+> echo ¼ℌăǅⓐ⁹灣湾ド鬒鬒æß | bsdconv UTF-8:ZH-FUZZY-TW:KANA-PHONETIC:CASEFOLD:NFKD:UTF-8
+1⁄4Hădža9灣灣do鬒鬒æss
 
 More example:
 > bsdconv big5:nl2br:ascii,html-img in.txt > out.htm
