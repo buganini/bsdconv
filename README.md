@@ -2,7 +2,7 @@
 http://cnmc.tw/~buganini/bsdconv.php
 
 #Documentation
-http://www.slideshare.net/Buganini/bsdconv
+http://www.slideshare.net/buganini/bsdconv
 
 See CODECS/bsdconv-man for description for each codecs
 
