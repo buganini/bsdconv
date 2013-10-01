@@ -62,9 +62,9 @@ Use glyph image from http://www.cns11643.gov.tw
 
 Maintain inter map:
 
-    bsdconv bsdconv-keyword,bsdconv:bsdconv-keyword,utf-8 MAP.txt > edit.tmp
+    bsdconv bsdconv-keyword,bsdconv:bsdconv-keyword,utf-8 inter/FOO.txt > edit.tmp
     vi edit.tmp
-    bsdconv bsdconv-keyword,utf-8:bsdconv-keyword,bsdconv edit.tmp > MAP.txt
+    bsdconv bsdconv-keyword,utf-8:bsdconv-keyword,bsdconv edit.tmp > inter/FOO.txt
 
 #WINDOWS:
 Use mingw with Makefile.win to build it, then copy everythings in build/ to c:\bsdconv\
