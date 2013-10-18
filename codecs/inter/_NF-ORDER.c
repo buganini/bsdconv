@@ -22,8 +22,12 @@
 struct ll_s{
 	struct data_rt *p;
 	int ccc;
+	struct ll_s *prev;
 	struct ll_s *next;
 };
+	/*
+	 * here use a double linked list with tailed holder.
+	*/
 
 struct my_s{
 	struct ll_s *head;
@@ -32,9 +36,10 @@ struct my_s{
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
-	r->head=malloc(sizeof(struct ll_s));
-	r->head->next=NULL;
-	r->tail=r->head;
+	r->tail=malloc(sizeof(struct ll_s));
+	r->tail->next=NULL;
+	r->head=r->tail;
+	r->head->prev=NULL;
 	return 0;
 }
 
@@ -43,15 +48,16 @@ void cbflush(struct bsdconv_instance *ins){
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
 
 	while(r->head->next){
-		this_phase->data_tail->next=r->head->next->p;
+		this_phase->data_tail->next=r->head->p;
 		this_phase->data_tail=this_phase->data_tail->next;
 		this_phase->data_tail->next=NULL;
 
-		struct ll_s *next=r->head->next->next;
-		free(r->head->next);
-		r->head->next=next;
+		struct ll_s *next=r->head->next;
+		free(r->head);
+		r->head=next;
 	}
-	r->tail=r->head;
+	r->head=r->tail;
+	r->head->prev=NULL;
 
 	this_phase->state.status=NEXTPHASE;
 }
@@ -90,15 +96,16 @@ void cbconv(struct bsdconv_instance *ins){
 
 	if(ccc==0){
 		while(r->head->next){
-			this_phase->data_tail->next=r->head->next->p;
+			this_phase->data_tail->next=r->head->p;
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
 
-			struct ll_s *next=r->head->next->next;
-			free(r->head->next);
-			r->head->next=next;
+			struct ll_s *next=r->head->next;
+			free(r->head);
+			r->head=next;
 		}
-		r->tail=r->head;
+		r->head=r->tail;
+		r->head->prev=NULL;
 
 		DATA_MALLOC(this_phase->data_tail->next);
 		this_phase->data_tail=this_phase->data_tail->next;
@@ -109,20 +116,23 @@ void cbconv(struct bsdconv_instance *ins){
 		this_phase->state.status=NEXTPHASE;
 		return;
 	}else{
-		struct ll_s *prev=r->head;
-		struct ll_s *p=r->head->next;
-		while(p && ccc >= p->ccc){
-			prev=p;
-			p=p->next;
+		struct ll_s *next=r->tail;
+		struct ll_s *p=r->tail->prev;
+		while(p && ccc < p->ccc){
+			next=p;
+			p=p->prev;
 		}
-		struct ll_s *next=prev->next;
-		prev->next=malloc(sizeof(struct ll_s));
-		prev->next->ccc=ccc;
-		prev->next->next=next;
-		if(r->tail->next)
-			r->tail=r->tail->next;
-		DATA_MALLOC(prev->next->p);
-		*(prev->next->p)=*(this_phase->curr);
+		struct ll_s *prev=next->prev;
+		next->prev=malloc(sizeof(struct ll_s));
+		next->prev->ccc=ccc;
+		next->prev->prev=prev;
+		next->prev->next=next;
+		if(prev)
+			prev->next=next->prev;
+		if(r->head->prev)
+			r->head=r->head->prev;
+		DATA_MALLOC(next->prev->p);
+		*(next->prev->p)=*(this_phase->curr);
 		this_phase->curr->flags &= ~F_FREE;
 
 		this_phase->state.status=SUBMATCH;
