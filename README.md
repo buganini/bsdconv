@@ -6,11 +6,11 @@ http://www.slideshare.net/buganini/bsdconv
 
 See CODECS/bsdconv-man for description for each codecs
 
-#Compiling & Installation:
+#Compiling & Installation
     make PREFIX=/usr # default is /usr/local
     sudo make install
 
-#Example:
+#Example
 
 Convert traditional chinese big5 to simplified chinese utf-8
 
@@ -66,7 +66,7 @@ Maintain inter map:
     vi edit.tmp
     bsdconv bsdconv-keyword,utf-8:bsdconv-keyword,bsdconv edit.tmp > inter/FOO.txt
 
-#WINDOWS:
+#WINDOWS
 Use mingw with Makefile.win to build it, then copy everythings in build/ to c:\bsdconv\
 the path of the executable will be c:\bsdconv\bsdconv.exe
 
