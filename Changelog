@@ -1,5 +1,6 @@
 11.3:
 	Update inter/SCORE, inter/SCORE_TRAIN, with manpages.
+	Improve worst-case performance for inter/_NF-ORDER
 
 11.2:
 	improve inter/{UPPER,LOWER} (include mapping in SpecialCasing.txt)
