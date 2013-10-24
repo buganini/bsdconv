@@ -32,14 +32,26 @@ struct my_s{
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	char buf[256]={0};
-	char *p=getenv("BSDCONV_SCORE");
-	if(p==NULL){
-		//try default score file
-		strcpy(buf,getenv("HOME"));
-		strcat(buf,"/.bsdconv.score");
-		p=buf;
+	char force_default=0;
+	r->bak=NULL;
+	r->score=NULL;
+
+	while(arg){
+		if(strcmp(arg->key, "DEFAULT")==0){
+			force_default=1;
+		}
+		arg=arg->next;
+	}
+
+	if(!force_default){
+		char *p=getenv("BSDCONV_SCORE");
+		if(p==NULL){
+			//try default score file
+			strcpy(buf,getenv("HOME"));
+			strcat(buf,"/.bsdconv.score");
+			p=buf;
+		}
 		r->bak=r->score=fopen(p,"rb+");
-		//if default score file is not available, it will fallback to builtin score table
 	}
 	r->counter=bsdconv_counter(ins, "SCORE");
 	CURRENT_CODEC(ins)->priv=r;
