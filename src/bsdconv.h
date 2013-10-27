@@ -258,11 +258,13 @@ void cbctl(struct bsdconv_instance *, int, void *, size_t);
 void cbdestroy(struct bsdconv_instance *);
 
 //CTL Action
-#define BSDCONV_ATTACH_SCORE 0
-#define BSDCONV_SET_WIDE_AMBI 1
-#define BSDCONV_SET_TRIM_WIDTH 2
-#define BSDCONV_ATTACH_OUTPUT_FILE 3
-#define BSDCONV_AMBIGUOUS_PAD 4
+enum bsdconv_ctl_action {
+	BSDCONV_ATTACH_SCORE,
+	BSDCONV_SET_WIDE_AMBI,
+	BSDCONV_SET_TRIM_WIDTH,
+	BSDCONV_ATTACH_OUTPUT_FILE,
+	BSDCONV_AMBIGUOUS_PAD
+};
 
 //Binary
 #define bb00000011 0x03
