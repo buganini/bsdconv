@@ -16,11 +16,6 @@
 
 #include <stdlib.h>
 #include "../../src/bsdconv.h"
-#ifdef WIN32
-#include <winsock2.h>
-#else
-#include <netinet/in.h>
-#endif
 
 struct gb18030_data {
 	uint32_t beg;
@@ -67,7 +62,7 @@ void cbconv(struct bsdconv_instance *ins){
 	for(i=0;(len-i)>0;++i){
 		codepoint.byte[3-i]=data[len-i-1];
 	}
-	ucs=ntohl(codepoint.num);
+	ucs=be32toh(codepoint.num);
 
 	if (ucs < gb18030_table[0].beg || ucs > gb18030_table[max].end){
 		this_phase->state.status=DEADEND;
@@ -90,7 +85,7 @@ void cbconv(struct bsdconv_instance *ins){
 		this_phase->data_tail->flags=F_FREE;
 
 		gb=gb18030_table[mid].off + (ucs - gb18030_table[mid].beg);
-		
+
 		this_phase->data_tail->len=4;
 		p=this_phase->data_tail->data=malloc(4);
 

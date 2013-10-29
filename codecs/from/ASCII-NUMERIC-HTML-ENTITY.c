@@ -21,11 +21,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include "../../src/bsdconv.h"
-#ifdef WIN32
-#include <winsock2.h>
-#else
-#include <netinet/in.h>
-#endif
 
 struct my_s{
 	int status;
@@ -69,7 +64,7 @@ void cbconv(struct bsdconv_instance *ins){
 		d=CP(this_phase->curr->data)[this_phase->i];
 		if(d==';' && t->status){
 			//put data
-			t->buf.i=htonl(t->buf.i);
+			t->buf.i=htobe32(t->buf.i);
 			for(i=0;i<4;i++){
 				if(t->buf.c[i] || j)
 					ob[j++]=t->buf.c[i];

@@ -18,11 +18,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef WIN32
-#include <winsock2.h>
-#else
-#include <netinet/in.h>
-#endif
 #include "../../src/bsdconv.h"
 
 struct my_s{
@@ -90,7 +85,7 @@ void cbconv(struct bsdconv_instance *ins){
 		fseek(r->score, ucs*sizeof(unsigned char), SEEK_SET);
 		fread(&v, sizeof(unsigned char), 1, r->score);
 		if(v==0 && r->list){
-			ucs4=htonl(ucs);
+			ucs4=htobe32(ucs);
 			fwrite(&ucs4, sizeof(uint32_t), 1, r->list);
 		}
 		if(v<3){

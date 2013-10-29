@@ -24,6 +24,15 @@
 #include <windows.h>
 #endif
 
+#if defined(__linux__)
+#ifndef _BSD_SOURCE
+#define _BSD_SOURCE
+#endif
+#include <endian.h>
+#else
+#include <sys/endian.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
