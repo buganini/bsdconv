@@ -223,7 +223,7 @@ char * getwd(char *);
 
 #define DATA_MALLOC(X) do{if(ins->pool){(X)=ins->pool; ins->pool=ins->pool->next;}else{(X)=malloc(sizeof(struct data_rt));}}while(0)
 #define DATUM_FREE(X) do{ if((X)->flags & F_FREE) free((X)->data); (X)->next=ins->pool; ins->pool=(X);}while(0)
-#define DATA_FREE(X) do{ if((X)->flags & F_FREE) free((X)->data); (X)->next=ins->pool; ins->pool=(X);}while(0)
+#define DATA_FREE(X) do{ struct data_rt *t,*p=(X); while(p){if(p->flags & F_FREE) free(p->data); t=p->next; p->next=ins->pool; ins->pool=p; p=t;}}while(0)
 
 #define CURRENT_PHASE(INS) (&(INS)->phase[(INS)->phase_index])
 #define CURRENT_CODEC(INS) (&(INS)->phase[(INS)->phase_index].codec[(INS)->phase[(INS)->phase_index].index])
@@ -254,8 +254,8 @@ char *bsdconv_pack(struct bsdconv_instance *);
 void *bsdconv_malloc(size_t);
 void bsdconv_free(void *);
 int bsdconv_mkstemp(char *);
-int str2datum(const char *, struct data_st *);
-struct data_st * str2data(const char *, int *);
+int str2datum(const char *, struct data_rt *);
+struct data_rt * str2data(const char *, int *, struct bsdconv_instance *);
 void free_data_st(struct data_st *);
 char * getCodecDir();
 

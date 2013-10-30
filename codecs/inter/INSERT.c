@@ -20,8 +20,8 @@
 #include "../../src/bsdconv.h"
 
 struct my_s{
-	struct data_st *after;
-	struct data_st *before;
+	struct data_rt *after;
+	struct data_rt *before;
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
@@ -32,21 +32,21 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	while(arg){
 		if(strcmp(arg->key, "AFTER")==0){
 			if(r->after)
-				free_data_st(r->after);
-			r->after=str2data(arg->ptr, &e);
+				DATA_FREE(r->after);
+			r->after=str2data(arg->ptr, &e, ins);
 			if(e){
 				if(r->after)
-					free_data_st(r->after);
+					DATA_FREE(r->after);
 				free(r);
 				return e;
 			}
 		}else if(strcmp(arg->key, "BEFORE")==0){
 			if(r->before)
-				free_data_st(r->before);
-			r->before=str2data(arg->ptr, &e);
+				DATA_FREE(r->before);
+			r->before=str2data(arg->ptr, &e, ins);
 			if(e){
 				if(r->before)
-					free_data_st(r->before);
+					DATA_FREE(r->before);
 				free(r);
 				return e;
 			}
@@ -62,16 +62,16 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 void cbdestroy(struct bsdconv_instance *ins){
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	if(r->after)
-		free_data_st(r->after);
+		DATA_FREE(r->after);
 	if(r->before)
-		free_data_st(r->before);
+		DATA_FREE(r->before);
 	free(r);
 }
 
 void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
-	struct data_st *data_ptr;
+	struct data_rt *data_ptr;
 
 	if(r->before)
 		LISTCPY(this_phase->data_tail, r->before, 0);

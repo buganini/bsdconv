@@ -113,12 +113,13 @@ void free_data_st(struct data_st *p){
 	}
 }
 
-int str2datum(const char *s, struct data_st *d){
+int str2datum(const char *s, struct data_rt *d){
 	d->data=NULL;
 	d->len=0;
 	if(!s)
 		return EINVAL;
 	d->data=malloc(strlen(s)/2);
+	d->flags=F_FREE;
 	char f=0;
 	while(*s){
 		if(hex[(unsigned char) *s]<0){
@@ -129,12 +130,12 @@ int str2datum(const char *s, struct data_st *d){
 		switch(f){
 			case 0:
 				f=1;
-				d->data[d->len]=hex[(unsigned char)*s];
+				UCP(d->data)[d->len]=hex[(unsigned char)*s];
 				break;
 			case 1:
 				f=0;
-				d->data[d->len]*=16;
-				d->data[d->len]+=hex[(unsigned char)*s];
+				UCP(d->data)[d->len]*=16;
+				UCP(d->data)[d->len]+=hex[(unsigned char)*s];
 				d->len+=1;
 				break;
 		}
@@ -143,9 +144,9 @@ int str2datum(const char *s, struct data_st *d){
 	return 0;
 }
 
-struct data_st * str2data(const char *_s, int *r){
-	struct data_st ph;
-	struct data_st *t=&ph;
+struct data_rt * str2data(const char *_s, int *r, struct bsdconv_instance *ins){
+	struct data_rt ph;
+	struct data_rt *t=&ph;
 	char *k, *cur;
 	char *s;
 	char f;
@@ -164,15 +165,16 @@ struct data_st * str2data(const char *_s, int *r){
 
 	cur=s;
 	while((k=strsep(&cur, "."))!=NULL){
-		t->next=malloc(sizeof(struct data_st));
+		t->next=malloc(sizeof(struct data_rt));
 		t=t->next;
 		t->next=NULL;
 		t->len=0;
+		t->flags=F_FREE;
 		t->data=malloc(strlen(k)/2);
 		f=0;
 		while(*k){
 			if(hex[(unsigned char) *k]<0){
-				free_data_st(ph.next);
+				DATA_FREE(ph.next);
 				*r=EINVAL;
 				free(s);
 				return NULL;
@@ -180,12 +182,12 @@ struct data_st * str2data(const char *_s, int *r){
 			switch(f){
 				case 0:
 					f=1;
-					t->data[t->len]=hex[(unsigned char)*k];
+					UCP(t->data)[t->len]=hex[(unsigned char)*k];
 					break;
 				case 1:
 					f=0;
-					t->data[t->len]*=16;
-					t->data[t->len]+=hex[(unsigned char)*k];
+					UCP(t->data)[t->len]*=16;
+					UCP(t->data)[t->len]+=hex[(unsigned char)*k];
 					t->len+=1;
 					break;
 			}

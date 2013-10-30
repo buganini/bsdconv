@@ -21,8 +21,8 @@
 #include "../../src/bsdconv.h"
 
 struct my_s{
-	struct data_st prefix;
-	struct data_st suffix;
+	struct data_rt prefix;
+	struct data_rt suffix;
 	int filter;
 	int mode;
 };
