@@ -256,7 +256,6 @@ void bsdconv_free(void *);
 int bsdconv_mkstemp(char *);
 int str2datum(const char *, struct data_rt *);
 struct data_rt * str2data(const char *, int *, struct bsdconv_instance *);
-void free_data_st(struct data_st *);
 char * getCodecDir();
 
 //Callback function interface

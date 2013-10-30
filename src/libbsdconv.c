@@ -103,16 +103,6 @@ char * getCodecDir(){
 	return b;
 }
 
-void free_data_st(struct data_st *p){
-	struct data_st *t;
-	while(p){
-		t=p->next;
-		free(p->data);
-		free(p);
-		p=t;
-	}
-}
-
 int str2datum(const char *s, struct data_rt *d){
 	d->data=NULL;
 	d->len=0;
