@@ -205,7 +205,7 @@ char * getwd(char *);
 
 #define LISTFREE(X,Y,Z)	while((X)->next && (X)->next!=(Y)){	\
 	data_ptr=(X)->next->next;	\
-	DATA_FREE((X)->next);	\
+	DATUM_FREE((X)->next);	\
 	if((Z)==(X)->next){	\
 		(Z)=(X);	\
 	}	\
@@ -222,6 +222,7 @@ char * getwd(char *);
 #define UCP(X) ((unsigned char *)(X))
 
 #define DATA_MALLOC(X) do{if(ins->pool){(X)=ins->pool; ins->pool=ins->pool->next;}else{(X)=malloc(sizeof(struct data_rt));}}while(0)
+#define DATUM_FREE(X) do{ if((X)->flags & F_FREE) free((X)->data); (X)->next=ins->pool; ins->pool=(X);}while(0)
 #define DATA_FREE(X) do{ if((X)->flags & F_FREE) free((X)->data); (X)->next=ins->pool; ins->pool=(X);}while(0)
 
 #define CURRENT_PHASE(INS) (&(INS)->phase[(INS)->phase_index])

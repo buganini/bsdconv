@@ -49,10 +49,10 @@ void cbinit(struct bsdconv_instance *ins){
 	t->last=&t->queue;
 	struct data_rt *q;
 	while(t->queue){
-		DATA_FREE((struct data_rt *)t->queue->data);
+		DATUM_FREE((struct data_rt *)t->queue->data);
 		q=t->queue;
 		t->queue=t->queue->next;
-		DATA_FREE(q);
+		DATUM_FREE(q);
 	}
 }
 
@@ -61,10 +61,10 @@ void cbdestroy(struct bsdconv_instance *ins){
 	struct data_rt *q;
 	if(bsdconv_hash_has(ins, HASHKEY)){
 		while(t->queue){
-			DATA_FREE((struct data_rt *)t->queue->data);
+			DATUM_FREE((struct data_rt *)t->queue->data);
 			q=t->queue;
 			t->queue=t->queue->next;
-			DATA_FREE(q);
+			DATUM_FREE(q);
 		}
 		free(t);
 		bsdconv_hash_del(ins, HASHKEY);
@@ -87,7 +87,7 @@ void cbconv(struct bsdconv_instance *ins){
 			t->dlast=NULL;
 		}
 		q=t->queue->next;
-		DATA_FREE(t->queue);
+		DATUM_FREE(t->queue);
 		t->queue=q;
 	}
 
@@ -107,7 +107,7 @@ void cbconv(struct bsdconv_instance *ins){
 			t->dlast=NULL;
 		}
 		q=t->queue->next;
-		DATA_FREE(t->queue);
+		DATUM_FREE(t->queue);
 		t->queue=q;
 	}
 

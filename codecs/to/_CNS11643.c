@@ -62,7 +62,7 @@ void cbconv(struct bsdconv_instance *ins){
 			}else{
 				this_phase->state.status=DEADEND;
 				if(data_p!=this_phase->curr)
-					DATA_FREE(data_p);
+					DATUM_FREE(data_p);
 				return;
 			}
 		case 0x02:
@@ -80,7 +80,7 @@ void cbconv(struct bsdconv_instance *ins){
 			this_phase->state.status=NEXTPHASE;
 
 			if(data_p!=this_phase->curr)
-				DATA_FREE(data_p);
+				DATUM_FREE(data_p);
 
 			return;
 		default:

@@ -56,7 +56,7 @@ void cbinit(struct bsdconv_instance *ins){
 	struct data_rt *t;
 	while(r->qh->next){
 		t=r->qh->next->next;
-		DATA_FREE(r->qh->next);
+		DATUM_FREE(r->qh->next);
 		r->qh->next=t;
 	}
 	r->qt=r->qh;
@@ -67,7 +67,7 @@ void cbdestroy(struct bsdconv_instance *ins){
 	struct data_rt *t;
 	while(r->qh){
 		t=r->qh->next;
-		DATA_FREE(r->qh);
+		DATUM_FREE(r->qh);
 		r->qh=t;
 	}
 	free(r);

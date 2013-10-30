@@ -60,7 +60,7 @@ void cbconv(struct bsdconv_instance *ins){
 	if(*data!=0x02){
 		this_phase->state.status=DEADEND;
 		if(data_p!=this_phase->curr)
-			DATA_FREE(data_p);
+			DATUM_FREE(data_p);
 		return;
 	}
 	this_phase->state.status=NEXTPHASE;
@@ -91,6 +91,6 @@ void cbconv(struct bsdconv_instance *ins){
 	memcpy(this_phase->data_tail->data, buf, len);
 
 	if(data_p!=this_phase->curr)
-		DATA_FREE(data_p);
+		DATUM_FREE(data_p);
 	return;
 }

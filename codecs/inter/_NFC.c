@@ -45,11 +45,11 @@ void cbinit(struct bsdconv_instance *ins){
 	r->status=0;
 	struct data_rt *t;
 	if(r->starter){
-		DATA_FREE(r->starter);
+		DATUM_FREE(r->starter);
 	}
 	while(r->pending_head->next){
 		t=r->pending_head->next->next;
-		DATA_FREE(r->pending_head->next);
+		DATUM_FREE(r->pending_head->next);
 		r->pending_head->next=t;
 	}
 	r->pending_tail=r->pending_head;
@@ -92,7 +92,7 @@ void cbconv(struct bsdconv_instance *ins){
 				r->ccc=0;
 				if(ccc==0){ //first starters
 					if(r->starter){
-						DATA_FREE(r->starter);
+						DATUM_FREE(r->starter);
 					}
 					r->status=1;
 					DATA_MALLOC(r->starter);
@@ -118,7 +118,7 @@ void cbconv(struct bsdconv_instance *ins){
 						r->map->flush=1;
 						bsdconv(r->map);
 						if(*(r->err)==0){
-							DATA_FREE(r->starter);
+							DATUM_FREE(r->starter);
 							r->status=1;
 							r->starter=r->map->phase[r->map->phasen].data_head->next;
 							r->map->phase[r->map->phasen].data_head->next=NULL;
@@ -157,7 +157,7 @@ void cbconv(struct bsdconv_instance *ins){
 
 						bsdconv(r->map);
 						if(*(r->err)==0){ //combinable
-							DATA_FREE(r->starter);
+							DATUM_FREE(r->starter);
 							r->status=1;
 							r->starter=r->map->phase[r->map->phasen].data_head->next;
 							r->map->phase[r->map->phasen].data_head->next=NULL;
@@ -203,11 +203,11 @@ void cbdestroy(struct bsdconv_instance *ins){
 	struct data_rt *t;
 	bsdconv_destroy(r->map);
 	if(r->status){
-		DATA_FREE(r->starter);
+		DATUM_FREE(r->starter);
 	}
 	while(r->pending_head){
 		t=r->pending_head->next;
-		DATA_FREE(r->pending_head);
+		DATUM_FREE(r->pending_head);
 		r->pending_head=t;
 	}
 	free(r);
