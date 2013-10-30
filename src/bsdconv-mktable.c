@@ -510,7 +510,7 @@ DPRINTF("%p[%X]=%p\n", todo_item->state, c, state_t);
 				}
 				l=0;
 			}else{
-				l+=1;				
+				l+=1;
 			}
 			hash_p=hash_p->parent;
 		}
@@ -539,7 +539,7 @@ DPRINTF("%p[%X]=%p\n", todo_item->state, c, state_t);
 		}else{
 			dstate.base=0;
 		}
-		
+
 		fseek(fp, state_t->offset, SEEK_SET);
 		//printf("Writing struct state_st.\n");
 		fwrite((void *)&dstate, sizeof(struct state_st), 1, fp);
@@ -568,7 +568,7 @@ DPRINTF("%p[%X]=%p\n", todo_item->state, c, state_t);
 		}
 		data_t=data_t->n;
 	}
-	
+
 	data_t=data_r;
 	while(data_t){
 		hash_p=(struct hash *)data_t->data;

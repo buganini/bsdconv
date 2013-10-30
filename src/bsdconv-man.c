@@ -14,8 +14,6 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#define _BSDCONV_INTERNAL
-
 #include <stdio.h>
 #include <string.h>
 #include "bsdconv.h"

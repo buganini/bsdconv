@@ -56,6 +56,7 @@ enum bsdconv_phase_type {
 	TO
 };
 
+#ifdef _BSDCONV_INTERNAL
 enum bsdconv_status{
 	CONTINUE,
 	DEADEND,
@@ -67,6 +68,7 @@ enum bsdconv_status{
 	NOMATCH,
 	NOOP
 };
+#endif
 
 enum bsdconv_output_mode{
 	BSDCONV_HOLD,
@@ -77,11 +79,13 @@ enum bsdconv_output_mode{
 	BSDCONV_NULL,
 };
 
+#ifdef _BSDCONV_INTERNAL
 struct data_st{
 	char *data;
 	size_t len;
 	struct data_st *next;
 };
+#endif
 
 struct data_rt{
 	void *data;
@@ -90,6 +94,7 @@ struct data_rt{
 	unsigned char flags;
 };
 
+#ifdef _BSDCONV_INTERNAL
 struct state_st{
 	char status;
 	struct data_st *data;
@@ -97,6 +102,7 @@ struct state_st{
 	uint16_t end;
 	offset_t base;
 };
+#endif
 
 struct state_rt{
 	char status;
@@ -106,11 +112,13 @@ struct state_rt{
 	offset_t base;
 };
 
+#ifdef _BSDCONV_INTERNAL
 struct bsdconv_hash_entry{
 	char *key;
 	void *ptr;
 	struct bsdconv_hash_entry *next;
 };
+#endif
 
 struct bsdconv_counter_entry{
 	char *key;
@@ -193,6 +201,7 @@ char * getwd(char *);
 
 
 //Internal API
+#ifdef _BSDCONV_INTERNAL
 #define LISTCPY(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
 	DATA_MALLOC((X)->next);	\
 	(X)=(X)->next;	\
@@ -227,6 +236,7 @@ char * getwd(char *);
 
 #define CURRENT_PHASE(INS) (&(INS)->phase[(INS)->phase_index])
 #define CURRENT_CODEC(INS) (&(INS)->phase[(INS)->phase_index].codec[(INS)->phase[(INS)->phase_index].index])
+#endif
 
 //API
 struct bsdconv_instance *bsdconv_create(const char *);
