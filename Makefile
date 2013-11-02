@@ -197,7 +197,7 @@ bsdconv-man: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
 bsdconv-completion: builddir libbsdconv meta src/bsdconv.h src/bsdconv-completion.c
 	$(CC) ${CFLAGS} src/bsdconv-completion.c -L./build/lib -o build/bin/bsdconv-completion -lbsdconv ${LIBS}
 
-bsdconv_dbg: builddir libbsdconv src/libbsdconv.c src/bsdconv.h src/bsdconv-dbg.c
+bsdconv-dbg: builddir libbsdconv src/libbsdconv.c src/bsdconv.h src/bsdconv-dbg.c
 	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv-dbg.c -o build/bin/bsdconv-dbg ${LIBS}
 
 codecs_basic: builddir bsdconv-mktable libbsdconv meta

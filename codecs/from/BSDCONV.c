@@ -40,11 +40,10 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 
 void cbinit(struct bsdconv_instance *ins){
 	struct my_s *t=CURRENT_CODEC(ins)->priv;
-	CURRENT_CODEC(ins)->data_z=0;
 	t->data.len=0;
 	if(t->data.data)
 		free(t->data.data);
-	t->data.next=0;
+	t->data.next=NULL;
 	t->flag=F_CLEAR;
 }
 
@@ -54,6 +53,12 @@ void cbdestroy(struct bsdconv_instance *ins){
 		free(t->data.data);
 	}
 	free(t);
+}
+
+void cbflush(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct my_s *t=CURRENT_CODEC(ins)->priv;
+	LISTCPY(this_phase->data_tail, &t->data);
 }
 
 void cbconv(struct bsdconv_instance *ins){
@@ -97,7 +102,7 @@ void cbconv(struct bsdconv_instance *ins){
 			this_phase->state.status=SUBMATCH;
 		else
 			this_phase->state.status=CONTINUE;
-		this_phase->state.data=&(t->data);
+
 		switch(t->flag){
 			case F_A:
 				if(t->data.len >= t->size){

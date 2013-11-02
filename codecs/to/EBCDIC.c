@@ -67,7 +67,6 @@ void cbconv(struct bsdconv_instance *ins){
 	struct data_rt *data_ptr;
 
 	memcpy(&data, (char *)(this_phase->codec[this_phase->index].data_z+(uintptr_t)this_phase->state.data), sizeof(struct data_st));
-	data.data=this_phase->codec[this_phase->index].data_z+(uintptr_t)data.data;
 
 	if(data.len>1 && t->status==0){
 		t->status=1;
@@ -94,7 +93,7 @@ void cbconv(struct bsdconv_instance *ins){
 	}
 
 	if(t->status){
-		LISTCPY(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
+		LISTCPY_ST(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
 
 		this_phase->data_head->len=0;
 		this_phase->flags |= (F_MATCH | F_PENDING);
@@ -110,7 +109,7 @@ void cbconv(struct bsdconv_instance *ins){
 
 		this_phase->state.status=NOOP;
 	}else{
-		LISTCPY(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
+		LISTCPY_ST(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
 
 		this_phase->state.status=NEXTPHASE;
 	}

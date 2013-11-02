@@ -46,7 +46,11 @@ extern "C" {
 #define F_PENDING 2
 #define F_LOOPBACK 4
 
-typedef uint32_t offset_t;
+// #define en_offset(X) htole32(X)
+// #define de_offset(X) le32toh(X)
+#define en_offset(X) (X)
+#define de_offset(X) (X)
+typedef uint32_t offset_t; //little endian
 typedef size_t bsdconv_counter_t;
 
 enum bsdconv_phase_type {
@@ -81,9 +85,9 @@ enum bsdconv_output_mode{
 
 #ifdef _BSDCONV_INTERNAL
 struct data_st{
-	char *data;
-	size_t len;
-	struct data_st *next;
+	offset_t data;
+	offset_t len;
+	offset_t next;
 };
 #endif
 
@@ -94,18 +98,16 @@ struct data_rt{
 	unsigned char flags;
 };
 
-#ifdef _BSDCONV_INTERNAL
 struct state_st{
-	char status;
-	struct data_st *data;
+	unsigned char status;
+	offset_t data;
 	uint16_t beg;
 	uint16_t end;
 	offset_t base;
 };
-#endif
 
 struct state_rt{
-	char status;
+	unsigned char status;
 	struct data_rt *data;
 	uint16_t beg;
 	uint16_t end;
@@ -145,7 +147,8 @@ struct bsdconv_instance{
 };
 
 struct bsdconv_phase{
-	struct data_rt *bak, *match_data, *data_head, *data_tail, *curr;
+	void *match_data;
+	struct data_rt *bak, *data_head, *data_tail, *curr;
 	struct state_rt state;
 	int index;
 	unsigned int i;
@@ -202,15 +205,29 @@ char * getwd(char *);
 
 //Internal API
 #ifdef _BSDCONV_INTERNAL
-#define LISTCPY(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
+#define LISTCPY_ST(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
+	struct data_st data_st; \
 	DATA_MALLOC((X)->next);	\
 	(X)=(X)->next;	\
-	memcpy((X), (char *)((Z)+(uintptr_t)data_ptr), sizeof(struct data_st));	\
-	data_ptr=(void *)((X)->next);	\
-	(X)->next=NULL;	\
-	(X)->data=(char *)((Z)+(uintptr_t)(X)->data);	\
+	memcpy(&data_st, (char *)((Z)+(uintptr_t)data_ptr), sizeof(struct data_st));	\
+	data_ptr=(void *)(uintptr_t)de_offset(data_st.next);	\
+	(X)->data=(char *)((Z)+(uintptr_t)de_offset(data_st.data));	\
+	(X)->len=data_st.len;	\
 	(X)->flags=0; \
+	(X)->next=NULL;	\
 }
+
+#define LISTCPY(X,Y) do{	\
+	struct data_rt *data_ptr=(Y);	\
+	while(data_ptr){	\
+		DATA_MALLOC((X)->next);	\
+		(X)=(X)->next;	\
+		*(X)=*data_ptr;	\
+		(X)->flags=0; \
+		(X)->next=NULL;	\
+		data_ptr=data_ptr->next;	\
+	}	\
+}while(0);
 
 #define LISTFREE(X,Y,Z)	while((X)->next && (X)->next!=(Y)){	\
 	data_ptr=(X)->next->next;	\
@@ -222,9 +239,15 @@ char * getwd(char *);
 }
 
 #define RESET(X) do{	\
+	struct state_st state_st; \
 	ins->phase[X].index=0;	\
 	ins->phase[X].offset=0;	\
-	memcpy(&ins->phase[X].state, ins->phase[X].codec[ins->phase[X].index].z, sizeof(struct state_st));	\
+	memcpy(&state_st, ins->phase[X].codec[ins->phase[X].index].z, sizeof(struct state_st));	\
+	ins->phase[X].state.status=state_st.status; \
+	ins->phase[X].state.data=(void *)(uintptr_t)state_st.data; \
+	ins->phase[X].state.beg=state_st.beg; \
+	ins->phase[X].state.end=state_st.end; \
+	ins->phase[X].state.base=state_st.base; \
 }while(0)
 
 #define CP(X) ((char *)(X))

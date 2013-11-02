@@ -43,7 +43,6 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 void cbinit(struct bsdconv_instance *ins){
 	struct my_s *t=CURRENT_CODEC(ins)->priv;
 	t->rerail=CURRENT_PHASE(ins);
-	CURRENT_CODEC(ins)->data_z=0;
 	t->offsetA=0;
 	t->offsetB=0;
 	t->last=&t->queue;

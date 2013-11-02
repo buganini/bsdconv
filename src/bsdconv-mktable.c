@@ -49,7 +49,7 @@ struct m_data_st{
 };
 
 struct m_state_st{
-	/* struct state_st */
+	/* mapped to struct state_t*/
 	char status;
 	struct m_data_st *data;
 	uint16_t beg;
@@ -520,14 +520,14 @@ DPRINTF("%p[%X]=%p\n", todo_item->state, c, state_t);
 		}
 		hash_p=(struct hash *)state_t->data;
 		if(hash_p)
-			dstate.data=(struct data_st *)(uintptr_t)hash_p->offset;
+			dstate.data=en_offset(hash_p->offset);
 		else
-			dstate.data=NULL;
+			dstate.data=0;
 		dstate.status=state_t->status;
 		dstate.beg=state_t->beg;
 		dstate.end=state_t->end;
 		if(state_t->base){
-			dstate.base=offset;
+			dstate.base=en_offset(offset);
 			fseek(fp, offset, SEEK_SET);
 			for(i=state_t->beg;i<state_t->end;++i)
 				if(state_t->base[i])
@@ -585,11 +585,11 @@ DPRINTF("%p[%X]=%p\n", todo_item->state, c, state_t);
 		}
 		hash_p=(struct hash *)data_t->data;
 		if(hash_p)
-			ddata.data=(char *)(uintptr_t)hash_p->offset;
+			ddata.data=en_offset(hash_p->offset);
 		else
-			ddata.data=NULL;
+			ddata.data=en_offset(0);
 		ddata.len=data_t->len;
-		ddata.next=(struct data_st *)(uintptr_t)data_t->next;
+		ddata.next=en_offset(data_t->next);
 		fseek(fp, data_t->offset, SEEK_SET);
 		//printf("Writing struct data_st at %p %c %p.\n", (void *)(uintptr_t)data_t->offset, hash_p->parent->c, ddata.next);
 		fwrite((void *)&ddata, sizeof(struct data_st), 1, fp);

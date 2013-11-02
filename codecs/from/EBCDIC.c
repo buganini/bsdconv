@@ -42,16 +42,17 @@ void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_s *t=CURRENT_CODEC(ins)->priv;
 	struct data_st data;
+	unsigned char *c;
 
 	memcpy(&data, (char *)(this_phase->codec[this_phase->index].data_z+(uintptr_t)this_phase->state.data), sizeof(struct data_st));
-	data.data=this_phase->codec[this_phase->index].data_z+(uintptr_t)data.data;
+	c=UCP(this_phase->codec[this_phase->index].data_z+(uintptr_t)data.data);
 
-	if(data.len==2 && UCP(data.data)[0]=='\x01'){
-		if(UCP(data.data)[1]=='\x0E'){
+	if(data.len==2 && c[0]=='\x01'){
+		if(c[1]=='\x0E'){
 			t->status=1;
 			this_phase->state.status=NEXTPHASE;
 			return;
-		}else if(UCP(data.data)[1]=='\x0F'){
+		}else if(c[1]=='\x0F'){
 			t->status=0;
 			this_phase->state.status=NEXTPHASE;
 			return;

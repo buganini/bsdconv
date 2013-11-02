@@ -71,10 +71,9 @@ void cbdestroy(struct bsdconv_instance *ins){
 void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
-	struct data_rt *data_ptr;
 
 	if(r->before)
-		LISTCPY(this_phase->data_tail, r->before, 0);
+		LISTCPY(this_phase->data_tail, r->before);
 
 	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
@@ -83,7 +82,7 @@ void cbconv(struct bsdconv_instance *ins){
 	this_phase->data_tail->next=NULL;
 
 	if(r->after)
-		LISTCPY(this_phase->data_tail, r->after, 0);
+		LISTCPY(this_phase->data_tail, r->after);
 
 	this_phase->state.status=NEXTPHASE;
 	return;

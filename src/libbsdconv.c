@@ -110,6 +110,7 @@ int str2datum(const char *s, struct data_rt *d){
 		return EINVAL;
 	d->data=malloc(strlen(s)/2);
 	d->flags=F_FREE;
+	d->next=NULL;
 	char f=0;
 	while(*s){
 		if(hex[(unsigned char) *s]<0){
@@ -1052,6 +1053,18 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 	free(ins);
 }
 
+static inline struct state_rt read_state(void *p){
+	struct state_st state_st;
+	struct state_rt state;
+	memcpy(&state_st, p, sizeof(struct state_st));
+	state.status=state_st.status;
+	state.data=(void *)(uintptr_t)de_offset(state_st.data);
+	state.beg=state_st.beg;
+	state.end=state_st.end;
+	state.base=de_offset(state_st.base);
+	return state;
+}
+
 void bsdconv(struct bsdconv_instance *ins){
 	uintptr_t i;
 	struct data_rt *data_ptr;
@@ -1089,7 +1102,7 @@ void bsdconv(struct bsdconv_instance *ins){
 							memcpy(&this_phase->offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (c - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
 						else if(!(this_phase->flags & F_LOOPBACK))
 							this_phase->offset=0;
-						memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + this_phase->offset, sizeof(struct state_st));
+						this_phase->state=read_state(this_phase->codec[this_phase->index].z + this_phase->offset);
 						from_x:
 						switch(this_phase->state.status){
 							case DEADEND:
@@ -1097,7 +1110,7 @@ void bsdconv(struct bsdconv_instance *ins){
 								this_phase->flags &= ~(F_PENDING | F_LOOPBACK);
 								if(this_phase->flags & F_MATCH){
 									if(this_phase->match_data){
-										LISTCPY(this_phase->data_tail, this_phase->match_data, this_phase->codec[this_phase->index].data_z);
+										LISTCPY_ST(this_phase->data_tail, this_phase->match_data, this_phase->codec[this_phase->index].data_z);
 
 										LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
 										this_phase->curr=prev_phase->data_head;
@@ -1110,7 +1123,9 @@ void bsdconv(struct bsdconv_instance *ins){
 									goto phase_begin;
 								}else if(this_phase->index < this_phase->codecn){
 									this_phase->index++;
-									memcpy(&this_phase->state, this_phase->codec[this_phase->index].z, sizeof(struct state_st));
+
+									this_phase->state=read_state(this_phase->codec[this_phase->index].z);
+
 									this_phase->curr=prev_phase->data_head;
 									this_phase->i=this_phase->data_head->len;
 									continue;
@@ -1130,7 +1145,7 @@ void bsdconv(struct bsdconv_instance *ins){
 								this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 								this_phase->match_data=NULL;
 
-								LISTCPY(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
+								LISTCPY_ST(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
 
 								this_phase->bak=this_phase->curr;
 								LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
@@ -1188,7 +1203,7 @@ void bsdconv(struct bsdconv_instance *ins){
 					}else if(!(this_phase->flags & F_LOOPBACK)){
 						this_phase->offset=0;
 					}
-					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + this_phase->offset, sizeof(struct state_st));
+					this_phase->state=read_state(this_phase->codec[this_phase->index].z + this_phase->offset);
 					switch(this_phase->state.status){
 						case DEADEND:
 							goto inter_deadend;
@@ -1209,7 +1224,7 @@ void bsdconv(struct bsdconv_instance *ins){
 						this_phase->flags &= ~(F_PENDING | F_LOOPBACK);
 						if(this_phase->flags & F_MATCH){
 							if(this_phase->match_data){
-								LISTCPY(this_phase->data_tail, this_phase->match_data, this_phase->codec[this_phase->index].data_z);
+								LISTCPY_ST(this_phase->data_tail, this_phase->match_data, this_phase->codec[this_phase->index].data_z);
 
 								LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
 								this_phase->curr=prev_phase->data_head;
@@ -1222,7 +1237,9 @@ void bsdconv(struct bsdconv_instance *ins){
 							goto phase_begin;
 						}else if(this_phase->index < this_phase->codecn){
 							this_phase->index++;
-							memcpy(&this_phase->state, this_phase->codec[this_phase->index].z, sizeof(struct state_st));
+
+							this_phase->state=read_state(this_phase->codec[this_phase->index].z);
+
 							this_phase->curr=prev_phase->data_head;
 							continue;
 						}else{
@@ -1247,7 +1264,7 @@ void bsdconv(struct bsdconv_instance *ins){
 						this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 						this_phase->match_data=NULL;
 
-						LISTCPY(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
+						LISTCPY_ST(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
 
 						this_phase->bak=this_phase->curr->next;
 						LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
@@ -1301,7 +1318,7 @@ void bsdconv(struct bsdconv_instance *ins){
 					memcpy(&this_phase->offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (256 - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
 				else if(!(this_phase->flags & F_LOOPBACK))
 					this_phase->offset=0;
-				memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + this_phase->offset, sizeof(struct state_st));
+				this_phase->state=read_state(this_phase->codec[this_phase->index].z + this_phase->offset);
 				if(this_phase->state.status==DEADEND){ goto inter_deadend;}
 			}
 			break;
@@ -1316,7 +1333,7 @@ void bsdconv(struct bsdconv_instance *ins){
 						memcpy(&this_phase->offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (c - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
 					else if(!(this_phase->flags & F_LOOPBACK))
 						this_phase->offset=0;
-					memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + this_phase->offset, sizeof(struct state_st));
+					this_phase->state=read_state(this_phase->codec[this_phase->index].z + this_phase->offset);
 					switch(this_phase->state.status){
 						case DEADEND:
 							goto to_deadend;
@@ -1336,7 +1353,7 @@ void bsdconv(struct bsdconv_instance *ins){
 						this_phase->flags &= ~(F_PENDING | F_LOOPBACK);
 						if(this_phase->flags & F_MATCH){
 							if(this_phase->match_data){
-								LISTCPY(this_phase->data_tail, this_phase->match_data, this_phase->codec[this_phase->index].data_z);
+								LISTCPY_ST(this_phase->data_tail, this_phase->match_data, this_phase->codec[this_phase->index].data_z);
 
 								LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
 								this_phase->curr=prev_phase->data_head;
@@ -1350,7 +1367,8 @@ void bsdconv(struct bsdconv_instance *ins){
 							goto phase_begin;
 						}else if(this_phase->index < this_phase->codecn){
 							this_phase->index++;
-							memcpy(&this_phase->state, this_phase->codec[this_phase->index].z, sizeof(struct state_st));
+							this_phase->state=read_state(this_phase->codec[this_phase->index].z);
+
 							this_phase->curr=prev_phase->data_head;
 							continue;
 						}else{
@@ -1369,7 +1387,7 @@ void bsdconv(struct bsdconv_instance *ins){
 						this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 						this_phase->match_data=NULL;
 
-						LISTCPY(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
+						LISTCPY_ST(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
 
 						this_phase->bak=this_phase->curr->next;
 						LISTFREE(prev_phase->data_head, this_phase->bak,prev_phase->data_tail);
@@ -1420,7 +1438,7 @@ void bsdconv(struct bsdconv_instance *ins){
 					memcpy(&this_phase->offset, this_phase->codec[this_phase->index].z + (uintptr_t)this_phase->state.base + (256 - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
 				else if(!(this_phase->flags & F_LOOPBACK))
 					this_phase->offset=0;
-				memcpy(&this_phase->state, this_phase->codec[this_phase->index].z + this_phase->offset, sizeof(struct state_st));
+				this_phase->state=read_state(this_phase->codec[this_phase->index].z + this_phase->offset);
 				if(this_phase->state.status==DEADEND){ goto to_deadend;}
 			}
 			break;
