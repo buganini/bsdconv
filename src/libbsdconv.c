@@ -1053,18 +1053,6 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 	free(ins);
 }
 
-static inline struct state_rt read_state(void *p){
-	struct state_st state_st;
-	struct state_rt state;
-	memcpy(&state_st, p, sizeof(struct state_st));
-	state.status=state_st.status;
-	state.data=(void *)(uintptr_t)de_offset(state_st.data);
-	state.beg=state_st.beg;
-	state.end=state_st.end;
-	state.base=de_offset(state_st.base);
-	return state;
-}
-
 void bsdconv(struct bsdconv_instance *ins){
 	uintptr_t i;
 	struct data_rt *data_ptr;

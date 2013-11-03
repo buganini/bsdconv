@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -46,11 +47,11 @@ extern "C" {
 #define F_PENDING 2
 #define F_LOOPBACK 4
 
-// #define en_offset(X) htole32(X)
-// #define de_offset(X) le32toh(X)
-#define en_offset(X) (X)
-#define de_offset(X) (X)
-typedef uint32_t offset_t; //little endian
+#define en_offset(X) htole32(X)
+#define de_offset(X) le32toh(X)
+#define en_uint16(X) htole16(X)
+#define de_uint16(X) le16toh(X)
+typedef uint32_t offset_t;
 typedef size_t bsdconv_counter_t;
 
 enum bsdconv_phase_type {
@@ -238,16 +239,22 @@ char * getwd(char *);
 	(X)->next=data_ptr;	\
 }
 
+static inline struct state_rt read_state(void *p){
+	struct state_st state_st;
+	struct state_rt state;
+	memcpy(&state_st, p, sizeof(struct state_st));
+	state.status=state_st.status;
+	state.data=(void *)(uintptr_t)de_offset(state_st.data);
+	state.beg=de_uint16(state_st.beg);
+	state.end=de_uint16(state_st.end);
+	state.base=de_offset(state_st.base);
+	return state;
+}
+
 #define RESET(X) do{	\
-	struct state_st state_st; \
 	ins->phase[X].index=0;	\
 	ins->phase[X].offset=0;	\
-	memcpy(&state_st, ins->phase[X].codec[ins->phase[X].index].z, sizeof(struct state_st));	\
-	ins->phase[X].state.status=state_st.status; \
-	ins->phase[X].state.data=(void *)(uintptr_t)state_st.data; \
-	ins->phase[X].state.beg=state_st.beg; \
-	ins->phase[X].state.end=state_st.end; \
-	ins->phase[X].state.base=state_st.base; \
+	ins->phase[X].state=read_state(ins->phase[X].codec[ins->phase[X].index].z);	\
 }while(0)
 
 #define CP(X) ((char *)(X))

@@ -524,8 +524,8 @@ DPRINTF("%p[%X]=%p\n", todo_item->state, c, state_t);
 		else
 			dstate.data=0;
 		dstate.status=state_t->status;
-		dstate.beg=state_t->beg;
-		dstate.end=state_t->end;
+		dstate.beg=en_uint16(state_t->beg);
+		dstate.end=en_uint16(state_t->end);
 		if(state_t->base){
 			dstate.base=en_offset(offset);
 			fseek(fp, offset, SEEK_SET);

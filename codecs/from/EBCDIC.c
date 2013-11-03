@@ -45,7 +45,7 @@ void cbconv(struct bsdconv_instance *ins){
 	unsigned char *c;
 
 	memcpy(&data, (char *)(this_phase->codec[this_phase->index].data_z+(uintptr_t)this_phase->state.data), sizeof(struct data_st));
-	c=UCP(this_phase->codec[this_phase->index].data_z+(uintptr_t)data.data);
+	c=UCP(this_phase->codec[this_phase->index].data_z+de_offset(data.data));
 
 	if(data.len==2 && c[0]=='\x01'){
 		if(c[1]=='\x0E'){
