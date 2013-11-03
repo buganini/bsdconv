@@ -307,11 +307,11 @@ plist:
 	@echo @dirrmtry %%DATADIR%%/from
 	@echo @dirrmtry %%DATADIR%%
 
-UnicodeData=ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData-6.3.0d3.txt
-DerivedNormalizationProps=http://www.unicode.org/Public/6.3.0/ucd/DerivedNormalizationProps-6.3.0d11.txt
-NormalizationTest=http://www.unicode.org/Public/6.2.0/ucd/NormalizationTest.txt
-SpecialCasing=http://www.unicode.org/Public/6.2.0/ucd/SpecialCasing.txt
-CaseFolding=http://www.unicode.org/Public/6.2.0/ucd/CaseFolding.txt
+UnicodeData=ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData.txt
+DerivedNormalizationProps=ftp://ftp.unicode.org/Public/6.3.0/ucd/DerivedNormalizationProps.txt
+NormalizationTest=ftp://ftp.unicode.org/Public/6.3.0/ucd/NormalizationTest.txt
+SpecialCasing=ftp://ftp.unicode.org/Public/6.3.0/ucd/SpecialCasing.txt
+CaseFolding=ftp://ftp.unicode.org/Public/6.3.0/ucd/CaseFolding.txt
 fetch:
 		mkdir -p tmp
 		if [ ! -e tmp/UnicodeData.txt ]; then \
@@ -336,7 +336,7 @@ fetch:
 		echo "SpecialCasing.txt	${SpecialCasing}" >> tmp/map.txt
 		echo "CaseFolding.txt	${CaseFolding}" >> tmp/map.txt
 
-test:
+test: fetch
 	@python testsuite/conversion.py
 	@$(CC) ${CFLAGS} testsuite/api.c -L./build/lib/ -o testsuite/api -lbsdconv ${LIBS}
 	@./testsuite/api

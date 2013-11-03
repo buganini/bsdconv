@@ -1,4 +1,4 @@
-/* Generated from ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData-6.3.0d3.txt*/
+/* Generated from ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData.txt*/
 
 	struct ccc_interval {
 	int beg;
