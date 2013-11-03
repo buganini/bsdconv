@@ -1,4 +1,4 @@
-Source: http://www.unicode.org/Public/6.2.0/ucd/CaseFolding.txt
+Source: ftp://ftp.unicode.org/Public/6.3.0/ucd/CaseFolding.txt
 0141	0161
 0142	0162
 0143	0163

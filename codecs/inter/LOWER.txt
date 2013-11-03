@@ -1,5 +1,5 @@
-Source: ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData-6.3.0d3.txt
-Source: http://www.unicode.org/Public/6.2.0/ucd/SpecialCasing.txt
+Source: ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData.txt
+Source: ftp://ftp.unicode.org/Public/6.3.0/ucd/SpecialCasing.txt
 0141	0161
 0142	0162
 0143	0163
