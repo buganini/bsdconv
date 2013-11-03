@@ -336,7 +336,7 @@ fetch:
 		echo "SpecialCasing.txt	${SpecialCasing}" >> tmp/map.txt
 		echo "CaseFolding.txt	${CaseFolding}" >> tmp/map.txt
 
-test:
+test: fetch
 	@python testsuite/conversion.py
 	@$(CC) ${CFLAGS} testsuite/api.c -L./build/lib/ -o testsuite/api -lbsdconv ${LIBS}
 	@./testsuite/api
