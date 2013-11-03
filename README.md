@@ -1,10 +1,12 @@
 #Online DEMO
 http://cnmc.tw/~buganini/bsdconv.php
 
-#Documentation
+#Documentation & Support
 http://www.slideshare.net/buganini/bsdconv
 
 See CODECS/bsdconv-man for description for each codecs
+
+IRC: irc://irc.freenode.net#bsdconv
 
 #Compiling & Installation
     make PREFIX=/usr # default is /usr/local
