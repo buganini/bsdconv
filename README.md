@@ -17,7 +17,7 @@ IRC: irc://irc.freenode.net#bsdconv
 Convert traditional chinese big5 to simplified chinese utf-8
 
     bsdconv big5:zhcn:utf-8 in.txt > out.txt
-    bsdconv big5:zhcn:utf-8 -i in.txt #in-place
+    bsdconv big5:zhcn:utf-8 -i in.txt #inplace
 
 Convert traditional chinese utf-8 to simplified chinese GB2312 with transliteration
 
