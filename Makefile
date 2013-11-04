@@ -313,28 +313,28 @@ NormalizationTest=ftp://ftp.unicode.org/Public/6.3.0/ucd/NormalizationTest.txt
 SpecialCasing=ftp://ftp.unicode.org/Public/6.3.0/ucd/SpecialCasing.txt
 CaseFolding=ftp://ftp.unicode.org/Public/6.3.0/ucd/CaseFolding.txt
 fetch:
-		mkdir -p tmp
-		if [ ! -e tmp/UnicodeData.txt ]; then \
+		@mkdir -p tmp
+		@if [ ! -e tmp/UnicodeData.txt ]; then \
 			wget -O tmp/UnicodeData.txt ${UnicodeData}; \
 		fi ;
-		if [ ! -e tmp/DerivedNormalizationProps.txt ]; then \
+		@if [ ! -e tmp/DerivedNormalizationProps.txt ]; then \
 			wget -O tmp/DerivedNormalizationProps.txt ${DerivedNormalizationProps}; \
 		fi ;
-		if [ ! -e tmp/NormalizationTest.txt ]; then \
+		@if [ ! -e tmp/NormalizationTest.txt ]; then \
 			wget -O tmp/NormalizationTest.txt ${NormalizationTest}; \
 		fi ;
-		if [ ! -e tmp/SpecialCasing.txt ]; then \
+		@if [ ! -e tmp/SpecialCasing.txt ]; then \
 			wget -O tmp/SpecialCasing.txt ${SpecialCasing}; \
 		fi ;
-		if [ ! -e tmp/CaseFolding.txt ]; then \
+		@if [ ! -e tmp/CaseFolding.txt ]; then \
 			wget -O tmp/CaseFolding.txt ${CaseFolding}; \
 		fi ;
-		cat /dev/null > tmp/map.txt
-		echo "UnicodeData.txt	${UnicodeData}" >> tmp/map.txt
-		echo "DerivedNormalizationProps.txt	${DerivedNormalizationProps}" >> tmp/map.txt
-		echo "NormalizationTest.txt	${NormalizationTest}" >> tmp/map.txt
-		echo "SpecialCasing.txt	${SpecialCasing}" >> tmp/map.txt
-		echo "CaseFolding.txt	${CaseFolding}" >> tmp/map.txt
+		@cat /dev/null > tmp/map.txt
+		@echo "UnicodeData.txt	${UnicodeData}" >> tmp/map.txt
+		@echo "DerivedNormalizationProps.txt	${DerivedNormalizationProps}" >> tmp/map.txt
+		@echo "NormalizationTest.txt	${NormalizationTest}" >> tmp/map.txt
+		@echo "SpecialCasing.txt	${SpecialCasing}" >> tmp/map.txt
+		@echo "CaseFolding.txt	${CaseFolding}" >> tmp/map.txt
 
 test: fetch
 	@python testsuite/conversion.py
