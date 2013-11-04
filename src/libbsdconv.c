@@ -473,6 +473,7 @@ void bsdconv_init(struct bsdconv_instance *ins){
 
 	ins->flush=0;
 	ins->input.data=NULL;
+	ins->input.flags=0;
 	ins->input.len=0;
 	ins->output.data=NULL;
 	ins->output.len=0;
