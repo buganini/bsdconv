@@ -1,4 +1,4 @@
-#Online DEMO
+#Online Demo
 http://cnmc.tw/~buganini/bsdconv.php
 
 #Documentation & Support
@@ -68,7 +68,7 @@ Maintain inter map:
     vi edit.tmp
     bsdconv bsdconv-keyword,utf-8:bsdconv-keyword,bsdconv edit.tmp > inter/FOO.txt
 
-#WINDOWS
+#Windows
 Use mingw with Makefile.win to build it, then copy everythings in build/ to c:\bsdconv\
 the path of the executable will be c:\bsdconv\bsdconv.exe
 
