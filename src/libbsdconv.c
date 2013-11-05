@@ -1297,7 +1297,6 @@ void bsdconv(struct bsdconv_instance *ins){
 						goto phase_begin;
 					case CONTINUE:
 						this_phase->flags |= F_PENDING;
-						this_phase->flags &= ~F_LOOPBACK;
 						break;
 					case NOOP:
 						goto phase_begin;

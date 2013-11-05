@@ -4,6 +4,7 @@
 	Update inter/SCORE, inter/SCORE_TRAIN, with manpages.
 	Improve worst-case performance for inter/_NF-ORDER
 	Unify map file structure on all platform
+	add inter/REPLACE and alias inter/NOBOM to inter/REPLACE#01FEFF
 
 11.1:
 	Correct algorithm for unicode normalization

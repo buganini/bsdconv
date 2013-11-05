@@ -1,0 +1,5 @@
+echo ABCD | bsdconv utf-8:replace#0142.0143=0132.0133:utf-8
+A23D
+
+echo ABCD | bsdconv utf-8:replace#0142.0143:utf-8
+AD
