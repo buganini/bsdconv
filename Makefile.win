@@ -1,6 +1,6 @@
 PREFIX?=C:/bsdconv
 BSDCONV_PATH?=${PREFIX}
-CFLAGS+=-Wall -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
+CFLAGS+=-Wall -O2 -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
 CC=mingw32-cc
 
 all: builddir libbsdconv bsdconv_mktable bsdconv codecs meta
