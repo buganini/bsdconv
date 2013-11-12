@@ -49,15 +49,6 @@
 struct bsdconv_instance *bsdconv_unpack(const char *);
 char *bsdconv_pack(struct bsdconv_instance *);
 
-static inline void strtoupper(char *s){
-	char *c;
-	for(c=s;*c;++c){
-		if(*c>='a' && *c<='z'){
-			*c=*c-'a'+'A';
-		}
-	}
-}
-
 static inline int _cbcreate(struct bsdconv_instance *ins, int p, int c){
 	int r;
 	char *argv;

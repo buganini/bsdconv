@@ -29,10 +29,8 @@ int main(int argc, char *argv[]){
 
 	part=arg;
 	mode=FROM;
+	strtoupper(arg);
 	for(c=arg;*c;++c){
-		if(*c>='a' && *c<='z'){
-			*c=*c-'a'+'A';
-		}
 		switch(*c){
 			case ':':
 				mode=TO;

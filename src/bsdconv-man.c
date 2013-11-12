@@ -18,15 +18,6 @@
 #include <string.h>
 #include "bsdconv.h"
 
-static inline void strtoupper(char *s){
-	char *c;
-	for(c=s;*c;++c){
-		if(*c>='a' && *c<='z'){
-			*c=*c-'a'+'A';
-		}
-	}
-}
-
 void usage(char *a0){
 	fprintf(stderr, "Usage:\n\t%s phase_type codec\n\t%s phase_type/codec\n", a0, a0);
 	exit(1);

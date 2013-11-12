@@ -315,6 +315,17 @@ enum bsdconv_ctl_action {
 	BSDCONV_AMBIGUOUS_PAD
 };
 
+//Helpers
+
+static inline void strtoupper(char *s){
+	char *c;
+	for(c=s;*c;++c){
+		if(*c>='a' && *c<='z'){
+			*c=*c-'a'+'A';
+		}
+	}
+}
+
 //Binary
 #define bb00000011 0x03
 #define bb00000111 0x07
