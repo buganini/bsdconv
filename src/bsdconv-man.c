@@ -18,12 +18,12 @@
 #include <string.h>
 #include "bsdconv.h"
 
-void usage(char *a0){
+static void usage(char *a0){
 	fprintf(stderr, "Usage:\n\t%s phase_type codec\n\t%s phase_type/codec\n", a0, a0);
 	exit(1);
 }
 
-int main(int argc, char *argv[]){
+static int man(char *pc){
 	char *phase=NULL;
 	char *codec=NULL;
 	char *codec_filename=NULL;
@@ -34,19 +34,12 @@ int main(int argc, char *argv[]){
 	size_t len;
 	FILE *fp;
 
-	if(argc==2){
-		codec=phase=strdup(argv[1]);
-		strsep(&codec, "/");
-		if(codec==NULL){
-			usage(argv[0]);
-		}
-		codec=strdup(codec);
-	}else if(argc==3){
-		phase=strdup(argv[1]);
-		codec=strdup(argv[2]);
-	}else{
-		usage(argv[0]);
+	codec=phase=strdup(pc);
+	strsep(&codec, "/");
+	if(codec==NULL){
+		return 1;
 	}
+
 	strtoupper(phase);
 	strtoupper(codec);
 
@@ -62,7 +55,7 @@ int main(int argc, char *argv[]){
 	}else{
 		free(phase);
 		free(codec);
-		usage(argv[0]);
+		return 1;
 	}
 
 	path=getCodecDir();
@@ -73,6 +66,14 @@ int main(int argc, char *argv[]){
 	sprintf(codec_filename, "%s.man", codec);
 	fp=fopen(codec_filename, "rb");
 	if(fp){
+		if(fscanf(fp, ".redirect %s", buf)){
+			fclose(fp);
+			free(codec_filename);
+			free(phase);
+			free(path);
+			return man(buf);
+		}
+		(void) fseek(fp, 0L, SEEK_SET);
 		printf("%s/%s:\n", phase, codec);
 		do{
 			len=fread(buf, 1, sizeof(buf), fp);
@@ -81,7 +82,6 @@ int main(int argc, char *argv[]){
 		fclose(fp);
 		free(codec_filename);
 		free(phase);
-		free(codec);
 		free(path);
 		return 0;
 	}
@@ -99,7 +99,27 @@ int main(int argc, char *argv[]){
 	}
 
 	free(phase);
-	free(codec);
 	free(path);
 	return 0;
+}
+
+int main(int argc, char *argv[]){
+	char *pc;
+	int r;
+	if(argc==2){
+		r=man(argv[1]);
+	}else if(argc==3){
+		pc=malloc(strlen(argv[1])+strlen(argv[2])+2);
+		sprintf(pc, "%s/%s", argv[1], argv[2]);
+		r=man(pc);
+		free(pc);
+	}else{
+		usage(argv[0]);
+		return 1;
+	}
+
+	if(r)
+		usage(argv[0]);
+
+	return r;
 }
