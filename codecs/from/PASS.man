@@ -11,3 +11,13 @@ ARGUMENT
 	FOR
 		FORMAT	ENUM{UNICODE,1,CNS11643,2,BYTE,3,ANSI,1B}
 		DESC	Input type whitelist
+
+EXAMPLE
+	#pass through packets queue
+	> echo -n abc | bsdconv 'ascii:pass|pass:bsdconv-stdout'
+	0161 ( SKIP )
+	0162 ( SKIP )
+	0163 ( SKIP )
+	> echo -n 測試 | bsdconv 'utf-8:utf-16le|pass:bsdconv-stdout'
+	2C6E ( FREE )
+	668A ( FREE )

@@ -1,0 +1,3 @@
+EXAMPLE
+	> echo 測 | bsdconv utf-8:ascii-html-unicode-img
+	<img class="unicode_img" src="http://www.unicode.org/cgi-bin/refglyph?24-6E2C" /><img class="unicode_img" src="http://www.unicode.org/cgi-bin/refglyph?24-A" />

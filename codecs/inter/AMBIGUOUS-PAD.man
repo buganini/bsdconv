@@ -14,3 +14,11 @@ CTL
 		INT
 			1	Enable
 			2	Disable
+
+EXAMPLE
+	#used in https://github.com/buganini/bug5
+	> echo БИ 2 | bsdconv utf-8:ambiguous-pad:utf-8
+	Б И  2
+	> echo БИ 2 | bsdconv utf-8:ambiguous-pad:utf-8 | hexdump -C
+	00000000  d0 91 c2 a0 d0 98 c2 a0  20 32 0a                 |........ 2.|
+	#(the padded character is U+00A0)

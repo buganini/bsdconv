@@ -1,0 +1,3 @@
+EXAMPLE
+	> echo '&uuml;' | bsdconv ascii-named-html-entity:utf-8
+	ü

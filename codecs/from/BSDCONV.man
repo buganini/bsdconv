@@ -4,3 +4,9 @@ INPUT
 
 OUTPUT
 	DESC	binary form of input
+
+EXAMPLE
+	> echo 016e2c|bsdconv bsdconv:utf-8
+	測
+	> echo 016e2c,018a66 | bsdconv bsdconv:utf-8
+	測試

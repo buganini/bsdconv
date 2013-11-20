@@ -3,7 +3,7 @@ INPUT
 
 OUTPUT
 	TYPE	Any
-	DESC	Append ',' (in term of bsdconv_keyword)
+	DESC	Append ',' (in term of bsdconv-keyword)
 
 ARGUMENT
 	AFTER
@@ -12,5 +12,5 @@ ARGUMENT
 		TYPE	Hex Value List
 
 EXAMPLE:
-	printf test|bsdconv utf-8:insert#after=002c:bsdconv_keyword,utf-8
+	printf test|bsdconv utf-8:insert#after=002c:bsdconv-keyword,utf-8
 	t,e,s,t,

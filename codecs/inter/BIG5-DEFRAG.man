@@ -1,0 +1,4 @@
+EXAMPLE
+	> perl -e 'print "\xaf\033[1m\xe0"' | bsdconv 'ansi-control,byte:big5-defrag:byte,ansi-control|skip,big5:bsdconv-stdout'
+	0180FD
+	1B5B316D ( FREE )

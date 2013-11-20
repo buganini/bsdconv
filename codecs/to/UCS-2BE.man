@@ -1,0 +1,1 @@
+UCS-2, subset of UTF-16

@@ -1,0 +1,3 @@
+EXAMPLE
+	> echo testTEST | bsdconv utf-8:upper:utf-8
+	TESTTEST

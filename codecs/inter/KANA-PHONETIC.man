@@ -1,0 +1,3 @@
+EXAMPLE
+	> echo ドラえもん | bsdconv utf-8:kana_phonetic:utf-8
+	doraemon

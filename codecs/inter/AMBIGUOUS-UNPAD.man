@@ -14,3 +14,8 @@ CTL
 		INT
 			1	Enable
 			2	Disable
+
+EXAMPLE
+	#used in https://github.com/buganini/bug5
+	> echo Б И  2|bsdconv utf-8:ambiguous-unpad:utf-8
+	БИ 2

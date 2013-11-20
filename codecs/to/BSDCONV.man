@@ -1,0 +1,3 @@
+EXAMPLE
+	> echo 測 | bsdconv utf-8:bsdconv
+	016E2C010A

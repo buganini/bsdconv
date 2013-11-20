@@ -1,0 +1,1 @@
+#just ascii (U+0001 ~ U+007F)

@@ -1,0 +1,6 @@
+EXAMPLE
+	#for internal use
+	> echo BIG5 | bsdconv ascii:to_alias:ascii
+	CP950
+	> echo CP950 | bsdconv ascii:to_alias:ascii
+	_CP950,ASCII

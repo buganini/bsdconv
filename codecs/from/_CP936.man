@@ -1,0 +1,4 @@
+DESC
+	simplified chinese
+	ascii is excluded, use same name without '_' prefixed to get ascii involved
+	cp936_trans is for transliteration

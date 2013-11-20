@@ -4,3 +4,7 @@ INPUT
 OUTPUT
 	TYPE	Any
 	DESC	Input data with removal of type identifier byte
+
+EXAMPLE
+	> printf 測試 | bsdconv utf-8:raw|hexdump -C
+	00000000  6e 2c 8a 66                                       |n,.f|

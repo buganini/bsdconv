@@ -4,7 +4,7 @@ http://cnmc.tw/~buganini/bsdconv.php
 #Documentation & Support
 http://www.slideshare.net/buganini/bsdconv
 
-See CODECS/bsdconv-man for description for each codecs
+Use bsdconv-man to show manual page for each codecs
 
 IRC: irc://irc.freenode.net#bsdconv
 

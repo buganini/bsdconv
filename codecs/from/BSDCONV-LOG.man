@@ -7,3 +7,14 @@ OUTPUT
 ENV
 	BSDCONV_FROM_LOG	log file
 
+EXAMPLE
+	#background debug tool
+	> echo 測試 | env BSDCONV_FROM_LOG=/tmp/bsdconv.log bsdconv bsdconv-log:utf-8
+	> cat /tmp/bsdconv.log
+	E6
+	B8
+	AC
+	E8
+	A9
+	A6
+	0A

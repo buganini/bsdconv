@@ -13,3 +13,13 @@ ARGUMENT
 		DESC	Output value
 		EXAMPLE	013F
 		EXAMPLE	013F.012F
+
+EXAMPLE
+	> echo test測試test | bsdconv ascii,any#013f&error:ascii
+	test??????test
+	> echo 陶喆測試|bsdconv utf-8:uao250|bsdconv cp950,3f:utf-8 #alias
+	陶?穘?試
+	> echo 陶喆測試|bsdconv utf-8:uao250|bsdconv cp950,any#01fffd:utf-8
+	陶�穘�試
+	> echo 陶喆測試|bsdconv utf-8:uao250|bsdconv cp950,sub:utf-8 #alias
+	陶�穘�試

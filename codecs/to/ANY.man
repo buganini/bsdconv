@@ -13,3 +13,7 @@ ARGUMENT
 		DESC	Output value
 		EXAMPLE	3F
 		EXAMPLE	3F.2F
+
+EXAMPLE
+	> echo -n test測試test |bsdconv utf-8:ascii,any#3f
+	test??test

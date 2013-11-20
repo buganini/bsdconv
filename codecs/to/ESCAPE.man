@@ -21,3 +21,11 @@ ARGUMENT
 	FOR
 		FORMAT	ENUM{UNICODE,1,BYTE,3}
 		DESC	Input type whitelist
+
+EXAMPLE
+	> echo 測test試 | bsdconv 'utf-8:ascii,url' #URL === ESCAPE#MODE=16&PREFIX=2575,ESCAPE#MODE=16&PREFIX=25
+	%u6E2Ctest%u8A66
+	> echo 測test喆試 | bsdconv 'utf-8:big5,unicode|skip,ascii,byte:ascii,url'
+	%B4%FAtest%u5586%B8%D5
+	> echo -n test測試 | bsdconv 'utf-8:ascii,ESCAPE#FOR=UNICODE&MODE=16&PREFIX=5C75'
+	test\u6e2c\u8a66

@@ -1,3 +1,6 @@
 DESC
 	Generate score table according to input data.
 	If environment variable BSDCONV_SCORE is presented, it will be used as score table path, else if ~/.bsdconv.score is presented, it will be used as score table.
+
+SEEALSO
+	inter/SCORE#EXAMPLE

@@ -5,3 +5,7 @@ INPUT
 
 OUTPUT
 	TYPE	Unicode
+
+EXAMPLE
+	> echo abc測試xyz|bsdconv utf-8:chewing:utf-8
+	abcㄘㄜˋㄕˋxyz

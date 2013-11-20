@@ -1,0 +1,4 @@
+EXAMPLE
+	#used to test decoding
+	> echo 測試blah blah blah | bsdconv utf-8:null
+	#(no output)

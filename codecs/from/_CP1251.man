@@ -1,0 +1,3 @@
+DESC
+	cyrillic alphabet
+	ascii is excluded, use same name without '_' prefixed to get ascii involved

@@ -1,0 +1,6 @@
+EXAMPLE
+	> echo 測試 | env BSDCONV_TO_LOG=/tmp/bsdconv.log bsdconv utf-8:bsdconv-log
+	> cat /tmp/bsdconv.log
+	016E2C ( FREE )
+	018A66 ( FREE )
+	010A

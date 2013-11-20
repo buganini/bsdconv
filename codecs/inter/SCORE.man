@@ -5,3 +5,32 @@ DESC
 ARGUMENT
 	DEFAULT
 		Force using default table
+
+EXAMPLE
+	#used for encoding detecting (roughly)
+	#reference codecs/inter/SCORE.c static const struct interval scoreboard for default weight
+	> echo 123Б測試 | bsdconv utf-8:score:null
+	Decoding failure: 0
+	Encoding failure: 0
+	Score: 6
+	> echo 123Б測試 | bsdconv big5:score:null
+	Decoding failure: 2
+	Encoding failure: 0
+	Score: 4
+	#if score data exists, it will use it.
+	#default score data path is $HOME/.bsdconv.score
+	> echo 123Б測試 | bsdconv utf-8:score_train:null
+	> echo 123Б測試 | bsdconv utf-8:score:null
+	Score: 7
+	> echo 123Б測試功能 | bsdconv utf-8:score:null
+	Score: 7
+	> echo 123Б測試功能 | bsdconv utf-8:score_train:null
+	> echo 123Б測試功能 | bsdconv utf-8:score:null
+	Score: 9
+	#specify score data path in C
+	bsdconv_ctl(
+		struct bsdconv_instance *, /*conversion instance*/
+		BSDCONV_ATTACH_SCORE, /* Ctl constant*/
+		FILE *, /* File pointer to the score data*/
+		0 /* unused argument */
+	);

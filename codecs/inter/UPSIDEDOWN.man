@@ -1,0 +1,3 @@
+EXAMPLE
+	> echo FUNNY | bsdconv utf-8:upsidedown:utf-8
+	Ⅎ∩ᴎᴎ⅄

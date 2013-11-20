@@ -1,5 +1,11 @@
 INPUT
-	DESC	Products of from/BSDCONV_KEYWORD
+	DESC	Products of from/BSDCONV-KEYWORD
 
 OUTPUT
-	DESC	Original form of data from from/BSDCONV_KEYWORD
+	DESC	Original form of data from from/BSDCONV-KEYWORD
+
+EXAMPLE
+	> printf "測,試\t测,试\n" | bsdconv bsdconv-keyword,utf-8:bsdconv-keyword,bsdconv
+	016E2C,018A66	016D4B,018BD5
+	> printf "測,試\t测,试\n" | bsdconv bsdconv-keyword,utf-8:bsdconv-keyword,bsdconv | bsdconv bsdconv-keyword,bsdconv:bsdconv-keyword,utf-8
+	測,試	测,试

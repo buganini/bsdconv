@@ -1,0 +1,14 @@
+#traditional chinese
+EXAMPLE
+	#ascii is excluded, use same name without '_' prefixed to get ascii involved
+	> perl -e 'print "\xa5\x5c\xaf\xe0"' | bsdconv _cp950:utf-8
+	功能
+	> echo 喆 | bsdconv utf-8:_cp950,ascii | hexdump -C
+	00000000  0a                                                |.|
+	> echo 喆 | bsdconv utf-8:_uao241,ascii | hexdump -C
+	00000000  95 ed 0a                                          |...|
+	> echo 测试 | bsdconv utf-8:big5 | hexdump -C
+	00000000  0a                                                |.|
+	#cp950_trans is for transliteration
+	> echo 测试 | bsdconv utf-8:big5,cp950_trans | hexdump -C
+	00000000  b4 fa b8 d5 0a                                    |.....|

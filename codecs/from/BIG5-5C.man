@@ -1,0 +1,5 @@
+EXAMPLE
+	> perl -e 'print "\xa5\x5c\x5c\xaf\xe0"' | bsdconv big5:utf-8
+	功\能
+	> perl -e 'print "\xa5\x5c\x5c\xaf\xe0"' | bsdconv big5-5c,big5:utf-8
+	功能

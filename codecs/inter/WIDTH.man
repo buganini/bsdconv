@@ -1,1 +1,7 @@
 Increase counters {full,half,ambi} accordingly
+
+EXAMPLE
+	> perl -e 'print "123Б測試"' | bsdconv utf-8:width:null
+	Full width: 2
+	Half width: 3
+	Ambi width: 1

@@ -1,0 +1,3 @@
+EXAMPLE
+		> echo 功能|bsdconv utf-8:big5-5c,big5|hexdump -C
+		00000000  a5 5c 5c af e0 0a                                 |.\\...|

@@ -1,0 +1,3 @@
+EXAMPLE
+	> perl -e 'print "a\r\nb"' | bsdconv utf-8:unix:utf-8 | hexdump -C
+	00000000  61 0a 62                                          |a.b|

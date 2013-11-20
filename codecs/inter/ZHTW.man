@@ -1,0 +1,3 @@
+EXAMPLE
+	> echo 测试之后|bsdconv utf-8:zhtw:utf-8
+	測試之后

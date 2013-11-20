@@ -1,0 +1,10 @@
+EXAMPLE
+	#for internal use
+	> echo BIG5 | bsdconv ascii:from_alias:ascii
+	UAO250
+	> echo UAO250 | bsdconv ascii:from_alias:ascii
+	ASCII,_UAO250
+	> echo LOCALE | bsdconv ascii:from_alias:ascii
+	UTF-8
+	> echo UTF-8 | bsdconv ascii:from_alias:ascii
+	ASCII,_UTF-8

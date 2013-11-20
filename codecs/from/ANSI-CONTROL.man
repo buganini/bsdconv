@@ -6,3 +6,11 @@ OUTPUT
 	TYPE	1B (ANSI CONTROL SEQUENCE)
 	DESC	Input as-is
 	EXAMPLE	1B5B33306D
+
+EXAMPLE
+	#used in https://github.com/buganini/bug5
+	#used with inter/BIG5-DEFRAG
+	> perl -e 'print "a\033[1mb"' | bsdconv ansi-control,utf-8:bsdconv-stdout
+	0161
+	1B5B316D ( FREE )
+	0162

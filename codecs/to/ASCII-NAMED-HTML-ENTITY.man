@@ -1,0 +1,3 @@
+EXAMPLE
+	> echo Ç | bsdconv utf-8:ascii-named-html-entity
+	&Ccedil;

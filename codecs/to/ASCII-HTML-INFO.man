@@ -1,0 +1,3 @@
+EXAMPLE
+	> echo 測 | bsdconv utf-8:ascii-html-info
+	<a href="http://www.cns11643.gov.tw/AIDB/query_general_view.do?page=1&code=6041"><img src="http://www.cns11643.gov.tw/AIDB/png.do?page=1&code=6041" /></a><a href="http://www.fileformat.info/info/unicode/char/0A/index.htm"><img class="unicode_img" src="http://www.unicode.org/cgi-bin/refglyph?24-A" /></a>

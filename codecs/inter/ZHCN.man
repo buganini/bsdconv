@@ -1,0 +1,3 @@
+EXAMPLE
+	> echo 測試 | bsdconv utf-8:zhcn:utf-8
+	测试

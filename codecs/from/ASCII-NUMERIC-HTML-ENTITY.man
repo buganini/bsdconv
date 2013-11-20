@@ -1,0 +1,3 @@
+EXAMPLE
+	> echo '&#x6e2c;&#35430;' | bsdconv ascii-numeric-html-entity:utf-8
+	測試

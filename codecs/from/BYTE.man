@@ -1,0 +1,3 @@
+EXAMPLE
+	> perl -e 'print "\xaa\xbb\xcc\xdd"' | bsdconv byte:byte|hexdump -C
+	00000000  aa bb cc dd                                       |....|
