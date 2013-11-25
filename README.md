@@ -1,6 +1,3 @@
-#Online Demo
-http://cnmc.tw/~buganini/bsdconv.php
-
 #Documentation & Support
 http://www.slideshare.net/buganini/bsdconv
 
