@@ -1,0 +1,219 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Go binding API &mdash; bsdconv 11.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '11.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="bsdconv 11.1 documentation" href="../../index.html" />
+    <link rel="next" title="PHP binding API" href="../../php-bsdconv/doc/api.html" />
+    <link rel="prev" title="C API" href="../../api.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../go-pkgindex.html" title="Golang Package Index"
+             >packages</a> |</li>
+        <li class="right" >
+          <a href="../../php-bsdconv/doc/api.html" title="PHP binding API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../../api.html" title="C API"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">bsdconv 11.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="package-bsdconv">
+<span id="go-binding-api"></span><h1>Go binding API<a class="headerlink" href="#package-bsdconv" title="Permalink to this headline">¶</a></h1>
+<dl class="type">
+<dt id="bsdconv.Bsdconv">
+<tt class="descname">Bsdconv</tt><a class="headerlink" href="#bsdconv.Bsdconv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv.func">
+<tt class="descname">func</tt><a class="headerlink" href="#bsdconv.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create converter instance with given conversion string</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="(bsdconv.Bsdconv) String">
+<tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">String</tt><big>(</big><big>)</big> &rarr; (string)<a class="headerlink" href="#(bsdconv.Bsdconv) String" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="(bsdconv.Bsdconv) Init">
+<tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Init</tt><big>(</big><big>)</big><a class="headerlink" href="#(bsdconv.Bsdconv) Init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="(bsdconv.Bsdconv) Conv_chunk">
+<tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Conv_chunk</tt><big>(</big><em>b&nbsp;</em>[]byte<big>)</big> &rarr; ([]byte)<a class="headerlink" href="#(bsdconv.Bsdconv) Conv_chunk" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="(bsdconv.Bsdconv) Conv_chunk_last">
+<tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Conv_chunk_last</tt><big>(</big><em>b&nbsp;</em>[]byte<big>)</big> &rarr; ([]byte)<a class="headerlink" href="#(bsdconv.Bsdconv) Conv_chunk_last" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="(bsdconv.Bsdconv) Conv">
+<tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Conv</tt><big>(</big><em>b&nbsp;</em>[]byte<big>)</big> &rarr; ([]byte)<a class="headerlink" href="#(bsdconv.Bsdconv) Conv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="(bsdconv.Bsdconv) Conv_file">
+<tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Conv_file</tt><big>(</big><em>ifile&nbsp;</em>string, <em>ofile&nbsp;</em>string<big>)</big><a class="headerlink" href="#(bsdconv.Bsdconv) Conv_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="(bsdconv.Bsdconv) Destroy">
+<tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Destroy</tt><big>(</big><big>)</big><a class="headerlink" href="#(bsdconv.Bsdconv) Destroy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt>
+<tt class="descname">func</tt></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt>
+<tt class="descname">func</tt></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv.Insert_phase">
+<tt class="descclassname">func&nbsp;</tt><tt class="descname">Insert_phase</tt><big>(</big><em>conversion&nbsp;</em>string, <em>codec&nbsp;</em>string, <em>phase_type&nbsp;</em>int, <em>phasen&nbsp;</em>int<big>)</big> &rarr; (string)<a class="headerlink" href="#bsdconv.Insert_phase" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv.Insert_codec">
+<tt class="descclassname">func&nbsp;</tt><tt class="descname">Insert_codec</tt><big>(</big><em>conversion&nbsp;</em>string, <em>codec&nbsp;</em>string, <em>phasen&nbsp;</em>int, <em>codecn&nbsp;</em>int<big>)</big> &rarr; (string)<a class="headerlink" href="#bsdconv.Insert_codec" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv.Replace_phase">
+<tt class="descclassname">func&nbsp;</tt><tt class="descname">Replace_phase</tt><big>(</big><em>conversion&nbsp;</em>string, <em>codec&nbsp;</em>string, <em>phase_type&nbsp;</em>int, <em>phasen&nbsp;</em>int<big>)</big> &rarr; (string)<a class="headerlink" href="#bsdconv.Replace_phase" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv.Replace_codec">
+<tt class="descclassname">func&nbsp;</tt><tt class="descname">Replace_codec</tt><big>(</big><em>conversion&nbsp;</em>string, <em>codec&nbsp;</em>string, <em>phasen&nbsp;</em>int, <em>codecn&nbsp;</em>int<big>)</big> &rarr; (string)<a class="headerlink" href="#bsdconv.Replace_codec" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv.Codec_check">
+<tt class="descclassname">func&nbsp;</tt><tt class="descname">Codec_check</tt><big>(</big><em>t&nbsp;</em>int, <em>c&nbsp;</em>string<big>)</big> &rarr; (bool)<a class="headerlink" href="#bsdconv.Codec_check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv.Codecs_list">
+<tt class="descclassname">func&nbsp;</tt><tt class="descname">Codecs_list</tt><big>(</big><em>t&nbsp;</em>int<big>)</big> &rarr; ([]string)<a class="headerlink" href="#bsdconv.Codecs_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt>
+<tt class="descname">func</tt></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt>
+<tt class="descname">func</tt></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt>
+<tt class="descname">func</tt></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../../api.html"
+                        title="previous chapter">C API</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../php-bsdconv/doc/api.html"
+                        title="next chapter">PHP binding API</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/go-bsdconv/doc/api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../go-pkgindex.html" title="Golang Package Index"
+             >packages</a> |</li>
+        <li class="right" >
+          <a href="../../php-bsdconv/doc/api.html" title="PHP binding API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../../api.html" title="C API"
+             >previous</a> |</li>
+        <li><a href="../../index.html">bsdconv 11.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Buganini Q.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

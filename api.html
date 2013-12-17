@@ -1,0 +1,261 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>C API &mdash; bsdconv 11.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '11.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="bsdconv 11.1 documentation" href="index.html" />
+    <link rel="next" title="Go binding API" href="go-bsdconv/doc/api.html" />
+    <link rel="prev" title="Welcome to bsdconv’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="go-pkgindex.html" title="Golang Package Index"
+             >packages</a> |</li>
+        <li class="right" >
+          <a href="go-bsdconv/doc/api.html" title="Go binding API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to bsdconv’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">bsdconv 11.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="c-api">
+<h1>C API<a class="headerlink" href="#c-api" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="bsdconv_create">
+struct bsdconv_instance * <tt class="descname">bsdconv_create</tt><big>(</big>const char<em>&nbsp;*conversion</em><big>)</big><a class="headerlink" href="#bsdconv_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create bsdconv instance with given conversion</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_get_phase_index">
+int <tt class="descname">bsdconv_get_phase_index</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em>, int<em>&nbsp;phase</em><big>)</big><a class="headerlink" href="#bsdconv_get_phase_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_get_codec_index">
+int <tt class="descname">bsdconv_get_codec_index</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em>, int<em>&nbsp;phase</em>, int<em>&nbsp;codec</em><big>)</big><a class="headerlink" href="#bsdconv_get_codec_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_insert_phase">
+char * <tt class="descname">bsdconv_insert_phase</tt><big>(</big>const char<em>&nbsp;*conversion</em>, const char<em>&nbsp;*conversion_phase</em>, int<em>&nbsp;phase_type</em>, int<em>&nbsp;phase</em><big>)</big><a class="headerlink" href="#bsdconv_insert_phase" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_insert_codec">
+char * <tt class="descname">bsdconv_insert_codec</tt><big>(</big>const char<em>&nbsp;*conversion</em>, const char<em>&nbsp;*conversion_codec</em>, int<em>&nbsp;phase</em>, int<em>&nbsp;codec</em><big>)</big><a class="headerlink" href="#bsdconv_insert_codec" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_replace_phase">
+char * <tt class="descname">bsdconv_replace_phase</tt><big>(</big>const char<em>&nbsp;*conversion</em>, const char<em>&nbsp;*conversion_phase</em>, int<em>&nbsp;phase_type</em>, int<em>&nbsp;phase</em><big>)</big><a class="headerlink" href="#bsdconv_replace_phase" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_replace_codec">
+char * <tt class="descname">bsdconv_replace_codec</tt><big>(</big>const char<em>&nbsp;*conversion</em>, const char<em>&nbsp;*conversion_codec</em>, int<em>&nbsp;phase</em>, int<em>&nbsp;codec</em><big>)</big><a class="headerlink" href="#bsdconv_replace_codec" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_init">
+void <tt class="descname">bsdconv_init</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em><big>)</big><a class="headerlink" href="#bsdconv_init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_ctl">
+void <tt class="descname">bsdconv_ctl</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em>, int<em>&nbsp;ctl</em>, void<em>&nbsp;*pointer</em>, int<em>&nbsp;value</em><big>)</big><a class="headerlink" href="#bsdconv_ctl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_destroy">
+void <tt class="descname">bsdconv_destroy</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em><big>)</big><a class="headerlink" href="#bsdconv_destroy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv">
+void <tt class="descname">bsdconv</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em><big>)</big><a class="headerlink" href="#bsdconv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_error">
+char * <tt class="descname">bsdconv_error</tt><big>(</big>void<big>)</big><a class="headerlink" href="#bsdconv_error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_counter">
+bsdconv_counter_t * <tt class="descname">bsdconv_counter</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em>, const char<em>&nbsp;*name</em><big>)</big><a class="headerlink" href="#bsdconv_counter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get counter</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_counter_reset">
+void <tt class="descname">bsdconv_counter_reset</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em>, const char<em>&nbsp;*name</em><big>)</big><a class="headerlink" href="#bsdconv_counter_reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_hash_set">
+void <tt class="descname">bsdconv_hash_set</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em>, const char<em>&nbsp;*key</em>, void<em>&nbsp;*pointer</em><big>)</big><a class="headerlink" href="#bsdconv_hash_set" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_hash_get">
+void * <tt class="descname">bsdconv_hash_get</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em>, const char<em>&nbsp;*key</em><big>)</big><a class="headerlink" href="#bsdconv_hash_get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_hash_has">
+int <tt class="descname">bsdconv_hash_has</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em>, const char<em>&nbsp;*key</em><big>)</big><a class="headerlink" href="#bsdconv_hash_has" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_hash_del">
+void <tt class="descname">bsdconv_hash_del</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em>, const char<em>&nbsp;*key</em><big>)</big><a class="headerlink" href="#bsdconv_hash_del" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_solve_alias">
+char * <tt class="descname">bsdconv_solve_alias</tt><big>(</big>int<em>&nbsp;phase_type</em>, char<em>&nbsp;*name</em><big>)</big><a class="headerlink" href="#bsdconv_solve_alias" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_codec_check">
+int <tt class="descname">bsdconv_codec_check</tt><big>(</big>int<em>&nbsp;phase_type</em>, const char<em>&nbsp;*codec</em><big>)</big><a class="headerlink" href="#bsdconv_codec_check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_codecs_list">
+char ** <tt class="descname">bsdconv_codecs_list</tt><big>(</big>int<em>&nbsp;phase_type</em><big>)</big><a class="headerlink" href="#bsdconv_codecs_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_pack">
+char *<tt class="descname">bsdconv_pack</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em><big>)</big><a class="headerlink" href="#bsdconv_pack" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_malloc">
+void *<tt class="descname">bsdconv_malloc</tt><big>(</big>size_t<em>&nbsp;size</em><big>)</big><a class="headerlink" href="#bsdconv_malloc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_free">
+void <tt class="descname">bsdconv_free</tt><big>(</big>void<em>&nbsp;*ptr</em><big>)</big><a class="headerlink" href="#bsdconv_free" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bsdconv_mkstemp">
+int <tt class="descname">bsdconv_mkstemp</tt><big>(</big>char<em>&nbsp;*template</em><big>)</big><a class="headerlink" href="#bsdconv_mkstemp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="str2datum">
+int <tt class="descname">str2datum</tt><big>(</big>const char<em>&nbsp;*string</em>, struct data_rt<em>&nbsp;*</em><big>)</big><a class="headerlink" href="#str2datum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="str2data">
+struct data_rt * <tt class="descname">str2data</tt><big>(</big>const char<em>&nbsp;*string</em>, int<em>&nbsp;*</em>, struct bsdconv_instance<em>&nbsp;*converter</em><big>)</big><a class="headerlink" href="#str2data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="getCodecDir">
+char * <tt class="descname">getCodecDir</tt><big>(</big><big>)</big><a class="headerlink" href="#getCodecDir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get codec search path</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to bsdconv&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="go-bsdconv/doc/api.html"
+                        title="next chapter">Go binding API</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="go-pkgindex.html" title="Golang Package Index"
+             >packages</a> |</li>
+        <li class="right" >
+          <a href="go-bsdconv/doc/api.html" title="Go binding API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to bsdconv’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">bsdconv 11.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Buganini Q.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
