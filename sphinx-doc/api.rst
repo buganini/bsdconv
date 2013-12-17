@@ -1,5 +1,5 @@
-API
-===
+C API
+=====
 
 .. c:function:: struct bsdconv_instance * bsdconv_create(const char *conversion)
 

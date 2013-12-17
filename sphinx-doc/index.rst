@@ -7,7 +7,10 @@ Contents:
    :maxdepth: 2
 
    api
+   go-bsdconv/doc/api
+   php-bsdconv/doc/api
    python-bsdconv/doc/api
+   ruby-bsdconv/doc/api
 
 
 Indices and tables
