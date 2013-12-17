@@ -280,6 +280,7 @@ install_ebcdic:
 doc:
 	xelatex -synctex=1 -interaction=nonstopmode bsdconv.tex //1-pass, for TOC
 	xelatex -synctex=1 -interaction=nonstopmode bsdconv.tex //2-pass
+	$(MAKE) -C sphinx-doc html
 
 plist:
 	@echo bin/bsdconv
