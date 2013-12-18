@@ -36,6 +36,12 @@
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../rb-modindex.html" title="Ruby Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="../../go-pkgindex.html" title="Golang Package Index"
              >packages</a> |</li>
         <li class="right" >
@@ -50,21 +56,117 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="ruby-binding-api">
-<h1>Ruby binding API<a class="headerlink" href="#ruby-binding-api" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-bsdconv">
+<span id="ruby-binding-api"></span><h1>Ruby binding API<a class="headerlink" href="#module-bsdconv" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="Bsdconv">
-<em class="property">class </em><tt class="descname">Bsdconv</tt><a class="headerlink" href="#Bsdconv" title="Permalink to this definition">¶</a></dt>
+<dt id="bsdconv::Bsdconv">
+<em class="property">class </em><tt class="descclassname">bsdconv::</tt><tt class="descname">Bsdconv</tt><a class="headerlink" href="#bsdconv::Bsdconv" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="classmethod">
-<dt id="Bsdconv.init">
-<em class="property">classmethod Bsdconv.</em><tt class="descname">init</tt><big>(</big><big>)</big><a class="headerlink" href="#Bsdconv.init" title="Permalink to this definition">¶</a></dt>
-<dd><p>Init</p>
+<dt id="bsdconv::Bsdconv.new">
+<em class="property">classmethod Bsdconv.</em><tt class="descname">new</tt><big>(</big><em>conversion</em><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create converter instance with given conversion string</p>
 </dd></dl>
 
 <dl class="classmethod">
-<dt id="Bsdconv.conv">
-<em class="property">classmethod Bsdconv.</em><tt class="descname">conv</tt><big>(</big><big>)</big><a class="headerlink" href="#Bsdconv.conv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform an atomic conversion</p>
+<dt id="bsdconv::Bsdconv.insert_phase">
+<em class="property">classmethod Bsdconv.</em><tt class="descname">insert_phase</tt><big>(</big><em>conversion</em>, <em>codec</em>, <em>phase_type</em>, <em>phasen</em><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv.insert_phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manipulate conversion string</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="bsdconv::Bsdconv.insert_codec">
+<em class="property">classmethod Bsdconv.</em><tt class="descname">insert_codec</tt><big>(</big><em>conversion</em>, <em>codec</em>, <em>phasen</em>, <em>codecn</em><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv.insert_codec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manipulate conversion string</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="bsdconv::Bsdconv.replace_phase">
+<em class="property">classmethod Bsdconv.</em><tt class="descname">replace_phase</tt><big>(</big><em>conversion</em>, <em>codec</em>, <em>phase_type</em>, <em>phasen</em><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv.replace_phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manipulate conversion string</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="bsdconv::Bsdconv.replace_codec">
+<em class="property">classmethod Bsdconv.</em><tt class="descname">replace_codec</tt><big>(</big><em>conversion</em>, <em>codec</em>, <em>phasen</em>, <em>codecn</em><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv.replace_codec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manipulate conversion string</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="bsdconv::Bsdconv.error">
+<em class="property">classmethod Bsdconv.</em><tt class="descname">error</tt><big>(</big><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv.error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get error message</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="bsdconv::Bsdconv.codecs_list">
+<em class="property">classmethod Bsdconv.</em><tt class="descname">codecs_list</tt><big>(</big><em>phase_type</em><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv.codecs_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get codecs list</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="bsdconv::Bsdconv.codec_check">
+<em class="property">classmethod Bsdconv.</em><tt class="descname">codec_check</tt><big>(</big><em>phase_type</em>, <em>codec</em><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv.codec_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check codec availability with given phase type and codec name</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="bsdconv::Bsdconv.mktemp">
+<em class="property">classmethod Bsdconv.</em><tt class="descname">mktemp</tt><big>(</big><em>template</em><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv.mktemp" title="Permalink to this definition">¶</a></dt>
+<dd><p>mkstemp()</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="bsdconv::Bsdconv.fopen">
+<em class="property">classmethod Bsdconv.</em><tt class="descname">fopen</tt><big>(</big><em>path</em>, <em>mode</em><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv.fopen" title="Permalink to this definition">¶</a></dt>
+<dd><p>fopen()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv::Bsdconv#conv">
+<tt class="descname">conv</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv#conv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform conversion</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv::Bsdconv#init">
+<tt class="descname">init</tt><big>(</big><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv#init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize/Reset bsdconv converter</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv::Bsdconv#ctl">
+<tt class="descname">ctl</tt><big>(</big><em>arg_ptr_obj</em>, <em>arg_int</em><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv#ctl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manipulate the underlying codec parameters</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv::Bsdconv#conv_chunk">
+<tt class="descname">conv_chunk</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv#conv_chunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform conversion without initializing and flushing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv::Bsdconv#conv_chunk_last">
+<tt class="descname">conv_chunk_last</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv#conv_chunk_last" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform conversion without initializing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv::Bsdconv#conv_file">
+<tt class="descname">conv_file</tt><big>(</big><em>from_file</em>, <em>to_file</em><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv#conv_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform conversion with given filename</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv::Bsdconv#counter">
+<tt class="descname">counter</tt><big>(</big><span class="optional">[</span><em>name</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv#counter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return conversion info</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv::Bsdconv#counter_reset">
+<tt class="descname">counter_reset</tt><big>(</big><span class="optional">[</span><em>name</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#bsdconv::Bsdconv#counter_reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset counter, if no name supplied, all counters will be reset</p>
 </dd></dl>
 
 </dd></dl>
@@ -108,6 +210,12 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../rb-modindex.html" title="Ruby Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="../../go-pkgindex.html" title="Golang Package Index"
              >packages</a> |</li>

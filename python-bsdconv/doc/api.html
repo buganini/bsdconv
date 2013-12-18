@@ -37,6 +37,12 @@
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../rb-modindex.html" title="Ruby Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="../../go-pkgindex.html" title="Golang Package Index"
              >packages</a> |</li>
         <li class="right" >
@@ -54,33 +60,138 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="python-binding-api">
-<h1>Python binding API<a class="headerlink" href="#python-binding-api" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-bsdconv">
+<span id="python-binding-api"></span><h1>Python binding API<a class="headerlink" href="#module-bsdconv" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="Bsdconv">
-<em class="property">class </em><tt class="descname">Bsdconv</tt><a class="headerlink" href="#Bsdconv" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="Bsdconv.create">
-<tt class="descclassname">Bsdconv.</tt><tt class="descname">create</tt><big>(</big><big>)</big><a class="headerlink" href="#Bsdconv.create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create bsdconv instance with given conversion</p>
+<dt id="bsdconv.Bsdconv">
+<em class="property">class </em><tt class="descclassname">bsdconv.</tt><tt class="descname">Bsdconv</tt><a class="headerlink" href="#bsdconv.Bsdconv" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="bsdconv.Bsdconv.init">
+<tt class="descname">init</tt><big>(</big><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize/Reset bsdconv converter</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="Bsdconv.init">
-<tt class="descclassname">Bsdconv.</tt><tt class="descname">init</tt><big>(</big><big>)</big><a class="headerlink" href="#Bsdconv.init" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="bsdconv.Bsdconv.ctl">
+<tt class="descname">ctl</tt><big>(</big><em>arg_ptr_obj</em>, <em>arg_int</em><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.ctl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manipulate the underlying codec parameters</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="Bsdconv.conv">
-<tt class="descclassname">Bsdconv.</tt><tt class="descname">conv</tt><big>(</big><big>)</big><a class="headerlink" href="#Bsdconv.conv" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="bsdconv.Bsdconv.conv">
+<tt class="descname">conv</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.conv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform conversion</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="Bsdconv.destroy">
-<tt class="descclassname">Bsdconv.</tt><tt class="descname">destroy</tt><big>(</big><big>)</big><a class="headerlink" href="#Bsdconv.destroy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="bsdconv.Bsdconv.conv_chunk">
+<tt class="descname">conv_chunk</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.conv_chunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform conversion without initializing and flushing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv.Bsdconv.conv_chunk_last">
+<tt class="descname">conv_chunk_last</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.conv_chunk_last" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform conversion without initializing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv.Bsdconv.conv_file">
+<tt class="descname">conv_file</tt><big>(</big><em>from_file</em>, <em>to_file</em><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.conv_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform conversion with given filename</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv.Bsdconv.testconv">
+<tt class="descname">testconv</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.testconv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform test conversion</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv.Bsdconv.testconv_chunk">
+<tt class="descname">testconv_chunk</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.testconv_chunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform test conversion without initializing and flushing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv.Bsdconv.testconv_chunk_last">
+<tt class="descname">testconv_chunk_last</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.testconv_chunk_last" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform test conversion without initializing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv.Bsdconv.testconv_file">
+<tt class="descname">testconv_file</tt><big>(</big><em>from_file</em><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.testconv_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform test conversion with given filename</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv.Bsdconv.counter">
+<tt class="descname">counter</tt><big>(</big><span class="optional">[</span><em>name</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.counter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return counter or counters if not specified</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bsdconv.Bsdconv.counter_reset">
+<tt class="descname">counter_reset</tt><big>(</big><span class="optional">[</span><em>name</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.counter_reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset counter, if no name supplied, all counters will be reset</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="bsdconv.Bsdconv.insert_phase">
+<em class="property">static </em><tt class="descname">insert_phase</tt><big>(</big><em>conversion</em>, <em>codecs</em>, <em>phase_type</em>, <em>phasen</em><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.insert_phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert conversion phase into bsdconv conversion string</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="bsdconv.Bsdconv.insert_codec">
+<em class="property">static </em><tt class="descname">insert_codec</tt><big>(</big><em>conversion</em>, <em>codec</em>, <em>phasen</em>, <em>codecn</em><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.insert_codec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert conversion codec into bsdconv conversion string</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="bsdconv.Bsdconv.replace_phase">
+<em class="property">static </em><tt class="descname">replace_phase</tt><big>(</big><em>conversion</em>, <em>codecs</em>, <em>phase_type</em>, <em>phasen</em><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.replace_phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace conversion phase in the bsdconv conversion string</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="bsdconv.Bsdconv.replace_codec">
+<em class="property">static </em><tt class="descname">replace_codec</tt><big>(</big><em>conversion</em>, <em>codec</em>, <em>phasen</em>, <em>codecn</em><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.replace_codec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace conversion codec in the bsdconv conversion string</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="bsdconv.Bsdconv.error">
+<em class="property">static </em><tt class="descname">error</tt><big>(</big><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return error message</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="bsdconv.Bsdconv.mktemp">
+<em class="property">static </em><tt class="descname">mktemp</tt><big>(</big><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.mktemp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make temporary file</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="bsdconv.Bsdconv.fopen">
+<em class="property">static </em><tt class="descname">fopen</tt><big>(</big><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.fopen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open file</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="bsdconv.Bsdconv.codecs_list">
+<em class="property">static </em><tt class="descname">codecs_list</tt><big>(</big><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.codecs_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>list codecs</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="bsdconv.Bsdconv.codec_check">
+<em class="property">static </em><tt class="descname">codec_check</tt><big>(</big><em>type</em>, <em>codec</em><big>)</big><a class="headerlink" href="#bsdconv.Bsdconv.codec_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>check if a codec is available</p>
+</dd></dl>
+
+</dd></dl>
 
 </div>
 
@@ -124,6 +235,12 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../rb-modindex.html" title="Ruby Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="../../go-pkgindex.html" title="Golang Package Index"
              >packages</a> |</li>

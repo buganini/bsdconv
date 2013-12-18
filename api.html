@@ -37,6 +37,12 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="rb-modindex.html" title="Ruby Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="go-pkgindex.html" title="Golang Package Index"
              >packages</a> |</li>
         <li class="right" >
@@ -59,7 +65,7 @@
 <dl class="function">
 <dt id="bsdconv_create">
 struct bsdconv_instance * <tt class="descname">bsdconv_create</tt><big>(</big>const char<em>&nbsp;*conversion</em><big>)</big><a class="headerlink" href="#bsdconv_create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create bsdconv instance with given conversion</p>
+<dd><p>Create converter instance with given conversion</p>
 </dd></dl>
 
 <dl class="function">
@@ -75,58 +81,68 @@ int <tt class="descname">bsdconv_get_codec_index</tt><big>(</big>struct bsdconv_
 <dl class="function">
 <dt id="bsdconv_insert_phase">
 char * <tt class="descname">bsdconv_insert_phase</tt><big>(</big>const char<em>&nbsp;*conversion</em>, const char<em>&nbsp;*conversion_phase</em>, int<em>&nbsp;phase_type</em>, int<em>&nbsp;phase</em><big>)</big><a class="headerlink" href="#bsdconv_insert_phase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Insert conversion phase into bsdconv conversion string</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv_insert_codec">
 char * <tt class="descname">bsdconv_insert_codec</tt><big>(</big>const char<em>&nbsp;*conversion</em>, const char<em>&nbsp;*conversion_codec</em>, int<em>&nbsp;phase</em>, int<em>&nbsp;codec</em><big>)</big><a class="headerlink" href="#bsdconv_insert_codec" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Insert conversion codec into bsdconv conversion string</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv_replace_phase">
 char * <tt class="descname">bsdconv_replace_phase</tt><big>(</big>const char<em>&nbsp;*conversion</em>, const char<em>&nbsp;*conversion_phase</em>, int<em>&nbsp;phase_type</em>, int<em>&nbsp;phase</em><big>)</big><a class="headerlink" href="#bsdconv_replace_phase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Replace conversion phase in the bsdconv conversion string</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv_replace_codec">
 char * <tt class="descname">bsdconv_replace_codec</tt><big>(</big>const char<em>&nbsp;*conversion</em>, const char<em>&nbsp;*conversion_codec</em>, int<em>&nbsp;phase</em>, int<em>&nbsp;codec</em><big>)</big><a class="headerlink" href="#bsdconv_replace_codec" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Replace conversion codec in the bsdconv conversion string</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv_init">
 void <tt class="descname">bsdconv_init</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em><big>)</big><a class="headerlink" href="#bsdconv_init" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Initialize/Reset bsdconv converter</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv_ctl">
 void <tt class="descname">bsdconv_ctl</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em>, int<em>&nbsp;ctl</em>, void<em>&nbsp;*pointer</em>, int<em>&nbsp;value</em><big>)</big><a class="headerlink" href="#bsdconv_ctl" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Manipulate the underlying codec parameters</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv_destroy">
 void <tt class="descname">bsdconv_destroy</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em><big>)</big><a class="headerlink" href="#bsdconv_destroy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Destroy converter instance</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv">
 void <tt class="descname">bsdconv</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em><big>)</big><a class="headerlink" href="#bsdconv" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Perform conversion</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv_error">
 char * <tt class="descname">bsdconv_error</tt><big>(</big>void<big>)</big><a class="headerlink" href="#bsdconv_error" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get error message</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv_counter">
 bsdconv_counter_t * <tt class="descname">bsdconv_counter</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em>, const char<em>&nbsp;*name</em><big>)</big><a class="headerlink" href="#bsdconv_counter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get counter</p>
+<dd><p>Get pointer to counter</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="bsdconv_counter_reset">
 void <tt class="descname">bsdconv_counter_reset</tt><big>(</big>struct bsdconv_instance<em>&nbsp;*converter</em>, const char<em>&nbsp;*name</em><big>)</big><a class="headerlink" href="#bsdconv_counter_reset" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Reset counter, if name is NULL, all counters will be reset</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv_hash_set">
@@ -241,6 +257,12 @@ char * <tt class="descname">getCodecDir</tt><big>(</big><big>)</big><a class="he
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="rb-modindex.html" title="Ruby Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="go-pkgindex.html" title="Golang Package Index"
              >packages</a> |</li>

@@ -37,6 +37,12 @@
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../rb-modindex.html" title="Ruby Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="../../go-pkgindex.html" title="Golang Package Index"
              >packages</a> |</li>
         <li class="right" >
@@ -68,94 +74,106 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="(bsdconv.Bsdconv) String">
-<tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">String</tt><big>(</big><big>)</big> &rarr; (string)<a class="headerlink" href="#(bsdconv.Bsdconv) String" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
 <dt id="(bsdconv.Bsdconv) Init">
 <tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Init</tt><big>(</big><big>)</big><a class="headerlink" href="#(bsdconv.Bsdconv) Init" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Initialize the converter instance</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="(bsdconv.Bsdconv) Conv_chunk">
 <tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Conv_chunk</tt><big>(</big><em>b&nbsp;</em>[]byte<big>)</big> &rarr; ([]byte)<a class="headerlink" href="#(bsdconv.Bsdconv) Conv_chunk" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Perform chunked conversion</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="(bsdconv.Bsdconv) Conv_chunk_last">
 <tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Conv_chunk_last</tt><big>(</big><em>b&nbsp;</em>[]byte<big>)</big> &rarr; ([]byte)<a class="headerlink" href="#(bsdconv.Bsdconv) Conv_chunk_last" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Perform chunked conversion with flush</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="(bsdconv.Bsdconv) Conv">
 <tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Conv</tt><big>(</big><em>b&nbsp;</em>[]byte<big>)</big> &rarr; ([]byte)<a class="headerlink" href="#(bsdconv.Bsdconv) Conv" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Perform conversion with initialization and flush</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="(bsdconv.Bsdconv) Conv_file">
 <tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Conv_file</tt><big>(</big><em>ifile&nbsp;</em>string, <em>ofile&nbsp;</em>string<big>)</big><a class="headerlink" href="#(bsdconv.Bsdconv) Conv_file" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Perform conversion from ifile to ofile</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="(bsdconv.Bsdconv) Destroy">
 <tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Destroy</tt><big>(</big><big>)</big><a class="headerlink" href="#(bsdconv.Bsdconv) Destroy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Destroy the converter instance</p>
+</dd></dl>
 
 <dl class="function">
 <dt>
 <tt class="descname">func</tt></dt>
-<dd></dd></dl>
+<dd><p>Get counter or counters if ct is nil</p>
+</dd></dl>
 
 <dl class="function">
 <dt>
 <tt class="descname">func</tt></dt>
-<dd></dd></dl>
+<dd><p>Manipulate the underlying codec parameters</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv.Insert_phase">
 <tt class="descclassname">func&nbsp;</tt><tt class="descname">Insert_phase</tt><big>(</big><em>conversion&nbsp;</em>string, <em>codec&nbsp;</em>string, <em>phase_type&nbsp;</em>int, <em>phasen&nbsp;</em>int<big>)</big> &rarr; (string)<a class="headerlink" href="#bsdconv.Insert_phase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Manipulate conversion string</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv.Insert_codec">
 <tt class="descclassname">func&nbsp;</tt><tt class="descname">Insert_codec</tt><big>(</big><em>conversion&nbsp;</em>string, <em>codec&nbsp;</em>string, <em>phasen&nbsp;</em>int, <em>codecn&nbsp;</em>int<big>)</big> &rarr; (string)<a class="headerlink" href="#bsdconv.Insert_codec" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Manipulate conversion string</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv.Replace_phase">
 <tt class="descclassname">func&nbsp;</tt><tt class="descname">Replace_phase</tt><big>(</big><em>conversion&nbsp;</em>string, <em>codec&nbsp;</em>string, <em>phase_type&nbsp;</em>int, <em>phasen&nbsp;</em>int<big>)</big> &rarr; (string)<a class="headerlink" href="#bsdconv.Replace_phase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Manipulate conversion string</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv.Replace_codec">
 <tt class="descclassname">func&nbsp;</tt><tt class="descname">Replace_codec</tt><big>(</big><em>conversion&nbsp;</em>string, <em>codec&nbsp;</em>string, <em>phasen&nbsp;</em>int, <em>codecn&nbsp;</em>int<big>)</big> &rarr; (string)<a class="headerlink" href="#bsdconv.Replace_codec" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Manipulate conversion string</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv.Codec_check">
 <tt class="descclassname">func&nbsp;</tt><tt class="descname">Codec_check</tt><big>(</big><em>t&nbsp;</em>int, <em>c&nbsp;</em>string<big>)</big> &rarr; (bool)<a class="headerlink" href="#bsdconv.Codec_check" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Check codec availability with given phase type and codec name</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="bsdconv.Codecs_list">
 <tt class="descclassname">func&nbsp;</tt><tt class="descname">Codecs_list</tt><big>(</big><em>t&nbsp;</em>int<big>)</big> &rarr; ([]string)<a class="headerlink" href="#bsdconv.Codecs_list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get codecs list of given phase type</p>
+</dd></dl>
 
 <dl class="function">
 <dt>
 <tt class="descname">func</tt></dt>
-<dd></dd></dl>
+<dd><p>mkstemp()</p>
+</dd></dl>
 
 <dl class="function">
 <dt>
 <tt class="descname">func</tt></dt>
-<dd></dd></dl>
+<dd><p>fopen()</p>
+</dd></dl>
 
 <dl class="function">
 <dt>
 <tt class="descname">func</tt></dt>
-<dd></dd></dl>
+<dd><p>fclose()</p>
+</dd></dl>
 
 </div>
 
@@ -199,6 +217,12 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../rb-modindex.html" title="Ruby Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="../../go-pkgindex.html" title="Golang Package Index"
              >packages</a> |</li>
