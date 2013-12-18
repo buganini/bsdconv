@@ -3,24 +3,54 @@ C API
 
 .. c:function:: struct bsdconv_instance * bsdconv_create(const char *conversion)
 
-	Create bsdconv instance with given conversion
+	Create converter instance with given conversion
 
 .. c:function:: int bsdconv_get_phase_index(struct bsdconv_instance *converter, int phase)
 .. c:function:: int bsdconv_get_codec_index(struct bsdconv_instance *converter, int phase, int codec)
 .. c:function:: char * bsdconv_insert_phase(const char *conversion, const char *conversion_phase, int phase_type, int phase)
+
+	Insert conversion phase into bsdconv conversion string
+
 .. c:function:: char * bsdconv_insert_codec(const char *conversion, const char *conversion_codec, int phase, int codec)
+
+	Insert conversion codec into bsdconv conversion string
+
 .. c:function:: char * bsdconv_replace_phase(const char *conversion, const char *conversion_phase, int phase_type, int phase)
+
+	Replace conversion phase in the bsdconv conversion string
+
 .. c:function:: char * bsdconv_replace_codec(const char *conversion, const char *conversion_codec, int phase, int codec)
+
+	Replace conversion codec in the bsdconv conversion string
+
 .. c:function:: void bsdconv_init(struct bsdconv_instance *converter)
+
+	Initialize/Reset bsdconv converter
+
 .. c:function:: void bsdconv_ctl(struct bsdconv_instance *converter, int ctl, void *pointer, int value)
+
+	Manipulate the underlying codec parameters
+
 .. c:function:: void bsdconv_destroy(struct bsdconv_instance *converter)
+
+	Destroy converter instance
+
 .. c:function:: void bsdconv(struct bsdconv_instance *converter)
+
+	Perform conversion
+
 .. c:function:: char * bsdconv_error(void)
+
+	Get error message
+
 .. c:function:: bsdconv_counter_t * bsdconv_counter(struct bsdconv_instance *converter, const char *name)
 
-	Get counter
+	Get pointer to counter
 
 .. c:function:: void bsdconv_counter_reset(struct bsdconv_instance *converter, const char *name)
+
+	Reset counter, if name is NULL, all counters will be reset
+
 .. c:function:: void bsdconv_hash_set(struct bsdconv_instance *converter, const char *key, void *pointer)
 .. c:function:: void * bsdconv_hash_get(struct bsdconv_instance *converter, const char *key)
 .. c:function:: int bsdconv_hash_has(struct bsdconv_instance *converter, const char *key)
