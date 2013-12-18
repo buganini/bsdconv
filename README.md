@@ -1,6 +1,9 @@
 #Documentation & Support
 http://www.slideshare.net/buganini/bsdconv
 
+
+API Reference: http://buganini.github.io/bsdconv/
+
 Use bsdconv-man to show manual page for each codecs
 
 IRC: irc://irc.freenode.net#bsdconv
