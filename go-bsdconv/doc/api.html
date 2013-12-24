@@ -68,8 +68,8 @@
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="bsdconv.func">
-<tt class="descname">func</tt><a class="headerlink" href="#bsdconv.func" title="Permalink to this definition">¶</a></dt>
+<dt id="bsdconv.Create">
+<tt class="descclassname">func&nbsp;</tt><tt class="descname">Create</tt><big>(</big><em>s&nbsp;</em>string<big>)</big> &rarr; (ins *Bsdconv)<a class="headerlink" href="#bsdconv.Create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create converter instance with given conversion string</p>
 </dd></dl>
 
@@ -110,14 +110,14 @@
 </dd></dl>
 
 <dl class="function">
-<dt>
-<tt class="descname">func</tt></dt>
+<dt id="(bsdconv.Bsdconv) Counter">
+<tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Counter</tt><big>(</big><em>ct&nbsp;</em>interface{}<big>)</big> &rarr; (interface{})<a class="headerlink" href="#(bsdconv.Bsdconv) Counter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get counter or counters if ct is nil</p>
 </dd></dl>
 
 <dl class="function">
-<dt>
-<tt class="descname">func</tt></dt>
+<dt id="(bsdconv.Bsdconv) Ctl">
+<tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Ctl</tt><big>(</big><em>ctl&nbsp;</em>int, <em>p&nbsp;</em>unsafe.Pointer, <em>v&nbsp;</em>int<big>)</big><a class="headerlink" href="#(bsdconv.Bsdconv) Ctl" title="Permalink to this definition">¶</a></dt>
 <dd><p>Manipulate the underlying codec parameters</p>
 </dd></dl>
 
@@ -158,20 +158,20 @@
 </dd></dl>
 
 <dl class="function">
-<dt>
-<tt class="descname">func</tt></dt>
+<dt id="bsdconv.Mktemp">
+<tt class="descclassname">func&nbsp;</tt><tt class="descname">Mktemp</tt><big>(</big><em>template&nbsp;</em>string<big>)</big> &rarr; (*C.FILE, string)<a class="headerlink" href="#bsdconv.Mktemp" title="Permalink to this definition">¶</a></dt>
 <dd><p>mkstemp()</p>
 </dd></dl>
 
 <dl class="function">
-<dt>
-<tt class="descname">func</tt></dt>
+<dt id="bsdconv.Fopen">
+<tt class="descclassname">func&nbsp;</tt><tt class="descname">Fopen</tt><big>(</big><em>p&nbsp;</em>string, <em>m&nbsp;</em>string<big>)</big> &rarr; (*C.FILE)<a class="headerlink" href="#bsdconv.Fopen" title="Permalink to this definition">¶</a></dt>
 <dd><p>fopen()</p>
 </dd></dl>
 
 <dl class="function">
-<dt>
-<tt class="descname">func</tt></dt>
+<dt id="bsdconv.Fclose">
+<tt class="descclassname">func&nbsp;</tt><tt class="descname">Fclose</tt><big>(</big><em>fp&nbsp;</em>*C.FILE<big>)</big><a class="headerlink" href="#bsdconv.Fclose" title="Permalink to this definition">¶</a></dt>
 <dd><p>fclose()</p>
 </dd></dl>
 

@@ -5,7 +5,7 @@ Go binding API
 
 .. go:type:: Bsdconv
 
-.. go:function:: func Create(s string)(*Bsdconv)
+.. go:function:: func Create(s string)(ins *Bsdconv)
 
 	Create converter instance with given conversion string
 
