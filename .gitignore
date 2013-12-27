@@ -1,3 +1,9 @@
 build
 tmp
 testsuite/api
+bsdconv.aux
+bsdconv.log
+bsdconv.out
+bsdconv.pdf
+bsdconv.synctex.gz
+bsdconv.toc
