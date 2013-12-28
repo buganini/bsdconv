@@ -3,19 +3,19 @@ PHP binding API
 
 .. php:function:: bsdconv_insert_phase($conversion, $codec, $phase_type, $phasen)
 
-		Manipulate conversion string
+		Insert conversion phase into bsdconv conversion string
 
 .. php:function:: bsdconv_insert_codec($conversion, $codec, $phasen, $codecn)
 
-		Manipulate conversion string
+		Insert conversion codec into bsdconv conversion string
 
 .. php:function:: bsdconv_replace_phase($conversion, $codec, $phase_type, $phasen)
 
-		Manipulate conversion string
+		Replace conversion phase in the bsdconv conversion string
 
 .. php:function:: bsdconv_replace_codec($conversion, $codec, $phasen, $codecn)
 
-		Manipulate conversion string
+		Replace conversion codec in the bsdconv conversion string
 
 .. php:function:: bsdconv_error()
 

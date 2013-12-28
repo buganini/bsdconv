@@ -11,19 +11,19 @@ Ruby binding API
 
 	.. rb:classmethod:: insert_phase(conversion, codec, phase_type, phasen)
 
-		Manipulate conversion string
+		Insert conversion phase into bsdconv conversion string
 
 	.. rb:classmethod:: insert_codec(conversion, codec, phasen, codecn)
 
-		Manipulate conversion string
+		Insert conversion codec into bsdconv conversion string
 
 	.. rb:classmethod:: replace_phase(conversion, codec, phase_type, phasen)
 
-		Manipulate conversion string
+		Replace conversion phase in the bsdconv conversion string
 
 	.. rb:classmethod:: replace_codec(conversion, codec, phasen, codecn)
 
-		Manipulate conversion string
+		Replace conversion codec in the bsdconv conversion string
 
 	.. rb:classmethod:: error()
 

@@ -62,6 +62,48 @@
             
   <div class="section" id="package-bsdconv">
 <span id="go-binding-api"></span><h1>Go binding API<a class="headerlink" href="#package-bsdconv" title="Permalink to this headline">¶</a></h1>
+<dl class="const">
+<dt id="bsdconv.FROM">
+<tt class="descname">FROM</tt><a class="headerlink" href="#bsdconv.FROM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="const">
+<dt id="bsdconv.INTER">
+<tt class="descname">INTER</tt><a class="headerlink" href="#bsdconv.INTER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="const">
+<dt id="bsdconv.TO">
+<tt class="descname">TO</tt><a class="headerlink" href="#bsdconv.TO" title="Permalink to this definition">¶</a></dt>
+<dd><p>Phase type</p>
+</dd></dl>
+
+<dl class="const">
+<dt id="bsdconv.CTL_ATTACH_SCORE">
+<tt class="descname">CTL_ATTACH_SCORE</tt><a class="headerlink" href="#bsdconv.CTL_ATTACH_SCORE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="const">
+<dt id="bsdconv.CTL_SET_WIDE_AMBI">
+<tt class="descname">CTL_SET_WIDE_AMBI</tt><a class="headerlink" href="#bsdconv.CTL_SET_WIDE_AMBI" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="const">
+<dt id="bsdconv.CTL_SET_TRIM_WIDTH">
+<tt class="descname">CTL_SET_TRIM_WIDTH</tt><a class="headerlink" href="#bsdconv.CTL_SET_TRIM_WIDTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="const">
+<dt id="bsdconv.CTL_ATTACH_OUTPUT_FILE">
+<tt class="descname">CTL_ATTACH_OUTPUT_FILE</tt><a class="headerlink" href="#bsdconv.CTL_ATTACH_OUTPUT_FILE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="const">
+<dt id="bsdconv.CTL_AMBIGUOUS_PAD">
+<tt class="descname">CTL_AMBIGUOUS_PAD</tt><a class="headerlink" href="#bsdconv.CTL_AMBIGUOUS_PAD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request for <a class="reference internal" href="#(bsdconv.Bsdconv) Ctl" title="(bsdconv.Bsdconv) Ctl"><tt class="xref go go-func docutils literal"><span class="pre">(bsdconv.Bsdconv)</span> <span class="pre">Ctl</span></tt></a></p>
+</dd></dl>
+
 <dl class="type">
 <dt id="bsdconv.Bsdconv">
 <tt class="descname">Bsdconv</tt><a class="headerlink" href="#bsdconv.Bsdconv" title="Permalink to this definition">¶</a></dt>
@@ -69,7 +111,7 @@
 
 <dl class="function">
 <dt id="bsdconv.Create">
-<tt class="descclassname">func&nbsp;</tt><tt class="descname">Create</tt><big>(</big><em>s&nbsp;</em>string<big>)</big> &rarr; (ins *Bsdconv)<a class="headerlink" href="#bsdconv.Create" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">func&nbsp;</tt><tt class="descname">Create</tt><big>(</big><em>s&nbsp;</em>string<big>)</big> &rarr; (*Bsdconv)<a class="headerlink" href="#bsdconv.Create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create converter instance with given conversion string</p>
 </dd></dl>
 
@@ -117,32 +159,32 @@
 
 <dl class="function">
 <dt id="(bsdconv.Bsdconv) Ctl">
-<tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Ctl</tt><big>(</big><em>ctl&nbsp;</em>int, <em>p&nbsp;</em>unsafe.Pointer, <em>v&nbsp;</em>int<big>)</big><a class="headerlink" href="#(bsdconv.Bsdconv) Ctl" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">func&nbsp;</tt><tt class="descclassname">(</tt><tt class="descclassname">this&nbsp;</tt><tt class="descname">Bsdconv</tt><tt class="descclassname">)&nbsp;</tt><tt class="descname">Ctl</tt><big>(</big><em>request&nbsp;</em>int, <em>ptr&nbsp;</em>unsafe.Pointer, <em>val&nbsp;</em>int<big>)</big><a class="headerlink" href="#(bsdconv.Bsdconv) Ctl" title="Permalink to this definition">¶</a></dt>
 <dd><p>Manipulate the underlying codec parameters</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="bsdconv.Insert_phase">
 <tt class="descclassname">func&nbsp;</tt><tt class="descname">Insert_phase</tt><big>(</big><em>conversion&nbsp;</em>string, <em>codec&nbsp;</em>string, <em>phase_type&nbsp;</em>int, <em>phasen&nbsp;</em>int<big>)</big> &rarr; (string)<a class="headerlink" href="#bsdconv.Insert_phase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Manipulate conversion string</p>
+<dd><p>Insert conversion phase into bsdconv conversion string</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="bsdconv.Insert_codec">
 <tt class="descclassname">func&nbsp;</tt><tt class="descname">Insert_codec</tt><big>(</big><em>conversion&nbsp;</em>string, <em>codec&nbsp;</em>string, <em>phasen&nbsp;</em>int, <em>codecn&nbsp;</em>int<big>)</big> &rarr; (string)<a class="headerlink" href="#bsdconv.Insert_codec" title="Permalink to this definition">¶</a></dt>
-<dd><p>Manipulate conversion string</p>
+<dd><p>Insert conversion codec into bsdconv conversion string</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="bsdconv.Replace_phase">
 <tt class="descclassname">func&nbsp;</tt><tt class="descname">Replace_phase</tt><big>(</big><em>conversion&nbsp;</em>string, <em>codec&nbsp;</em>string, <em>phase_type&nbsp;</em>int, <em>phasen&nbsp;</em>int<big>)</big> &rarr; (string)<a class="headerlink" href="#bsdconv.Replace_phase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Manipulate conversion string</p>
+<dd><p>Replace conversion phase in the bsdconv conversion string</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="bsdconv.Replace_codec">
 <tt class="descclassname">func&nbsp;</tt><tt class="descname">Replace_codec</tt><big>(</big><em>conversion&nbsp;</em>string, <em>codec&nbsp;</em>string, <em>phasen&nbsp;</em>int, <em>codecn&nbsp;</em>int<big>)</big> &rarr; (string)<a class="headerlink" href="#bsdconv.Replace_codec" title="Permalink to this definition">¶</a></dt>
-<dd><p>Manipulate conversion string</p>
+<dd><p>Replace conversion codec in the bsdconv conversion string</p>
 </dd></dl>
 
 <dl class="function">
