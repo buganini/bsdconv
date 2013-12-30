@@ -38,7 +38,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	r->suffix.data=strdup("");
 	r->suffix.len=0;
 	while(arg){
-		if(strcmp(arg->key, "PREFIX")==0){
+		if(strcasecmp(arg->key, "PREFIX")==0){
 			free(r->prefix.data);
 			e=str2datum(arg->ptr, &(r->prefix));
 			if(e){
@@ -46,7 +46,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 				free(r);
 				return e;
 			}
-		}else if(strcmp(arg->key, "SUFFIX")==0){
+		}else if(strcasecmp(arg->key, "SUFFIX")==0){
 			free(r->suffix.data);
 			e=str2datum(arg->ptr, &(r->suffix));
 			if(e){
@@ -54,12 +54,12 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 				free(r);
 				return e;
 			}
-		}else if(strcmp(arg->key, "MODE")==0){
-			if(strcmp(arg->ptr, "HEX")==0 || strcmp(arg->ptr, "16")==0){
+		}else if(strcasecmp(arg->key, "MODE")==0){
+			if(strcasecmp(arg->ptr, "HEX")==0 || strcasecmp(arg->ptr, "16")==0){
 				r->mode=16;
-			}else if(strcmp(arg->ptr, "DEC")==0 || strcmp(arg->ptr, "10")==0){
+			}else if(strcasecmp(arg->ptr, "DEC")==0 || strcasecmp(arg->ptr, "10")==0){
 				r->mode=10;
-			}else if(strcmp(arg->ptr, "OCT")==0 || strcmp(arg->ptr, "8")==0){
+			}else if(strcasecmp(arg->ptr, "OCT")==0 || strcasecmp(arg->ptr, "8")==0){
 				r->mode=8;
 			}else{
 				free(r->prefix.data);
@@ -67,10 +67,10 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 				free(r);
 				return EINVAL;
 			}
-		}else if(strcmp(arg->key, "FOR")==0){
-			if(strcmp(arg->ptr, "UNICODE")==0 || strcmp(arg->ptr, "1")==0 || strcmp(arg->ptr, "01")==0){
+		}else if(strcasecmp(arg->key, "FOR")==0){
+			if(strcasecmp(arg->ptr, "UNICODE")==0 || strcasecmp(arg->ptr, "1")==0 || strcasecmp(arg->ptr, "01")==0){
 				r->filter=1;
-			}else if(strcmp(arg->ptr, "BYTE")==0 || strcmp(arg->ptr, "3")==0 || strcmp(arg->ptr, "03")==0){
+			}else if(strcasecmp(arg->ptr, "BYTE")==0 || strcasecmp(arg->ptr, "3")==0 || strcasecmp(arg->ptr, "03")==0){
 				r->filter=3;
 			}else{
 				free(r->prefix.data);

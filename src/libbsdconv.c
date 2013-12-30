@@ -551,7 +551,6 @@ char * bsdconv_insert_phase(const char *conversion, const char *codec, int phase
 	ins->phase[phasen].codecn=0 /* trimmed length */;
 
 	ins->phase[phasen].codec[0].desc=strdup(codec);
-	strtoupper(ins->phase[phasen].codec[0].desc);
 	ins->phase[phasen].codec[0].argv=NULL;
 
 	ret=bsdconv_pack(ins);
@@ -588,7 +587,6 @@ char * bsdconv_insert_codec(const char *conversion, const char *codec, int ophas
 		ins->phase[phasen].codec[i]=ins->phase[phasen].codec[i-1];
 	}
 	ins->phase[phasen].codec[codecn].desc=strdup(codec);
-	strtoupper(ins->phase[phasen].codec[codecn].desc);
 	ins->phase[phasen].codec[codecn].argv=NULL;
 
 	ret=bsdconv_pack(ins);
@@ -624,7 +622,6 @@ char * bsdconv_replace_phase(const char *conversion, const char *codec, int phas
 	ins->phase[phasen].type=phase_type;
 	ins->phase[phasen].codecn=0 /* trimmed length */;
 	ins->phase[phasen].codec[0].desc=strdup(codec);
-	strtoupper(ins->phase[phasen].codec[0].desc);
 	ins->phase[phasen].codec[0].argv=NULL;
 
 	ret=bsdconv_pack(ins);
@@ -656,7 +653,6 @@ char * bsdconv_replace_codec(const char *conversion, const char *codec, int opha
 
 	free(ins->phase[phasen].codec[codecn].desc);
 	ins->phase[phasen].codec[codecn].desc=strdup(codec);
-	strtoupper(ins->phase[phasen].codec[codecn].desc);
 	ins->phase[phasen].codec[codecn].argv=NULL;
 
 	ret=bsdconv_pack(ins);
@@ -763,7 +759,6 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 
 	conversion=strdup(_conversion);
 	t1=t=conversion;
-	strtoupper(conversion);
 	i=1;
 	for(t=(char *)conversion;*t;t++){
 		if(*t==':' || *t=='|')++i;
@@ -821,6 +816,7 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 				*(ins->phase[i].codec[j].argv)=0;
 				ins->phase[i].codec[j].argv+=1;
 			}
+			strtoupper(ins->phase[i].codec[j].desc);
 			if(ins->phase[i].codec[j].desc[0]==0){
 				for(;j>=0;--j){
 					free(ins->phase[i].codec[j].desc);

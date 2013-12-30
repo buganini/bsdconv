@@ -30,7 +30,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	r->after=NULL;
 	r->before=NULL;
 	while(arg){
-		if(strcmp(arg->key, "AFTER")==0){
+		if(strcasecmp(arg->key, "AFTER")==0){
 			if(r->after)
 				DATA_FREE(r->after);
 			r->after=str2data(arg->ptr, &e, ins);
@@ -40,7 +40,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 				free(r);
 				return e;
 			}
-		}else if(strcmp(arg->key, "BEFORE")==0){
+		}else if(strcasecmp(arg->key, "BEFORE")==0){
 			if(r->before)
 				DATA_FREE(r->before);
 			r->before=str2data(arg->ptr, &e, ins);

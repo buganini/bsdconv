@@ -14,16 +14,16 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	r->filter=0;
 	r->unmark=0;
 	while(arg){
-		if(strcmp(arg->key, "UNMARK")==0){
+		if(strcasecmp(arg->key, "UNMARK")==0){
 			r->unmark=1;
-		}else if(strcmp(arg->key, "FOR")==0){
-			if(strcmp(arg->ptr, "UNICODE")==0 || strcmp(arg->ptr, "1")==0 || strcmp(arg->ptr, "01")==0){
+		}else if(strcasecmp(arg->key, "FOR")==0){
+			if(strcasecmp(arg->ptr, "UNICODE")==0 || strcasecmp(arg->ptr, "1")==0 || strcasecmp(arg->ptr, "01")==0){
 				r->filter=1;
-			}else if(strcmp(arg->ptr, "CNS11643")==0 || strcmp(arg->ptr, "2")==0 || strcmp(arg->ptr, "02")==0){
+			}else if(strcasecmp(arg->ptr, "CNS11643")==0 || strcasecmp(arg->ptr, "2")==0 || strcasecmp(arg->ptr, "02")==0){
 				r->filter=2;
-			}else if(strcmp(arg->ptr, "BYTE")==0 || strcmp(arg->ptr, "3")==0 || strcmp(arg->ptr, "03")==0){
+			}else if(strcasecmp(arg->ptr, "BYTE")==0 || strcasecmp(arg->ptr, "3")==0 || strcasecmp(arg->ptr, "03")==0){
 				r->filter=3;
-			}else if(strcmp(arg->ptr, "ANSI")==0 || strcmp(arg->ptr, "1B")==0){
+			}else if(strcasecmp(arg->ptr, "ANSI")==0 || strcasecmp(arg->ptr, "1B")==0){
 				r->filter=0x1b;
 			}else{
 				free(r);

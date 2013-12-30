@@ -37,7 +37,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	r->score=NULL;
 
 	while(arg){
-		if(strcmp(arg->key, "DEFAULT")==0){
+		if(strcasecmp(arg->key, "DEFAULT")==0){
 			force_default=1;
 		}
 		arg=arg->next;

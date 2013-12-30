@@ -30,7 +30,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	r->data=str2data("013F", &e, ins);
 	r->counter=NULL;
 	while(arg){
-		if(strcmp(arg->key, "ERROR")==0){
+		if(strcasecmp(arg->key, "ERROR")==0){
 			if(arg->ptr)
 				r->counter=bsdconv_counter(ins, arg->ptr);
 			else
