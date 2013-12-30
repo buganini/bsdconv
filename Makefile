@@ -255,9 +255,6 @@ install_main:
 		ln -sf libbsdconv.so.${SHLIBVER} ${DESTDIR}${PREFIX}/lib/libbsdconv.so ; \
 	fi
 
-install_doc:
-	install -m 555 build/bin/bsdconv-man ${DESTDIR}${PREFIX}/bin
-
 install_basic:
 	for item in ${TODO_CODECS_BASIC} ; do \
 		install -m 444 build/share/bsdconv/$${item} ${DESTDIR}${PREFIX}/share/bsdconv/$${item} ; \
