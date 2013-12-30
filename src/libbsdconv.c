@@ -295,6 +295,7 @@ int loadcodec(struct bsdconv_codec_t *cd, int type){
 	char *cwd;
 	char *c;
 	char buf[PATH_MAX+1];
+	char *upper;
 	cwd=getcwd(NULL, 0);
 	if((c=getenv("BSDCONV_PATH"))){
 		chdir(c);
@@ -313,9 +314,12 @@ int loadcodec(struct bsdconv_codec_t *cd, int type){
 			chdir("to");
 			break;
 	}
-	REALPATH(cd->desc, buf);
+	upper=strdup(cd->desc);
+	strtoupper(upper);
+	REALPATH(upper, buf);
 	chdir(cwd);
 	free(cwd);
+	free(upper);
 	if(!_loadcodec(cd, buf))
 		return 0;
 	return 1;
@@ -816,7 +820,6 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 				*(ins->phase[i].codec[j].argv)=0;
 				ins->phase[i].codec[j].argv+=1;
 			}
-			strtoupper(ins->phase[i].codec[j].desc);
 			if(ins->phase[i].codec[j].desc[0]==0){
 				for(;j>=0;--j){
 					free(ins->phase[i].codec[j].desc);
