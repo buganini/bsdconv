@@ -2,7 +2,7 @@
 
 import sys
 import urllib
-import bsdconv
+from bsdconv import Bsdconv
 
 def bsdconv01(dt):
 	dt=dt.lstrip("0").upper()
@@ -120,9 +120,9 @@ countertest=[
 passed=True
 
 for c, i, o in iotest:
-	p=bsdconv.Bsdconv(c)
+	p=Bsdconv(c)
 	if not p:
-		print(bsdconv.error())
+		print(Bsdconv.error())
 		print("Test failed at %s" % repr([c, i, o]))
 		del p
 		passed=False
@@ -136,9 +136,9 @@ for c, i, o in iotest:
 	del p
 
 for c, d, i in countertest:
-	p=bsdconv.Bsdconv(c)
+	p=Bsdconv(c)
 	if not p:
-		print(bsdconv.error())
+		print(Bsdconv.error())
 		print("Test failed at %s" % repr([c, i, o]))
 		passed=False
 		continue
@@ -160,11 +160,11 @@ for l in f_map:
 		url=l[1]
 		break
 nt=open("tmp/NormalizationTest.txt")
-toSRC=bsdconv.Bsdconv("bsdconv:insert#after=002c:bsdconv-keyword,bsdconv")
-toNFC=bsdconv.Bsdconv("bsdconv:nfc:insert#after=002c:bsdconv-keyword,bsdconv")
-toNFD=bsdconv.Bsdconv("bsdconv:nfd:insert#after=002c:bsdconv-keyword,bsdconv")
-toNFKC=bsdconv.Bsdconv("bsdconv:nfkc:insert#after=002c:bsdconv-keyword,bsdconv")
-toNFKD=bsdconv.Bsdconv("bsdconv:nfkd:insert#after=002c:bsdconv-keyword,bsdconv")
+toSRC=Bsdconv("bsdconv:insert#after=002c:bsdconv-keyword,bsdconv")
+toNFC=Bsdconv("bsdconv:nfc:insert#after=002c:bsdconv-keyword,bsdconv")
+toNFD=Bsdconv("bsdconv:nfd:insert#after=002c:bsdconv-keyword,bsdconv")
+toNFKC=Bsdconv("bsdconv:nfkc:insert#after=002c:bsdconv-keyword,bsdconv")
+toNFKD=Bsdconv("bsdconv:nfkd:insert#after=002c:bsdconv-keyword,bsdconv")
 print("Normalization Tests: #"+url)
 for l in nt:
 	if not l:
