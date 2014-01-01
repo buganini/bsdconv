@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 Kuan-Chung Chiu <buganini@gmail.com>
+ * Copyright (c) 2009-2014 Kuan-Chung Chiu <buganini@gmail.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -52,10 +52,10 @@ void cbdestroy(struct bsdconv_instance *ins){
 void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	switch(ctl){
-		case BSDCONV_ATTACH_SCORE:
+		case BSDCONV_CTL_ATTACH_SCORE:
 			r->score=ptr;
 			break;
-		case BSDCONV_ATTACH_OUTPUT_FILE:
+		case BSDCONV_CTL_ATTACH_OUTPUT_FILE:
 			r->list=ptr;
 			break;
 	}

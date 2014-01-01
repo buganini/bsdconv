@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013 Kuan-Chung Chiu <buganini@gmail.com>
+ * Copyright (c) 2009-2014 Kuan-Chung Chiu <buganini@gmail.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -308,11 +308,11 @@ void cbdestroy(struct bsdconv_instance *);
 
 //CTL Action
 enum bsdconv_ctl_action {
-	BSDCONV_ATTACH_SCORE,
-	BSDCONV_SET_WIDE_AMBI,
-	BSDCONV_SET_TRIM_WIDTH,
-	BSDCONV_ATTACH_OUTPUT_FILE,
-	BSDCONV_AMBIGUOUS_PAD
+	BSDCONV_CTL_ATTACH_SCORE,
+	BSDCONV_CTL_SET_WIDE_AMBI,
+	BSDCONV_CTL_SET_TRIM_WIDTH,
+	BSDCONV_CTL_ATTACH_OUTPUT_FILE,
+	BSDCONV_CTL_AMBIGUOUS_PAD
 };
 
 //Helpers

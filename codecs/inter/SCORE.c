@@ -2,7 +2,7 @@
  * Reference: http://blog.oasisfeng.com/2006/10/19/full-cjk-unicode-range/
  * Some code come from http://www.cl.cam.ac.uk/~mgk25/ucs/wcwidth.c
  *
- * Copyright (c) 2009-2013 Kuan-Chung Chiu <buganini@gmail.com>
+ * Copyright (c) 2009-2014 Kuan-Chung Chiu <buganini@gmail.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -61,7 +61,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	switch(ctl){
-		case BSDCONV_ATTACH_SCORE:
+		case BSDCONV_CTL_ATTACH_SCORE:
 			r->score=ptr;
 			break;
 	}

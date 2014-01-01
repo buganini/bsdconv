@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012,2013 Kuan-Chung Chiu <buganini@gmail.com>
+ * Copyright (c) 2012-2014 Kuan-Chung Chiu <buganini@gmail.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -64,10 +64,10 @@ void cbinit(struct bsdconv_instance *ins){
 void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	switch(ctl){
-		case BSDCONV_SET_WIDE_AMBI:
+		case BSDCONV_CTL_SET_WIDE_AMBI:
 			r->ambi_width=2;
 			break;
-		case BSDCONV_SET_TRIM_WIDTH:
+		case BSDCONV_CTL_SET_TRIM_WIDTH:
 			r->width=v;
 			break;
 	}
