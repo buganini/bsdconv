@@ -15,6 +15,7 @@
  */
 
 #include <limits.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -31,22 +32,26 @@ struct my_s{
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
-	char *p;
+	int i;
 	struct my_s *r=CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
 
+	char width_set=0;
 	r->ambi_width=1;
 
-	p=getenv("BSDCONV_WIDE_AMBI");
-	if(p){
-		r->ambi_width=2;
+	while(arg){
+		if(strcasecmp(arg->key, "AMBI-AS-WIDE")==0 || strcasecmp(arg->key, "AMBIGUOUS-AS-WIDE")==0){
+			r->ambi_width=2;
+		}else if(sscanf(arg->key,"%d", &i)==1){
+			r->width=i;
+			width_set=1;
+		}else{
+			return EINVAL;
+		}
+		arg=arg->next;
 	}
 
-	p=getenv("BSDCONV_TRIM_WIDTH");
-	if(p){
-		int t;
-		sscanf(p,"%d",&t);
-		r->width=t;
-	}
+	if(width_set==0)
+		return EINVAL;
 
 	r->ins=bsdconv_create("WIDTH");
 	r->full=bsdconv_counter(r->ins, "FULL");
@@ -61,18 +66,6 @@ void cbinit(struct bsdconv_instance *ins){
 	r->remain=r->width;
 }
 
-void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
-	switch(ctl){
-		case BSDCONV_CTL_SET_WIDE_AMBI:
-			r->ambi_width=2;
-			break;
-		case BSDCONV_CTL_SET_TRIM_WIDTH:
-			r->width=v;
-			break;
-	}
-}
-
 void cbdestroy(struct bsdconv_instance *ins){
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
 	bsdconv_destroy(r->ins);
@@ -83,6 +76,7 @@ void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
 
+	bsdconv_counter_reset(r->ins, NULL);
 	bsdconv_init(r->ins);
 	r->ins->input=*(this_phase->curr);
 	this_phase->curr->flags &= ~F_FREE;

@@ -1,9 +1,20 @@
+INPUT
+	TYPE ANY
+
+OUTPUT
+	TYPE ANY
+	DESC Trimed content
+
+ARGUMENT
+	AMBIGUOUS-AS-WIDE
+	AMBI-AS-WIDE
+		Counter ambiguous width characters' width as 2
+	$Integer (mandatory)
+		The width of the desired trim
+
 EXAMPLE
-	> echo ˋˊ這是個很長的字串啊啊啊 | env BSDCONV_WIDE_AMBI=1 BSDCONV_TRIM_WIDTH=22 bsdconv utf-8:trim-width:utf-8
+	> echo ˋˊ這是個很長的字串啊啊啊 | bsdconv "utf-8:trim-width#22&ambi-as-wide:utf-8"
 	ˋˊ這是個很長的字串啊
-	> echo ˋˊ這是個很長的字串啊啊啊 | env BSDCONV_TRIM_WIDTH=22 bsdconv utf-8:trim-width:utf-8
+	> echo ˋˊ這是個很長的字串啊啊啊 | bsdconv utf-8:trim-width#22:utf-8
 	ˋˊ這是個很長的字串啊啊
-	> echo 三長兩短ˊˋ3長2短|env BSDCONV_TRIM_WIDTH=10 BSDCONV_SET_WIDE_AMBI= bsdconv utf-8:trim-width:utf-8
-	#set parameters in C
-	bsdconv_ctl(struct bsdconv_instance *, BSDCONV_SET_WIDE_AMBI, NULL, 0);
-	bsdconv_ctl(struct bsdconv_instance *, BSDCONV_SET_TRIM_WIDTH, NULL, 10);
+	> echo 三長兩短ˊˋ3長2短 | bsdconv utf-8:trim-width#10&ambiguous-as-wide:utf-8
