@@ -1,6 +1,18 @@
 PHP binding API
 ==================
 
+.. php:const:: BSDCONV_FROM
+.. php:const:: BSDCONV_INTER
+.. php:const:: BSDCONV_TO
+
+	Phase type
+
+.. php:const:: BSDCONV_CTL_ATTACH_SCORE
+.. php:const:: BSDCONV_CTL_ATTACH_OUTPUT_FILE
+.. php:const:: BSDCONV_CTL_AMBIGUOUS_PAD
+
+	Request for :php:func:`Bsdconv::ctl`
+
 .. php:function:: bsdconv_insert_phase($conversion, $codec, $phase_type, $phasen)
 
 		Insert conversion phase into bsdconv conversion string

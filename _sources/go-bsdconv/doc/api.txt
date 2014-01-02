@@ -10,8 +10,6 @@ Go binding API
 	Phase type
 
 .. go:const:: CTL_ATTACH_SCORE
-.. go:const:: CTL_SET_WIDE_AMBI
-.. go:const:: CTL_SET_TRIM_WIDTH
 .. go:const:: CTL_ATTACH_OUTPUT_FILE
 .. go:const:: CTL_AMBIGUOUS_PAD
 

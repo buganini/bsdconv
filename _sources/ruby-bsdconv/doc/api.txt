@@ -1,9 +1,21 @@
 Ruby binding API
-==================
+================
 
 .. rb:module:: bsdconv
 
 .. rb:class:: Bsdconv
+
+	.. rb:const:: FROM
+	.. rb:const:: INTER
+	.. rb:const:: TO
+
+		Phase type
+
+	.. rb:const:: CTL_ATTACH_SCORE
+	.. rb:const:: CTL_ATTACH_OUTPUT_FILE
+	.. rb:const:: CTL_AMBIGUOUS_PAD
+
+		Request for :rb:meth:`ctl`
 
 	.. rb:classmethod:: new(conversion)
 

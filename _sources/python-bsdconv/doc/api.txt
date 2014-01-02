@@ -5,6 +5,18 @@ Python binding API
 
 .. py:class:: Bsdconv
 
+	.. py:data:: FROM
+	.. py:data:: INTER
+	.. py:data:: TO
+
+		Phase type
+
+	.. py:data:: CTL_ATTACH_SCORE
+	.. py:data:: CTL_ATTACH_OUTPUT_FILE
+	.. py:data:: CTL_AMBIGUOUS_PAD
+
+		Request for :py:meth:`ctl`
+
 	.. py:method:: init()
 
 		Initialize/Reset bsdconv converter
