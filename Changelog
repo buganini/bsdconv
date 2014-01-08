@@ -8,6 +8,9 @@
 	Update documentations
 	support DESTDIR in makefile
 	be case-sensitive for codec arguments (for bsdconv-opencc)
+	update to/_CP950
+	add from/_HKSCS{1999,2001,2004}
+	add inter/BIG5-BONUS
 
 11.1:
 	Correct algorithm for unicode normalization

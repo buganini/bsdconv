@@ -137,6 +137,7 @@ TODO_CODECS_CHINESE+=from/_HKSCS1999
 TODO_CODECS_CHINESE+=from/_HKSCS2001
 TODO_CODECS_CHINESE+=from/_GB2312
 TODO_CODECS_CHINESE+=from/_UAO241
+TODO_CODECS_CHINESE+=inter/BIG5-BONUS
 TODO_CODECS_CHINESE+=inter/CHEWING
 TODO_CODECS_CHINESE+=inter/CNS11643
 TODO_CODECS_CHINESE+=inter/HAN-PINYIN
@@ -348,7 +349,7 @@ test: fetch
 	@$(CC) ${CFLAGS} testsuite/api.c -L./build/lib/ -o testsuite/api -lbsdconv ${LIBS}
 	@./testsuite/api
 
-gen: unicode_gen chvar
+gen: unicode_gen chvar big5_bonus
 
 chvar_url=	http://cnmc.tw/~buganini/chvar/engine.php?action=dump
 chvar:
@@ -368,3 +369,6 @@ chvar:
 
 unicode_gen: fetch
 	python tools/unicode_gen.py
+
+big5_bonus:
+	python tools/mkbonus.py codecs/src/BIG5-BONUS.txt > codecs/inter/BIG5-BONUS.txt
