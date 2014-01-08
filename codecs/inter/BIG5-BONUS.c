@@ -23,16 +23,15 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 }
 
 void cbconv(struct bsdconv_instance *ins){
-	printf("lala\n");
 	bsdconv_counter_t *counter=CURRENT_CODEC(ins)->priv;
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	data=this_phase->curr->data;
+	struct data_st data_st;
+	memcpy(&data_st, (char *)((this_phase->codec[this_phase->index].data_z)+(uintptr_t)this_phase->state.data), sizeof(struct data_st));
+	data=UCP((this_phase->codec[this_phase->index].data_z)+(uintptr_t)de_offset(data_st.data));
 
-	printf("LALALA%d\n", (int)*data);
 	*counter += *data;
 
 	this_phase->state.status=NEXTPHASE;
-	printf("asdf\n");
 	return;
 }
