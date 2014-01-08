@@ -32,7 +32,7 @@ for k in la:
 
 if allin:
 	print("All In")
+elif allnotin:
+	print("All Not In")
 else:
 	print("Not All In")
-if allnotin:
-	print("All Not In")
