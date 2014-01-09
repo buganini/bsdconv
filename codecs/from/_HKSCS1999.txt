@@ -1,4 +1,4 @@
-00	01
+# Source: http://moztw.org/docs/big5/table/hkscs1999.txt
 8840	01F303
 8841	01F304
 8842	01F305

@@ -1,3 +1,4 @@
+# Source: http://moztw.org/docs/big5/table/hkscs2004.txt
 8740	0143F0
 8741	014C32
 8742	014603
