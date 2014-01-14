@@ -23,11 +23,20 @@ for f,l in ((fa, la), (fb, lb)):
 
 allnotin = True
 allin = True
+
+total=0
+inc=0
+ninc=0
+
 for k in la:
+	total+=1
 	if k in lb:
-		print(k)
+		inc+=1
+		print("IN\t%s " % k)
 		allnotin = False
 	else:
+		ninc+=1
+		print("NOTIN\t%s " % k)
 		allin = False
 
 if allin:
@@ -36,3 +45,6 @@ elif allnotin:
 	print("All Not In")
 else:
 	print("Not All In")
+print("Total: ", total)
+print("In: ", inc)
+print("Not In: ", ninc)
