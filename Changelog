@@ -10,6 +10,7 @@
 	be case-sensitive for codec arguments (for bsdconv-opencc)
 	update to/_CP950
 	add from/_HKSCS{1999,2001,2004}
+	add from/_BIG5{E,-2003,-ETEN}
 	add inter/BIG5-BONUS
 
 11.1:
