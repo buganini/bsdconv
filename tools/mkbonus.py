@@ -27,7 +27,7 @@ for l in f:
 	p = a[0]
 	ln = len(p.decode("utf-8"))
 	if ln > 1:
-		bonus = 7
+		bonus = 6
 		p = bcv_zhtw.conv(p).rstrip(",")
 		of = plist
 	else:
@@ -40,6 +40,8 @@ for l in f:
 		score = sc.counter("SCORE")
 		if score < 5*ln:
 			bonus += 5*ln - score
+		if bonus == 0:
+			continue
 		p = bcv.conv(p).rstrip(",")
 		of = clist
 	of.write("%s\t?%02X,%s\n" % (p, bonus, p))
