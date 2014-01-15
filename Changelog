@@ -11,7 +11,7 @@
 	update to/_CP950
 	add from/_HKSCS{1999,2001,2004}
 	add from/_BIG5{E,-2003,-ETEN}
-	add inter/BIG5-BONUS
+	add inter/ZH-BONUS and inter/ZH-BONUS-PHRASE
 
 11.1:
 	Correct algorithm for unicode normalization

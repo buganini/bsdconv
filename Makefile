@@ -140,11 +140,12 @@ TODO_CODECS_CHINESE+=from/_HKSCS1999
 TODO_CODECS_CHINESE+=from/_HKSCS2001
 TODO_CODECS_CHINESE+=from/_GB2312
 TODO_CODECS_CHINESE+=from/_UAO241
-TODO_CODECS_CHINESE+=inter/BIG5-BONUS
 TODO_CODECS_CHINESE+=inter/CHEWING
 TODO_CODECS_CHINESE+=inter/CNS11643
 TODO_CODECS_CHINESE+=inter/HAN-PINYIN
 TODO_CODECS_CHINESE+=inter/UNICODE
+TODO_CODECS_CHINESE+=inter/ZH-BONUS
+TODO_CODECS_CHINESE+=inter/ZH-BONUS-PHRASE
 TODO_CODECS_CHINESE+=inter/ZH-COMP
 TODO_CODECS_CHINESE+=inter/ZH-DECOMP
 TODO_CODECS_CHINESE+=to/CCCII
@@ -373,5 +374,5 @@ chvar:
 unicode_gen: fetch
 	python tools/unicode_gen.py
 
-big5_bonus:
-	python tools/mkbonus.py codecs/src/BIG5-BONUS.txt > codecs/inter/BIG5-BONUS.txt
+bonus:
+	python tools/mkbonus.py codecs/src/ZH-BONUS.txt codecs/inter/ZH-BONUS.txt codecs/inter/ZH-BONUS-PHRASE.txt
