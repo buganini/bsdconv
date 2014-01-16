@@ -9,8 +9,7 @@ ARGUMENT
 	UNMARK
 		DESC	Remove "MARK" flag
 	FOR
-		FORMAT	ENUM{UNICODE,1,CNS11643,2,BYTE,3,ANSI,1B}
-		DESC	Input type whitelist
+		FORMAT	Filter
 
 EXAMPLE
 	#pass through packets queue
