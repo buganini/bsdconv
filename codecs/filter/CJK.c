@@ -17,6 +17,8 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include "../../src/bsdconv.h"
+
 struct range {
 	int first;
 	int last;

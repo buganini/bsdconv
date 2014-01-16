@@ -301,10 +301,11 @@ char * getCodecDir();
 //Callback function interface
 void cbconv(struct bsdconv_instance *);
 void cbflush(struct bsdconv_instance *);
-int cbcreate(struct bsdconv_instance *, struct bsdconv_hash_entry *arg);
+int cbcreate(struct bsdconv_instance *, struct bsdconv_hash_entry *);
 void cbinit(struct bsdconv_instance *);
 void cbctl(struct bsdconv_instance *, int, void *, size_t);
 void cbdestroy(struct bsdconv_instance *);
+unsigned char cbfilter(struct data_rt *data);
 
 //CTL Action
 enum bsdconv_ctl_action {
