@@ -2,7 +2,7 @@ DESTDIR?=
 PREFIX?=/usr/local
 BSDCONV_PATH?=${PREFIX}
 
-CFLAGS+=-Wall -Wno-unused-result -O2 -D_BSDCONV_INTERNAL -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
+CFLAGS+=-g -Wall -Wno-unused-result -O2 -D_BSDCONV_INTERNAL -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
 SHLIBVER=11
 
 UNAME_S=$(shell uname -s)
@@ -16,6 +16,13 @@ LIBS?=
 ifeq (${UNAME_S}, Linux)
 LIBS+=-ldl
 endif
+
+TODO_FILTERS=
+TODO_FILTERS+=ANSI
+TODO_FILTERS+=BYTE
+TODO_FILTERS+=CJK
+TODO_FILTERS+=CNS11643
+TODO_FILTERS+=UNICODE
 
 TODO_CODECS_BASIC=
 TODO_CODECS_BASIC+=from/00
@@ -48,6 +55,7 @@ TODO_CODECS_BASIC+=from/_JIS0212
 TODO_CODECS_BASIC+=from/_SHIFT-JIS
 TODO_CODECS_BASIC+=from/_UAO250
 TODO_CODECS_BASIC+=from/_UTF-8
+TODO_CODECS_BASIC+=inter/ALIAS-FILTER
 TODO_CODECS_BASIC+=inter/ALIAS-FROM
 TODO_CODECS_BASIC+=inter/ALIAS-INTER
 TODO_CODECS_BASIC+=inter/ALIAS-TO
@@ -167,9 +175,10 @@ TODO_CODECS_EBCDIC+=to/IBM-935
 TODO_CODECS_EBCDIC+=to/IBM-937
 TODO_CODECS_EBCDIC+=to/IBM-939
 
-all: libbsdconv bsdconv-mktable meta bsdconv-man bsdconv-completion bsdconv codecs
+all: libbsdconv bsdconv-mktable meta bsdconv-man bsdconv-completion bsdconv filters codecs
 
 alias:
+	python tools/mkalias.py modules/filter/alias modules/inter/ALIAS-FILTER.txt
 	python tools/mkalias.py modules/from/alias modules/inter/ALIAS-FROM.txt
 	@printf "014C,014F,0143,0141,014C,0145\t?\n" >> modules/inter/ALIAS-FROM.txt
 	python tools/mkalias.py modules/inter/alias modules/inter/ALIAS-INTER.txt
@@ -180,6 +189,7 @@ builddir:
 	mkdir -p build/bin
 	mkdir -p build/lib
 	mkdir -p build/include
+	mkdir -p build/share/bsdconv/filter
 	mkdir -p build/share/bsdconv/from
 	mkdir -p build/share/bsdconv/inter
 	mkdir -p build/share/bsdconv/to
@@ -188,6 +198,7 @@ installdir:
 	mkdir -p ${DESTDIR}${PREFIX}/bin
 	mkdir -p ${DESTDIR}${PREFIX}/lib
 	mkdir -p ${DESTDIR}${PREFIX}/include
+	mkdir -p ${DESTDIR}${PREFIX}/share/bsdconv/filter
 	mkdir -p ${DESTDIR}${PREFIX}/share/bsdconv/from
 	mkdir -p ${DESTDIR}${PREFIX}/share/bsdconv/inter
 	mkdir -p ${DESTDIR}${PREFIX}/share/bsdconv/to
@@ -209,6 +220,12 @@ bsdconv-completion: builddir libbsdconv meta src/bsdconv.h src/bsdconv-completio
 
 bsdconv-dbg: builddir libbsdconv src/libbsdconv.c src/bsdconv.h src/bsdconv-dbg.c
 	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv-dbg.c -o build/bin/bsdconv-dbg ${LIBS}
+
+filters: builddir
+	for item in ${TODO_FILTERS} ; do \
+		echo Build filter $${item}.so ; \
+		$(CC) ${CFLAGS} modules/filter/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/filter/$${item}.so -lbsdconv ${LIBS} ; \
+	done
 
 codecs_basic: builddir bsdconv-mktable libbsdconv meta
 	for item in ${TODO_CODECS_BASIC} ; do \
@@ -246,7 +263,7 @@ clean:
 	rm -rf build
 	rm -rf testsuite/api
 
-install: installdir install_main install_basic install_chinese install_ebcdic
+install: installdir install_main install_filters install_basic install_chinese install_ebcdic
 
 install_main:
 	install -m 555 build/bin/bsdconv ${DESTDIR}${PREFIX}/bin
@@ -261,6 +278,11 @@ install_main:
 	if [ ${SHLIBNAME} != libbsdconv.so ]; then \
 		ln -sf libbsdconv.so.${SHLIBVER} ${DESTDIR}${PREFIX}/lib/libbsdconv.so ; \
 	fi
+
+install_filters:
+	for item in ${TODO_FILTERS} ; do \
+		install -m 444 build/share/bsdconv/filter/$${item}.so ${DESTDIR}${PREFIX}/share/bsdconv/filter/$${item}.so ; \
+	done
 
 install_basic:
 	for item in ${TODO_CODECS_BASIC} ; do \

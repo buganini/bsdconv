@@ -6,4 +6,6 @@ OUTPUT
 	DESC	No content changed, counter increased
 
 ARGUMENT
+	FOR
+		FORMAT	FILTER
 	$CounterName

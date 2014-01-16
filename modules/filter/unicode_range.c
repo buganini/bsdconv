@@ -1,5 +1,5 @@
 /*
- * Reference: http://blog.oasisfeng.com/2006/10/19/full-cjk-unicode-range/
+ * Some code come from http://www.cl.cam.ac.uk/~mgk25/ucs/wcwidth.c
  *
  * Copyright (c) 2012-2014 Kuan-Chung Chiu <buganini@gmail.com>
  *
@@ -18,17 +18,34 @@
 
 #include "../../src/bsdconv.h"
 
-static const struct uint32_range ranges[] = {
-	{ 0x3100, 0x312F },	//Chinese Bopomofo
-	{ 0x3400, 0x4DB5 },	//CJK Unified Ideographs Extension A	;Unicode3.0
-	{ 0x4E00, 0x6FFF },	//CJK Unified Ideographs	;Unicode 1.1	;HF
-	{ 0x7000, 0x9FA5 },	//CJK Unified Ideographs	;Unicode 1.1	;LF
-	{ 0x9FA6, 0x9FBB },	//CJK Unified Ideographs	;Unicode 4.1
-	{ 0xF900, 0xFA2D },	//CJK Compatibility Ideographs	;Unicode 1.1
-	{ 0xFA30, 0xFA6A },	//CJK Compatibility Ideographs	;Unicode 3.2
-	{ 0xFA70, 0xFAD9 },	//CJK Compatibility Ideographs	;Unicode 4.1
-	{ 0x20000, 0x2A6D6 },//CJK Unified Ideographs Extension B	;Unicode 3.1
-	{ 0x2F800, 0x2FA1D },//CJK Compatibility Supplement	;Unicode 3.1
-};
+int cbfilter(struct data_rt *data){
+	uint32_t ucs=0;
+	int i;
+	int max=sizeof(ranges) / sizeof(struct uint32_range) - 1;
+	int min = 0;
+	int mid;
 
-#include "unicode_range.c"
+	if(data->len<1 || UCP(data->data)[0]!=1){
+		return 0;
+	}
+
+	for(i=1;i<data->len;++i){
+		ucs<<=8;
+		ucs|=UCP(data->data)[i];
+	}
+
+	if (ucs < ranges[0].first || ucs > ranges[max].last){
+		//noop
+	}else while (max >= min) {
+		mid = (min + max) / 2;
+		if (ucs > ranges[mid].last)
+			min = mid + 1;
+		else if (ucs < ranges[mid].first)
+			max = mid - 1;
+		else{
+			return 1;
+		}
+	}
+
+	return 0;
+}

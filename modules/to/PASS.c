@@ -3,30 +3,23 @@
 #include "../../src/bsdconv.h"
 
 struct my_s{
-	int filter;
+	struct bsdconv_filter *filter;
 	int mark;
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	CURRENT_CODEC(ins)->priv=r;
-	r->filter=0;
+	r->filter=NULL;
 	r->mark=0;
 	while(arg){
 		if(strcasecmp(arg->key, "MARK")==0){
 			r->mark=1;
 		}else if(strcasecmp(arg->key, "FOR")==0){
-			if(strcasecmp(arg->ptr, "UNICODE")==0 || strcasecmp(arg->ptr, "1")==0 || strcasecmp(arg->ptr, "01")==0){
-				r->filter=1;
-			}else if(strcasecmp(arg->ptr, "CNS11643")==0 || strcasecmp(arg->ptr, "2")==0 || strcasecmp(arg->ptr, "02")==0){
-				r->filter=2;
-			}else if(strcasecmp(arg->ptr, "BYTE")==0 || strcasecmp(arg->ptr, "3")==0 || strcasecmp(arg->ptr, "03")==0){
-				r->filter=3;
-			}else if(strcasecmp(arg->ptr, "ANSI")==0 || strcasecmp(arg->ptr, "1B")==0){
-				r->filter=0x1b;
-			}else{
+			r->filter=load_filter(arg->ptr);
+			if(r->filter==NULL){
 				free(r);
-				return EINVAL;
+				return ENOTSUP;
 			}
 		}else{
 			free(r);
@@ -39,6 +32,8 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 
 void cbdestroy(struct bsdconv_instance *ins){
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	if(r->filter)
+		unload_filter(r->filter);
 	free(r);
 }
 
@@ -47,7 +42,7 @@ void cbconv(struct bsdconv_instance *ins){
 	struct my_s *t=CURRENT_CODEC(ins)->priv;
 	int pass=1;
 
-	if(t->filter!=0 && (this_phase->curr->len==0 || UCP(this_phase->curr->data)[0]!=t->filter))
+	if(t->filter!=NULL && !t->filter->cbfilter(this_phase->curr))
 		pass=0;
 
 	if(pass){

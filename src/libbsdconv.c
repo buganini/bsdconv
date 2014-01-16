@@ -31,7 +31,6 @@
 #else
 #include <fcntl.h>
 #include <errno.h>
-#include <dlfcn.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 #endif
@@ -183,6 +182,56 @@ struct data_rt * str2data(const char *_s, int *r, struct bsdconv_instance *ins){
 	return ph.next;
 }
 
+struct bsdconv_filter *load_filter(const char *_name){
+	struct bsdconv_filter *filter;
+
+	char *cwd;
+	char *c;
+	char path[PATH_MAX+1];
+	char *name=strdup(_name);
+	strtoupper(name);
+
+	while(!bsdconv_codec_check(FILTER, name)){
+		c=bsdconv_solve_alias(FILTER, name);
+		if(c==NULL || strcmp(c, name)==0){
+			free(name);
+			free(c);
+			return NULL;
+		}
+		free(name);
+		name=c;
+	}
+	cwd=getcwd(NULL, 0);
+	if((c=getenv("BSDCONV_PATH"))){
+		chdir(c);
+	}else{
+		chdir(BSDCONV_PATH);
+	}
+	chdir(CODECS_SUBPATH);
+	chdir("filter");
+	REALPATH(name, path);
+	chdir(cwd);
+	free(cwd);
+	free(name);
+	strcat(path, "." SHLIBEXT);
+
+	filter=malloc(sizeof(struct bsdconv_filter));
+	filter->so=OPEN_SHAREOBJECT(path);
+	if(!filter->so){
+		free(filter);
+		return NULL;
+	}
+
+	filter->cbfilter=SHAREOBJECT_SYMBOL(filter->so, "cbfilter");
+
+	return filter;
+}
+
+void unload_filter(struct bsdconv_filter *filter){
+	CLOSE_SHAREOBJECT(filter->so);
+	free(filter);
+}
+
 int _loadcodec(struct bsdconv_codec_t *cd, char *path){
 #ifdef WIN32
 	if ((cd->fd=CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL))==INVALID_HANDLE_VALUE){
@@ -226,25 +275,15 @@ int _loadcodec(struct bsdconv_codec_t *cd, char *path){
 	cd->cbdestroy=NULL;
 	strcat(path, "." SHLIBEXT);
 
-#ifdef WIN32
-	if((cd->dl=LoadLibrary(path))){
-		cd->cbconv=(void *)GetProcAddress(cd->dl,"cbconv");
-		cd->cbflush=(void *)GetProcAddress(cd->dl,"cbflush");
-		cd->cbcreate=(void *)GetProcAddress(cd->dl,"cbcreate");
-		cd->cbinit=(void *)GetProcAddress(cd->dl,"cbinit");
-		cd->cbctl=(void *)GetProcAddress(cd->dl,"cbctl");
-		cd->cbdestroy=(void *)GetProcAddress(cd->dl,"cbdestroy");
+	if((cd->dl=OPEN_SHAREOBJECT(path))){
+		cd->cbconv=SHAREOBJECT_SYMBOL(cd->dl,"cbconv");
+		cd->cbflush=SHAREOBJECT_SYMBOL(cd->dl,"cbflush");
+		cd->cbcreate=SHAREOBJECT_SYMBOL(cd->dl,"cbcreate");
+		cd->cbinit=SHAREOBJECT_SYMBOL(cd->dl,"cbinit");
+		cd->cbctl=SHAREOBJECT_SYMBOL(cd->dl,"cbctl");
+		cd->cbdestroy=SHAREOBJECT_SYMBOL(cd->dl,"cbdestroy");
 	}
-#else
-	if((cd->dl=dlopen(path, RTLD_LAZY))){
-		cd->cbconv=dlsym(cd->dl,"cbconv");
-		cd->cbflush=dlsym(cd->dl,"cbflush");
-		cd->cbcreate=dlsym(cd->dl,"cbcreate");
-		cd->cbinit=dlsym(cd->dl,"cbinit");
-		cd->cbctl=dlsym(cd->dl,"cbctl");
-		cd->cbdestroy=dlsym(cd->dl,"cbdestroy");
-	}
-#endif
+
 	return 1;
 }
 
@@ -262,6 +301,9 @@ char * bsdconv_solve_alias(int type, char *_codec){
 			break;
 		case TO:
 			ins=bsdconv_create("ASCII:ALIAS-TO,COUNT#ERR:ASCII");
+			break;
+		case FILTER:
+			ins=bsdconv_create("ASCII:ALIAS-FILTER,COUNT#ERR:ASCII");
 			break;
 		default:
 			return NULL;
@@ -326,17 +368,14 @@ int loadcodec(struct bsdconv_codec_t *cd, int type){
 }
 
 void unloadcodec(struct bsdconv_codec_t *cd){
-#ifdef WIN32
 	if(cd->dl){
-		FreeLibrary(cd->dl);
+		CLOSE_SHAREOBJECT(cd->dl);
 	}
+#ifdef WIN32
 	UnmapViewOfFile(cd->z);
 	CloseHandle(cd->md);
 	CloseHandle(cd->fd);
 #else
-	if(cd->dl){
-		dlclose(cd->dl);
-	}
 	munmap(cd->z, cd->maplen);
 	close(cd->fd);
 #endif
@@ -1547,12 +1586,9 @@ char * bsdconv_error(void){
 int bsdconv_codec_check(int type, const char *_codec){
 	int ret=0;
 	char *cwd;
-	char *codec;
+	char *codec=NULL;
 	FILE *fp;
 	char *c;
-
-	codec=strdup(_codec);
-	strtoupper(codec);
 
 	cwd=getcwd(NULL, 0);
 
@@ -1566,12 +1602,25 @@ int bsdconv_codec_check(int type, const char *_codec){
 	switch(type){
 		case FROM:
 			chdir("from");
+			codec=strdup(_codec);
+			strtoupper(codec);
 			break;
 		case INTER:
 			chdir("inter");
+			codec=strdup(_codec);
+			strtoupper(codec);
 			break;
 		case TO:
 			chdir("to");
+			codec=strdup(_codec);
+			strtoupper(codec);
+			break;
+		case FILTER:
+			chdir("filter");
+			codec=malloc(strlen(_codec) + strlen("." SHLIBEXT) + 1);
+			strcpy(codec, _codec);
+			strtoupper(codec);
+			strcat(codec, "." SHLIBEXT);
 			break;
 	}
 
@@ -1584,6 +1633,7 @@ int bsdconv_codec_check(int type, const char *_codec){
 
 	chdir(cwd);
 	free(cwd);
+
 	return ret;
 }
 
