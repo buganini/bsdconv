@@ -42,6 +42,10 @@ unsigned char cbfilter(struct data_rt *data){
 	int min = 0;
 	int mid;
 
+	if(UCP(data->data)[0]!=1){
+		return 0;
+	}
+
 	for(i=1;i<data->len;++i){
 		ucs<<=8;
 		ucs|=UCP(data->data)[i];
