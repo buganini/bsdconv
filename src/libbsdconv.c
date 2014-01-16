@@ -1573,7 +1573,7 @@ char * bsdconv_error(void){
 		case EDOOFUS:
 				return strdup("Unexpected condition");
 		case EOPNOTSUPP:
-				return strdup("Unsupported charset/encoding");
+				return strdup("Unsupported charset/encoding or filter");
 		case ENOMEM:
 				return strdup("Mmap failed");
 		case EINVAL:
