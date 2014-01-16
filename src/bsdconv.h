@@ -62,7 +62,7 @@ enum bsdconv_phase_type {
 };
 
 #ifdef _BSDCONV_INTERNAL
-enum bsdconv_status{
+enum bsdconv_status {
 	CONTINUE,
 	DEADEND,
 	MATCH,
@@ -75,7 +75,7 @@ enum bsdconv_status{
 };
 #endif
 
-enum bsdconv_output_mode{
+enum bsdconv_output_mode {
 	BSDCONV_HOLD,
 	BSDCONV_AUTOMALLOC,
 	BSDCONV_PREMALLOCED,
@@ -85,21 +85,21 @@ enum bsdconv_output_mode{
 };
 
 #ifdef _BSDCONV_INTERNAL
-struct data_st{
+struct data_st {
 	offset_t data;
 	offset_t len;
 	offset_t next;
 };
 #endif
 
-struct data_rt{
+struct data_rt {
 	void *data;
 	size_t len;
 	struct data_rt *next;
 	unsigned char flags;
 };
 
-struct state_st{
+struct state_st {
 	unsigned char status;
 	offset_t data;
 	uint16_t beg;
@@ -107,7 +107,7 @@ struct state_st{
 	offset_t base;
 };
 
-struct state_rt{
+struct state_rt {
 	unsigned char status;
 	struct data_rt *data;
 	uint16_t beg;
@@ -116,20 +116,20 @@ struct state_rt{
 };
 
 #ifdef _BSDCONV_INTERNAL
-struct bsdconv_hash_entry{
+struct bsdconv_hash_entry {
 	char *key;
 	void *ptr;
 	struct bsdconv_hash_entry *next;
 };
 #endif
 
-struct bsdconv_counter_entry{
+struct bsdconv_counter_entry {
 	char *key;
 	bsdconv_counter_t val;
 	struct bsdconv_counter_entry *next;
 };
 
-struct bsdconv_instance{
+struct bsdconv_instance {
 	int output_mode;
 
 	struct data_rt input, output;
@@ -147,7 +147,7 @@ struct bsdconv_instance{
 	struct data_rt *pool;
 };
 
-struct bsdconv_phase{
+struct bsdconv_phase {
 	void *match_data;
 	struct data_rt *bak, *data_head, *data_tail, *curr;
 	struct state_rt state;
