@@ -76,7 +76,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 				free(r->prefix.data);
 				free(r->suffix.data);
 				free(r);
-				return EINVAL;
+				return EOPNOTSUPP;
 			}
 		}else{
 			free(r->prefix.data);
