@@ -15,7 +15,7 @@
  */
 
 #include "../../src/bsdconv.h"
-#include "../filter/cjk.c"
+#include "../filter/CJK.c"
 #include <stdlib.h>
 #include <string.h>
 
