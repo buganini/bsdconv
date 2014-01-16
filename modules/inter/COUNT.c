@@ -15,6 +15,8 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <errno.h>
+#include <string.h>
 #include "../../src/bsdconv.h"
 
 struct my_s{
@@ -33,7 +35,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 			r->filter=load_filter(arg->ptr);
 			if(r->filter==NULL){
 				free(r);
-				return ENOTSUP;
+				return EOPNOTSUPP;
 			}
 		}else{
 			key=arg->key;
@@ -46,9 +48,9 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 
 void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct my_s *t=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
 
-	if(t->filter!=NULL && t->filter->cbfilter(this_phase->curr))
+	if(r->filter==NULL || r->filter->cbfilter(this_phase->curr))
 		*(r->counter)+=1;
 
 	DATA_MALLOC(this_phase->data_tail->next);

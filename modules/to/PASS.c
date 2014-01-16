@@ -19,7 +19,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 			r->filter=load_filter(arg->ptr);
 			if(r->filter==NULL){
 				free(r);
-				return ENOTSUP;
+				return EOPNOTSUPP;
 			}
 		}else{
 			free(r);
