@@ -9,13 +9,13 @@ def bsdconv01(dt):
 		return "01"+dt
 
 
-f_ccc=open("codecs/inter/_NF-CCC.h", "w")
-f_nfd=open("codecs/inter/_NFD.txt", "w")
-f_nfkd=open("codecs/inter/_NFKD.txt", "w")
-f_nfc=open("codecs/inter/_NFC-MAP.txt", "w")
-f_upper=open("codecs/inter/UPPER.txt", "w")
-f_lower=open("codecs/inter/LOWER.txt", "w")
-f_casefold=open("codecs/inter/CASEFOLD.txt", "w")
+f_ccc=open("modules/inter/_NF-CCC.h", "w")
+f_nfd=open("modules/inter/_NFD.txt", "w")
+f_nfkd=open("modules/inter/_NFKD.txt", "w")
+f_nfc=open("modules/inter/_NFC-MAP.txt", "w")
+f_upper=open("modules/inter/UPPER.txt", "w")
+f_lower=open("modules/inter/LOWER.txt", "w")
+f_casefold=open("modules/inter/CASEFOLD.txt", "w")
 
 ccc_start=-1
 ccc_end=-1

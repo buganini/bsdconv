@@ -8,7 +8,7 @@ ARGUMENT
 
 EXAMPLE
 	#used for encoding detecting (roughly)
-	#reference codecs/inter/SCORE.c static const struct interval scoreboard for default weight
+	#reference modules/inter/SCORE.c static const struct interval scoreboard for default weight
 	> echo 123Б測試 | bsdconv utf-8:score:null
 	Decoding failure: 0
 	Encoding failure: 0

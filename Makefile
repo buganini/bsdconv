@@ -170,11 +170,11 @@ TODO_CODECS_EBCDIC+=to/IBM-939
 all: libbsdconv bsdconv-mktable meta bsdconv-man bsdconv-completion bsdconv codecs
 
 alias:
-	python tools/mkalias.py codecs/from/alias codecs/inter/ALIAS-FROM.txt
-	@printf "014C,014F,0143,0141,014C,0145\t?\n" >> codecs/inter/ALIAS-FROM.txt
-	python tools/mkalias.py codecs/inter/alias codecs/inter/ALIAS-INTER.txt
-	python tools/mkalias.py codecs/to/alias codecs/inter/ALIAS-TO.txt
-	@printf "014C,014F,0143,0141,014C,0145\t?\n" >> codecs/inter/ALIAS-TO.txt
+	python tools/mkalias.py modules/from/alias modules/inter/ALIAS-FROM.txt
+	@printf "014C,014F,0143,0141,014C,0145\t?\n" >> modules/inter/ALIAS-FROM.txt
+	python tools/mkalias.py modules/inter/alias modules/inter/ALIAS-INTER.txt
+	python tools/mkalias.py modules/to/alias modules/inter/ALIAS-TO.txt
+	@printf "014C,014F,0143,0141,014C,0145\t?\n" >> modules/inter/ALIAS-TO.txt
 
 builddir:
 	mkdir -p build/bin
@@ -212,23 +212,23 @@ bsdconv-dbg: builddir libbsdconv src/libbsdconv.c src/bsdconv.h src/bsdconv-dbg.
 
 codecs_basic: builddir bsdconv-mktable libbsdconv meta
 	for item in ${TODO_CODECS_BASIC} ; do \
-		./build/bin/bsdconv-mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
-		if [ -e codecs/$${item}.man ]; then cp codecs/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
-		if [ -e codecs/$${item}.c ]; then echo Build $${item}.so; $(CC) ${CFLAGS} codecs/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
+		./build/bin/bsdconv-mktable modules/$${item}.txt ./build/share/bsdconv/$${item} ; \
+		if [ -e modules/$${item}.man ]; then cp modules/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
+		if [ -e modules/$${item}.c ]; then echo Build $${item}.so; $(CC) ${CFLAGS} modules/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
 	done
 
 codecs_chinese: builddir bsdconv-mktable libbsdconv meta
 	for item in ${TODO_CODECS_CHINESE} ; do \
-		./build/bin/bsdconv-mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
-		if [ -e codecs/$${item}.man ]; then cp codecs/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
-		if [ -e codecs/$${item}.c ]; then echo Build $${item}.so; $(CC) ${CFLAGS} codecs/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
+		./build/bin/bsdconv-mktable modules/$${item}.txt ./build/share/bsdconv/$${item} ; \
+		if [ -e modules/$${item}.man ]; then cp modules/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
+		if [ -e modules/$${item}.c ]; then echo Build $${item}.so; $(CC) ${CFLAGS} modules/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
 	done
 
 codecs_ebcdic: builddir bsdconv-mktable libbsdconv meta
 	for item in ${TODO_CODECS_EBCDIC} ; do \
-		./build/bin/bsdconv-mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
-		if [ -e codecs/$${item}.man ]; then cp codecs/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
-		if [ -e codecs/$${item}.c ]; then echo Build $${item}.so; $(CC) ${CFLAGS} codecs/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
+		./build/bin/bsdconv-mktable modules/$${item}.txt ./build/share/bsdconv/$${item} ; \
+		if [ -e modules/$${item}.man ]; then cp modules/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
+		if [ -e modules/$${item}.c ]; then echo Build $${item}.so; $(CC) ${CFLAGS} modules/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
 	done
 
 codecs: codecs_basic codecs_chinese codecs_ebcdic
@@ -238,9 +238,9 @@ meta: libbsdconv
 		ln -sf libbsdconv.so.${SHLIBVER} build/lib/libbsdconv.so ; \
 	fi
 	cp src/bsdconv.h build/include
-	cp codecs/from/alias build/share/bsdconv/from/alias
-	cp codecs/inter/alias build/share/bsdconv/inter/alias
-	cp codecs/to/alias build/share/bsdconv/to/alias
+	cp modules/from/alias build/share/bsdconv/from/alias
+	cp modules/inter/alias build/share/bsdconv/inter/alias
+	cp modules/to/alias build/share/bsdconv/to/alias
 
 clean:
 	rm -rf build
@@ -301,18 +301,18 @@ plist:
 	@echo %%DATADIR%%/to/alias
 	@for item in ${TODO_CODECS_BASIC} ; do \
 		echo %%DATADIR%%/$${item} ; \
-		if [ -e codecs/$${item}.man ]; then echo %%DATADIR%%/$${item}.man ; fi ; \
-		if [ -e codecs/$${item}.c ]; then echo %%DATADIR%%/$${item}.so ; fi ; \
+		if [ -e modules/$${item}.man ]; then echo %%DATADIR%%/$${item}.man ; fi ; \
+		if [ -e modules/$${item}.c ]; then echo %%DATADIR%%/$${item}.so ; fi ; \
 	done
 	@for item in ${TODO_CODECS_CHINESE} ; do \
 		echo %%CHINESE%%%%DATADIR%%/$${item} ; \
-		if [ -e codecs/$${item}.man ]; then echo %%CHINESE%%%%DATADIR%%/$${item}.man ; fi ; \
-		if [ -e codecs/$${item}.c ]; then echo %%CHINESE%%%%DATADIR%%/$${item}.so ; fi ; \
+		if [ -e modules/$${item}.man ]; then echo %%CHINESE%%%%DATADIR%%/$${item}.man ; fi ; \
+		if [ -e modules/$${item}.c ]; then echo %%CHINESE%%%%DATADIR%%/$${item}.so ; fi ; \
 	done
 	@for item in ${TODO_CODECS_EBCDIC} ; do \
 		echo %%EBCDIC%%%%DATADIR%%/$${item} ; \
-		if [ -e codecs/$${item}.man ]; then echo %%EBCDIC%%%%DATADIR%%/$${item}.man ; fi ; \
-		if [ -e codecs/$${item}.c ]; then echo %%EBCDIC%%%%DATADIR%%/$${item}.so ; fi ; \
+		if [ -e modules/$${item}.man ]; then echo %%EBCDIC%%%%DATADIR%%/$${item}.man ; fi ; \
+		if [ -e modules/$${item}.c ]; then echo %%EBCDIC%%%%DATADIR%%/$${item}.so ; fi ; \
 	done
 	@echo @dirrmtry %%DATADIR%%/to
 	@echo @dirrmtry %%DATADIR%%/inter
@@ -357,22 +357,22 @@ gen: unicode_gen chvar big5_bonus
 
 chvar_url=	http://cnmc.tw/~buganini/chvar/engine.php?action=dump
 chvar:
-	wget -O codecs/inter/ZHTW.txt "${chvar_url}&mode=norml&for=tw"
-	wget -O codecs/inter/ZHCN.txt "${chvar_url}&mode=norml&for=cn"
-	wget -O codecs/inter/ZH-FUZZY-TW.txt "${chvar_url}&mode=fuzzy&for=tw"
-	wget -O codecs/inter/ZH-FUZZY-CN.txt "${chvar_url}&mode=fuzzy&for=cn"
+	wget -O modules/inter/ZHTW.txt "${chvar_url}&mode=norml&for=tw"
+	wget -O modules/inter/ZHCN.txt "${chvar_url}&mode=norml&for=cn"
+	wget -O modules/inter/ZH-FUZZY-TW.txt "${chvar_url}&mode=fuzzy&for=tw"
+	wget -O modules/inter/ZH-FUZZY-CN.txt "${chvar_url}&mode=fuzzy&for=cn"
 	@for file in ZHTW ZHCN ZH-FUZZY-TW ZH-FUZZY-CN; do \
-		sed -i '' -e 's|^|01|g' "codecs/inter/$${file}.txt" ; \
-		sed -i '' -e 's|	|	01|g' "codecs/inter/$${file}.txt" ; \
+		sed -i '' -e 's|^|01|g' "modules/inter/$${file}.txt" ; \
+		sed -i '' -e 's|	|	01|g' "modules/inter/$${file}.txt" ; \
 	done
-	wget -O codecs/to/CP950-TRANS.txt "${chvar_url}&mode=trans&for=cp950"
-	wget -O codecs/to/CP936-TRANS.txt "${chvar_url}&mode=trans&for=cp936"
+	wget -O modules/to/CP950-TRANS.txt "${chvar_url}&mode=trans&for=cp950"
+	wget -O modules/to/CP936-TRANS.txt "${chvar_url}&mode=trans&for=cp936"
 	@for file in CP950-TRANS CP936-TRANS ; do \
-		sed -i '' -e 's|^|01|g' "codecs/to/$${file}.txt" ; \
+		sed -i '' -e 's|^|01|g' "modules/to/$${file}.txt" ; \
 	done
 
 unicode_gen: fetch
 	python tools/unicode_gen.py
 
 bonus:
-	python tools/mkbonus.py codecs/src/ZH-BONUS.txt codecs/inter/ZH-BONUS.txt codecs/inter/ZH-BONUS-PHRASE.txt
+	python tools/mkbonus.py modules/src/ZH-BONUS.txt modules/inter/ZH-BONUS.txt modules/inter/ZH-BONUS-PHRASE.txt

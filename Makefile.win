@@ -7,11 +7,11 @@ all: builddir libbsdconv bsdconv_mktable bsdconv codecs meta
 
 builddir:
 	mkdir -p build/
-	mkdir -p build/codecs
 	mkdir -p build/include
-	mkdir -p build/codecs/from
-	mkdir -p build/codecs/inter
-	mkdir -p build/codecs/to
+	mkdir -p build/mofules
+	mkdir -p build/modules/from
+	mkdir -p build/modules/inter
+	mkdir -p build/modules/to
 
 libbsdconv: builddir
 	$(CC) ${CFLAGS} src/missing_func.c src/libbsdconv.c -shared -o build/libbsdconv.dll
@@ -24,11 +24,11 @@ bsdconv_mktable: builddir src/bsdconv_mktable.c
 
 codecs_table: builddir bsdconv_mktable
 	cd codecs && \
-	find */*.txt -type f | awk -F. '{cmd="bsdconv_mktable ../codecs/"$$1"."$$2" codecs/"$$1; print(cmd);}' > ../build/mk_table.bat
+	find */*.txt -type f | awk -F. '{cmd="bsdconv_mktable ../modules/"$$1"."$$2" modules/"$$1; print(cmd);}' > ../build/mk_table.bat
 
 codecs_callback: builddir libbsdconv
 	cd codecs && \
-	find */*.c -type f | awk -F. '{cmd="$(CC) ${CFLAGS} -shared -lbsdconv -L../build/ -o ../build/codecs/"$$1".dll "$$1"."$$2" -lwsock32"; system(cmd);}'
+	find */*.c -type f | awk -F. '{cmd="$(CC) ${CFLAGS} -shared -lbsdconv -L../build/ -o ../build/modules/"$$1".dll "$$1"."$$2" -lwsock32"; system(cmd);}'
 
 codecs: builddir codecs_table codecs_callback
 
