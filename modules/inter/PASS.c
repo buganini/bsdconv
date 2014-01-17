@@ -56,6 +56,8 @@ void cbinit(struct bsdconv_instance *ins){
 
 void cbdestroy(struct bsdconv_instance *ins){
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	if(r->filter)
+		unload_filter(r->filter);
 	free(r);
 }
 

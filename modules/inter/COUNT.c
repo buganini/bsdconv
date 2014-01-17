@@ -45,6 +45,13 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	return 0;
 }
 
+void cbdestroy(struct bsdconv_instance *ins){
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	if(r->filter)
+		unload_filter(r->filter);
+	free(r);
+}
+
 void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_s *r=CURRENT_CODEC(ins)->priv;

@@ -49,6 +49,8 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 
 void cbdestroy(struct bsdconv_instance *ins){
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	if(r->filter)
+		unload_filter(r->filter);
 	free(r);
 }
 
