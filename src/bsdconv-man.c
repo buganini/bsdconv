@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Kuan-Chung Chiu <buganini@gmail.com>
+ * Copyright (c) 2013-2014 Kuan-Chung Chiu <buganini@gmail.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -37,6 +37,7 @@ static int man(char *pc){
 	codec=phase=strdup(pc);
 	strsep(&codec, "/");
 	if(codec==NULL){
+		free(phase);
 		return 1;
 	}
 
@@ -52,6 +53,9 @@ static int man(char *pc){
 	}else if(strcmp(phase, "TO")==0){
 		iphase=TO;
 		phase_dir="to";
+	}else if(strcmp(phase, "FILTER")==0){
+		iphase=FILTER;
+		phase_dir="filter";
 	}else{
 		free(phase);
 		free(codec);
@@ -91,12 +95,12 @@ static int man(char *pc){
 	if(a!=NULL){
 		printf("%s/%s:\n", phase, codec);
 		printf("Alias to %s\n", a);
-		free(a);
 	}else if(bsdconv_codec_check(iphase, codec)){
 		printf("No man page for such codec\n");
 	}else{
 		printf("No such codec\n");
 	}
+	free(a);
 
 	free(phase);
 	free(path);
