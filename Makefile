@@ -2,7 +2,7 @@ DESTDIR?=
 PREFIX?=/usr/local
 BSDCONV_PATH?=${PREFIX}
 
-CFLAGS+=-g -Wall -Wno-unused-result -O2 -D_BSDCONV_INTERNAL -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
+CFLAGS+=-Wall -Wno-unused-result -O2 -D_BSDCONV_INTERNAL -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
 SHLIBVER=11
 
 UNAME_S=$(shell uname -s)
@@ -225,6 +225,7 @@ filters: builddir
 	for item in ${TODO_FILTERS} ; do \
 		echo Build filter $${item}.so ; \
 		$(CC) ${CFLAGS} modules/filter/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/filter/$${item}.so -lbsdconv ${LIBS} ; \
+		if [ -e modules/filter/$${item}.man ]; then cp modules/filter/$${item}.man ./build/share/bsdconv/filter/$${item}.man ; fi ; \
 	done
 
 codecs_basic: builddir bsdconv-mktable libbsdconv meta
@@ -282,6 +283,7 @@ install_main:
 install_filters:
 	for item in ${TODO_FILTERS} ; do \
 		install -m 444 build/share/bsdconv/filter/$${item}.so ${DESTDIR}${PREFIX}/share/bsdconv/filter/$${item}.so ; \
+		if [ -e build/share/bsdconv/filter/$${item}.man ]; then install -m 444 build/share/bsdconv/filter/$${item}.man ${DESTDIR}${PREFIX}/share/bsdconv/filter/$${item}.man ; fi ; \
 	done
 
 install_basic:

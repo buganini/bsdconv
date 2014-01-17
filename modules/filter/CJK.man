@@ -1,0 +1,8 @@
+U+3400..U+4DB5	CJK Unified Ideographs Extension A	3.0
+U+4E00..U+9FA5	CJK Unified Ideographs	1.1
+U+9FA6..U+9FBB	CJK Unified Ideographs	4.1
+U+F900..U+FA2D	CJK Compatibility Ideographs	1.1
+U+FA30..U+FA6A	CJK Compatibility Ideographs	3.2
+U+FA70..U+FAD9	CJK Compatibility Ideographs	4.1
+U+20000..U+2A6D6	CJK Unified Ideographs Extension B	3.1
+U+2F800..U+2FA1D	CJK Compatibility Supplement	3.1
