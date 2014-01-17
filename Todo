@@ -1,5 +1,4 @@
 update score table
 to/ASCII-TRANS
 {}
-filter man
 codec => module
