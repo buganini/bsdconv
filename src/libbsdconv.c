@@ -1637,6 +1637,10 @@ int bsdconv_codec_check(int type, const char *_codec){
 	return ret;
 }
 
+int scmp(const void *a, const void *b){
+    return strcmp(*(char **)a, *(char **)b);
+}
+
 char ** bsdconv_codecs_list(int phase_type){
 	char **list=malloc(sizeof(char *) * 8);
 	int size=8;
@@ -1667,20 +1671,38 @@ char ** bsdconv_codecs_list(int phase_type){
 		case TO:
 			type="to";
 			break;
+		case FILTER:
+			type="filter";
+			break;
 		default:
 			return list;
 	}
 	dir=opendir(type);
 	if(dir!=NULL){
-		while((d=readdir(dir))!=NULL){
-			if(strstr(d->d_name, ".")!=NULL || strcmp(d->d_name, "alias")==0)
-				continue;
-			if(length>=size){
-				size+=8;
-				list=realloc(list, sizeof(char *) * size);
+		if(phase_type==FILTER){
+			while((d=readdir(dir))!=NULL){
+				if(strcmp(d->d_name, "alias")==0 || strcmp(d->d_name, ".")==0 || strcmp(d->d_name, "..")==0)
+					continue;
+				if(length>=size){
+					size+=8;
+					list=realloc(list, sizeof(char *) * size);
+				}
+				list[length]=strdup(d->d_name);
+				c=list[length];
+				strsep(&c, ".");
+				length+=1;
 			}
-			list[length]=strdup(d->d_name);
-			length+=1;
+		}else{
+			while((d=readdir(dir))!=NULL){
+				if(strstr(d->d_name, ".")!=NULL || strcmp(d->d_name, "alias")==0)
+					continue;
+				if(length>=size){
+					size+=8;
+					list=realloc(list, sizeof(char *) * size);
+				}
+				list[length]=strdup(d->d_name);
+				length+=1;
+			}
 		}
 		closedir(dir);
 	}
@@ -1704,8 +1726,8 @@ char ** bsdconv_codecs_list(int phase_type){
 		size+=8;
 		list=realloc(list, sizeof(char *) * size);
 	}
+	qsort(list, length, sizeof(char *), scmp);
 	list[length]=NULL;
-	length+=1;
 	chdir(cwd);
 	free(cwd);
 	return list;
