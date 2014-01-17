@@ -40,9 +40,9 @@
 #endif
 
 #ifdef WIN32
-#define CODECS_SUBPATH "codecs"
+#define MODULES_SUBPATH "modules"
 #else
-#define CODECS_SUBPATH "share/bsdconv"
+#define MODULES_SUBPATH "share/bsdconv"
 #endif
 
 struct bsdconv_instance *bsdconv_unpack(const char *);
@@ -88,8 +88,8 @@ char * getCodecDir(){
 	if((c=getenv("BSDCONV_PATH"))==NULL){
 		c=BSDCONV_PATH;
 	}
-	b=malloc(strlen(c)+strlen(CODECS_SUBPATH)+2);
-	sprintf(b, "%s/%s", c, CODECS_SUBPATH);
+	b=malloc(strlen(c)+strlen(MODULES_SUBPATH)+2);
+	sprintf(b, "%s/%s", c, MODULES_SUBPATH);
 	return b;
 }
 
@@ -207,7 +207,7 @@ struct bsdconv_filter *load_filter(const char *_name){
 	}else{
 		chdir(BSDCONV_PATH);
 	}
-	chdir(CODECS_SUBPATH);
+	chdir(MODULES_SUBPATH);
 	chdir("filter");
 	REALPATH(name, path);
 	chdir(cwd);
@@ -344,7 +344,7 @@ int loadcodec(struct bsdconv_codec_t *cd, int type){
 	}else{
 		chdir(BSDCONV_PATH);
 	}
-	chdir(CODECS_SUBPATH);
+	chdir(MODULES_SUBPATH);
 	switch(type){
 		case FROM:
 			chdir("from");
@@ -1598,7 +1598,7 @@ int bsdconv_codec_check(int type, const char *_codec){
 		chdir(BSDCONV_PATH);
 	}
 
-	chdir(CODECS_SUBPATH);
+	chdir(MODULES_SUBPATH);
 	switch(type){
 		case FROM:
 			chdir("from");
@@ -1660,7 +1660,7 @@ char ** bsdconv_codecs_list(int phase_type){
 		chdir(BSDCONV_PATH);
 	}
 	list[0]=NULL;
-	chdir(CODECS_SUBPATH);
+	chdir(MODULES_SUBPATH);
 	switch(phase_type){
 		case FROM:
 			type="from";

@@ -3,7 +3,7 @@ BSDCONV_PATH?=${PREFIX}
 CFLAGS+=-Wall -O2 -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
 CC=mingw32-cc
 
-all: builddir libbsdconv bsdconv_mktable bsdconv codecs meta
+all: builddir libbsdconv bsdconv_mktable bsdconv modules meta
 
 builddir:
 	mkdir -p build/
@@ -23,14 +23,14 @@ bsdconv_mktable: builddir src/bsdconv_mktable.c
 	$(CC) ${CFLAGS} src/missing_func.c src/bsdconv_mktable.c -o build/bsdconv_mktable.exe
 
 codecs_table: builddir bsdconv_mktable
-	cd codecs && \
+	cd modules && \
 	find */*.txt -type f | awk -F. '{cmd="bsdconv_mktable ../modules/"$$1"."$$2" modules/"$$1; print(cmd);}' > ../build/mk_table.bat
 
 codecs_callback: builddir libbsdconv
-	cd codecs && \
+	cd modules && \
 	find */*.c -type f | awk -F. '{cmd="$(CC) ${CFLAGS} -shared -lbsdconv -L../build/ -o ../build/modules/"$$1".dll "$$1"."$$2" -lwsock32"; system(cmd);}'
 
-codecs: builddir codecs_table codecs_callback
+modules: builddir codecs_table codecs_callback
 
 meta:
 	cp src/bsdconv.h build/include/
