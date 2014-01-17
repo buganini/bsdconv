@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013 Kuan-Chung Chiu <buganini@gmail.com>
+ * Copyright (c) 2009-2014 Kuan-Chung Chiu <buganini@gmail.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -28,7 +28,7 @@
 
 #define IBUFLEN 1024
 
-#define LIST_CODECS(type) do{ \
+#define LIST_MODULES(type) do{ \
 	list=bsdconv_codecs_list(type); \
 	p=list; \
 	while(*p!=NULL){ \
@@ -39,16 +39,18 @@
 	bsdconv_free(list); \
 }while(0);
 
-void list_codecs(){
+void list_modules(){
 	char **list;
 	char **p;
 
 	printf("[From]\n");
-	LIST_CODECS(FROM);
+	LIST_MODULES(FROM);
 	printf("[Inter]\n");
-	LIST_CODECS(INTER);
+	LIST_MODULES(INTER);
 	printf("[To]\n");
-	LIST_CODECS(TO);
+	LIST_MODULES(TO);
+	printf("[Filter]\n");
+	LIST_MODULES(FILTER);
 
 	exit(0);
 }
@@ -100,13 +102,13 @@ int main(int argc, char *argv[]){
 	i=2;
 
 	if(strcmp(argv[1],"-l")==0)
-		list_codecs();
+		list_modules();
 
 	if(argc>2) while(i<argc){
 		if(strcmp(argv[i],"-i")==0)
 			inplace=1;
 		else if(strcmp(argv[i],"-l")==0)
-			list_codecs();
+			list_modules();
 		else
 			break;
 		i+=1;
