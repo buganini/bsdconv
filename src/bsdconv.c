@@ -29,7 +29,7 @@
 #define IBUFLEN 1024
 
 #define LIST_MODULES(type) do{ \
-	list=bsdconv_codecs_list(type); \
+	list=bsdconv_modules_list(type); \
 	p=list; \
 	while(*p!=NULL){ \
 		printf("\t%s\n", *p); \

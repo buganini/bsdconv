@@ -95,7 +95,7 @@ static int man(char *pc){
 	if(a!=NULL){
 		printf("%s/%s:\n", phase, codec);
 		printf("Alias to %s\n", a);
-	}else if(bsdconv_codec_check(iphase, codec)){
+	}else if(bsdconv_module_check(iphase, codec)){
 		printf("No man page for such codec\n");
 	}else{
 		printf("No such codec\n");

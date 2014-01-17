@@ -191,7 +191,7 @@ struct bsdconv_filter *load_filter(const char *_name){
 	char *name=strdup(_name);
 	strtoupper(name);
 
-	while(!bsdconv_codec_check(FILTER, name)){
+	while(!bsdconv_module_check(FILTER, name)){
 		c=bsdconv_solve_alias(FILTER, name);
 		if(c==NULL || strcmp(c, name)==0){
 			free(name);
@@ -912,7 +912,7 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 		}
 		for(i=1;i<=ins->phasen;++i){
 			for(j=0;j<=ins->phase[i].codecn;++j){
-				if(!bsdconv_codec_check(ins->phase[i].type, ins->phase[i].codec[j].desc)){
+				if(!bsdconv_module_check(ins->phase[i].type, ins->phase[i].codec[j].desc)){
 					c=bsdconv_solve_alias(ins->phase[i].type, ins->phase[i].codec[j].desc);
 					if(c==NULL){
 						e=1;
@@ -1583,7 +1583,7 @@ char * bsdconv_error(void){
 	}
 }
 
-int bsdconv_codec_check(int type, const char *_codec){
+int bsdconv_module_check(int type, const char *_codec){
 	int ret=0;
 	char *cwd;
 	char *codec=NULL;
@@ -1641,7 +1641,7 @@ int scmp(const void *a, const void *b){
     return strcmp(*(char **)a, *(char **)b);
 }
 
-char ** bsdconv_codecs_list(int phase_type){
+char ** bsdconv_modules_list(int phase_type){
 	char **list=malloc(sizeof(char *) * 8);
 	int size=8;
 	int length=0;

@@ -48,8 +48,8 @@ int main(int argc, char *argv[]){
 
 	int size=0;
 	int num=0;
-	inter_list=bsdconv_codecs_list(INTER);
-	fromto_list=bsdconv_codecs_list(mode);
+	inter_list=bsdconv_modules_list(INTER);
+	fromto_list=bsdconv_modules_list(mode);
 	for(p=inter_list;*p;++p)
 		num+=1;
 	for(p=fromto_list;*p;++p)

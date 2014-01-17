@@ -1,3 +1,7 @@
+12.0:
+	rename bsdconv_codecs_list() to bsdconv_modules_list()
+	rename bsdconv_codec_check() to bsdconv_module_check()
+
 11.2:
 	improve inter/{UPPER,LOWER} (include mapping in SpecialCasing.txt)
 	add inter/CASEFOLD (C/F in CASEFOLD.txt)
