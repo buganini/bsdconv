@@ -62,7 +62,7 @@ C API
 
 	Solve module alias
 
-.. c:function:: int bsdconv_module_check(int type, const char *modlue)
+.. c:function:: int bsdconv_module_check(int type, const char *module)
 
 	Check availability with given type and module name
 
