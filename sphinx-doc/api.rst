@@ -55,15 +55,45 @@ C API
 .. c:function:: void * bsdconv_hash_get(struct bsdconv_instance *converter, const char *key)
 .. c:function:: int bsdconv_hash_has(struct bsdconv_instance *converter, const char *key)
 .. c:function:: void bsdconv_hash_del(struct bsdconv_instance *converter, const char *key)
-.. c:function:: char * bsdconv_solve_alias(int phase_type, char *name)
-.. c:function:: int bsdconv_codec_check(int phase_type, const char *codec)
-.. c:function:: char ** bsdconv_codecs_list(int phase_type)
+
+	Access key-value system stored in conversion instance
+
+.. c:function:: char * bsdconv_solve_alias(int type, char *name)
+
+	Solve module alias
+
+.. c:function:: int bsdconv_module_check(int type, const char *modlue)
+
+	Check availability with given type and module name
+
+.. c:function:: char ** bsdconv_modules_list(int type)
+
+	Get modules list of specified type
+
 .. c:function:: char *bsdconv_pack(struct bsdconv_instance *converter)
+
+	Get equivalent conversion string of a conversion instance
+
 .. c:function:: void *bsdconv_malloc(size_t size)
+
+	malloc()
+
 .. c:function:: void bsdconv_free(void *ptr)
+
+	free()
+
 .. c:function:: int bsdconv_mkstemp(char *template)
+
+	mkstemp()
+
 .. c:function:: int str2datum(const char *string, struct data_rt *)
+
+	Parse single data cell
+
 .. c:function:: struct data_rt * str2data(const char *string, int *, struct bsdconv_instance *converter)
+
+	Parse data list
+
 .. c:function:: char * getCodecDir()
 
 	Get codec search path
