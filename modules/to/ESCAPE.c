@@ -33,8 +33,8 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	CURRENT_CODEC(ins)->priv=r;
 	r->filter=1;
 	r->mode=16;
-	r->prefix.data=strdup("%");
-	r->prefix.len=1;
+	r->prefix.data=strdup("%u");
+	r->prefix.len=2;
 	r->suffix.data=strdup("");
 	r->suffix.len=0;
 	while(arg){
