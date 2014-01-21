@@ -1,7 +1,7 @@
 12.0:
 	rename bsdconv_codecs_list() to bsdconv_modules_list()
 	rename bsdconv_codec_check() to bsdconv_module_check()
-	add filter/{HIRAGANA,KATAKANA}
+	add filter/{HIRAGANA,KATAKANA,HANGUL,CYRILLIC}
 
 11.2:
 	improve inter/{UPPER,LOWER} (include mapping in SpecialCasing.txt)
