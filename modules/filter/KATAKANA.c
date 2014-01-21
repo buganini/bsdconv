@@ -1,5 +1,4 @@
 /*
- *
  * Copyright (c) 2014 Kuan-Chung Chiu <buganini@gmail.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
