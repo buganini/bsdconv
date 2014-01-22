@@ -21,19 +21,19 @@
 #include "../../src/bsdconv.h"
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
-	CURRENT_CODEC(ins)->priv=bsdconv_create("CNS11643");
+	THIS_CODEC(ins)->priv=bsdconv_create("CNS11643");
 	return 0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	void *p=CURRENT_CODEC(ins)->priv;
+	void *p=THIS_CODEC(ins)->priv;
 	bsdconv_destroy(p);
 }
 
 void cbconv(struct bsdconv_instance *ins){
 	char *data;
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct bsdconv_instance *cns=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct bsdconv_instance *cns=THIS_CODEC(ins)->priv;
 	struct data_rt *data_p=this_phase->curr;
 	data=this_phase->curr->data;
 

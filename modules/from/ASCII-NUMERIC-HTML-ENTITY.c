@@ -33,17 +33,17 @@ struct my_s{
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
-	CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
+	THIS_CODEC(ins)->priv=malloc(sizeof(struct my_s));
 	return 0;
 }
 
 void cbinit(struct bsdconv_instance *ins){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	r->status=0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	void *p=CURRENT_CODEC(ins)->priv;
+	void *p=THIS_CODEC(ins)->priv;
 	free(p);
 }
 
@@ -56,8 +56,8 @@ void cbdestroy(struct bsdconv_instance *ins){
 void cbconv(struct bsdconv_instance *ins){
 	char ob[8], *p;
 	int i,j=0;
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct my_s *t=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct my_s *t=THIS_CODEC(ins)->priv;
 	char d;
 
 	for(;this_phase->i<this_phase->curr->len;this_phase->i+=1){

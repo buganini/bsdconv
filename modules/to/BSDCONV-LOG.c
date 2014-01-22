@@ -21,18 +21,18 @@
 #define TAILIZE(p) while(*p){ p++ ;}
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
-	CURRENT_CODEC(ins)->priv=fopen(getenv("BSDCONV_TO_LOG"),"a");
+	THIS_CODEC(ins)->priv=fopen(getenv("BSDCONV_TO_LOG"),"a");
 	return 0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	void *p=CURRENT_CODEC(ins)->priv;
+	void *p=THIS_CODEC(ins)->priv;
 	fclose(p);
 }
 
 void cbconv(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	FILE *fp=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	FILE *fp=THIS_CODEC(ins)->priv;
 	int i;
 	this_phase->state.status=NEXTPHASE;
 

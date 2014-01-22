@@ -35,7 +35,7 @@ struct my_s{
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
-	struct my_s *r=CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
+	struct my_s *r=THIS_CODEC(ins)->priv=malloc(sizeof(struct my_s));
 	r->tail=malloc(sizeof(struct ll_s));
 	r->tail->next=NULL;
 	r->head=r->tail;
@@ -44,8 +44,8 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 }
 
 void cbflush(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct my_s *r=THIS_CODEC(ins)->priv;
 
 	while(r->head->next){
 		this_phase->data_tail->next=r->head->p;
@@ -63,9 +63,9 @@ void cbflush(struct bsdconv_instance *ins){
 }
 
 void cbconv(struct bsdconv_instance *ins){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	unsigned char *data;
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	data=this_phase->curr->data;
 	int i;
 	int max=sizeof(ccc_table) / sizeof(struct ccc_interval) - 1;
@@ -142,7 +142,7 @@ void cbconv(struct bsdconv_instance *ins){
 
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	free(r->head);
 	free(r);
 }

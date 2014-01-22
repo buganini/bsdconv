@@ -39,18 +39,18 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	fclose(r->bak);
 	r->bak=r->score=fopen(p,"rb+");
 	r->list=NULL;
-	CURRENT_CODEC(ins)->priv=r;
+	THIS_CODEC(ins)->priv=r;
 	return 0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	fclose(r->bak);
 	free(r);
 }
 
 void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	switch(ctl){
 		case BSDCONV_CTL_ATTACH_SCORE:
 			r->score=ptr;
@@ -63,8 +63,8 @@ void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
 
 void cbconv(struct bsdconv_instance *ins){
 	unsigned char *data;
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	data=this_phase->curr->data;
 	unsigned char v=0;
 	int i;

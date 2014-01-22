@@ -286,8 +286,9 @@ static inline struct state_rt read_state(void *p){
 #define DATUM_FREE(X) do{ if((X)->flags & F_FREE) free((X)->data); (X)->next=ins->pool; ins->pool=(X);}while(0)
 #define DATA_FREE(X) do{ struct data_rt *t,*p=(X); while(p){if(p->flags & F_FREE) free(p->data); t=p->next; p->next=ins->pool; ins->pool=p; p=t;}}while(0)
 
-#define CURRENT_PHASE(INS) (&(INS)->phase[(INS)->phase_index])
-#define CURRENT_CODEC(INS) (&(INS)->phase[(INS)->phase_index].codec[(INS)->phase[(INS)->phase_index].index])
+#define PREV_PHASE(INS) (&(INS)->phase[(INS)->phase_index])
+#define THIS_PHASE(INS) (&(INS)->phase[(INS)->phase_index])
+#define THIS_CODEC(INS) (&(INS)->phase[(INS)->phase_index].codec[(INS)->phase[(INS)->phase_index].index])
 #endif
 
 //API

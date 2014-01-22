@@ -47,19 +47,19 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 		}
 		arg=arg->next;
 	}
-	CURRENT_CODEC(ins)->priv=r;
+	THIS_CODEC(ins)->priv=r;
 	return 0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct my_st *r=this_phase->codec[this_phase->index].priv;
 	DATA_FREE(r->data);
 	free(r);
 }
 
 void cbconv(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct my_st *r=this_phase->codec[this_phase->index].priv;
 
 	LISTCPY(this_phase->data_tail, r->data);

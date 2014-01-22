@@ -24,7 +24,7 @@
 void cbconv(struct bsdconv_instance *ins){
 	char *data;
 	unsigned int len, i;
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	data=this_phase->curr->data;
 
 	this_phase->state.status=NEXTPHASE;

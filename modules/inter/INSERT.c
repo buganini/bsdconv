@@ -55,12 +55,12 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 		}
 		arg=arg->next;
 	}
-	CURRENT_CODEC(ins)->priv=r;
+	THIS_CODEC(ins)->priv=r;
 	return 0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	if(r->after)
 		DATA_FREE(r->after);
 	if(r->before)
@@ -69,8 +69,8 @@ void cbdestroy(struct bsdconv_instance *ins){
 }
 
 void cbconv(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct my_s *r=THIS_CODEC(ins)->priv;
 
 	if(r->before)
 		LISTCPY(this_phase->data_tail, r->before);

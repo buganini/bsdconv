@@ -24,7 +24,7 @@ struct my_s {
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
-	struct my_s *r=CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
+	struct my_s *r=THIS_CODEC(ins)->priv=malloc(sizeof(struct my_s));
 	DATA_MALLOC(r->qh);
 	r->qh->flags=0;
 	r->qh->next=NULL;
@@ -32,7 +32,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 }
 
 void cbinit(struct bsdconv_instance *ins){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	struct data_rt *t;
 	while(r->qh->next){
 		t=r->qh->next->next;
@@ -43,7 +43,7 @@ void cbinit(struct bsdconv_instance *ins){
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	struct data_rt *t;
 	while(r->qh){
 		t=r->qh->next;
@@ -54,8 +54,8 @@ void cbdestroy(struct bsdconv_instance *ins){
 }
 
 void cbflush(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct my_s *r=THIS_CODEC(ins)->priv;
 
 	if(r->qh->next){
 		DATA_MALLOC(r->qt->next);
@@ -75,8 +75,8 @@ void cbflush(struct bsdconv_instance *ins){
 }
 
 void cbconv(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct my_s *r=THIS_CODEC(ins)->priv;
 
 	if(cbfilter(this_phase->curr)){
 		DATA_MALLOC(r->qt->next);

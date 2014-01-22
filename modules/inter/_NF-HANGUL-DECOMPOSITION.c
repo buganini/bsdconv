@@ -31,7 +31,7 @@ static void decomposeHangul(uint32_t ucs, struct bsdconv_instance *ins);
 
 void cbconv(struct bsdconv_instance *ins){
 	unsigned char *data;
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	data=this_phase->curr->data;
 	int i;
 	uint32_t ucs=0;
@@ -58,7 +58,7 @@ void cbconv(struct bsdconv_instance *ins){
 }
 
 static void decomposeHangul(uint32_t ucs, struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	int SIndex  = ucs - SBase;
 	if(SIndex >= 0 && SIndex < SCount){
 		int L = LBase + SIndex / NCount;

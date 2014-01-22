@@ -26,19 +26,19 @@ struct my_s{
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	r->buf=malloc(8);
-	CURRENT_CODEC(ins)->priv=r;
+	THIS_CODEC(ins)->priv=r;
 	return 0;
 }
 
 void cbinit(struct bsdconv_instance *ins){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	r->status=0;
 	r->p=r->buf+1;
 	r->f=0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	free(r->buf);
 	free(r);
 }
@@ -68,8 +68,8 @@ void cbdestroy(struct bsdconv_instance *ins){
 }while(0);
 
 void cbconv(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct my_s *t=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct my_s *t=THIS_CODEC(ins)->priv;
 	char d;
 
 	for(;this_phase->i<this_phase->curr->len;this_phase->i+=1){
@@ -187,21 +187,21 @@ struct my_s{
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct my_s *r=malloc(sizeof(struct my_s));
-	CURRENT_CODEC(ins)->priv=r;
+	THIS_CODEC(ins)->priv=r;
 }
 
 void cbinit(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct my_s *t=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct my_s *t=THIS_CODEC(ins)->priv;
 	t->w=0;
 	t->ucs4.ucs4=0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	free(r);
 }
 
@@ -232,7 +232,7 @@ void cbdestroy(struct bsdconv_instance *ins){
 void cbconv(struct bsdconv_instance *ins){
 	int i;
 	unsigned char *c;
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
 	char d;
 

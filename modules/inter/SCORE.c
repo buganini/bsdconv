@@ -54,12 +54,12 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 		r->bak=r->score=fopen(p,"rb+");
 	}
 	r->counter=bsdconv_counter(ins, "SCORE");
-	CURRENT_CODEC(ins)->priv=r;
+	THIS_CODEC(ins)->priv=r;
 	return 0;
 }
 
 void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	switch(ctl){
 		case BSDCONV_CTL_ATTACH_SCORE:
 			r->score=ptr;
@@ -68,7 +68,7 @@ void cbctl(struct bsdconv_instance *ins, int ctl, void *ptr, size_t v){
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	if(r->bak)
 		fclose(r->bak);
 	free(r);
@@ -101,8 +101,8 @@ static const struct interval scoreboard[] = {
 
 void cbconv(struct bsdconv_instance *ins){
 	unsigned char *data;
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	FILE *fp=r->score;
 	data=this_phase->curr->data;
 	int i;

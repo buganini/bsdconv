@@ -30,7 +30,7 @@ struct my_s {
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
-	struct my_s *r=CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
+	struct my_s *r=THIS_CODEC(ins)->priv=malloc(sizeof(struct my_s));
 	r->map=bsdconv_create("_NFC-MAP,COUNT#ERR");
 	r->err=bsdconv_counter(r->map, "ERR");
 	r->starter=NULL;
@@ -41,7 +41,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 }
 
 void cbinit(struct bsdconv_instance *ins){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	r->status=0;
 	struct data_rt *t;
 	if(r->starter){
@@ -56,9 +56,9 @@ void cbinit(struct bsdconv_instance *ins){
 }
 
 void cbconv(struct bsdconv_instance *ins){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	unsigned char *data;
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct bsdconv_phase *prev_phase=&ins->phase[ins->phase_index-1];
 	data=this_phase->curr->data;
 	int i;
@@ -199,7 +199,7 @@ void cbconv(struct bsdconv_instance *ins){
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	struct data_rt *t;
 	bsdconv_destroy(r->map);
 	if(r->status){
@@ -214,8 +214,8 @@ void cbdestroy(struct bsdconv_instance *ins){
 }
 
 void cbflush(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	struct data_rt *t;
 
 	this_phase->state.status=NEXTPHASE;

@@ -40,7 +40,7 @@ static const struct gb18030_data gb18030_table[] = {
 };
 
 void cbconv(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	unsigned char *data, *p;
 	unsigned int len;
 	int max=sizeof(gb18030_table) / sizeof(struct gb18030_data) - 1;

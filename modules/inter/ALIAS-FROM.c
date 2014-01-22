@@ -20,17 +20,17 @@
 
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
-	CURRENT_CODEC(ins)->priv=bsdconv_create("ASCII:PASS");
+	THIS_CODEC(ins)->priv=bsdconv_create("ASCII:PASS");
 	return 0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	bsdconv_destroy(CURRENT_CODEC(ins)->priv);
+	bsdconv_destroy(THIS_CODEC(ins)->priv);
 }
 
 void cbconv(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct bsdconv_instance *uni=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct bsdconv_instance *uni=THIS_CODEC(ins)->priv;
 	const char *locale;
 	const char *s;
 

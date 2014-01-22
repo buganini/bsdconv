@@ -34,12 +34,12 @@ struct my_s {
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	r->data.data=NULL;
-	CURRENT_CODEC(ins)->priv=r;
+	THIS_CODEC(ins)->priv=r;
 	return 0;
 }
 
 void cbinit(struct bsdconv_instance *ins){
-	struct my_s *t=CURRENT_CODEC(ins)->priv;
+	struct my_s *t=THIS_CODEC(ins)->priv;
 	t->data.len=0;
 	if(t->data.data)
 		free(t->data.data);
@@ -48,7 +48,7 @@ void cbinit(struct bsdconv_instance *ins){
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct my_s *t=CURRENT_CODEC(ins)->priv;
+	struct my_s *t=THIS_CODEC(ins)->priv;
 	if(t->data.data){
 		free(t->data.data);
 	}
@@ -56,14 +56,14 @@ void cbdestroy(struct bsdconv_instance *ins){
 }
 
 void cbflush(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct my_s *t=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct my_s *t=THIS_CODEC(ins)->priv;
 	LISTCPY(this_phase->data_tail, &t->data);
 }
 
 void cbconv(struct bsdconv_instance *ins){
 	struct data_rt *data_ptr;
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct bsdconv_phase *prev_phase=&ins->phase[ins->phase_index-1];
 	struct my_s *t=this_phase->codec[this_phase->index].priv;
 	char d=CP(this_phase->curr->data)[this_phase->i];

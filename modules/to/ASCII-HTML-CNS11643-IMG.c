@@ -24,12 +24,12 @@
 #define TAILIZE(p) while(*p){ p++ ;}
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
-	CURRENT_CODEC(ins)->priv=bsdconv_create("CNS11643");
+	THIS_CODEC(ins)->priv=bsdconv_create("CNS11643");
 	return 0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	void *p=CURRENT_CODEC(ins)->priv;
+	void *p=THIS_CODEC(ins)->priv;
 	if(p!=NULL)
 		bsdconv_destroy(p);
 }
@@ -37,7 +37,7 @@ void cbdestroy(struct bsdconv_instance *ins){
 void cbconv(struct bsdconv_instance *ins){
 	char *data, *p, buf[128]={0};
 	unsigned int len, i;
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct bsdconv_instance *cns=this_phase->codec[this_phase->index].priv;
 	struct data_rt *data_p=this_phase->curr;
 	data=this_phase->curr->data;
