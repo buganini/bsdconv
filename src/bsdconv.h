@@ -156,7 +156,7 @@ struct bsdconv_phase {
 	struct state_rt state;
 	int index;
 	unsigned int i;
-	struct bsdconv_codec_t *codec;
+	struct bsdconv_codec *codec;
 	int codecn;
 	offset_t offset;
 	char flags;
@@ -180,7 +180,7 @@ struct bsdconv_filter {
 	int (*cbfilter)(struct data_rt *);
 };
 
-struct bsdconv_codec_t {
+struct bsdconv_codec {
 #ifdef WIN32
 	HANDLE fd;
 	HANDLE md;

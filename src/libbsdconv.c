@@ -232,7 +232,7 @@ void unload_filter(struct bsdconv_filter *filter){
 	free(filter);
 }
 
-int _loadcodec(struct bsdconv_codec_t *cd, char *path){
+int _loadcodec(struct bsdconv_codec *cd, char *path){
 #ifdef WIN32
 	if ((cd->fd=CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL))==INVALID_HANDLE_VALUE){
 		SetLastError(EOPNOTSUPP);
@@ -333,7 +333,7 @@ char * bsdconv_solve_alias(int type, char *_codec){
 	return ret;
 }
 
-int loadcodec(struct bsdconv_codec_t *cd, int type){
+int loadcodec(struct bsdconv_codec *cd, int type){
 	char *cwd;
 	char *c;
 	char buf[PATH_MAX+1];
@@ -367,7 +367,7 @@ int loadcodec(struct bsdconv_codec_t *cd, int type){
 	return 1;
 }
 
-void unloadcodec(struct bsdconv_codec_t *cd){
+void unloadcodec(struct bsdconv_codec *cd){
 	if(cd->dl){
 		CLOSE_SHAREOBJECT(cd->dl);
 	}
@@ -590,7 +590,7 @@ char * bsdconv_insert_phase(const char *conversion, const char *codec, int phase
 		ins->phase[i]=ins->phase[i-1];
 	}
 	ins->phase[phasen].type=phase_type;
-	ins->phase[phasen].codec=malloc(sizeof(struct bsdconv_codec_t));
+	ins->phase[phasen].codec=malloc(sizeof(struct bsdconv_codec));
 	ins->phase[phasen].codecn=0 /* trimmed length */;
 
 	ins->phase[phasen].codec[0].desc=strdup(codec);
@@ -624,7 +624,7 @@ char * bsdconv_insert_codec(const char *conversion, const char *codec, int ophas
 	int codecn=bsdconv_get_codec_index(ins, ophasen, ocodecn);
 
 	++ins->phase[phasen].codecn;
-	ins->phase[phasen].codec=realloc(ins->phase[phasen].codec, sizeof(struct bsdconv_codec_t)*(ins->phase[phasen].codecn+1));
+	ins->phase[phasen].codec=realloc(ins->phase[phasen].codec, sizeof(struct bsdconv_codec)*(ins->phase[phasen].codecn+1));
 
 	for(i=ins->phase[phasen].codecn;i>codecn;--i){
 		ins->phase[phasen].codec[i]=ins->phase[phasen].codec[i-1];
@@ -848,7 +848,7 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 		ins->phase[i].codecn-=1;
 	}
 	for(i=1;i<=ins->phasen;++i){
-		ins->phase[i].codec=malloc((ins->phase[i].codecn + 1)* sizeof(struct bsdconv_codec_t));
+		ins->phase[i].codec=malloc((ins->phase[i].codecn + 1)* sizeof(struct bsdconv_codec));
 	}
 	for(i=1;i<=ins->phasen;++i){
 		t=opipe[i];
