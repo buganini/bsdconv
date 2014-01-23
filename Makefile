@@ -207,7 +207,7 @@ installdir:
 	mkdir -p ${DESTDIR}${PREFIX}/share/bsdconv/inter
 	mkdir -p ${DESTDIR}${PREFIX}/share/bsdconv/to
 
-libbsdconv: builddir src/libbsdconv.c src/bsdconv.h
+libbsdconv: builddir src/libbsdconv*.c src/bsdconv.h
 	$(CC) ${CFLAGS} src/libbsdconv.c -fPIC -shared -o build/lib/${SHLIBNAME} ${LIBS}
 
 bsdconv: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
