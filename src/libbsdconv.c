@@ -230,7 +230,7 @@ void bsdconv_init(struct bsdconv_instance *ins){
 }
 
 void bsdconv_ctl(struct bsdconv_instance *ins, int ctl, void *p, int v){
-	int i,j;
+	int i, j;
 	for(i=1;i<=ins->phasen;++i){
 		for(j=0;j<=ins->phase[i].codecn;++j){
 			if(ins->phase[i].codec[j].cbctl){
@@ -247,7 +247,7 @@ char *bsdconv_pack(struct bsdconv_instance *ins){
 	char *t, *cur;
 	const char *end;
 	int len=0;
-	int i,j,n;
+	int i, j, n;
 	for(i=1;i<=ins->phasen;++i){
 		for(j=0;j<=ins->phase[i].codecn;++j){
 			len+=strlen(ins->phase[i].codec[j].desc);
@@ -299,7 +299,7 @@ char *bsdconv_pack(struct bsdconv_instance *ins){
 						strcat(ret, "&");
 					strcat(ret, ins->phase[i].codec[j].argv);
 				}
-				strcat(ret,end);
+				strcat(ret, end);
 				if(cur)
 					t=cur+1;
 				else
@@ -554,7 +554,7 @@ bsdconv_create_error:
 }
 
 void bsdconv_destroy(struct bsdconv_instance *ins){
-	int i,j;
+	int i, j;
 	struct data_rt *data_ptr;
 	void *p;
 
@@ -649,7 +649,7 @@ void bsdconv(struct bsdconv_instance *ins){
 									if(this_phase->match_data){
 										LISTCPY_ST(this_phase->data_tail, this_phase->match_data, this_codec->data_z);
 
-										LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
+										LISTFREE(prev_phase->data_head, this_phase->bak, prev_phase->data_tail);
 										this_phase->curr=prev_phase->data_head;
 										this_phase->i=this_phase->data_head->len;
 									}else if(this_codec->cbflush){
@@ -671,9 +671,10 @@ void bsdconv(struct bsdconv_instance *ins){
 									*(ins->ierr)+=1;
 
 									RESET(ins->phase_index);
+									this_codec=THIS_CODEC(ins);
 
 									this_phase->bak=this_phase->curr;
-									LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
+									LISTFREE(prev_phase->data_head, this_phase->bak, prev_phase->data_tail);
 									this_phase->bak=this_phase->curr=prev_phase->data_head;
 									this_phase->i=this_phase->data_head->len=this_phase->data_head->len+1;
 									continue;
@@ -686,7 +687,7 @@ void bsdconv(struct bsdconv_instance *ins){
 								LISTCPY_ST(this_phase->data_tail, this_phase->state.data, this_codec->data_z);
 
 								this_phase->bak=this_phase->curr;
-								LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
+								LISTFREE(prev_phase->data_head, this_phase->bak, prev_phase->data_tail);
 								this_phase->curr=prev_phase->data_head;
 								this_phase->data_head->len=this_phase->i+1;
 
@@ -705,13 +706,14 @@ void bsdconv(struct bsdconv_instance *ins){
 							case SUBMATCH_SUBROUTINE:
 								this_codec->cbconv(ins);
 								this_phase->flags |= F_LOOPBACK;
+
 								goto from_x;
 							case NEXTPHASE:
 								this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 								this_phase->match_data=NULL;
 
 								this_phase->bak=this_phase->curr;
-								LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
+								LISTFREE(prev_phase->data_head, this_phase->bak, prev_phase->data_tail);
 								this_phase->curr=prev_phase->data_head;
 								this_phase->data_head->len=this_phase->i+1;
 
@@ -764,7 +766,7 @@ void bsdconv(struct bsdconv_instance *ins){
 							if(this_phase->match_data){
 								LISTCPY_ST(this_phase->data_tail, this_phase->match_data, this_codec->data_z);
 
-								LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
+								LISTFREE(prev_phase->data_head, this_phase->bak, prev_phase->data_tail);
 								this_phase->curr=prev_phase->data_head;
 							}else if(this_codec->cbflush){
 								this_codec->cbflush(ins);
@@ -838,7 +840,7 @@ void bsdconv(struct bsdconv_instance *ins){
 						this_phase->match_data=NULL;
 
 						this_phase->bak=this_phase->curr->next;
-						LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
+						LISTFREE(prev_phase->data_head, this_phase->bak, prev_phase->data_tail);
 						this_phase->curr=prev_phase->data_head;
 
 						RESET(ins->phase_index);
@@ -915,6 +917,7 @@ void bsdconv(struct bsdconv_instance *ins){
 							*(ins->oerr)+=1;
 
 							RESET(ins->phase_index);
+							this_codec=THIS_CODEC(ins);
 
 							this_phase->bak=this_phase->curr->next;
 							LISTFREE(prev_phase->data_head, this_phase->bak, prev_phase->data_tail);
