@@ -40,22 +40,22 @@ basicstyle=\ttfamily
 				    \node [right=of from](d1) {:};
 				    \node [right=of d1] (to) {UTF-8};
 				    \node [right=of to] (d2) {};
-					
+
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
 (d0)--(d1)  node  [black,midway,yshift=-1cm] { from };
-				
+
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
 (d1) -- (d2)  node [black,midway,yshift=-1cm] { to };
-				
+
 				\end{tikzpicture}
 				\caption{Basic two phases conversion}
 			\end{figure}
-			
+
 			\paragraph{}
 			Between \textbf{from} and \textbf{to} phases, we can have an \textbf{inter} phase.
 			\begin{figure}[H]
 				\centering
-				\begin{tikzpicture}[auto,node distance=0,on grid=false]			
+				\begin{tikzpicture}[auto,node distance=0,on grid=false]
 				    % Place nodes
 				    \node (d0) {};
 				    \node [right=of d0](from) {UTF-8};
@@ -63,20 +63,20 @@ basicstyle=\ttfamily
 				    \node [right=of d1] (inter) {UPPER};
 				    \node [right=of inter](d2) {:};
 				    \node [right=of d2] (to) {UTF-8};
-				    \node [right=of to] (d3) {};			
-					
+				    \node [right=of to] (d3) {};
+
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
 	(d0) -- (d1) node [black,midway,yshift=-1cm] { from };
-					
+
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
 	(d1) -- (d2) node [black,midway,yshift=-1cm] { inter };
-					
+
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
 	(d2) -- (d3) node [black,midway,yshift=-1cm] { to };
 				\end{tikzpicture}
 				\caption{Conversion with inter-mapping phase}
 			\end{figure}
-			
+
 			\paragraph{}
 			There can be more than one \textbf{inter} phases.
 			\begin{figure}[H]
@@ -91,20 +91,16 @@ basicstyle=\ttfamily
 				    \node [right=of d2] (inter2) {FULL};
 				    \node [right=of inter2](d3) {:};
 				    \node [right=of d3] (to) {UTF-8};
-				    \node [right=of to] (d4) {};			
-					
-					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
-	(d0) -- (d1) node [black,midway,yshift=-1cm] { from };
-					
-					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
-	(d1) -- (d2) node [black,midway,yshift=-1cm] { inter };
-					
-					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
-	(d2) -- (d3) node [black,midway,yshift=-1cm] { inter };
-					
-					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
-	(d3) -- (d4) node [black,midway,yshift=-1cm] { to };
-				
+				    \node [right=of to] (d4) {};
+
+					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d0) -- (d1) node [black,midway,yshift=-1cm] { from };
+
+					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d1) -- (d2) node [black,midway,yshift=-1cm] { inter };
+
+					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d2) -- (d3) node [black,midway,yshift=-1cm] { inter };
+
+					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d3) -- (d4) node [black,midway,yshift=-1cm] { to };
+
 				\end{tikzpicture}
 				\caption{Conversion with multiple inter-mapping phases}
 			\end{figure}
@@ -119,13 +115,12 @@ basicstyle=\ttfamily
 				    \node (d0) {};
 				    \node [right=of d0](inter) {HALF};
 				    \node [right=of inter] (d1) {};
-					
-					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
-(d0)--(d1)  node  [black,midway,yshift=-1cm] { inter };
+
+					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d0)--(d1)  node  [black,midway,yshift=-1cm] { inter };
 				\end{tikzpicture}
 				\caption{Standalone inter-mapping phase}
 			\end{figure}
-			
+
 			\paragraph{}
 			Conversions can be cascaded with pipe symbol. In most cases it is equivalent to shell pipe unless the use of codecs manipulating flag (described in section 2.2).
 			\begin{figure}[H]
@@ -141,21 +136,21 @@ basicstyle=\ttfamily
 				    \node [right=of from2](d3) {:};
 				    \node [right=of d3](to2) {UTF-8};
 				    \node [right=of to2] (d4) {};
-					
+
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d0) -- (d1) node [black,midway,yshift=-1cm] { from };
-				
+
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d1) -- (d2) node [black,midway,yshift=-1cm] { to };
 
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d2) -- (d3) node [black,midway,yshift=-1cm] { from };
 
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d3) -- (d4) node [black,midway,yshift=-1cm] { to };
-				
+
 				\end{tikzpicture}
 				\caption{Cascaded conversions}
 			\end{figure}
 			\paragraph{}
 			ASCII-compatible codecs are designed to exclude ASCII part and named as \_FOO, with alias FOO $\Rightarrow$ \_FOO,ASCII or ASCII,\_FOO.
-		
+
 		\subsection{Codecs \& Fallback}
 			\paragraph{}
 			A phase consists of one or more codecs, separated by comma. The latter codecs will be utilized if and only if the former codecs fail to consume the incoming data, once a codec finish its task, the first codec will be up again for upcoming data.
@@ -170,15 +165,15 @@ basicstyle=\ttfamily
 				    \node [right=of to] (d2) {,};
 				    \node [right=of d2] (from2) {3F};
 				    \node [right=of from2] (d3) {};
-					
+
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d0) -- (d1) node [black,midway,yshift=-1cm] { from };
-				
+
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d1) -- (d3) node [black,midway,yshift=-1cm] { to };
-				
+
 				\end{tikzpicture}
 				\caption{Fallback codec}
 			\end{figure}
-			
+
 		\subsection{Codec argument}
 			\paragraph{}
 			Some codecs take arguments, after the hash symbol.
@@ -193,13 +188,13 @@ basicstyle=\ttfamily
 				    \node [right=of to] (d2) {,};
 				    \node [right=of d2] (to2) {ANY\#3F};
 				    \node [right=of from2] (d3) {};
-				
+
 				\end{tikzpicture}
 				\caption{Passing argument to codec}
 			\end{figure}
-			
+
 			\paragraph{}
-			Some codecs take arguments in key-value form. Argument name and value consist of numbers, alphabets, hyphen and underscore, binary data are represented in hexadecimal form. 
+			Some codecs take arguments in key-value form. Argument name and value consist of numbers, alphabets, hyphen and underscore, binary data are represented in hexadecimal form.
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
@@ -211,7 +206,7 @@ basicstyle=\ttfamily
 				    \node [right=of to] (d2) {,};
 				    \node [right=of d2] (to2) {ESCAPE\#PREFIX=2575};
 				    \node [right=of to2] (d3) {};
-				
+
 				\end{tikzpicture}
 				\caption{Passing argument to codec in key-value form}
 			\end{figure}
@@ -229,7 +224,7 @@ basicstyle=\ttfamily
 				    \node [right=of to] (d2) {,};
 				    \node [right=of d2] (to2) {ESCAPE\#PREFIX=262378\&SUFFIX=3B};
 				    \node [right=of to2] (d3) {};
-				
+
 				\end{tikzpicture}
 				\caption{Passing multiple arguments to codec}
 			\end{figure}
@@ -244,7 +239,7 @@ basicstyle=\ttfamily
 				    \node [right=of from](d1) {:};
 				    \node [right=of d1] (to) {ASCII};
 				    \node [right=of to] (d2) {};
-				
+
 				\end{tikzpicture}
 				\caption{Data list}
 			\end{figure}
@@ -333,7 +328,7 @@ basicstyle=\ttfamily
 					    \node [below=0 of internal2] {Internal data};
 					    \node [rectangle,draw,right=1 of internal2] (output) {A\%E2\%88\%80};
 					    \node [below=0 of output] {Output (UTF-8 literal)};
-					
+
 						\draw [->] (input) -- (decoder);
 						\draw [->] (decoder) -- (internal);
 						\draw [->] (internal.east) -- ++ (0.5,0) -- ++ (0,-2) -| (encoder.north);
@@ -343,10 +338,10 @@ basicstyle=\ttfamily
 					\caption{Fallback \& Type}
 				\end{figure}
 		\clearpage
-		
+
 		\subsection{Flag}
 			\paragraph{}
-			A code point packet carries its own flags. Currently there are two types of flag, \textbf{FREE} and \textbf{MARK}. Flag \textbf{FREE} indicates that the packet buffer needs to be recycled or released, this is used only when programming is involved. Flag \textbf{MARK} is (currently only) added by codec to/PASS\#MARK and used by codec from/PASS\#UNMARK to identify which packets have already been decoded and needs to be passed through in \textbf{from} phase. 
+			A code point packet carries its own flags. Currently there are two types of flag, \textbf{FREE} and \textbf{MARK}. Flag \textbf{FREE} indicates that the packet buffer needs to be recycled or released, this is used only when programming is involved. Flag \textbf{MARK} is (currently only) added by codec to/PASS\#MARK and used by codec from/PASS\#UNMARK to identify which packets have already been decoded and needs to be passed through in \textbf{from} phase.
 			\paragraph{}
 			The code point packets structure is retained, including flags, within cascaded conversions, but not for shell pipe. Figure 11 demonstrate the flow of conversion "ESCAPE:PASS\#MARK\&FOR=1,BYTE$|$PASS\#UNMARK,UTF-8:UTF-8".
 				\begin{figure}[H]
@@ -381,7 +376,7 @@ basicstyle=\ttfamily
 					    \node [below=0 of internal] {Internal data};
 					    \node [ellipse,draw,below=2cm of input] (encoder) {... : PASS\#MARK\&FOR=1,BYTE};
 					    \node [below=0 of encoder] {Encoder};
-					    					    \node [rectangle,draw,right=1cm of encoder] (internal2) {
+					    \node [rectangle,draw,right=1cm of encoder] (internal2) {
 							\begin{tikzpicture}[node distance=3mm]
 								\node [type](n0){01};
 								\node [below=0 of n0,data](n1){03};
@@ -438,7 +433,7 @@ basicstyle=\ttfamily
 					\end{tikzpicture}
 					\caption{Flag, from/PASS \& to/PASS}
 				\end{figure}
-				
+
 		\subsection{Helper codecs}
 			\paragraph{}
 			Codec from/bsdconv can be used to input internal data structure, and codec to/bsdconv\_stdout can be used to inspect type and flags.
