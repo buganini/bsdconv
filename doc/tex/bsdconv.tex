@@ -34,18 +34,16 @@ basicstyle=\ttfamily
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
 
-				    % Place nodes
-				    \node (d0) {};
-				    \node [right=of d0](from) {ISO-8859-1};
-				    \node [right=of from](d1) {:};
-				    \node [right=of d1] (to) {UTF-8};
-				    \node [right=of to] (d2) {};
+					% Place nodes
+					\node (d0) {};
+					\node [right=of d0](from) {ISO-8859-1};
+					\node [right=of from](d1) {:};
+					\node [right=of d1] (to) {UTF-8};
+					\node [right=of to] (d2) {};
 
-					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
-(d0)--(d1)  node  [black,midway,yshift=-1cm] { from };
+					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d0)--(d1) node [black,midway,yshift=-1cm] { from };
 
-					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
-(d1) -- (d2)  node [black,midway,yshift=-1cm] { to };
+					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d1) -- (d2) node [black,midway,yshift=-1cm] { to };
 
 				\end{tikzpicture}
 				\caption{Basic two phases conversion}
@@ -56,23 +54,20 @@ basicstyle=\ttfamily
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
-				    % Place nodes
-				    \node (d0) {};
-				    \node [right=of d0](from) {UTF-8};
-				    \node [right=of from](d1) {:};
-				    \node [right=of d1] (inter) {UPPER};
-				    \node [right=of inter](d2) {:};
-				    \node [right=of d2] (to) {UTF-8};
-				    \node [right=of to] (d3) {};
+					% Place nodes
+					\node (d0) {};
+					\node [right=of d0](from) {UTF-8};
+					\node [right=of from](d1) {:};
+					\node [right=of d1] (inter) {UPPER};
+					\node [right=of inter](d2) {:};
+					\node [right=of d2] (to) {UTF-8};
+					\node [right=of to] (d3) {};
 
-					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
-	(d0) -- (d1) node [black,midway,yshift=-1cm] { from };
+					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d0) -- (d1) node [black,midway,yshift=-1cm] { from };
 
-					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
-	(d1) -- (d2) node [black,midway,yshift=-1cm] { inter };
+					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]	(d1) -- (d2) node [black,midway,yshift=-1cm] { inter };
 
-					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]
-	(d2) -- (d3) node [black,midway,yshift=-1cm] { to };
+					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}]	(d2) -- (d3) node [black,midway,yshift=-1cm] { to };
 				\end{tikzpicture}
 				\caption{Conversion with inter-mapping phase}
 			\end{figure}
@@ -82,16 +77,16 @@ basicstyle=\ttfamily
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
-				    % Place nodes
-				    \node (d0) {};
-				    \node [right=of d0](from) {UTF-8};
-				    \node [right=of from](d1) {:};
-				    \node [right=of d1] (inter) {UPPER};
-				    \node [right=of inter](d2) {:};
-				    \node [right=of d2] (inter2) {FULL};
-				    \node [right=of inter2](d3) {:};
-				    \node [right=of d3] (to) {UTF-8};
-				    \node [right=of to] (d4) {};
+					% Place nodes
+					\node (d0) {};
+					\node [right=of d0](from) {UTF-8};
+					\node [right=of from](d1) {:};
+					\node [right=of d1] (inter) {UPPER};
+					\node [right=of inter](d2) {:};
+					\node [right=of d2] (inter2) {FULL};
+					\node [right=of inter2](d3) {:};
+					\node [right=of d3] (to) {UTF-8};
+					\node [right=of to] (d4) {};
 
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d0) -- (d1) node [black,midway,yshift=-1cm] { from };
 
@@ -111,10 +106,10 @@ basicstyle=\ttfamily
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
 
-				    % Place nodes
-				    \node (d0) {};
-				    \node [right=of d0](inter) {HALF};
-				    \node [right=of inter] (d1) {};
+					% Place nodes
+					\node (d0) {};
+					\node [right=of d0](inter) {HALF};
+					\node [right=of inter] (d1) {};
 
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d0)--(d1)  node  [black,midway,yshift=-1cm] { inter };
 				\end{tikzpicture}
@@ -126,16 +121,16 @@ basicstyle=\ttfamily
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
-				    % Place nodes
-				    \node (d0) {};
-				    \node [right=of d0] (from) {UTF-8};
-				    \node [right=of from] (d1) {:};
-				    \node [right=of d1] (to) {BIG5};
-				    \node [right=of to] (d2) {$|$};
-				    \node [right=of d2] (from2) {BIG5};
-				    \node [right=of from2](d3) {:};
-				    \node [right=of d3](to2) {UTF-8};
-				    \node [right=of to2] (d4) {};
+					% Place nodes
+					\node (d0) {};
+					\node [right=of d0] (from) {UTF-8};
+					\node [right=of from] (d1) {:};
+					\node [right=of d1] (to) {BIG5};
+					\node [right=of to] (d2) {$|$};
+					\node [right=of d2] (from2) {BIG5};
+					\node [right=of from2](d3) {:};
+					\node [right=of d3](to2) {UTF-8};
+					\node [right=of to2] (d4) {};
 
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d0) -- (d1) node [black,midway,yshift=-1cm] { from };
 
@@ -157,14 +152,14 @@ basicstyle=\ttfamily
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
-				    % Place nodes
-				    \node (d0) {};
-				    \node [right=of d0] (from) {UTF-8};
-				    \node [right=of from] (d1) {:};
-				    \node [right=of d1] (to) {ASCII};
-				    \node [right=of to] (d2) {,};
-				    \node [right=of d2] (from2) {3F};
-				    \node [right=of from2] (d3) {};
+					% Place nodes
+					\node (d0) {};
+					\node [right=of d0] (from) {UTF-8};
+					\node [right=of from] (d1) {:};
+					\node [right=of d1] (to) {ASCII};
+					\node [right=of to] (d2) {,};
+					\node [right=of d2] (from2) {3F};
+					\node [right=of from2] (d3) {};
 
 					\draw [decorate,decoration={brace,amplitude=5pt,raise=3mm, mirror}] (d0) -- (d1) node [black,midway,yshift=-1cm] { from };
 
@@ -180,14 +175,14 @@ basicstyle=\ttfamily
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
-				    % Place nodes
-				    \node (d0) {};
-				    \node [right=of d0] (from) {UTF-8};
-				    \node [right=of from] (d1) {:};
-				    \node [right=of d1] (to) {ASCII};
-				    \node [right=of to] (d2) {,};
-				    \node [right=of d2] (to2) {ANY\#3F};
-				    \node [right=of from2] (d3) {};
+					% Place nodes
+					\node (d0) {};
+					\node [right=of d0] (from) {UTF-8};
+					\node [right=of from] (d1) {:};
+					\node [right=of d1] (to) {ASCII};
+					\node [right=of to] (d2) {,};
+					\node [right=of d2] (to2) {ANY\#3F};
+					\node [right=of from2] (d3) {};
 
 				\end{tikzpicture}
 				\caption{Passing argument to codec}
@@ -198,14 +193,14 @@ basicstyle=\ttfamily
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
-				    % Place nodes
-				    \node (d0) {};
-				    \node [right=of d0](from) {UTF-8};
-				    \node [right=of from](d1) {:};
-				    \node [right=of d1] (to) {ASCII};
-				    \node [right=of to] (d2) {,};
-				    \node [right=of d2] (to2) {ESCAPE\#PREFIX=2575};
-				    \node [right=of to2] (d3) {};
+					% Place nodes
+					\node (d0) {};
+					\node [right=of d0](from) {UTF-8};
+					\node [right=of from](d1) {:};
+					\node [right=of d1] (to) {ASCII};
+					\node [right=of to] (d2) {,};
+					\node [right=of d2] (to2) {ESCAPE\#PREFIX=2575};
+					\node [right=of to2] (d3) {};
 
 				\end{tikzpicture}
 				\caption{Passing argument to codec in key-value form}
@@ -216,14 +211,14 @@ basicstyle=\ttfamily
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
-				    % Place nodes
-				    \node (d0) {};
-				    \node [right=of d0](from) {UTF-8};
-				    \node [right=of from](d1) {:};
-				    \node [right=of d1] (to) {ASCII};
-				    \node [right=of to] (d2) {,};
-				    \node [right=of d2] (to2) {ESCAPE\#PREFIX=262378\&SUFFIX=3B};
-				    \node [right=of to2] (d3) {};
+					% Place nodes
+					\node (d0) {};
+					\node [right=of d0](from) {UTF-8};
+					\node [right=of from](d1) {:};
+					\node [right=of d1] (to) {ASCII};
+					\node [right=of to] (d2) {,};
+					\node [right=of d2] (to2) {ESCAPE\#PREFIX=262378\&SUFFIX=3B};
+					\node [right=of to2] (d3) {};
 
 				\end{tikzpicture}
 				\caption{Passing multiple arguments to codec}
@@ -233,12 +228,12 @@ basicstyle=\ttfamily
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}[auto,node distance=0,on grid=false]
-				    % Place nodes
-				    \node (d0) {};
-				    \node [right=of d0](from) {ANY\#013F.0121};
-				    \node [right=of from](d1) {:};
-				    \node [right=of d1] (to) {ASCII};
-				    \node [right=of to] (d2) {};
+					% Place nodes
+					\node (d0) {};
+					\node [right=of d0](from) {ANY\#013F.0121};
+					\node [right=of from](d1) {:};
+					\node [right=of d1] (to) {ASCII};
+					\node [right=of to] (d2) {};
 
 				\end{tikzpicture}
 				\caption{Data list}
@@ -272,21 +267,21 @@ basicstyle=\ttfamily
 				\begin{figure}[H]
 					\centering
 					\begin{tikzpicture}[auto,node distance=0.5cm,on grid=false]
-					    % Place nodes
-					    \node (table){\begin{tabular}{|c|c|c|}
-					    	\hline
-					    	Entity & Unicode & UTF-8 Hex \\
-					    	\hline
-					    	\% & U+0025 & 25 \\
-					    	A & U+0041 & 41 \\
-					    	$\forall$ & U+2200 & E28880 \\
-					    	\hline
-						    \end{tabular}};
-					    \node [below=1 of table,rectangle,draw] (input) {A$\forall$};
-					    \node [below=0 of input] {Input (UTF-8 literal)};
-					    \node [ellipse,draw,right=of input] (decoder) {ASCII,BYTE : ...};
-					    \node [below=0 of decoder] {Decoder};
-					    \node [rectangle,draw,right=of decoder] (internal) {
+						% Place nodes
+						\node (table){\begin{tabular}{|c|c|c|}
+							\hline
+							Entity & Unicode & UTF-8 Hex \\
+							\hline
+							\% & U+0025 & 25 \\
+							A & U+0041 & 41 \\
+							$\forall$ & U+2200 & E28880 \\
+							\hline
+							\end{tabular}};
+						\node [below=1 of table,rectangle,draw] (input) {A$\forall$};
+						\node [below=0 of input] {Input (UTF-8 literal)};
+						\node [ellipse,draw,right=of input] (decoder) {ASCII,BYTE : ...};
+						\node [below=0 of decoder] {Decoder};
+						\node [rectangle,draw,right=of decoder] (internal) {
 							\begin{tikzpicture}[node distance=3mm]
 								\node [type](n0){01};
 								\node [below=0 of n0,data](n1){41};
@@ -300,11 +295,11 @@ basicstyle=\ttfamily
 								\draw [->] (n2) -- (n4);
 								\draw [->] (n4) -- (n6);
 							\end{tikzpicture}
-					    };
-					    \node [below=0 of internal] {Internal data};
-					    \node [ellipse,draw,below=3cm of input] (encoder) {... : ASCII,ESCAPE};
-					    \node [below=0 of encoder] {Encoder};
-					    					    \node [rectangle,draw,right=of encoder] (internal2) {
+						};
+						\node [below=0 of internal] {Internal data};
+						\node [ellipse,draw,below=3cm of input] (encoder) {... : ASCII,ESCAPE};
+						\node [below=0 of encoder] {Encoder};
+												\node [rectangle,draw,right=of encoder] (internal2) {
 							\begin{tikzpicture}[node distance=3mm]
 								\node [data](n0){41};
 								\node [above=0 of n0]{"A"};
@@ -324,10 +319,10 @@ basicstyle=\ttfamily
 								\draw [->] (n1) -- (n4);
 								\draw [->] (n4) -- (n7);
 							\end{tikzpicture}
-					    };
-					    \node [below=0 of internal2] {Internal data};
-					    \node [rectangle,draw,right=1 of internal2] (output) {A\%E2\%88\%80};
-					    \node [below=0 of output] {Output (UTF-8 literal)};
+						};
+						\node [below=0 of internal2] {Internal data};
+						\node [rectangle,draw,right=1 of internal2] (output) {A\%E2\%88\%80};
+						\node [below=0 of output] {Output (UTF-8 literal)};
 
 						\draw [->] (input) -- (decoder);
 						\draw [->] (decoder) -- (internal);
@@ -343,24 +338,24 @@ basicstyle=\ttfamily
 			\paragraph{}
 			A code point packet carries its own flags. Currently there are two types of flag, \textbf{FREE} and \textbf{MARK}. Flag \textbf{FREE} indicates that the packet buffer needs to be recycled or released, this is used only when programming is involved. Flag \textbf{MARK} is (currently only) added by codec to/PASS\#MARK and used by codec from/PASS\#UNMARK to identify which packets have already been decoded and needs to be passed through in \textbf{from} phase.
 			\paragraph{}
-			The code point packets structure is retained, including flags, within cascaded conversions, but not for shell pipe. Figure 11 demonstrate the flow of conversion "ESCAPE:PASS\#MARK\&FOR=1,BYTE$|$PASS\#UNMARK,UTF-8:UTF-8".
+			The code point packets structure is retained, including flags, within cascaded conversions, but not for shell pipe. Figure 11 demonstrate the flow of conversion ESCAPE:PASS\#MARK\&FOR=1,BYTE$|$PASS\#UNMARK,UTF-8:UTF-8".
 				\begin{figure}[H]
 					\centering
 					\begin{tikzpicture}[auto,node distance=0.5cm,on grid=false]
-					    % Place nodes
+						% Place nodes
 						\node (table){\begin{tabular}{|c|c|c|}
-					    	\hline
-					    	Entity & Unicode & UTF-8 Hex \\
-					    	\hline
-					    	$\alpha$ & U+03B1 & CEB1 \\
-					    	$\beta$ & U+03B2 & CEB2 \\
-					    	\hline
-						    \end{tabular}};
-					    \node [below=0.5cm of table,rectangle,draw] (input) {\%u03B1\%CE\%B2};
-					    \node [below=0 of input] {Input (UTF-8 literal)};
-					    \node [ellipse,draw,right=of input] (decoder) {ESCAPE : ...};
-					    \node [below=0 of decoder] {Decoder};
-					    \node [rectangle,draw,right=of decoder] (internal) {
+							\hline
+							Entity & Unicode & UTF-8 Hex \\
+							\hline
+							$\alpha$ & U+03B1 & CEB1 \\
+							$\beta$ & U+03B2 & CEB2 \\
+							\hline
+							\end{tabular}};
+						\node [below=0.5cm of table,rectangle,draw] (input) {\%u03B1\%CE\%B2};
+						\node [below=0 of input] {Input (UTF-8 literal)};
+						\node [ellipse,draw,right=of input] (decoder) {ESCAPE : ...};
+						\node [below=0 of decoder] {Decoder};
+						\node [rectangle,draw,right=of decoder] (internal) {
 							\begin{tikzpicture}[node distance=3mm]
 								\node [type](n0){01};
 								\node [below=0 of n0,data](n1){03};
@@ -372,11 +367,11 @@ basicstyle=\ttfamily
 								\draw [->] (n0) -- (n3);
 								\draw [->] (n3) -- (n5);
 							\end{tikzpicture}
-					    };
-					    \node [below=0 of internal] {Internal data};
-					    \node [ellipse,draw,below=2cm of input] (encoder) {... : PASS\#MARK\&FOR=1,BYTE};
-					    \node [below=0 of encoder] {Encoder};
-					    \node [rectangle,draw,right=1cm of encoder] (internal2) {
+						};
+						\node [below=0 of internal] {Internal data};
+						\node [ellipse,draw,below=2cm of input] (encoder) {... : PASS\#MARK\&FOR=1,BYTE};
+						\node [below=0 of encoder] {Encoder};
+						\node [rectangle,draw,right=1cm of encoder] (internal2) {
 							\begin{tikzpicture}[node distance=3mm]
 								\node [type](n0){01};
 								\node [below=0 of n0,data](n1){03};
@@ -387,11 +382,11 @@ basicstyle=\ttfamily
 								\draw [->] (n0) -- (n3);
 								\draw [->] (n3) -- (n5);
 							\end{tikzpicture}
-					    };
+						};
 						\node [below=0 of internal2] {Internal data};
 						\node [ellipse,draw,below=2cm of encoder] (decoder2) {PASS\#UNMARK,UTF-8 : ...};
 						\node [below=0 of decoder2] {Decoder};
-					    \node [rectangle,draw,right=of decoder2] (internal3) {
+						\node [rectangle,draw,right=of decoder2] (internal3) {
 							\begin{tikzpicture}[node distance=3mm]
 								\node [type](n0){01};
 								\node [below=0 of n0,data](n1){03};
@@ -401,11 +396,11 @@ basicstyle=\ttfamily
 								\node [below=0 of n4,data](n5){B2};
 								\draw [->] (n0) -- (n3);
 							\end{tikzpicture}
-					    };
-					    \node [below=0 of internal3] {Internal data};
+						};
+						\node [below=0 of internal3] {Internal data};
 						\node [ellipse,draw,right=of internal3] (encoder2) {... : UTF-8};
 						\node [below=0 of encoder2] {Encoder};
-					    \node [rectangle,draw,below=1.5cm of decoder2] (internal4) {
+						\node [rectangle,draw,below=1.5cm of decoder2] (internal4) {
 							\begin{tikzpicture}[node distance=3mm]
 								\node [data](n0){CE};
 								\node [below=0 of n0,data](n1){B1};
@@ -415,10 +410,10 @@ basicstyle=\ttfamily
 								\node [above=0 of n2]{"$\beta$"};
 								\draw [->] (n0) -- (n2);
 							\end{tikzpicture}
-					    };
-					    \node [below=0 of internal4] {Internal data};
-   					    \node [right=2cm of internal4,rectangle,draw] (output) {$\alpha\beta$};
-					    \node [below=0 of output] {Output (UTF-8 literal)};
+						};
+						\node [below=0 of internal4] {Internal data};
+						\node [right=2cm of internal4,rectangle,draw] (output) {$\alpha\beta$};
+						\node [below=0 of output] {Output (UTF-8 literal)};
 
 						\draw [->] (input) -- (decoder);
 						\draw [->] (decoder) -- (internal);
