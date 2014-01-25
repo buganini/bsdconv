@@ -312,8 +312,8 @@ install_ebcdic:
 	done
 
 build_doc:
-	xelatex -synctex=1 -interaction=nonstopmode bsdconv.tex //1-pass, for TOC
-	xelatex -synctex=1 -interaction=nonstopmode bsdconv.tex //2-pass
+	xelatex -synctex=1 -interaction=nonstopmode doc/tex/bsdconv.tex //1-pass, for TOC
+	xelatex -synctex=1 -interaction=nonstopmode doc/tex/bsdconv.tex //2-pass
 	$(MAKE) -C doc html
 
 plist:
