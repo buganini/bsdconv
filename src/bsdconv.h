@@ -293,30 +293,39 @@ static inline struct state_rt read_state(void *p){
 #endif
 
 //API
+//main
 struct bsdconv_instance *bsdconv_create(const char *);
+void bsdconv_init(struct bsdconv_instance *);
+void bsdconv_ctl(struct bsdconv_instance *, int, void *, int);
+void bsdconv_destroy(struct bsdconv_instance *);
+void bsdconv(struct bsdconv_instance *);
+char * bsdconv_error(void);
+char *bsdconv_pack(struct bsdconv_instance *);
+
+//counter
+bsdconv_counter_t * bsdconv_counter(struct bsdconv_instance *, const char *);
+void bsdconv_counter_reset(struct bsdconv_instance *, const char *);
+
+//hash
+void bsdconv_hash_set(struct bsdconv_instance *, const char *, void *);
+void * bsdconv_hash_get(struct bsdconv_instance *, const char *);
+int bsdconv_hash_has(struct bsdconv_instance *, const char *);
+void bsdconv_hash_del(struct bsdconv_instance *, const char *);
+
+//module
+char * bsdconv_solve_alias(int, char *);
+int bsdconv_module_check(int, const char *);
+int bsdconv_codec_check(int, const char *);
+char ** bsdconv_modules_list(int);
+char ** bsdconv_codecs_list(int);
+
+//util
 int bsdconv_get_phase_index(struct bsdconv_instance *, int);
 int bsdconv_get_codec_index(struct bsdconv_instance *, int, int);
 char * bsdconv_insert_phase(const char *, const char *, int, int);
 char * bsdconv_insert_codec(const char *, const char *, int, int);
 char * bsdconv_replace_phase(const char *, const char *, int, int);
 char * bsdconv_replace_codec(const char *, const char *, int, int);
-void bsdconv_init(struct bsdconv_instance *);
-void bsdconv_ctl(struct bsdconv_instance *, int, void *, int);
-void bsdconv_destroy(struct bsdconv_instance *);
-void bsdconv(struct bsdconv_instance *);
-char * bsdconv_error(void);
-bsdconv_counter_t * bsdconv_counter(struct bsdconv_instance *, const char *);
-void bsdconv_counter_reset(struct bsdconv_instance *, const char *);
-void bsdconv_hash_set(struct bsdconv_instance *, const char *, void *);
-void * bsdconv_hash_get(struct bsdconv_instance *, const char *);
-int bsdconv_hash_has(struct bsdconv_instance *, const char *);
-void bsdconv_hash_del(struct bsdconv_instance *, const char *);
-char * bsdconv_solve_alias(int, char *);
-int bsdconv_module_check(int, const char *);
-int bsdconv_codec_check(int, const char *);
-char ** bsdconv_modules_list(int);
-char ** bsdconv_codecs_list(int);
-char *bsdconv_pack(struct bsdconv_instance *);
 void *bsdconv_malloc(size_t);
 void bsdconv_free(void *);
 int bsdconv_mkstemp(char *);
