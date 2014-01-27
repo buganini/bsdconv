@@ -1,14 +1,26 @@
+#include <errno.h>
 #include "../../src/bsdconv.h"
-#include "../filter/CJK.c"
-#include <stdlib.h>
-#include <string.h>
 
 struct my_s {
+	struct bsdconv_filter *filter;
 	struct data_rt *qh, *qt;
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=THIS_CODEC(ins)->priv=malloc(sizeof(struct my_s));
+
+	char *filter="ROMAN";
+	while(arg){
+		filter=arg->key;
+		arg=arg->next;
+	}
+
+	r->filter=load_filter(filter);
+	if(r->filter==NULL){
+		free(r);
+		return EOPNOTSUPP;
+	}
+
 	DATA_MALLOC(r->qh);
 	r->qh->flags=0;
 	r->qh->next=NULL;
@@ -29,6 +41,7 @@ void cbinit(struct bsdconv_instance *ins){
 void cbdestroy(struct bsdconv_instance *ins){
 	struct my_s *r=THIS_CODEC(ins)->priv;
 	struct data_rt *t;
+	unload_filter(r->filter);
 	while(r->qh){
 		t=r->qh->next;
 		DATUM_FREE(r->qh);
@@ -62,7 +75,7 @@ void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct my_s *r=THIS_CODEC(ins)->priv;
 
-	if(cbfilter(this_phase->curr)){
+	if(r->filter->cbfilter(this_phase->curr)){
 		DATA_MALLOC(r->qt->next);
 		r->qt=r->qt->next;
 		*(r->qt)=*(this_phase->curr);
