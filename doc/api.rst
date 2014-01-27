@@ -62,9 +62,17 @@ C API
 
 	Solve module alias
 
+.. c:function:: int bsdconv_codec_check(int type, const char *module)
+
+	DEPRECATED: use :c:func:`bsdconv_module_check()` instead
+
 .. c:function:: int bsdconv_module_check(int type, const char *module)
 
 	Check availability with given type and module name
+
+.. c:function:: char ** bsdconv_codecs_list(int type)
+
+	DEPRECATED: use :c:func:`bsdconv_modules_list()` instead
 
 .. c:function:: char ** bsdconv_modules_list(int type)
 
