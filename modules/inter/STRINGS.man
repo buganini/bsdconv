@@ -1,5 +1,10 @@
-Similiar to STRINGS(1), but for Chinese
+DESC
+	Similiar to STRINGS(1), but for filter characters with specified filter
+
+ARGUMENT
+	$filter
+
 EXAMPLE
-	> echo abd測試efg功能，hij | bsdconv utf-8:zh-strings:utf-8
+	> echo abd測試efg功能，hij | bsdconv utf-8:strings#cjk:utf-8
 	測試
 	功能
