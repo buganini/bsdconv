@@ -311,9 +311,13 @@ install_ebcdic:
 		if [ -e build/share/bsdconv/$${item}.so ]; then install -m 444 build/share/bsdconv/$${item}.so ${DESTDIR}${PREFIX}/share/bsdconv/$${item}.so ; fi ; \
 	done
 
-build_doc:
+build_doc: build_doc_tex build_doc_sphinx
+
+build_doc_tex:
 	xelatex -synctex=1 -interaction=nonstopmode doc/tex/bsdconv.tex //1-pass, for TOC
 	xelatex -synctex=1 -interaction=nonstopmode doc/tex/bsdconv.tex //2-pass
+
+build_doc_sphinx:
 	$(MAKE) -C doc html
 
 plist:
