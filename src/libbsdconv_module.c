@@ -60,6 +60,10 @@ char * bsdconv_solve_alias(int type, char *_codec){
 	return ret;
 }
 
+int bsdconv_codec_check(int type, const char *_codec){
+	return bsdconv_module_check(type, _codec);
+}
+
 int bsdconv_module_check(int type, const char *_codec){
 	int ret=0;
 	char *cwd;
@@ -116,6 +120,10 @@ int bsdconv_module_check(int type, const char *_codec){
 
 int scmp(const void *a, const void *b){
     return strcmp(*(char **)a, *(char **)b);
+}
+
+char ** bsdconv_codecs_list(int phase_type){
+	return bsdconv_modules_list(phase_type);
 }
 
 char ** bsdconv_modules_list(int phase_type){

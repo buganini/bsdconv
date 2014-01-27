@@ -1,6 +1,6 @@
-12.0:
-	rename bsdconv_codecs_list() to bsdconv_modules_list()
-	rename bsdconv_codec_check() to bsdconv_module_check()
+11.3:
+	deprecate bsdconv_codecs_list() by bsdconv_modules_list(), old symbol will be remained until next major release
+	deprecate bsdconv_codec_check() by bsdconv_module_check(), old symbol will be remained until next major release
 	add filter/{HIRAGANA,KATAKANA,HANGUL,CYRILLIC}
 
 11.2:
