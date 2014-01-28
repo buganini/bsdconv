@@ -1,7 +1,7 @@
 11.3:
 	deprecate bsdconv_codecs_list() by bsdconv_modules_list(), old symbol will be remained until next major release
 	deprecate bsdconv_codec_check() by bsdconv_module_check(), old symbol will be remained until next major release
-	add filter/{HIRAGANA,KATAKANA,HANGUL,CYRILLIC,ROMAN,PRINT}
+	add filter/{CYRILLIC,HANGUL,HIRAGANA,KATAKANA,KHMER,ROMAN,THAI,PRINT}
 	replace inter/ZH-STRINGS with inter/STRINGS which accepts filter
 
 11.2:
