@@ -9,7 +9,7 @@ struct my_s {
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=THIS_CODEC(ins)->priv=malloc(sizeof(struct my_s));
 
-	char *filter="ROMAN";
+	char *filter="PRINT";
 	while(arg){
 		filter=arg->key;
 		arg=arg->next;
