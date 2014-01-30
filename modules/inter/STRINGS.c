@@ -11,7 +11,9 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 
 	char *filter="PRINT";
 	while(arg){
-		filter=arg->key;
+		if(strcasecmp(arg->key, "FOR")==0){
+			filter=arg->ptr;
+		}
 		arg=arg->next;
 	}
 
