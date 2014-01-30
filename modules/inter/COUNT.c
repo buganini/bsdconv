@@ -12,18 +12,22 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	THIS_CODEC(ins)->priv=r;
 	r->filter=NULL;
 
+	char *filter=NULL;
 	char *key="COUNT";
 	while(arg){
 		if(strcasecmp(arg->key, "FOR")==0){
-			r->filter=load_filter(arg->ptr);
-			if(r->filter==NULL){
-				free(r);
-				return EOPNOTSUPP;
-			}
+			filter=arg->ptr;
 		}else{
 			key=arg->key;
 		}
 		arg=arg->next;
+	}
+	if(filter!=NULL){
+		r->filter=load_filter(filter);
+		if(r->filter==NULL){
+			free(r);
+			return EOPNOTSUPP;
+		}
 	}
 	r->counter=bsdconv_counter(ins, key);
 	return 0;

@@ -15,13 +15,11 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	THIS_CODEC(ins)->priv=r;
 	r->filter=NULL;
 	r->limit=0;
+
+	char *filter=NULL;
 	while(arg){
 		if(strcasecmp(arg->key, "FOR")==0){
-			r->filter=load_filter(arg->ptr);
-			if(r->filter==NULL){
-				free(r);
-				return EOPNOTSUPP;
-			}
+			filter=arg->ptr;
 		}else if(strcasecmp(arg->key, "LIMIT")==0){
 			sscanf(arg->ptr, "%d", &r->limit);
 		}else{
@@ -29,6 +27,13 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 			return EINVAL;
 		}
 		arg=arg->next;
+	}
+	if(filter!=NULL){
+		r->filter=load_filter(filter);
+		if(r->filter==NULL){
+			free(r);
+			return EOPNOTSUPP;
+		}
 	}
 	return 0;
 }

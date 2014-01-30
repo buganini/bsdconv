@@ -12,20 +12,25 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	THIS_CODEC(ins)->priv=r;
 	r->filter=NULL;
 	r->mark=0;
+
+	char *filter=NULL;
 	while(arg){
 		if(strcasecmp(arg->key, "MARK")==0){
 			r->mark=1;
 		}else if(strcasecmp(arg->key, "FOR")==0){
-			r->filter=load_filter(arg->ptr);
-			if(r->filter==NULL){
-				free(r);
-				return EOPNOTSUPP;
-			}
+			filter=arg->ptr;
 		}else{
 			free(r);
 			return EINVAL;
 		}
 		arg=arg->next;
+	}
+	if(filter!=NULL){
+		r->filter=load_filter(filter);
+		if(r->filter==NULL){
+			free(r);
+			return EOPNOTSUPP;
+		}
 	}
 	return 0;
 }
