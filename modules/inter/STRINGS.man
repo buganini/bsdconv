@@ -1,5 +1,5 @@
 DESC
-	Similiar to STRINGS(1), but for filter characters with specified filter
+	Similiar to STRINGS(1), but target for characters with specified filter
 
 ARGUMENT
 	FOR
