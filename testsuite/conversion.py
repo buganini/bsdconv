@@ -112,6 +112,7 @@ iotest=[
 	["utf-8:_nf-hangul-decomposition:utf-8","가","가"],
 	["utf-8:casefold:utf-8","AbяЯßẞ","abяяssss"],
 	["utf-8:replace#0142.0143=0132.0133:utf-8","ABCD","A23D"],
+	["utf-8:strings#min-len=2:utf-8","aㄎabㄎabcㄉabcd","ab\nabc\nabcd\n"],
 ]
 
 countertest=[

@@ -1,18 +1,29 @@
+#include <stdio.h>
 #include <errno.h>
 #include "../../src/bsdconv.h"
 
 struct my_s {
 	struct bsdconv_filter *filter;
 	struct data_rt *qh, *qt;
+	unsigned int acc_len;
+	int min_len;
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=THIS_CODEC(ins)->priv=malloc(sizeof(struct my_s));
+	int i;
+
+	r->min_len=1;
 
 	char *filter="PRINT";
 	while(arg){
 		if(strcasecmp(arg->key, "FOR")==0){
 			filter=arg->ptr;
+		}else if(strcasecmp(arg->key, "MIN-LEN")==0 && sscanf(arg->ptr, "%d", &i)==1){
+			r->min_len=i;
+		}else{
+			free(r);
+			return EINVAL;
 		}
 		arg=arg->next;
 	}
@@ -38,6 +49,7 @@ void cbinit(struct bsdconv_instance *ins){
 		r->qh->next=t;
 	}
 	r->qt=r->qh;
+	r->acc_len=0;
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
@@ -57,17 +69,24 @@ void cbflush(struct bsdconv_instance *ins){
 	struct my_s *r=THIS_CODEC(ins)->priv;
 
 	if(r->qh->next){
-		DATA_MALLOC(r->qt->next);
-		r->qt=r->qt->next;
-		r->qt->data="\x01\n";
-		r->qt->len=2;
-		r->qt->flags=0;
-		r->qt->next=NULL;
+		if(r->acc_len >= r->min_len){
+			DATA_MALLOC(r->qt->next);
+			r->qt=r->qt->next;
+			r->qt->data="\x01\n";
+			r->qt->len=2;
+			r->qt->flags=0;
+			r->qt->next=NULL;
 
-		this_phase->data_tail->next=r->qh->next;
-		this_phase->data_tail=r->qt;
-		r->qh->next=NULL;
-		r->qt=r->qh;
+			this_phase->data_tail->next=r->qh->next;
+			this_phase->data_tail=r->qt;
+			r->qh->next=NULL;
+			r->qt=r->qh;
+			r->acc_len=0;
+		}else{
+			DATA_FREE(r->qh->next);
+			r->qt=r->qh;
+			r->acc_len=0;
+		}
 	}
 
 	this_phase->state.status=NEXTPHASE;
@@ -83,6 +102,7 @@ void cbconv(struct bsdconv_instance *ins){
 		*(r->qt)=*(this_phase->curr);
 		this_phase->curr->flags &= ~F_FREE;
 		r->qt->next=NULL;
+		r->acc_len+=1;
 
 		this_phase->state.status=SUBMATCH;
 		return;

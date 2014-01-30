@@ -4,6 +4,8 @@ DESC
 ARGUMENT
 	FOR
 		FORMAT	FILTER
+	MIN-LEN
+		FROMAT INTEGER
 
 EXAMPLE
 	> echo abd測試efg功能，hij | bsdconv utf-8:strings#for=cjk:utf-8
