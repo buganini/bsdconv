@@ -7,6 +7,7 @@ struct my_s {
 	struct data_rt *qh, *qt;
 	unsigned int acc_len;
 	int min_len;
+	struct data_rt *sep;
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
@@ -16,11 +17,14 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	r->min_len=1;
 
 	char *filter="PRINT";
+	char *sep="010A";
 	while(arg){
 		if(strcasecmp(arg->key, "FOR")==0){
 			filter=arg->ptr;
 		}else if(strcasecmp(arg->key, "MIN-LEN")==0 && sscanf(arg->ptr, "%d", &i)==1){
 			r->min_len=i;
+		}else if(strcasecmp(arg->key, "SEP")==0){
+			sep=arg->ptr;
 		}else{
 			free(r);
 			return EINVAL;
@@ -32,6 +36,15 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	if(r->filter==NULL){
 		free(r);
 		return EOPNOTSUPP;
+	}
+
+	r->sep=str2data(sep, &i, ins);
+	if(i){
+		DATA_FREE(r->sep);
+		if(r->filter)
+			unload_filter(r->filter);
+		free(r);
+		return i;
 	}
 
 	DATA_MALLOC(r->qh);
@@ -55,6 +68,7 @@ void cbinit(struct bsdconv_instance *ins){
 void cbdestroy(struct bsdconv_instance *ins){
 	struct my_s *r=THIS_CODEC(ins)->priv;
 	struct data_rt *t;
+	DATA_FREE(r->sep);
 	unload_filter(r->filter);
 	while(r->qh){
 		t=r->qh->next;
@@ -70,12 +84,7 @@ void cbflush(struct bsdconv_instance *ins){
 
 	if(r->qh->next){
 		if(r->acc_len >= r->min_len){
-			DATA_MALLOC(r->qt->next);
-			r->qt=r->qt->next;
-			r->qt->data="\x01\n";
-			r->qt->len=2;
-			r->qt->flags=0;
-			r->qt->next=NULL;
+			LISTCPY(r->qt, r->sep);
 
 			this_phase->data_tail->next=r->qh->next;
 			this_phase->data_tail=r->qt;
