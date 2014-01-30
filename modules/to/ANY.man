@@ -9,7 +9,7 @@ OUTPUT
 ARGUMENT
 	ERROR
 		DESC	Increase counter (OERR if no counter name specified)
-	$HexValueList
+	$DataList
 		DESC	Output value
 		EXAMPLE	3F
 		EXAMPLE	3F.2F
