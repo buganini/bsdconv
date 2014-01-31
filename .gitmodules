@@ -1,6 +1,6 @@
 [submodule "doc/python-bsdconv"]
 	path = doc/python-bsdconv
-	url = https://github.com/buganini/python-bsdconv.git
+	url = git@github.com:buganini/python-bsdconv.git
 [submodule "doc/php-bsdconv"]
 	path = doc/php-bsdconv
 	url = git@github.com:buganini/php-bsdconv.git
