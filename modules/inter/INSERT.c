@@ -12,32 +12,42 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	int e;
 	r->after=NULL;
 	r->before=NULL;
+
+	char *after=NULL;
+	char *before=NULL;
 	while(arg){
 		if(strcasecmp(arg->key, "AFTER")==0){
-			if(r->after)
-				DATA_FREE(r->after);
-			r->after=str2data(arg->ptr, &e, ins);
-			if(e){
-				if(r->after)
-					DATA_FREE(r->after);
-				free(r);
-				return e;
-			}
+			after=arg->ptr;
 		}else if(strcasecmp(arg->key, "BEFORE")==0){
-			if(r->before)
-				DATA_FREE(r->before);
-			r->before=str2data(arg->ptr, &e, ins);
-			if(e){
-				if(r->before)
-					DATA_FREE(r->before);
-				free(r);
-				return e;
-			}
+			before=arg->ptr;
 		}else{
 			return EINVAL;
 		}
 		arg=arg->next;
 	}
+
+	if(after){
+		r->after=str2data(after, &e, ins);
+		if(e){
+			if(r->after)
+				DATA_FREE(r->after);
+			free(r);
+			return e;
+		}
+	}
+
+	if(before){
+		r->before=str2data(before, &e, ins);
+		if(e){
+			if(r->after)
+				DATA_FREE(r->after);
+			if(r->before)
+				DATA_FREE(r->before);
+			free(r);
+			return e;
+		}
+	}
+
 	THIS_CODEC(ins)->priv=r;
 	return 0;
 }
