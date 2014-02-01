@@ -113,6 +113,7 @@ iotest=[
 	["utf-8:casefold:utf-8","AbяЯßẞ","abяяssss"],
 	["utf-8:replace#0142.0143=0132.0133:utf-8","ABCD","A23D"],
 	["utf-8:strings#min-len=2:utf-8","aㄎabㄎabcㄉabcd","ab\nabc\nabcd\n"],
+	["utf-8:strings#min-len=2&before=0128&after=0129.010a:utf-8","aㄎabㄎabcㄉabcd","(ab)\n(abc)\n(abcd)\n"],
 ]
 
 countertest=[

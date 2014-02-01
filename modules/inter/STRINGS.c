@@ -7,7 +7,8 @@ struct my_s {
 	struct data_rt *qh, *qt;
 	unsigned int acc_len;
 	int min_len;
-	struct data_rt *sep;
+	struct data_rt *after;
+	struct data_rt *before;
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
@@ -15,16 +16,21 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	int i;
 
 	r->min_len=1;
+	r->after=NULL;
+	r->before=NULL;
 
 	char *filter="PRINT";
-	char *sep="010A";
+	char *after="010A";
+	char *before=NULL;
 	while(arg){
 		if(strcasecmp(arg->key, "FOR")==0){
 			filter=arg->ptr;
 		}else if(strcasecmp(arg->key, "MIN-LEN")==0 && sscanf(arg->ptr, "%d", &i)==1){
 			r->min_len=i;
-		}else if(strcasecmp(arg->key, "SEP")==0){
-			sep=arg->ptr;
+		}else if(strcasecmp(arg->key, "AFTER")==0){
+			after=arg->ptr;
+		}else if(strcasecmp(arg->key, "BEFORE")==0){
+			before=arg->ptr;
 		}else{
 			free(r);
 			return EINVAL;
@@ -38,13 +44,26 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 		return EOPNOTSUPP;
 	}
 
-	r->sep=str2data(sep, &i, ins);
-	if(i){
-		DATA_FREE(r->sep);
-		if(r->filter)
-			unload_filter(r->filter);
-		free(r);
-		return i;
+	if(after){
+		r->after=str2data(after, &i, ins);
+		if(i){
+			if(r->after)
+				DATA_FREE(r->after);
+			free(r);
+			return i;
+		}
+	}
+
+	if(before){
+		r->before=str2data(before, &i, ins);
+		if(i){
+			if(r->after)
+				DATA_FREE(r->after);
+			if(r->before)
+				DATA_FREE(r->before);
+			free(r);
+			return i;
+		}
 	}
 
 	DATA_MALLOC(r->qh);
@@ -68,7 +87,10 @@ void cbinit(struct bsdconv_instance *ins){
 void cbdestroy(struct bsdconv_instance *ins){
 	struct my_s *r=THIS_CODEC(ins)->priv;
 	struct data_rt *t;
-	DATA_FREE(r->sep);
+	if(r->after)
+		DATA_FREE(r->after);
+	if(r->before)
+		DATA_FREE(r->before);
 	unload_filter(r->filter);
 	while(r->qh){
 		t=r->qh->next;
@@ -84,13 +106,17 @@ void cbflush(struct bsdconv_instance *ins){
 
 	if(r->qh->next){
 		if(r->acc_len >= r->min_len){
-			LISTCPY(r->qt, r->sep);
+			if(r->before)
+				LISTCPY(this_phase->data_tail, r->before);
 
 			this_phase->data_tail->next=r->qh->next;
 			this_phase->data_tail=r->qt;
 			r->qh->next=NULL;
 			r->qt=r->qh;
 			r->acc_len=0;
+
+			if(r->after)
+				LISTCPY(this_phase->data_tail, r->after);
 		}else{
 			DATA_FREE(r->qh->next);
 			r->qt=r->qh;

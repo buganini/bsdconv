@@ -6,10 +6,11 @@ ARGUMENT
 		FORMAT	FILTER
 	MIN-LEN
 		FROMAT INTEGER
-	SEP
-		DESC Separator
-		DEFAULT 010A
-		FORMAT	DataList
+	AFTER
+		TYPE	Hex Value List
+		DEFAULT	010A
+	BEFORE
+		TYPE	Hex Value List
 
 EXAMPLE
 	> echo abd測試efg功能，hij | bsdconv utf-8:strings#for=cjk:utf-8
