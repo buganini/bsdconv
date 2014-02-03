@@ -4,7 +4,7 @@
 	add filter/{CYRILLIC,HANGUL,HIRAGANA,KATAKANA,KHMER,MAHJONG,PRINT,ROMAN,THAI}
 	replace inter/ZH-STRINGS with inter/STRINGS which accepts filter
 	add scorer infrastructure
-	add scorer/{CJK}
+	add scorer/{CJK,LATIN1}
 
 11.2:
 	improve inter/{UPPER,LOWER} (include mapping in SpecialCasing.txt)
