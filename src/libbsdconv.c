@@ -34,6 +34,7 @@ char *bsdconv_pack(struct bsdconv_instance *);
 
 #include "libbsdconv_counter.c"
 #include "libbsdconv_filter.c"
+#include "libbsdconv_scorer.c"
 #include "libbsdconv_hash.c"
 #include "libbsdconv_module.c"
 #include "libbsdconv_util.c"

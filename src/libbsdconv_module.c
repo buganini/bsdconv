@@ -87,6 +87,13 @@ int bsdconv_module_check(int type, const char *_codec){
 			strtoupper(codec);
 			strcat(codec, "." SHLIBEXT);
 			break;
+		case SCORER:
+			chdir("scorer");
+			codec=malloc(strlen(_codec) + strlen("." SHLIBEXT) + 1);
+			strcpy(codec, _codec);
+			strtoupper(codec);
+			strcat(codec, "." SHLIBEXT);
+			break;
 	}
 
 	fp=fopen(codec, "rb");
@@ -142,6 +149,9 @@ char ** bsdconv_modules_list(int phase_type){
 			break;
 		case FILTER:
 			type="filter";
+			break;
+		case SCORER:
+			type="scorer";
 			break;
 		default:
 			return list;

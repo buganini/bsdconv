@@ -45,7 +45,8 @@ enum bsdconv_phase_type {
 	FROM,
 	INTER,
 	TO,
-	FILTER //for convenient use in bsdconv_solve_alias
+	FILTER, //for convenient use in module functions
+	SCORER, //for convenient use in module functions
 };
 
 #ifdef _BSDCONV_INTERNAL
@@ -164,6 +165,11 @@ struct bsdconv_filter {
 	int (*cbfilter)(struct data_rt *);
 };
 
+struct bsdconv_scorer {
+	SHAREOBJECT so;
+	int (*cbscorer)(struct data_rt *);
+};
+
 struct bsdconv_codec {
 #ifdef WIN32
 	HANDLE fd;
@@ -211,6 +217,9 @@ char * getwd(char *);
 #ifdef _BSDCONV_INTERNAL
 struct bsdconv_filter *load_filter(const char *);
 void unload_filter(struct bsdconv_filter *);
+
+struct bsdconv_scorer *load_scorer(const char *);
+void unload_scorer(struct bsdconv_scorer *);
 
 #define LISTCPY_ST(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
 	struct data_st data_st; \
@@ -371,11 +380,19 @@ int dec[256]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 int hex[256]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,1,2,3,4,5,6,7,8,9,-1,-1,-1,-1,-1,-1,-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 #endif
 
-// modules/filter/range.c
+// modules/filter/unicode_range.c
 struct uint32_range {
 	uint32_t first;
 	uint32_t last;
 };
+
+// modules/score/unicode_range.c
+struct uint32_range_with_score {
+	uint32_t first;
+	uint32_t last;
+	uint32_t score;
+};
+
 
 #ifdef __cplusplus
 }

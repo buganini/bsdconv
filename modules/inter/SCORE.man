@@ -3,34 +3,34 @@ DESC
 	If environment variable BSDCONV_SCORE is presented, it will be used as score table path, else if ~/.bsdconv.score is presented, it will be used as score table.
 
 ARGUMENT
-	DEFAULT
-		Force using default table
+	WITH
+		FORMAT	Scorer
+		DESC
+			If TRAINED is specified, default score file will be used
+	AS
+		DESC
+			Counter Name
 
 EXAMPLE
-	#used for encoding detecting (roughly)
-	#reference modules/inter/SCORE.c static const struct interval scoreboard for default weight
-	> echo 123Б測試 | bsdconv utf-8:score:null
-	Decoding failure: 0
-	Encoding failure: 0
-	Score: 6
-	> echo 123Б測試 | bsdconv big5:score:null
-	Decoding failure: 2
-	Encoding failure: 0
-	Score: 4
+	> echo 123Б測試 | bsdconv utf-8:score#with=cjk:null
+	Score: 25
+	> echo 123Б測試 | bsdconv big5:score#with=cjk:null
+	IERR: 2
+	Score: 29
 	#if score data exists, it will use it.
 	#default score data path is $HOME/.bsdconv.score
-	> echo 123Б測試 | bsdconv utf-8:score_train:null
-	> echo 123Б測試 | bsdconv utf-8:score:null
+	> echo 123Б測試 | bsdconv utf-8:score-train:null
+	> echo 123Б測試 | bsdconv utf-8:score#with=trained:null
 	Score: 7
-	> echo 123Б測試功能 | bsdconv utf-8:score:null
+	> echo 123Б測試功能 | bsdconv utf-8:score#with=trained:null
 	Score: 7
-	> echo 123Б測試功能 | bsdconv utf-8:score_train:null
-	> echo 123Б測試功能 | bsdconv utf-8:score:null
-	Score: 9
+	> echo 123Б測試功能 | bsdconv utf-8:score-train:null
+	> echo 123Б測試功能 | bsdconv utf-8:score#with=trained:null
+	Score: 16
 	#specify score data path in C
 	bsdconv_ctl(
 		struct bsdconv_instance *, /*conversion instance*/
-		BSDCONV_ATTACH_SCORE, /* Ctl constant*/
+		BSDCONV_CTL_ATTACH_SCORE, /* Ctl constant*/
 		FILE *, /* File pointer to the score data*/
 		0 /* unused argument */
 	);

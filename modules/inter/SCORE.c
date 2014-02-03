@@ -1,7 +1,4 @@
-/*
- * Reference: http://blog.oasisfeng.com/2006/10/19/full-cjk-unicode-range/
- */
-
+#include <errno.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -11,24 +8,31 @@
 struct my_s{
 	FILE *bak;
 	FILE *score;
+	struct bsdconv_scorer *scorer;
 	bsdconv_counter_t *counter;
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=malloc(sizeof(struct my_s));
 	char buf[256]={0};
-	char force_default=0;
 	r->bak=NULL;
 	r->score=NULL;
+	r->scorer=NULL;
 
+	char *scorer="CJK";
+	char *counter="SCORE";
 	while(arg){
-		if(strcasecmp(arg->key, "DEFAULT")==0){
-			force_default=1;
+		if(strcasecmp(arg->key, "WITH")==0){
+			scorer=arg->ptr;
+		}else if(strcasecmp(arg->key, "AS")==0){
+			counter=arg->ptr;
+		}else{
+			return EINVAL;
 		}
 		arg=arg->next;
 	}
 
-	if(!force_default){
+	if(strcasecmp(scorer, "TRAINED")==0){
 		char *p=getenv("BSDCONV_SCORE");
 		if(p==NULL){
 			//try default score file
@@ -37,8 +41,15 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 			p=buf;
 		}
 		r->bak=r->score=fopen(p,"rb+");
+	}else{
+		r->scorer=load_scorer(scorer);
+		if(r->scorer==NULL){
+			free(r);
+			return EOPNOTSUPP;
+		}
 	}
-	r->counter=bsdconv_counter(ins, "SCORE");
+
+	r->counter=bsdconv_counter(ins, counter);
 	THIS_CODEC(ins)->priv=r;
 	return 0;
 }
@@ -56,46 +67,20 @@ void cbdestroy(struct bsdconv_instance *ins){
 	struct my_s *r=THIS_CODEC(ins)->priv;
 	if(r->bak)
 		fclose(r->bak);
+	if(r->scorer)
+		unload_scorer(r->scorer);
 	free(r);
 }
-
-struct interval {
-	int first;
-	int last;
-	double score;
-};
-
-static const struct interval scoreboard[] = {
-	{ 0x0, 0x7F, 4 },	//ASCII
-	{ 0x3000, 0x303F, 4 },	//CJK punctuation
-	{ 0x3040, 0x309F, 5 },	//Japanese hiragana
-	{ 0x30A0, 0x30FF, 5 },	//Japanese katakana
-	{ 0x3100, 0x312F, 4 },	//Chinese Bopomofo
-	{ 0x3400, 0x4DB5, 3 },	//CJK Unified Ideographs Extension A	;Unicode3.0
-	{ 0x4E00, 0x6FFF, 5 },	//CJK Unified Ideographs	;Unicode 1.1	;HF
-	{ 0x7000, 0x9FA5, 4 },	//CJK Unified Ideographs	;Unicode 1.1	;LF
-	{ 0x9FA6, 0x9FBB, 3 },	//CJK Unified Ideographs	;Unicode 4.1
-	{ 0xAC00, 0xD7AF, 3 },	//Korean word
-	{ 0xF900, 0xFA2D, 4 },	//CJK Compatibility Ideographs	;Unicode 1.1
-	{ 0xFA30, 0xFA6A, 4 },	//CJK Compatibility Ideographs	;Unicode 3.2
-	{ 0xFA70, 0xFAD9, 2 },	//CJK Compatibility Ideographs	;Unicode 4.1
-	{ 0xFF00, 0xFFEF, 3},	//Fullwidth ASCII, punctuation, Japanese, Korean
-	{ 0x20000, 0x2A6D6, 1 },//CJK Unified Ideographs Extension B	;Unicode 3.1
-	{ 0x2F800, 0x2FA1D, 1 },//CJK Compatibility Supplement	;Unicode 3.1
-};
 
 void cbconv(struct bsdconv_instance *ins){
 	unsigned char *data;
 	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct my_s *r=THIS_CODEC(ins)->priv;
 	FILE *fp=r->score;
-	data=this_phase->curr->data;
 	int i;
-	int max=sizeof(scoreboard) / sizeof(struct interval) - 1;
-	int min = 0;
-	int mid;
 	uint32_t ucs=0;
-	unsigned char v=0;
+	unsigned char v;
+	data=this_phase->curr->data;
 
 	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
@@ -103,31 +88,16 @@ void cbconv(struct bsdconv_instance *ins){
 	this_phase->curr->flags &= ~F_FREE;
 	this_phase->data_tail->next=NULL;
 
-	if(data[0]==0x1){
+	if(r->scorer!=NULL){
+		*(r->counter)+=r->scorer->cbscorer(this_phase->curr);
+	}else if(fp!=NULL && this_phase->curr->len>0 && UCP(this_phase->curr->data)[0]==0x1){
 		for(i=1;i<this_phase->curr->len;++i){
 			ucs<<=8;
 			ucs|=data[i];
 		}
-
-		if(fp==NULL){
-			if (ucs < scoreboard[0].first || ucs > scoreboard[max].last){
-				//noop
-			}else while (max >= min) {
-				mid = (min + max) / 2;
-				if (ucs > scoreboard[mid].last)
-					min = mid + 1;
-				else if (ucs < scoreboard[mid].first)
-					max = mid - 1;
-				else{
-					*(r->counter)+=scoreboard[mid].score;
-					break;
-				}
-			}
-		}else{
-			fseek(fp, ucs*sizeof(unsigned char), SEEK_SET);
-			fread(&v, sizeof(unsigned char), 1, fp);
-			*(r->counter)+=v;
-		}
+		fseek(fp, ucs*sizeof(unsigned char), SEEK_SET);
+		fread(&v, sizeof(unsigned char), 1, fp);
+		*(r->counter)+=v;
 	}
 
 	this_phase->state.status=NEXTPHASE;

@@ -33,6 +33,9 @@ TODO_FILTERS+=ROMAN
 TODO_FILTERS+=THAI
 TODO_FILTERS+=UNICODE
 
+TODO_SCORERS=
+TODO_SCORERS+=CJK
+
 TODO_CODECS_BASIC=
 TODO_CODECS_BASIC+=from/00
 TODO_CODECS_BASIC+=from/ANSI-CONTROL
@@ -184,7 +187,7 @@ TODO_CODECS_EBCDIC+=to/IBM-935
 TODO_CODECS_EBCDIC+=to/IBM-937
 TODO_CODECS_EBCDIC+=to/IBM-939
 
-all: libbsdconv bsdconv-mktable meta bsdconv-man bsdconv-completion bsdconv filters codecs
+all: libbsdconv bsdconv-mktable meta bsdconv-man bsdconv-completion bsdconv filters scorers codecs
 
 alias:
 	python tools/mkalias.py modules/filter/alias modules/inter/ALIAS-FILTER.txt
@@ -199,6 +202,7 @@ builddir:
 	mkdir -p build/lib
 	mkdir -p build/include
 	mkdir -p build/share/bsdconv/filter
+	mkdir -p build/share/bsdconv/scorer
 	mkdir -p build/share/bsdconv/from
 	mkdir -p build/share/bsdconv/inter
 	mkdir -p build/share/bsdconv/to
@@ -208,6 +212,7 @@ installdir:
 	mkdir -p ${DESTDIR}${PREFIX}/lib
 	mkdir -p ${DESTDIR}${PREFIX}/include
 	mkdir -p ${DESTDIR}${PREFIX}/share/bsdconv/filter
+	mkdir -p ${DESTDIR}${PREFIX}/share/bsdconv/scorer
 	mkdir -p ${DESTDIR}${PREFIX}/share/bsdconv/from
 	mkdir -p ${DESTDIR}${PREFIX}/share/bsdconv/inter
 	mkdir -p ${DESTDIR}${PREFIX}/share/bsdconv/to
@@ -235,6 +240,13 @@ filters: builddir
 		echo Build filter $${item}.so ; \
 		$(CC) ${CFLAGS} modules/filter/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/filter/$${item}.so -lbsdconv ${LIBS} ; \
 		if [ -e modules/filter/$${item}.man ]; then cp modules/filter/$${item}.man ./build/share/bsdconv/filter/$${item}.man ; fi ; \
+	done
+
+scorers: builddir
+	for item in ${TODO_SCORERS} ; do \
+		echo Build scorer $${item}.so ; \
+		$(CC) ${CFLAGS} modules/scorer/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/scorer/$${item}.so -lbsdconv ${LIBS} ; \
+		if [ -e modules/scorer/$${item}.man ]; then cp modules/scorer/$${item}.man ./build/share/bsdconv/scorer/$${item}.man ; fi ; \
 	done
 
 codecs_basic: builddir bsdconv-mktable libbsdconv meta
@@ -273,7 +285,7 @@ clean:
 	rm -rf build
 	rm -rf testsuite/api
 
-install: installdir install_main install_filters install_basic install_chinese install_ebcdic
+install: installdir install_main install_filters install_scorers install_basic install_chinese install_ebcdic
 
 install_main:
 	install -m 555 build/bin/bsdconv ${DESTDIR}${PREFIX}/bin
@@ -293,6 +305,12 @@ install_filters:
 	for item in ${TODO_FILTERS} ; do \
 		install -m 444 build/share/bsdconv/filter/$${item}.so ${DESTDIR}${PREFIX}/share/bsdconv/filter/$${item}.so ; \
 		if [ -e build/share/bsdconv/filter/$${item}.man ]; then install -m 444 build/share/bsdconv/filter/$${item}.man ${DESTDIR}${PREFIX}/share/bsdconv/filter/$${item}.man ; fi ; \
+	done
+
+install_scorers:
+	for item in ${TODO_SCORERS} ; do \
+		install -m 444 build/share/bsdconv/scorer/$${item}.so ${DESTDIR}${PREFIX}/share/bsdconv/scorer/$${item}.so ; \
+		if [ -e build/share/bsdconv/scorer/$${item}.man ]; then install -m 444 build/share/bsdconv/scorer/$${item}.man ${DESTDIR}${PREFIX}/share/bsdconv/scorer/$${item}.man ; fi ; \
 	done
 
 install_basic:
