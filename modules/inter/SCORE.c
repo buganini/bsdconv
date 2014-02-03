@@ -80,16 +80,16 @@ void cbconv(struct bsdconv_instance *ins){
 	int i;
 	uint32_t ucs=0;
 	unsigned char v;
+	uint32_t score;
 	data=this_phase->curr->data;
 
-	DATA_MALLOC(this_phase->data_tail->next);
-	this_phase->data_tail=this_phase->data_tail->next;
-	*(this_phase->data_tail)=*(this_phase->curr);
-	this_phase->curr->flags &= ~F_FREE;
-	this_phase->data_tail->next=NULL;
-
 	if(r->scorer!=NULL){
-		*(r->counter)+=r->scorer->cbscorer(this_phase->curr);
+		score=r->scorer->cbscorer(this_phase->curr);
+		*(r->counter)+=score;
+		if(score==0){
+			this_phase->state.status=DEADEND;
+			return;
+		}
 	}else if(fp!=NULL && this_phase->curr->len>0 && UCP(this_phase->curr->data)[0]==0x1){
 		for(i=1;i<this_phase->curr->len;++i){
 			ucs<<=8;
@@ -99,6 +99,12 @@ void cbconv(struct bsdconv_instance *ins){
 		fread(&v, sizeof(unsigned char), 1, fp);
 		*(r->counter)+=v;
 	}
+
+	DATA_MALLOC(this_phase->data_tail->next);
+	this_phase->data_tail=this_phase->data_tail->next;
+	*(this_phase->data_tail)=*(this_phase->curr);
+	this_phase->curr->flags &= ~F_FREE;
+	this_phase->data_tail->next=NULL;
 
 	this_phase->state.status=NEXTPHASE;
 	return;
