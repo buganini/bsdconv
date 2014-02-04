@@ -132,10 +132,8 @@ void cbconv(struct bsdconv_instance *ins){
 	struct my_s *r=THIS_CODEC(ins)->priv;
 
 	if(r->filter->cbfilter(this_phase->curr)){
-		DATA_MALLOC(r->qt->next);
+		r->qt->next=dup_data_rt(ins, this_phase->curr);
 		r->qt=r->qt->next;
-		*(r->qt)=*(this_phase->curr);
-		this_phase->curr->flags &= ~F_FREE;
 		r->qt->next=NULL;
 		r->acc_len+=1;
 

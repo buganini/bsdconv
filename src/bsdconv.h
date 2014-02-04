@@ -344,6 +344,13 @@ enum bsdconv_ctl_action {
 };
 
 //Helpers
+static inline struct data_rt * dup_data_rt(struct bsdconv_instance *ins, struct data_rt *data){
+	struct data_rt *ret;
+	DATA_MALLOC(ret);
+	*ret=*data;
+	data->flags &= ~F_FREE;
+	return ret;
+}
 
 static inline void strtoupper(char *s){
 	char *c;

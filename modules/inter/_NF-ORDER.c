@@ -90,10 +90,8 @@ void cbconv(struct bsdconv_instance *ins){
 		r->head=r->tail;
 		r->head->prev=NULL;
 
-		DATA_MALLOC(this_phase->data_tail->next);
+		this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
 		this_phase->data_tail=this_phase->data_tail->next;
-		*(this_phase->data_tail)=*(this_phase->curr);
-		this_phase->curr->flags &= ~F_FREE;
 		this_phase->data_tail->next=NULL;
 
 		this_phase->state.status=NEXTPHASE;
@@ -114,9 +112,7 @@ void cbconv(struct bsdconv_instance *ins){
 			prev->next=next->prev;
 		if(r->head->prev)
 			r->head=r->head->prev;
-		DATA_MALLOC(next->prev->p);
-		*(next->prev->p)=*(this_phase->curr);
-		this_phase->curr->flags &= ~F_FREE;
+		next->prev->p=dup_data_rt(ins, this_phase->curr);
 
 		this_phase->state.status=SUBMATCH;
 		return;

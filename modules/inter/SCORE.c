@@ -100,10 +100,8 @@ void cbconv(struct bsdconv_instance *ins){
 		*(r->counter)+=v;
 	}
 
-	DATA_MALLOC(this_phase->data_tail->next);
+	this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
 	this_phase->data_tail=this_phase->data_tail->next;
-	*(this_phase->data_tail)=*(this_phase->curr);
-	this_phase->curr->flags &= ~F_FREE;
 	this_phase->data_tail->next=NULL;
 
 	this_phase->state.status=NEXTPHASE;

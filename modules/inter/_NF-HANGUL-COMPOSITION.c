@@ -62,18 +62,14 @@ void cbconv(struct bsdconv_instance *ins){
 						this_phase->state.status=SUBMATCH;
 					}else{
 						cbflush(ins);
-						DATA_MALLOC(this_phase->data_tail->next);
+						this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
 						this_phase->data_tail=this_phase->data_tail->next;
-						*(this_phase->data_tail)=*(this_phase->curr);
-						this_phase->curr->flags &= ~F_FREE;
 						this_phase->data_tail->next=NULL;
 					}
 				}else{
 					cbflush(ins);
-					DATA_MALLOC(this_phase->data_tail->next);
+					this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
 					this_phase->data_tail=this_phase->data_tail->next;
-					*(this_phase->data_tail)=*(this_phase->curr);
-					this_phase->curr->flags &= ~F_FREE;
 					this_phase->data_tail->next=NULL;
 				}
 				return;
@@ -97,10 +93,8 @@ void cbconv(struct bsdconv_instance *ins){
 						r->status=1;
 						this_phase->state.status=SUBMATCH;
 					}else{
-						DATA_MALLOC(this_phase->data_tail->next);
+						this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
 						this_phase->data_tail=this_phase->data_tail->next;
-						*(this_phase->data_tail)=*(this_phase->curr);
-						this_phase->curr->flags &= ~F_FREE;
 						this_phase->data_tail->next=NULL;
 					}
 				}
@@ -108,10 +102,8 @@ void cbconv(struct bsdconv_instance *ins){
 		}
 	}else{
 		cbflush(ins);
-		DATA_MALLOC(this_phase->data_tail->next);
+		this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
 		this_phase->data_tail=this_phase->data_tail->next;
-		*(this_phase->data_tail)=*(this_phase->curr);
-		this_phase->curr->flags &= ~F_FREE;
 		this_phase->data_tail->next=NULL;
 	}
 	return;
