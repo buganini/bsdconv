@@ -78,9 +78,7 @@ void cbconv(struct bsdconv_instance *ins){
 						DATUM_FREE(r->starter);
 					}
 					r->status=1;
-					DATA_MALLOC(r->starter);
-					*(r->starter)=*(this_phase->curr);
-					this_phase->curr->flags &= ~F_FREE;
+					r->starter=dup_data_rt(ins, this_phase->curr);
 					this_phase->state.status=SUBMATCH;
 				}else{ //non-starters
 					this_phase->state.status=DEADEND;
@@ -108,25 +106,19 @@ void cbconv(struct bsdconv_instance *ins){
 						}else{
 							cbflush(ins);
 							r->status=1;
-							DATA_MALLOC(r->starter);
-							*(r->starter)=*(this_phase->curr);
-							this_phase->curr->flags &= ~F_FREE;
+							r->starter=dup_data_rt(ins, this_phase->curr);
 						}
 					}else{ //replace first starters
 						cbflush(ins);
 						r->status=1;
-						DATA_MALLOC(r->starter);
-						*(r->starter)=*(this_phase->curr);
-						this_phase->curr->flags &= ~F_FREE;
+						r->starter=dup_data_rt(ins, this_phase->curr);
 					}
 				}else{ //following non-starters
 					if(ccc <= r->ccc){ //blocked
 						r->ccc=ccc;
-						DATA_MALLOC(r->pending_tail->next);
+						r->pending_tail->next=dup_data_rt(ins, this_phase->curr);
 						r->pending_tail=r->pending_tail->next;
-						*(r->pending_tail)=*(this_phase->curr);
 						r->pending_tail->next=NULL;
-						this_phase->curr->flags &= ~F_FREE;
 					}else{ //try to combine
 						bsdconv_init(r->map);
 						bsdconv_counter_reset(r->map, NULL);
@@ -158,11 +150,9 @@ void cbconv(struct bsdconv_instance *ins){
 							r->ccc=0;
 						}else{ //not combinable
 							r->ccc=ccc;
-							DATA_MALLOC(r->pending_tail->next);
+							r->pending_tail->next=dup_data_rt(ins, this_phase->curr);
 							r->pending_tail=r->pending_tail->next;
-							*(r->pending_tail)=*(this_phase->curr);
 							r->pending_tail->next=NULL;
-							this_phase->curr->flags &= ~F_FREE;
 						}
 					}
 				}
@@ -172,10 +162,8 @@ void cbconv(struct bsdconv_instance *ins){
 	}else{ //not unicode
 		r->ccc=0;
 		cbflush(ins);
-		DATA_MALLOC(this_phase->data_tail->next);
+		this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
 		this_phase->data_tail=this_phase->data_tail->next;
-		*(this_phase->data_tail)=*(this_phase->curr);
-		this_phase->curr->flags &= ~F_FREE;
 		this_phase->data_tail->next=NULL;
 	}
 	return;
