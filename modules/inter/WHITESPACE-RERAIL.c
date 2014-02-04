@@ -1,14 +1,5 @@
 #include "../../src/bsdconv.h"
-#define HASHKEY "WHITESPACE"
-
-struct my_s{
-	struct data_rt *queue;
-	struct data_rt **last;
-	struct data_rt **dlast;
-	struct bsdconv_phase *rerail;
-	size_t offsetA;
-	size_t offsetB;
-};
+#include "WHITESPACE.h"
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *t;
@@ -53,6 +44,24 @@ void cbdestroy(struct bsdconv_instance *ins){
 	}
 }
 
+void cbflush(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct my_s *t=THIS_CODEC(ins)->priv;
+	struct data_rt *q;
+
+	while(t->queue){
+		this_phase->data_tail->next=t->queue->data;
+		this_phase->data_tail=this_phase->data_tail->next;
+		this_phase->data_tail->next=NULL;
+		if(&t->queue->next==t->last){
+			t->last=&t->queue;
+		}
+		q=t->queue->next;
+		DATUM_FREE(t->queue);
+		t->queue=q;
+	}
+}
+
 void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct my_s *t=THIS_CODEC(ins)->priv;
@@ -66,17 +75,14 @@ void cbconv(struct bsdconv_instance *ins){
 		this_phase->data_tail->next=NULL;
 		if(&t->queue->next==t->last){
 			t->last=&t->queue;
-			t->dlast=NULL;
 		}
 		q=t->queue->next;
 		DATUM_FREE(t->queue);
 		t->queue=q;
 	}
 
-	DATA_MALLOC(this_phase->data_tail->next);
+	this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
 	this_phase->data_tail=this_phase->data_tail->next;
-	*(this_phase->data_tail)=*(this_phase->curr);
-	this_phase->curr->flags &= ~F_FREE;
 	this_phase->data_tail->next=NULL;
 	t->offsetB+=1;
 
@@ -86,7 +92,6 @@ void cbconv(struct bsdconv_instance *ins){
 		this_phase->data_tail->next=NULL;
 		if(&t->queue->next==t->last){
 			t->last=&t->queue;
-			t->dlast=NULL;
 		}
 		q=t->queue->next;
 		DATUM_FREE(t->queue);
@@ -95,11 +100,10 @@ void cbconv(struct bsdconv_instance *ins){
 
 	if(t->queue){
 		this_phase->flags |= (F_MATCH | F_PENDING);
-		this_phase->match_data=t->queue->data;
 	}else{
 		this_phase->flags &= ~(F_MATCH | F_PENDING);
-		this_phase->match_data=NULL;
 	}
+	this_phase->match_data=NULL;
 
 	return;
 }

@@ -1,14 +1,5 @@
 #include "../../src/bsdconv.h"
-#define HASHKEY "WHITESPACE"
-
-struct my_s{
-	struct data_rt *queue;
-	struct data_rt **last;
-	struct data_rt **dlast;
-	struct bsdconv_phase *rerail;
-	size_t offsetA;
-	size_t offsetB;
-};
+#include "WHITESPACE.h"
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *t;
@@ -29,7 +20,6 @@ void cbinit(struct bsdconv_instance *ins){
 	t->offsetA=0;
 	t->offsetB=0;
 	t->last=&t->queue;
-	t->dlast=NULL;
 	struct data_rt *q;
 	while(t->queue){
 		DATUM_FREE((struct data_rt *)t->queue->data);
@@ -76,18 +66,13 @@ void cbconv(struct bsdconv_instance *ins){
 			q->next=NULL;
 			q->flags=0;
 			t->last=&q->next;
-			DATA_MALLOC(q->data);
-			if(t->dlast!=NULL)
-				*(t->dlast)=q->data;
-			t->dlast=&(((struct data_rt *)q->data)->next);
-			*((struct data_rt *)q->data)=*(this_phase->curr);
+			q->data=(void *) dup_data_rt(ins, this_phase->curr);
 			((struct data_rt *)q->data)->next=NULL;
-			this_phase->curr->flags &= ~F_FREE;
 			q->len=t->offsetA;
 
 			if(t->rerail){
 				t->rerail->flags |= (F_MATCH | F_PENDING);
-				t->rerail->match_data=t->queue->data;
+				t->rerail->match_data = NULL;
 			}
 
 			return;
@@ -95,10 +80,8 @@ void cbconv(struct bsdconv_instance *ins){
 	}
 	t->offsetA+=1;
 
-	DATA_MALLOC(this_phase->data_tail->next);
+	this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
 	this_phase->data_tail=this_phase->data_tail->next;
-	*(this_phase->data_tail)=*(this_phase->curr);
-	this_phase->curr->flags &= ~F_FREE;
 	this_phase->data_tail->next=NULL;
 
 	return;
