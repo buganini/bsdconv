@@ -59,7 +59,8 @@ enum bsdconv_status {
 	SUBMATCH_SUBROUTINE,
 	NEXTPHASE,
 	NOMATCH,
-	NOOP
+	NOOP,
+	YIELD,
 };
 #endif
 

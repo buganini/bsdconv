@@ -86,6 +86,11 @@ void cbconv(struct bsdconv_instance *ins){
 					cbflush(ins);
 
 					//restart
+
+					//unrolled
+					//this_phase->state.status=YIELD;
+					//return;
+
 					LIndex = ucs - LBase;
 					if (0 <= LIndex && LIndex < LCount){
 						r->pending = ucs;
