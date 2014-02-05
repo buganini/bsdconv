@@ -791,7 +791,6 @@ void bsdconv(struct bsdconv_instance *ins){
 							if(prev_phase->data_tail==data_ptr){
 								prev_phase->data_tail=prev_phase->data_head;
 							}
-							this_phase->curr=prev_phase->data_head;
 
 							RESET(ins->phase_index);
 
@@ -972,7 +971,6 @@ void bsdconv(struct bsdconv_instance *ins){
 
 						this_phase->bak=this_phase->curr;
 						LISTFREE(prev_phase->data_head, this_phase->bak, prev_phase->data_tail);
-						this_phase->curr=prev_phase->data_head;
 
 						this_codec->cbconv(ins);
 						goto to_x;
