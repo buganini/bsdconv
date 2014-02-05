@@ -71,6 +71,7 @@ enum bsdconv_output_mode {
 	BSDCONV_FILE,
 	BSDCONV_FD,
 	BSDCONV_NULL,
+	BSDCONV_PASS,
 };
 
 #ifdef _BSDCONV_INTERNAL

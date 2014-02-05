@@ -586,6 +586,7 @@ void bsdconv_destroy(struct bsdconv_instance *ins){
 }
 
 void bsdconv(struct bsdconv_instance *ins){
+	struct bsdconv_instance *inso;
 	uintptr_t i;
 	struct data_rt *data_ptr;
 	char *ptr;
@@ -1106,6 +1107,15 @@ void bsdconv(struct bsdconv_instance *ins){
 				data_ptr=LAST_PHASE(ins)->data_head->next;
 				LAST_PHASE(ins)->data_head->next=LAST_PHASE(ins)->data_head->next->next;
 				DATUM_FREE(data_ptr);
+			}
+			LAST_PHASE(ins)->data_tail=LAST_PHASE(ins)->data_head;
+			break;
+		case BSDCONV_PASS:
+			inso=ins->output.data;
+			if(LAST_PHASE(ins)->data_head->next){
+				inso->input=*(LAST_PHASE(ins)->data_head->next);
+				free(LAST_PHASE(ins)->data_head->next);
+				LAST_PHASE(ins)->data_head->next=NULL;
 			}
 			LAST_PHASE(ins)->data_tail=LAST_PHASE(ins)->data_head;
 			break;

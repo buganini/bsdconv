@@ -5,6 +5,7 @@
 	replace inter/ZH-STRINGS with inter/STRINGS which accepts filter
 	add scorer infrastructure
 	add scorer/{CJK,LATIN1}
+	add output mode BSDCONV_PASS
 
 11.2:
 	improve inter/{UPPER,LOWER} (include mapping in SpecialCasing.txt)
