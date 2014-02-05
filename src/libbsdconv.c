@@ -694,7 +694,8 @@ void bsdconv(struct bsdconv_instance *ins){
 
 								goto from_x;
 							case YIELD:
-								this_phase->flags &= ~(F_MATCH | F_PENDING);
+								// to be investigated
+								// this_phase->flags &= ~(F_MATCH | F_PENDING);
 								this_phase->match_data=NULL;
 
 								this_phase->bak=this_phase->curr;
@@ -833,12 +834,12 @@ void bsdconv(struct bsdconv_instance *ins){
 						this_codec->cbconv(ins);
 						goto inter_x;
 					case YIELD:
-						this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
+						// to be investigated
+						// this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 						this_phase->match_data=NULL;
 
 						this_phase->bak=this_phase->curr;
 						LISTFREE(prev_phase->data_head, this_phase->bak, prev_phase->data_tail);
-						this_phase->curr=prev_phase->data_head;
 
 						this_codec->cbconv(ins);
 						goto inter_x;
@@ -966,7 +967,8 @@ void bsdconv(struct bsdconv_instance *ins){
 						this_codec->cbconv(ins);
 						goto to_x;
 					case YIELD:
-						this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
+						// to be investigated
+						//this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 						this_phase->match_data=NULL;
 
 						this_phase->bak=this_phase->curr;
