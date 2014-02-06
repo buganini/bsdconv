@@ -1031,6 +1031,7 @@ void bsdconv(struct bsdconv_instance *ins){
 		}
 	}
 
+	struct bsdconv_phase *last_phase =  LAST_PHASE(ins);
 	//output
 	switch(ins->output_mode){
 		case BSDCONV_HOLD:
@@ -1039,21 +1040,21 @@ void bsdconv(struct bsdconv_instance *ins){
 			break;
 		case BSDCONV_AUTOMALLOC:
 			i=ins->output.len;
-			data_ptr=LAST_PHASE(ins)->data_head;
+			data_ptr=last_phase->data_head;
 			while(data_ptr){
 				i+=data_ptr->len;
 				data_ptr=data_ptr->next;
 			}
-			LAST_PHASE(ins)->data_tail=LAST_PHASE(ins)->data_head;
+			last_phase->data_tail=last_phase->data_head;
 			ins->output.flags=1;
 			ptr=ins->output.data=malloc(i);
 			ins->output.len=i-ins->output.len;
-			data_ptr=LAST_PHASE(ins)->data_head;
-			while(LAST_PHASE(ins)->data_head->next){
-				data_ptr=LAST_PHASE(ins)->data_head->next;
+			data_ptr=last_phase->data_head;
+			while(last_phase->data_head->next){
+				data_ptr=last_phase->data_head->next;
 				memcpy(ptr, data_ptr->data, data_ptr->len);
 				ptr+=data_ptr->len;
-				LAST_PHASE(ins)->data_head->next=LAST_PHASE(ins)->data_head->next->next;
+				last_phase->data_head->next=last_phase->data_head->next->next;
 				DATUM_FREE(ins, data_ptr);
 			}
 			break;
@@ -1061,20 +1062,20 @@ void bsdconv(struct bsdconv_instance *ins){
 			ins->output.flags=0;
 			if(ins->output.data!=NULL && ins->output.len){
 				i=0;
-				while(LAST_PHASE(ins)->data_head->next && LAST_PHASE(ins)->data_head->next->len<=ins->output.len-i){
-					memcpy(ins->output.data+i, LAST_PHASE(ins)->data_head->next->data, LAST_PHASE(ins)->data_head->next->len);
-					i+=LAST_PHASE(ins)->data_head->next->len;
-					if(LAST_PHASE(ins)->data_tail==LAST_PHASE(ins)->data_head->next){
-						LAST_PHASE(ins)->data_tail=LAST_PHASE(ins)->data_head;
+				while(last_phase->data_head->next && last_phase->data_head->next->len<=ins->output.len-i){
+					memcpy(ins->output.data+i, last_phase->data_head->next->data, last_phase->data_head->next->len);
+					i+=last_phase->data_head->next->len;
+					if(last_phase->data_tail==last_phase->data_head->next){
+						last_phase->data_tail=last_phase->data_head;
 					}
-					data_ptr=LAST_PHASE(ins)->data_head->next;
-					LAST_PHASE(ins)->data_head->next=LAST_PHASE(ins)->data_head->next->next;
+					data_ptr=last_phase->data_head->next;
+					last_phase->data_head->next=last_phase->data_head->next->next;
 					DATUM_FREE(ins, data_ptr);
 				}
 				ins->output.len=i;
 			}else{
 				i=0;
-				data_ptr=LAST_PHASE(ins)->data_head;
+				data_ptr=last_phase->data_head;
 				while(data_ptr){
 					i+=data_ptr->len;
 					data_ptr=data_ptr->next;
@@ -1084,40 +1085,40 @@ void bsdconv(struct bsdconv_instance *ins){
 			break;
 		case BSDCONV_FILE:
 			fp=ins->output.data;
-			while(LAST_PHASE(ins)->data_head->next){
-				data_ptr=LAST_PHASE(ins)->data_head->next;
+			while(last_phase->data_head->next){
+				data_ptr=last_phase->data_head->next;
 				fwrite(data_ptr->data, data_ptr->len, 1, fp);
-				LAST_PHASE(ins)->data_head->next=LAST_PHASE(ins)->data_head->next->next;
+				last_phase->data_head->next=last_phase->data_head->next->next;
 				DATUM_FREE(ins, data_ptr);
 			}
-			LAST_PHASE(ins)->data_tail=LAST_PHASE(ins)->data_head;
+			last_phase->data_tail=last_phase->data_head;
 			break;
 		case BSDCONV_FD:
 			fd=(intptr_t)ins->output.data;
-			while(LAST_PHASE(ins)->data_head->next){
-				data_ptr=LAST_PHASE(ins)->data_head->next;
+			while(last_phase->data_head->next){
+				data_ptr=last_phase->data_head->next;
 				write(fd, data_ptr->data, data_ptr->len);
-				LAST_PHASE(ins)->data_head->next=LAST_PHASE(ins)->data_head->next->next;
+				last_phase->data_head->next=last_phase->data_head->next->next;
 				DATUM_FREE(ins, data_ptr);
 			}
-			LAST_PHASE(ins)->data_tail=LAST_PHASE(ins)->data_head;
+			last_phase->data_tail=last_phase->data_head;
 			break;
 		case BSDCONV_NULL:
-			while(LAST_PHASE(ins)->data_head->next){
-				data_ptr=LAST_PHASE(ins)->data_head->next;
-				LAST_PHASE(ins)->data_head->next=LAST_PHASE(ins)->data_head->next->next;
+			while(last_phase->data_head->next){
+				data_ptr=last_phase->data_head->next;
+				last_phase->data_head->next=last_phase->data_head->next->next;
 				DATUM_FREE(ins, data_ptr);
 			}
-			LAST_PHASE(ins)->data_tail=LAST_PHASE(ins)->data_head;
+			last_phase->data_tail=last_phase->data_head;
 			break;
 		case BSDCONV_PASS:
 			inso=ins->output.data;
-			if(LAST_PHASE(ins)->data_head->next){
-				inso->input=*(LAST_PHASE(ins)->data_head->next);
-				free(LAST_PHASE(ins)->data_head->next);
-				LAST_PHASE(ins)->data_head->next=NULL;
+			if(last_phase->data_head->next){
+				inso->input=*(last_phase->data_head->next);
+				free(last_phase->data_head->next);
+				last_phase->data_head->next=NULL;
 			}
-			LAST_PHASE(ins)->data_tail=LAST_PHASE(ins)->data_head;
+			last_phase->data_tail=last_phase->data_head;
 			break;
 	}
 	return;
