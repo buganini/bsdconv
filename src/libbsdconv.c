@@ -1115,10 +1115,19 @@ void bsdconv(struct bsdconv_instance *ins){
 			inso=ins->output.data;
 			if(last_phase->data_head->next){
 				inso->input=*(last_phase->data_head->next);
-				free(last_phase->data_head->next);
-				last_phase->data_head->next=NULL;
+				data_ptr=last_phase->data_head->next->next;
+				last_phase->data_head->next->flags &= ~F_FREE;
+				DATUM_FREE(ins, last_phase->data_head->next);
+				last_phase->data_head->next=data_ptr;
 			}
-			last_phase->data_tail=last_phase->data_head;
+			struct data_rt *tail;
+			tail=&inso->input;
+			while(last_phase->data_head->next){
+				tail->next=dup_data_rt(inso, last_phase->data_head->next);
+				data_ptr=last_phase->data_head->next->next;
+				DATUM_FREE(ins, last_phase->data_head->next);
+				last_phase->data_head->next=data_ptr;
+			}
 			break;
 	}
 	return;
