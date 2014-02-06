@@ -132,7 +132,7 @@ void cbconv(struct bsdconv_instance *ins){
 				if(gb18030_table[mid].beg<=t->ucs && t->ucs<=gb18030_table[mid].end){
 					ucs.ucs4=htobe32(gb18030_table[mid].off + (t->ucs - gb18030_table[mid].beg));
 					for(i=0;ucs.byte[i]==0 && i<4;++i);
-					DATA_MALLOC(this_phase->data_tail->next);
+					DATA_MALLOC(ins, this_phase->data_tail->next);
 					this_phase->data_tail=this_phase->data_tail->next;
 					this_phase->data_tail->next=NULL;
 					this_phase->data_tail->len=5 - i;

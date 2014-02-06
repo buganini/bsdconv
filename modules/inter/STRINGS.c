@@ -48,7 +48,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 		r->after=str2data(after, &i, ins);
 		if(i){
 			if(r->after)
-				DATA_FREE(r->after);
+				DATA_FREE(ins, r->after);
 			free(r);
 			return i;
 		}
@@ -58,15 +58,15 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 		r->before=str2data(before, &i, ins);
 		if(i){
 			if(r->after)
-				DATA_FREE(r->after);
+				DATA_FREE(ins, r->after);
 			if(r->before)
-				DATA_FREE(r->before);
+				DATA_FREE(ins, r->before);
 			free(r);
 			return i;
 		}
 	}
 
-	DATA_MALLOC(r->qh);
+	DATA_MALLOC(ins, r->qh);
 	r->qh->flags=0;
 	r->qh->next=NULL;
 	return 0;
@@ -77,7 +77,7 @@ void cbinit(struct bsdconv_instance *ins){
 	struct data_rt *t;
 	while(r->qh->next){
 		t=r->qh->next->next;
-		DATUM_FREE(r->qh->next);
+		DATUM_FREE(ins, r->qh->next);
 		r->qh->next=t;
 	}
 	r->qt=r->qh;
@@ -88,13 +88,13 @@ void cbdestroy(struct bsdconv_instance *ins){
 	struct my_s *r=THIS_CODEC(ins)->priv;
 	struct data_rt *t;
 	if(r->after)
-		DATA_FREE(r->after);
+		DATA_FREE(ins, r->after);
 	if(r->before)
-		DATA_FREE(r->before);
+		DATA_FREE(ins, r->before);
 	unload_filter(r->filter);
 	while(r->qh){
 		t=r->qh->next;
-		DATUM_FREE(r->qh);
+		DATUM_FREE(ins, r->qh);
 		r->qh=t;
 	}
 	free(r);
@@ -107,7 +107,7 @@ void cbflush(struct bsdconv_instance *ins){
 	if(r->qh->next){
 		if(r->acc_len >= r->min_len){
 			if(r->before)
-				LISTCPY(this_phase->data_tail, r->before);
+				LISTCPY(ins, this_phase->data_tail, r->before);
 
 			this_phase->data_tail->next=r->qh->next;
 			this_phase->data_tail=r->qt;
@@ -116,9 +116,9 @@ void cbflush(struct bsdconv_instance *ins){
 			r->acc_len=0;
 
 			if(r->after)
-				LISTCPY(this_phase->data_tail, r->after);
+				LISTCPY(ins, this_phase->data_tail, r->after);
 		}else{
-			DATA_FREE(r->qh->next);
+			DATA_FREE(ins, r->qh->next);
 			r->qt=r->qh;
 			r->acc_len=0;
 		}

@@ -46,13 +46,13 @@ void cbconv(struct bsdconv_instance *ins){
 			}else{
 				this_phase->state.status=DEADEND;
 				if(data_p!=this_phase->curr)
-					DATUM_FREE(data_p);
+					DATUM_FREE(ins, data_p);
 				return;
 			}
 		case 0x02:
 			converted:
 
-			DATA_MALLOC(this_phase->data_tail->next);
+			DATA_MALLOC(ins, this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
 
@@ -64,7 +64,7 @@ void cbconv(struct bsdconv_instance *ins){
 			this_phase->state.status=NEXTPHASE;
 
 			if(data_p!=this_phase->curr)
-				DATUM_FREE(data_p);
+				DATUM_FREE(ins, data_p);
 
 			return;
 		default:

@@ -42,7 +42,7 @@ void cbdestroy(struct bsdconv_instance *ins){
 void cbflush(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct my_s *t=THIS_CODEC(ins)->priv;
-	LISTCPY(this_phase->data_tail, &t->data);
+	LISTCPY(ins, this_phase->data_tail, &t->data);
 }
 
 void cbconv(struct bsdconv_instance *ins){
@@ -55,14 +55,14 @@ void cbconv(struct bsdconv_instance *ins){
 		if(this_phase->flags & F_MATCH){
 			this_phase->flags &= ~(F_PENDING | F_MATCH | F_LOOPBACK);
 
-			DATA_MALLOC(this_phase->data_tail->next);
+			DATA_MALLOC(ins, this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
 			this_phase->data_tail->data=t->data.data;
 			this_phase->data_tail->len=t->data.len;
 			this_phase->data_tail->flags=F_FREE;
 
-			LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
+			LISTFREE(ins, prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
 			this_phase->curr=prev_phase->data_head;
 			this_phase->i=this_phase->data_head->len;
 			RESET(ins->phase_index);

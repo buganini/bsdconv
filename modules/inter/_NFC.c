@@ -28,11 +28,11 @@ void cbinit(struct bsdconv_instance *ins){
 	r->status=0;
 	struct data_rt *t;
 	if(r->starter){
-		DATUM_FREE(r->starter);
+		DATUM_FREE(ins, r->starter);
 	}
 	while(r->pending_head->next){
 		t=r->pending_head->next->next;
-		DATUM_FREE(r->pending_head->next);
+		DATUM_FREE(ins, r->pending_head->next);
 		r->pending_head->next=t;
 	}
 	r->pending_tail=r->pending_head;
@@ -75,7 +75,7 @@ void cbconv(struct bsdconv_instance *ins){
 				r->ccc=0;
 				if(ccc==0){ //first starters
 					if(r->starter){
-						DATUM_FREE(r->starter);
+						DATUM_FREE(ins, r->starter);
 					}
 					r->status=1;
 					r->starter=dup_data_rt(ins, this_phase->curr);
@@ -92,14 +92,14 @@ void cbconv(struct bsdconv_instance *ins){
 						bsdconv_counter_reset(r->map, NULL);
 						r->map->input=*(r->starter);
 						r->map->input.flags &= ~F_FREE;
-						DATA_MALLOC(r->map->input.next);
+						DATA_MALLOC(ins, r->map->input.next);
 						*(r->map->input.next)=*(this_phase->curr);
 						r->map->input.next->flags &= ~F_FREE;
 						r->map->input.next->next=NULL;
 						r->map->flush=1;
 						bsdconv(r->map);
 						if(*(r->err)==0){
-							DATUM_FREE(r->starter);
+							DATUM_FREE(ins, r->starter);
 							r->status=1;
 							r->starter=r->map->phase[r->map->phasen].data_head->next;
 							r->map->phase[r->map->phasen].data_head->next=NULL;
@@ -124,7 +124,7 @@ void cbconv(struct bsdconv_instance *ins){
 						bsdconv_counter_reset(r->map, NULL);
 						r->map->input=*(r->starter);
 						r->map->input.flags &= ~F_FREE;
-						DATA_MALLOC(r->map->input.next);
+						DATA_MALLOC(ins, r->map->input.next);
 						*(r->map->input.next)=*(this_phase->curr);
 						r->map->input.next->flags &= ~F_FREE;
 						r->map->input.next->next=NULL;
@@ -132,7 +132,7 @@ void cbconv(struct bsdconv_instance *ins){
 
 						bsdconv(r->map);
 						if(*(r->err)==0){ //combinable
-							DATUM_FREE(r->starter);
+							DATUM_FREE(ins, r->starter);
 							r->status=1;
 							r->starter=r->map->phase[r->map->phasen].data_head->next;
 							r->map->phase[r->map->phasen].data_head->next=NULL;
@@ -174,11 +174,11 @@ void cbdestroy(struct bsdconv_instance *ins){
 	struct data_rt *t;
 	bsdconv_destroy(r->map);
 	if(r->status){
-		DATUM_FREE(r->starter);
+		DATUM_FREE(ins, r->starter);
 	}
 	while(r->pending_head){
 		t=r->pending_head->next;
-		DATUM_FREE(r->pending_head);
+		DATUM_FREE(ins, r->pending_head);
 		r->pending_head=t;
 	}
 	free(r);

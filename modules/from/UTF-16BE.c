@@ -51,7 +51,7 @@ void cbconv(struct bsdconv_instance *ins){
 						if(t->buf[i]) break;
 					}
 					l=(2-i)+1;
-					DATA_MALLOC(this_phase->data_tail->next);
+					DATA_MALLOC(ins, this_phase->data_tail->next);
 					this_phase->data_tail=this_phase->data_tail->next;
 					this_phase->data_tail->next=NULL;
 					this_phase->data_tail->len=l;
@@ -83,7 +83,7 @@ void cbconv(struct bsdconv_instance *ins){
 						if(buf[i]) break;
 					}
 					l=(3-i)+1;
-					DATA_MALLOC(this_phase->data_tail->next);
+					DATA_MALLOC(ins, this_phase->data_tail->next);
 					this_phase->data_tail=this_phase->data_tail->next;
 					this_phase->data_tail->next=NULL;
 					this_phase->data_tail->len=l;

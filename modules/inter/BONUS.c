@@ -17,7 +17,7 @@ void cbconv(struct bsdconv_instance *ins){
 
 	*counter += *data;
 
-	LISTCPY_ST(this_phase->data_tail, (void *)(uintptr_t)de_offset(data_st.next), THIS_CODEC(ins)->data_z);
+	LISTCPY_ST(ins, this_phase->data_tail, (void *)(uintptr_t)de_offset(data_st.next), THIS_CODEC(ins)->data_z);
 
 	this_phase->state.status=NEXTPHASE;
 	return;

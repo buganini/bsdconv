@@ -128,7 +128,7 @@ void cbflush(struct bsdconv_instance *ins){
 	unsigned char *p;
 	unsigned char stack[8];
 	int stack_len=0;
-	DATA_MALLOC(this_phase->data_tail->next);
+	DATA_MALLOC(ins, this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
 	while(ucs && stack_len<sizeof(stack)){
 		stack[stack_len] = ucs & 0xff;

@@ -88,7 +88,7 @@ void cbconv(struct bsdconv_instance *ins){
 
 	if(t->filter==1 && this_phase->curr->len>1 && UCP(this_phase->curr->data)[0]==1){ //unicode
 		if(t->mode==16){
-			DATA_MALLOC(this_phase->data_tail->next);
+			DATA_MALLOC(ins, this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
 			this_phase->data_tail->flags=F_FREE;
@@ -103,7 +103,7 @@ void cbconv(struct bsdconv_instance *ins){
 			memcpy(p, t->suffix.data, t->suffix.len);
 			ins->phase[ins->phase_index].state.status=NEXTPHASE;
 		}else if(t->mode==10){
-			DATA_MALLOC(this_phase->data_tail->next);
+			DATA_MALLOC(ins, this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
 			this_phase->data_tail->flags=F_FREE;
@@ -126,7 +126,7 @@ void cbconv(struct bsdconv_instance *ins){
 		}
 	}else if(t->filter==3 && this_phase->curr->len==2 && UCP(this_phase->curr->data)[0]==3){ //byte
 		if(t->mode==8){
-			DATA_MALLOC(this_phase->data_tail->next);
+			DATA_MALLOC(ins, this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
 			this_phase->data_tail->flags=F_FREE;
@@ -143,7 +143,7 @@ void cbconv(struct bsdconv_instance *ins){
 			memcpy(p+3, t->suffix.data, t->suffix.len);
 			ins->phase[ins->phase_index].state.status=NEXTPHASE;
 		}else if(t->mode==10){
-			DATA_MALLOC(this_phase->data_tail->next);
+			DATA_MALLOC(ins, this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
 			this_phase->data_tail->flags=F_FREE;
@@ -156,7 +156,7 @@ void cbconv(struct bsdconv_instance *ins){
 			this_phase->data_tail->len=(p+t->suffix.len)-CP(this_phase->data_tail->data);
 			ins->phase[ins->phase_index].state.status=NEXTPHASE;
 		}else if(t->mode==16){
-			DATA_MALLOC(this_phase->data_tail->next);
+			DATA_MALLOC(ins, this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
 			this_phase->data_tail->flags=F_FREE;

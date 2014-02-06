@@ -83,7 +83,7 @@ struct data_rt * str2data(const char *_s, int *r, struct bsdconv_instance *ins){
 		f=0;
 		while(*k){
 			if(hex[(unsigned char) *k]<0){
-				DATA_FREE(ph.next);
+				DATA_FREE(ins, ph.next);
 				*r=EINVAL;
 				free(s);
 				return NULL;

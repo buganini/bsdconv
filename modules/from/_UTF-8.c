@@ -36,7 +36,7 @@ void cbdestroy(struct bsdconv_instance *ins){
 }while(0);
 
 #define PASS() do{	\
-	DATA_MALLOC(this_phase->data_tail->next);	\
+	DATA_MALLOC(ins, this_phase->data_tail->next);	\
 	this_phase->data_tail=this_phase->data_tail->next;	\
 	this_phase->data_tail->next=NULL;	\
 	this_phase->data_tail->len=t->p - t->buf;	\

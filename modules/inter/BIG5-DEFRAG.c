@@ -37,7 +37,7 @@ void cbconv(struct bsdconv_instance *ins){
 			this_phase->state.status=SUBMATCH;
 			return;
 		}else{
-			DATA_MALLOC(this_phase->data_tail->next);
+			DATA_MALLOC(ins, this_phase->data_tail->next);
 			this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;

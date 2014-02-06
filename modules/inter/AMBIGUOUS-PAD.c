@@ -65,7 +65,7 @@ void cbconv(struct bsdconv_instance *ins){
 				}
 		}
 		if(pad && *dopad){
-			DATA_MALLOC(this_phase->data_tail->next);
+			DATA_MALLOC(ins, this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->len=2;
 			this_phase->data_tail->data=space;

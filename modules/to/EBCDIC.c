@@ -26,7 +26,7 @@ void cbflush(struct bsdconv_instance *ins){
 	if(t->status!=0){
 		t->status=0;
 
-		DATA_MALLOC(this_phase->data_tail->next);
+		DATA_MALLOC(ins, this_phase->data_tail->next);
 		this_phase->data_tail=this_phase->data_tail->next;
 		this_phase->data_tail->next=NULL;
 		this_phase->data_tail->len=1;
@@ -56,7 +56,7 @@ void cbconv(struct bsdconv_instance *ins){
 		t->status=1;
 		this_phase->flags |= F_PENDING;
 
-		DATA_MALLOC(this_phase->data_tail->next);
+		DATA_MALLOC(ins, this_phase->data_tail->next);
 		this_phase->data_tail=this_phase->data_tail->next;
 		this_phase->data_tail->next=NULL;
 		this_phase->data_tail->len=1;
@@ -67,7 +67,7 @@ void cbconv(struct bsdconv_instance *ins){
 		t->status=0;
 		this_phase->flags &= ~F_PENDING;
 
-		DATA_MALLOC(this_phase->data_tail->next);
+		DATA_MALLOC(ins, this_phase->data_tail->next);
 		this_phase->data_tail=this_phase->data_tail->next;
 		this_phase->data_tail->next=NULL;
 		this_phase->data_tail->len=1;
@@ -77,14 +77,14 @@ void cbconv(struct bsdconv_instance *ins){
 	}
 
 	if(t->status){
-		LISTCPY_ST(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
+		LISTCPY_ST(ins, this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
 
 		this_phase->data_head->len=0;
 		this_phase->flags |= (F_MATCH | F_PENDING);
 		this_phase->match_data=NULL;
 
 		this_phase->bak=this_phase->curr->next;
-		LISTFREE(prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
+		LISTFREE(ins, prev_phase->data_head,this_phase->bak,prev_phase->data_tail);
 		this_phase->curr=prev_phase->data_head;
 
 		RESET(ins->phase_index);
@@ -93,7 +93,7 @@ void cbconv(struct bsdconv_instance *ins){
 
 		this_phase->state.status=NOOP;
 	}else{
-		LISTCPY_ST(this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
+		LISTCPY_ST(ins, this_phase->data_tail, this_phase->state.data, this_phase->codec[this_phase->index].data_z);
 
 		this_phase->state.status=NEXTPHASE;
 	}

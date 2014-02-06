@@ -19,7 +19,7 @@ void cbconv(struct bsdconv_instance *ins){
 	i=*data;
 	data+=1;
 	len=this_phase->curr->len-1;
-	DATA_MALLOC(this_phase->data_tail->next);
+	DATA_MALLOC(ins, this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
 	this_phase->data_tail->next=NULL;
 

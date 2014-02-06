@@ -22,9 +22,9 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 		}else{
 			bak=r->data;
 			r->data=str2data(arg->key, &e, ins);
-			DATA_FREE(bak);
+			DATA_FREE(ins, bak);
 			if(e){
-				DATA_FREE(r->data);
+				DATA_FREE(ins, r->data);
 				free(r);
 				return e;
 			}
@@ -38,7 +38,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 void cbdestroy(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct my_st *r=this_phase->codec[this_phase->index].priv;
-	DATA_FREE(r->data);
+	DATA_FREE(ins, r->data);
 	free(r);
 }
 
@@ -46,7 +46,7 @@ void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct my_st *r=this_phase->codec[this_phase->index].priv;
 
-	LISTCPY(this_phase->data_tail, r->data);
+	LISTCPY(ins, this_phase->data_tail, r->data);
 
 	this_phase->state.status=NEXTPHASE;
 

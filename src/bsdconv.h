@@ -223,9 +223,10 @@ void unload_filter(struct bsdconv_filter *);
 struct bsdconv_scorer *load_scorer(const char *);
 void unload_scorer(struct bsdconv_scorer *);
 
-#define LISTCPY_ST(X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
+
+#define LISTCPY_ST(INS, X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
 	struct data_st data_st; \
-	DATA_MALLOC((X)->next);	\
+	DATA_MALLOC(INS, (X)->next);	\
 	(X)=(X)->next;	\
 	memcpy(&data_st, (char *)((Z)+(uintptr_t)data_ptr), sizeof(struct data_st));	\
 	data_ptr=(void *)(uintptr_t)de_offset(data_st.next);	\
@@ -235,10 +236,10 @@ void unload_scorer(struct bsdconv_scorer *);
 	(X)->next=NULL;	\
 }
 
-#define LISTCPY(X,Y) do{	\
+#define LISTCPY(INS, X,Y) do{	\
 	struct data_rt *data_ptr=(Y);	\
 	while(data_ptr){	\
-		DATA_MALLOC((X)->next);	\
+		DATA_MALLOC(INS, (X)->next);	\
 		(X)=(X)->next;	\
 		*(X)=*data_ptr;	\
 		(X)->flags=0; \
@@ -247,9 +248,9 @@ void unload_scorer(struct bsdconv_scorer *);
 	}	\
 }while(0);
 
-#define LISTFREE(X,Y,Z)	while((X)->next && (X)->next!=(Y)){	\
+#define LISTFREE(INS, X,Y,Z)	while((X)->next && (X)->next!=(Y)){	\
 	data_ptr=(X)->next->next;	\
-	DATUM_FREE((X)->next);	\
+	DATUM_FREE(INS, (X)->next);	\
 	if((Z)==(X)->next){	\
 		(Z)=(X);	\
 	}	\
@@ -277,9 +278,9 @@ static inline struct state_rt read_state(void *p){
 #define CP(X) ((char *)(X))
 #define UCP(X) ((unsigned char *)(X))
 
-#define DATA_MALLOC(X) do{if(ins->pool){(X)=ins->pool; ins->pool=ins->pool->next;}else{(X)=malloc(sizeof(struct data_rt));}}while(0)
-#define DATUM_FREE(X) do{ if((X)->flags & F_FREE) free((X)->data); (X)->next=ins->pool; ins->pool=(X);}while(0)
-#define DATA_FREE(X) do{ struct data_rt *t,*p=(X); while(p){if(p->flags & F_FREE) free(p->data); t=p->next; p->next=ins->pool; ins->pool=p; p=t;}}while(0)
+#define DATA_MALLOC(INS, X) do{if(INS->pool){(X)=INS->pool; INS->pool=INS->pool->next;}else{(X)=malloc(sizeof(struct data_rt));}}while(0)
+#define DATUM_FREE(INS, X) do{ if((X)->flags & F_FREE) free((X)->data); (X)->next=INS->pool; INS->pool=(X);}while(0)
+#define DATA_FREE(INS, X) do{ struct data_rt *t,*p=(X); while(p){if(p->flags & F_FREE) free(p->data); t=p->next; p->next=INS->pool; INS->pool=p; p=t;}}while(0)
 
 #define PREV_PHASE(INS) (&(INS)->phase[(INS)->phase_index-1])
 #define LAST_PHASE(INS) (&(INS)->phase[(INS)->phasen])
@@ -347,7 +348,7 @@ enum bsdconv_ctl_action {
 //Helpers
 static inline struct data_rt * dup_data_rt(struct bsdconv_instance *ins, struct data_rt *data){
 	struct data_rt *ret;
-	DATA_MALLOC(ret);
+	DATA_MALLOC(ins, ret);
 	*ret=*data;
 	data->flags &= ~F_FREE;
 	return ret;

@@ -96,7 +96,7 @@ void cbconv(struct bsdconv_instance *ins){
 				}else{
 					t->buf[0]*=16;
 					t->buf[0]+=hex[(unsigned char)d];
-					DATA_MALLOC(this_phase->data_tail->next);
+					DATA_MALLOC(ins, this_phase->data_tail->next);
 					this_phase->data_tail=this_phase->data_tail->next;
 					this_phase->data_tail->next=NULL;
 					this_phase->data_tail->flags=F_FREE;
@@ -129,7 +129,7 @@ void cbconv(struct bsdconv_instance *ins){
 					if(i>377)
 						DEADEND();
 					t->buf[0]=i;
-					DATA_MALLOC(this_phase->data_tail->next);
+					DATA_MALLOC(ins, this_phase->data_tail->next);
 					this_phase->data_tail=this_phase->data_tail->next;
 					this_phase->data_tail->next=NULL;
 					this_phase->data_tail->flags=F_FREE;
@@ -178,7 +178,7 @@ void cbconv(struct bsdconv_instance *ins){
 					t->buf[1]*=16;
 					t->buf[1]+=hex[(unsigned char)d];
 					while(t->buf[i]==0)++i;
-					DATA_MALLOC(this_phase->data_tail->next);
+					DATA_MALLOC(ins, this_phase->data_tail->next);
 					this_phase->data_tail=this_phase->data_tail->next;
 					this_phase->data_tail->next=NULL;
 					this_phase->data_tail->flags=F_FREE;

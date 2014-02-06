@@ -5,7 +5,7 @@ void cbconv(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	int i;
 
-	DATA_MALLOC(this_phase->data_tail->next);
+	DATA_MALLOC(ins, this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
 	this_phase->data_tail->next=NULL;
 	this_phase->data_tail->len=ins->phase[ins->phase_index].curr->len-1;
