@@ -1124,6 +1124,7 @@ void bsdconv(struct bsdconv_instance *ins){
 			tail=&inso->input;
 			while(last_phase->data_head->next){
 				tail->next=dup_data_rt(inso, last_phase->data_head->next);
+				tail=tail->next;
 				data_ptr=last_phase->data_head->next->next;
 				DATUM_FREE(ins, last_phase->data_head->next);
 				last_phase->data_head->next=data_ptr;
