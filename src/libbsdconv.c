@@ -1128,6 +1128,7 @@ void bsdconv(struct bsdconv_instance *ins){
 				DATUM_FREE(ins, last_phase->data_head->next);
 				last_phase->data_head->next=data_ptr;
 			}
+			last_phase->data_tail=last_phase->data_head;
 			break;
 	}
 	return;
