@@ -13,6 +13,7 @@ int item_in_array(char *item, char **array, int size){
 
 int main(int argc, char *argv[]){
 	char *arg="";
+	char *arg_base;
 	char *c;
 	char **p;
 	char *part;
@@ -25,7 +26,15 @@ int main(int argc, char *argv[]){
 	if(argc>1)
 		arg=argv[1];
 
-	arg=strdup(arg);
+	arg=arg_base=strdup(arg);
+
+	if(arg[0]=='\'' || arg[0]=='"'){
+		arg+=1;
+	}
+	i=strlen(arg)-1;
+	if(arg[i]=='\'' || arg[i]=='"'){
+		arg[i]=0;
+	}
 
 	part=arg;
 	mode=FROM;
@@ -76,7 +85,9 @@ int main(int argc, char *argv[]){
 		strncpy(res, arg, part-arg);
 		res[part-arg]=0;
 		strcat(res, codecs_list[i]);
+
 		printf("%s\n", res);
+
 		free(res);
 	}
 
@@ -91,6 +102,6 @@ int main(int argc, char *argv[]){
 
 	bsdconv_free(codecs_list);
 
-	free(arg);
+	free(arg_base);
 	return 0;
 }
