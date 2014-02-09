@@ -71,18 +71,14 @@ int main(int argc, char *argv[]){
 		codecs_list[size]=NULL;
 	}
 
-/*	if(size==1){
-		char *res=malloc(strlen(arg)+strlen(codecs_list[0])+1);
+	for(i=0;i<size;++i){
+		char *res=malloc(strlen(arg)+strlen(codecs_list[i])+1);
 		strncpy(res, arg, part-arg);
 		res[part-arg]=0;
-		strcat(res, codecs_list[0]);
+		strcat(res, codecs_list[i]);
 		printf("%s\n", res);
 		free(res);
-	}else{
-*/		for(i=0;i<size;++i){
-			printf("%s\n", codecs_list[i]);
-		}
-//	}
+	}
 
 	for(p=inter_list;*p;++p){
 		bsdconv_free(*p);
