@@ -1,7 +1,5 @@
 #compdef bsdconv
 
-zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}'
-
 _bsdconv() {
 	_arguments \
 		'1: :->conversion'\
