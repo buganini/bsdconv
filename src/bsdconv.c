@@ -82,7 +82,7 @@ int main(int argc, char *argv[]){
 	int i;
 
 	if(argc<2){
-		fprintf(stderr, "Usage:\n\t %s conversion [-il] [file] [...]\n\t\t-i:\tsave in-place\n\t\t-l:\tlist codecs\n", argv[0]);
+		fprintf(stderr, "Usage:\n\t %s conversion|-l [-i] [file] [...]\n\t\t-i:\tsave in-place\n\t\t-l:\tlist codecs\n", argv[0]);
 		exit(1);
 	}
 	i=2;
