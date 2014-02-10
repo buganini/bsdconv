@@ -160,7 +160,7 @@ char ** bsdconv_modules_list(int phase_type){
 	if(dir!=NULL){
 		if(phase_type==FILTER || phase_type==SCORER){
 			while((d=readdir(dir))!=NULL){
-				if(strstr(d->d_name, ".so")==NULL)
+				if(strstr(d->d_name, ".so")==NULL || strcmp(d->d_name, "alias")==0)
 					continue;
 				if(length>=size){
 					size+=8;

@@ -282,6 +282,7 @@ meta: libbsdconv
 	cp modules/from/alias build/share/bsdconv/from/alias
 	cp modules/inter/alias build/share/bsdconv/inter/alias
 	cp modules/to/alias build/share/bsdconv/to/alias
+	cp modules/filter/alias build/share/bsdconv/filter/alias
 
 clean:
 	rm -rf build
@@ -299,6 +300,7 @@ install_main:
 	install -m 444 build/share/bsdconv/from/alias ${DESTDIR}${PREFIX}/share/bsdconv/from/alias
 	install -m 444 build/share/bsdconv/inter/alias ${DESTDIR}${PREFIX}/share/bsdconv/inter/alias
 	install -m 444 build/share/bsdconv/to/alias ${DESTDIR}${PREFIX}/share/bsdconv/to/alias
+	install -m 444 build/share/bsdconv/filter/alias ${DESTDIR}${PREFIX}/share/bsdconv/filter/alias
 	if [ ${SHLIBNAME} != libbsdconv.so ]; then \
 		ln -sf libbsdconv.so.${SHLIBVER} ${DESTDIR}${PREFIX}/lib/libbsdconv.so ; \
 	fi
