@@ -35,6 +35,8 @@ void list_modules(){
 	LIST_MODULES(TO);
 	printf("[Filter]\n");
 	LIST_MODULES(FILTER);
+	printf("[Scorer]\n");
+	LIST_MODULES(SCORER);
 
 	exit(0);
 }

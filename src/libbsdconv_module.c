@@ -158,7 +158,7 @@ char ** bsdconv_modules_list(int phase_type){
 	}
 	dir=opendir(type);
 	if(dir!=NULL){
-		if(phase_type==FILTER){
+		if(phase_type==FILTER || phase_type==SCORER){
 			while((d=readdir(dir))!=NULL){
 				if(strstr(d->d_name, ".so")==NULL)
 					continue;
