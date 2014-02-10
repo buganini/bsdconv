@@ -8,7 +8,7 @@
 	add output mode BSDCONV_PASS
 	add zsh auto completion script
 
-11.2:
+11.2:	(2014-01-17)
 	improve inter/{UPPER,LOWER} (include mapping in SpecialCasing.txt)
 	add inter/CASEFOLD (C/F in CASEFOLD.txt)
 	Update inter/SCORE, inter/SCORE_TRAIN, with manpages.
@@ -24,10 +24,10 @@
 	add inter/ZH-BONUS and inter/ZH-BONUS-PHRASE
 	add filter infrastructure
 
-11.1:
+11.1:	(2013-09-16)
 	Correct algorithm for unicode normalization
 
-11.0:
+11.0:	(2013-08-25)
 	add man page for inter/AMBIGUOUS-PAD and inter/AMBIGUOUS-UNPAD
 	add inter/{NFC,NFD,NFKC,NFKD} #UnicodeData
 	improve inter/{UPPER,LOWER} #UnicodeData
@@ -37,7 +37,7 @@
 	replace inter/SPLIT with newly added inter/INSERT
 	support data list for codec argument
 
-10.0:
+10.0:	(2013-04-24)
 	support "codec#key&key=value" style argument
 	replace from/3f and from/sub with from/any
 	replace to/3f with to/any
@@ -51,7 +51,7 @@
 	add document
 	API change for bsdconv_{insert,replace}_{phase,codec}
 
-9.1:
+9.1:	(2013-02-26)
 	bash completion script (buggy)
 	extend from/ESCAPE to support \uUUUU \xXX \OOO
 	add bsdconv -l
@@ -64,7 +64,7 @@
 	improve bsdconv_mktable, significantly reduce some output file size
 	add testsuite
 
-9.0:
+9.0:	(2012-10-02)
 	fix for MinGW
 	export bsdconv_malloc/bsdconv_free
 	add {from,to}/CCCII (as Thomas-Tsai's request)
@@ -72,7 +72,7 @@
 	internal API changes for use of bsdconv_ctl in wrappers
 	bugfixes
 
-8.0:
+8.0:	(2012-09-14)
 	add flush function into callback interface
 		for supporting inter/OPENCC* ( http://github.com/buganini/bsdconv-opencc )
 	sync data from project chvar
@@ -80,65 +80,65 @@
 	use double data type for score value
 	add inter/TRIM-WIDTH
 
-7.5:
+7.5:	(2012-08-15)
 	add {from,to}/CP1253
 	fix several linux issues
 	bugfixes
 
-7.4:
+7.4:	(2012-04-07)
 	adaptive verbosity
 
-7.3:
+7.3:	(2012-01-17)
 	bsdconv: add -q for quiet mode
 	sync tables from project chvar
 	bugfixes
 
-7.2:
+7.2:	(2011-12-29)
 	add {from,to}/_JIS0212 and it's alias
 	update inter/ZHTW, inter/ZHCN, to/CP950_TRANS, to/CP936_TRANS
 	add inter/ZH_FUZZY_TW, INTER/ZH_FUZZY_CN
 	various bugfixes
 
-7.1:
+7.1:	(2011-12-22)
 	add {from,to}/LOCALE alias to system locale
 	rename inter/JP_PINYIN to inter/KANA_PHONETIC
 	add transposed to/_CP12151, to/_CP1252, to/_CP874, to/_CP949, to/_SHIFT-JIS
 	add {from,to}/GB18030
 	add inter/NOBOM
 
-7.0:
+7.0:	(2011-11-18)
 	add inter/SPLIT
 	add from/_CP874
 	alter bsdconv_codecs_list()
 
-6.4:
+6.4:	(2011-11-07)
 	bugfixes
 
-6.3:
+6.3:	(2011-11-07)
 	improve alias mechanism
 	add bsdconv_codec_check()
 	add bsdconv_codecs_list()
 	add bsdconv_pack()
 
-6.2:
+6.2:	(2011-10-26)
 	improve inter/{zh_decomp,zh_comp}
 
-6.1:
+6.1:	(2011-10-07)
 	mac os compatible (thanks to godfat)
 	improve inter/ZHTW_WORDS
 	improve inter/ZH_DECOMP and inter/ZH_COMP
 
-6.0:
+6.0:	(2011-06-24)
 	improve cross-codecs communication
 	inter/WHITESPACE-DERAIL
 	inter/WHITESPACE-RERAIL
 
-5.1:
+5.1:	(2011-05-30)
 	reduce memory usage in bsdconv_mktable
 	inter/WIDTH
 	to/NULL
 
-5.0:
+5.0:	(2011-05-25)
 	table format change
 	inter/SCORE
 	inter/SCORE_TRAIN
@@ -152,10 +152,10 @@
 	add bsdconv_duplicate()
 	add bsdconv_ctl() and cbctl() in callback mechanism
 
-4.8:
+4.8:	(2011-04-27)
 	improve inter/{half,full}
 
-4.7:
+4.7:	(2011-04-26)
 	from/UAO250
 	to/UAO250
 	split wrappers and bsdconvmv
@@ -164,11 +164,11 @@
 	inter/AMBIGUOUS-UNPAD
 	inter/BSDCONV_INFO
 
-4.6:
+4.6:	(2011-04-25)
 	from/MOZ18 -> from/UAO241
 	to/UAO241
 
-4.5:
+4.5:	(2011-04-25)
 	from/ANSI-CONTROL
 	from/BSDCONV_LOG
 	from/SKIP
@@ -180,42 +180,48 @@
 	to/BSDCONV_RAW
 	verify SUBROUTINE in inter phases
 
-4.4:
+4.4:	(2011-04-13)
 	Add to/RAW
 	fix bug in CNS11643 conversion
 	fix bug in UTF-8 decoding
 
-4.3:
+4.3:	(2011-01-20)
 	Enhance table builder
 
-4.0:
+4.0:	(2011-01-15)
 	Allow using '|' to do re-conversion
 	New design of operation mode
 	Add bsdconvmv tool
 
-3.0:
+3.0:	(2009-09-05)
 	Support multiple inter-phase
 
-2.0:
+2.0:	(2009-07-14)
 	from/ASCII-NAMED-HTMLENTITY
 
-1.7:
+1.7:	(2009-05-28)
 	Add Perl wrapper
 
-1.0:
+1.0:	(2009-05-23)
 	Add PHP wrapper
 
-0.6:
+0.7:	(2009-05-23)
+	Bugfixes & Cleanup
+
+0.6:	(2009-05-20)
 	Support various type of operation mode
 
-0.5:
+0.5:	(2009-05-18)
 	Support alias
 
-0.3:
+0.4:	(2009-05-14)
+	Bugfixes & Refactoring
+
+0.3:	(2009-05-12)
 	Support callback in codecs
 
-0.2:
+0.2:	(2009-05-07)
 	Make hibernating works (for multiple-cycle conversion)
 
-0.1:
+0.1:	(2009-04-19)
 	First tag, conversion format: from:inter:to
