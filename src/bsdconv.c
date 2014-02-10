@@ -87,8 +87,10 @@ int main(int argc, char *argv[]){
 	}
 	i=2;
 
-	if(strcmp(argv[1],"-l")==0)
+	if(strcmp(argv[1],"-l")==0){
 		list_modules();
+		return 0;
+	}
 
 	if(argc>2) while(i<argc){
 		if(strcmp(argv[i],"-i")==0)
