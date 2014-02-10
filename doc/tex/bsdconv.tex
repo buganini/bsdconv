@@ -510,6 +510,7 @@ bsdconv_destroy(ins);
 				BSDCONV\_FILE & Write output into (FILE *) stream file \\
 				BSDCONV\_FD & Write output into (int) file descriptor \\
 				BSDCONV\_NULL & Discard output \\
+				BSDCONV\_PASS & Pass to another conversion instance \\
 				\hline
 			\end{tabular}
 			\subsubsection{BSDCONV\_HOLD}
@@ -530,6 +531,9 @@ bsdconv_destroy(ins);
 			\subsubsection{BSDCONV\_NULL}
 				\paragraph{}
 				Output will be discard. This is usually used with evaluating conversion (see section 3.4).
+			\subsubsection{BSDCONV\_PASS}
+				\paragraph{}
+				Output packets will be passed to the given (struct bsdconv\_instance *) conversion instance at ins-$>$output.data.
 
 		\subsection{Counters}
 			Counters are listed in ins-$>$counter in linked-list with following structure.
