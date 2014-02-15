@@ -1,0 +1,12 @@
+ARGUMENT
+	STDERR
+		Output to stderr
+	STDOUT (default)
+		Output to stdout
+
+EXAMPLE
+	#foreground debug tool
+	> echo 測試 | bsdconv utf-8:bsdconv-output
+	016E2C ( FREE )
+	018A66 ( FREE )
+	010A

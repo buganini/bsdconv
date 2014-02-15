@@ -1,6 +1,0 @@
-EXAMPLE
-	#foreground debug tool
-	> echo 測試 | bsdconv utf-8:bsdconv-stdout
-	016E2C ( FREE )
-	018A66 ( FREE )
-	010A
