@@ -51,7 +51,7 @@ Decode javascript escaped data (byte/unicode mixed) like %u9644%20
 
 Generate string for fuzzy comparison
 
-    echo ¼ℌăǅⓐ⁹灣湾ド鬒鬒æß | bsdconv UTF-8:ZH-FUZZY-TW:KANA-PHONETIC:NFKD_CASEFOLD:UTF-8
+    echo ¼ℌăǅⓐ⁹灣湾ド鬒鬒æß | bsdconv UTF-8:ZH-FUZZY-TW:KANA-PHONETIC:NFKD-CASEFOLD:UTF-8
     1⁄4hădža9灣灣do鬒鬒æss
 
 Translate text to HTML <IMG />
