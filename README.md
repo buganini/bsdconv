@@ -45,7 +45,7 @@ Recover from mis-decoding/encoding (mistreated big5 as iso-8859-1 and converted 
 
     bsdconv 'utf-8:iso-8859-1|big5:utf-8'
 
-Decode javascript escaped data (byte/unicode mixed) like %u9644%20
+Decode escaped data (byte/unicode mixed) like %u9644%20
 
     bsdconv 'escape,byte:unicode,byte|skip,ascii:utf-8'
 
