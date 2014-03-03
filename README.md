@@ -1,6 +1,7 @@
 #Documentation & Support
 http://www.slideshare.net/buganini/bsdconv
 
+http://www.slideshare.net/Buganini/journey-of-bsdconv
 
 API Reference: http://buganini.github.io/bsdconv/
 
