@@ -4,7 +4,6 @@
 #include "../../src/bsdconv.h"
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
-	printf("asdfas\n");
 	FILE *fp=stdout;
 	while(arg){
 		if(strcasecmp(arg->key, "STDERR")==0){
