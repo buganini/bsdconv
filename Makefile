@@ -2,7 +2,7 @@ DESTDIR?=
 PREFIX?=/usr/local
 BSDCONV_PATH?=${PREFIX}
 
-CFLAGS+=-Wall -Wno-unused-result -O2 -D_BSDCONV_INTERNAL -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
+CFLAGS+=-g -Wall -Wno-unused-result -D_BSDCONV_INTERNAL -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
 SHLIBVER=11
 
 UNAME_S=$(shell uname -s)
