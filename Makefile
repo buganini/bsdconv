@@ -409,7 +409,7 @@ fetch:
 
 test: fetch
 	@python testsuite/conversion.py
-	@$(CC) ${CFLAGS} testsuite/api.c -L./build/lib/ -o testsuite/api -lbsdconv ${LIBS}
+	@$(CC) ${CFLAGS} -Isrc/ testsuite/api.c -L./build/lib/ -o testsuite/api -lbsdconv ${LIBS}
 	@./testsuite/api
 
 gen: unicode_gen chvar big5_bonus
