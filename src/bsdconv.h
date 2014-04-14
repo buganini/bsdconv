@@ -278,7 +278,6 @@ static inline struct state_rt read_state(void *p){
 #define CP(X) ((char *)(X))
 #define UCP(X) ((unsigned char *)(X))
 
-#define DATA_MALLOC(INS, X) do{if(INS->pool){(X)=INS->pool; INS->pool=INS->pool->next;}else{(X)=malloc(sizeof(struct data_rt));}}while(0)
 #define DATUM_FREE(INS, X) do{ if((X)->flags & F_FREE) free((X)->data); (X)->next=INS->pool; INS->pool=(X);}while(0)
 #define DATA_FREE(INS, X) do{ struct data_rt *t,*p=(X); while(p){if(p->flags & F_FREE) free(p->data); t=p->next; p->next=INS->pool; INS->pool=p; p=t;}}while(0)
 
@@ -346,6 +345,8 @@ enum bsdconv_ctl_action {
 };
 
 //Helpers
+#define DATA_MALLOC(INS, X) do{if(INS->pool){(X)=INS->pool; INS->pool=INS->pool->next;}else{(X)=malloc(sizeof(struct data_rt));}}while(0)
+
 static inline struct data_rt * dup_data_rt(struct bsdconv_instance *ins, struct data_rt *data){
 	struct data_rt *ret;
 	DATA_MALLOC(ins, ret);
