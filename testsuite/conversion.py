@@ -39,7 +39,7 @@ iotest=[
 	["bsdconv:utf-8","016e2c","測"],
 	["bsdconv:utf-8","016e2c,018a66","測試"],
 	["utf-8:bsdconv","測\n","016E2C010A"],
-	["utf-8:bsdconv_raw","測\n","\x01\x6e\x2c\x01\x0a"],
+	["utf-8:pass","測\n","\x01\x6e\x2c\x01\x0a"],
 	["utf-8:raw","測試\n","\x6e\x2c\x8a\x66\x0a"],
 	["bsdconv-keyword,utf-8:bsdconv-keyword,bsdconv|bsdconv-keyword,bsdconv:bsdconv-keyword,utf-8","測,試\t测,试\n","測,試\t测,试\n"],
 	["byte:byte","\xaa\xbb\xcc\xdd","\xaa\xbb\xcc\xdd"],
