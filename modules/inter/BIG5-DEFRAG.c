@@ -41,6 +41,7 @@ void cbconv(struct bsdconv_instance *ins){
 			this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
+			this_phase->state.status=NEXTPHASE;
 			return;
 		}
 	}else if(r->f){
