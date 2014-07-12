@@ -1,12 +1,12 @@
 [submodule "doc/python-bsdconv"]
 	path = doc/python-bsdconv
-	url = git@github.com:buganini/python-bsdconv.git
+	url = https://github.com/buganini/python-bsdconv.git
 [submodule "doc/php-bsdconv"]
 	path = doc/php-bsdconv
-	url = git@github.com:buganini/php-bsdconv.git
+	url = https://github.com/buganini/php-bsdconv.git
 [submodule "doc/ruby-bsdconv"]
 	path = doc/ruby-bsdconv
-	url = git@github.com:buganini/ruby-bsdconv.git
+	url = https://github.com/buganini/ruby-bsdconv.git
 [submodule "doc/go-bsdconv"]
 	path = doc/go-bsdconv
-	url = git@github.com:buganini/go-bsdconv.git
+	url = https://github.com/buganini/go-bsdconv.git
