@@ -378,11 +378,11 @@ plist:
 	@echo @dirrmtry %%DATADIR%%/from
 	@echo @dirrmtry %%DATADIR%%
 
-UnicodeData=ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData.txt
-DerivedNormalizationProps=ftp://ftp.unicode.org/Public/6.3.0/ucd/DerivedNormalizationProps.txt
-NormalizationTest=ftp://ftp.unicode.org/Public/6.3.0/ucd/NormalizationTest.txt
-SpecialCasing=ftp://ftp.unicode.org/Public/6.3.0/ucd/SpecialCasing.txt
-CaseFolding=ftp://ftp.unicode.org/Public/6.3.0/ucd/CaseFolding.txt
+UnicodeData=ftp://ftp.unicode.org/Public/7.0.0/ucd/UnicodeData.txt
+DerivedNormalizationProps=ftp://ftp.unicode.org/Public/7.0.0/ucd/DerivedNormalizationProps.txt
+NormalizationTest=ftp://ftp.unicode.org/Public/7.0.0/ucd/NormalizationTest.txt
+SpecialCasing=ftp://ftp.unicode.org/Public/7.0.0/ucd/SpecialCasing.txt
+CaseFolding=ftp://ftp.unicode.org/Public/7.0.0/ucd/CaseFolding.txt
 fetch:
 	@mkdir -p tmp
 	@if [ ! -e tmp/UnicodeData.txt ]; then \

@@ -1,4 +1,4 @@
-Source: ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData.txt
+Source: ftp://ftp.unicode.org/Public/7.0.0/ucd/UnicodeData.txt
 01A0	0120	#noBreak
 01A8	0120,010308	#compat
 01AA	0161	#super
@@ -2334,9 +2334,15 @@ Source: ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData.txt
 0133FD	0133,0130,0165E5	#compat
 0133FE	0133,0131,0165E5	#compat
 0133FF	0167,0161,016C	#square
+01A69C	01044A	#super
+01A69D	01044C	#super
 01A770	01A76F	#super
 01A7F8	010126	#super
 01A7F9	010153	#super
+01AB5C	01A727	#super
+01AB5D	01AB37	#super
+01AB5E	01026B	#super
+01AB5F	01AB52	#super
 01F900	018C48	#canonical
 01F901	0166F4	#canonical
 01F902	018ECA	#canonical
@@ -3881,6 +3887,13 @@ Source: ftp://ftp.unicode.org/Public/6.3.0/ucd/UnicodeData.txt
 010110AB	010110A5,010110BA	#canonical
 0101112E	01011131,01011127	#canonical
 0101112F	01011132,01011127	#canonical
+0101134B	01011347,0101133E	#canonical
+0101134C	01011347,01011357	#canonical
+010114BB	010114B9,010114BA	#canonical
+010114BC	010114B9,010114B0	#canonical
+010114BE	010114B9,010114BD	#canonical
+010115BA	010115B8,010115AF	#canonical
+010115BB	010115B9,010115AF	#canonical
 0101D15E	0101D157,0101D165	#canonical
 0101D15F	0101D158,0101D165	#canonical
 0101D160	0101D158,0101D165,0101D16E	#canonical
