@@ -231,7 +231,7 @@ blocks={
 	"^Cuneiform.*$": "CUNEIFORM",
 	"^Currency.*$": "CURRENCY",
 	"^Cyrillic.*$": "CYRILLIC",
-	"^Devanagari$": "DEVANAGARI",
+	"^Devanagari.*$": "DEVANAGARI",
 	"^Egyptian.*$": "EGYPTIAN",
 	"^Emoticons$": "EMOTICON",
 	"^Ethiopic.*$": "ETHIOPIC",
