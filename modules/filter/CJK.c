@@ -13,12 +13,14 @@ static const struct uint32_range ranges[] = {
 	{ 0x30A0, 0x30FF }, // Katakana
 	{ 0x3100, 0x312F }, // Bopomofo
 	{ 0x3130, 0x318F }, // Hangul Compatibility Jamo
+	{ 0x3190, 0x319F }, // Kanbun
 	{ 0x31A0, 0x31BF }, // Bopomofo Extended
 	{ 0x31C0, 0x31EF }, // CJK Strokes
 	{ 0x31F0, 0x31FF }, // Katakana Phonetic Extensions
 	{ 0x3200, 0x32FF }, // Enclosed CJK Letters and Months
 	{ 0x3300, 0x33FF }, // CJK Compatibility
 	{ 0x3400, 0x4DBF }, // CJK Unified Ideographs Extension A
+	{ 0x4DC0, 0x4DFF }, // Yijing Hexagram Symbols
 	{ 0x4E00, 0x9FFF }, // CJK Unified Ideographs
 	{ 0xA000, 0xA48F }, // Yi Syllables
 	{ 0xA490, 0xA4CF }, // Yi Radicals

@@ -244,6 +244,7 @@ blocks={
 	"^Javanese$": "JAVANESE",
 	"^Katakana.*$": ["KATAKANA", "CJK"],
 	"^Kana .*$": "CJK",
+	"^Kanbun.*$": "CJK",
 	"^Kangxi Radicals$": "CJK",
 	"^Kannada$": "KANNADA",
 	"^Khmer.*$": "KHMER",
@@ -271,6 +272,7 @@ blocks={
 	"^Tibetan$": "TIBETAN",
 	"^Tifinagh$": "TIFINAGH",
 	"^Yi .*$": ["YI", "CJK"],
+	"^Yijing.*$": "CJK",
 }
 
 m={}
