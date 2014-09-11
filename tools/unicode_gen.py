@@ -240,6 +240,7 @@ blocks={
 	"^Hangul.*$": ["HANGUL", "CJK"],
 	"^Hebrew$": "HEBREW",
 	"^Hiragana$": ["HIRAGANA", "CJK"],
+	"^Ideographic Description Characters*": "CJK",
 	"^IPA.*$": ["IPA", "PHONETIC"],
 	"^Javanese$": "JAVANESE",
 	"^Katakana.*$": ["KATAKANA", "CJK"],

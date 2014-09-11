@@ -8,6 +8,7 @@ static const struct uint32_range ranges[] = {
 	{ 0x1100, 0x11FF }, // Hangul Jamo
 	{ 0x2E80, 0x2EFF }, // CJK Radicals Supplement
 	{ 0x2F00, 0x2FDF }, // Kangxi Radicals
+	{ 0x2FF0, 0x2FFF }, // Ideographic Description Characters
 	{ 0x3000, 0x303F }, // CJK Symbols and Punctuation
 	{ 0x3040, 0x309F }, // Hiragana
 	{ 0x30A0, 0x30FF }, // Katakana
