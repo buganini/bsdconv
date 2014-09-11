@@ -1,5 +1,6 @@
 import sys
-import urllib
+import re
+import os
 
 def bsdconv01(dt):
 	dt=dt.strip().lstrip("0").upper()
@@ -31,7 +32,6 @@ for l in f_map:
 	l=l.strip().split("\t")
 	if len(l)==2:
 		m_url[l[0]]=l[1]
-
 
 f_ccc.write("/* Generated from {url}*/\n".format(url=m_url["UnicodeData.txt"]));
 for f in [f_nfc, f_nfd, f_nfkd, f_upper, f_lower]:
@@ -215,3 +215,96 @@ for l in cf:
 	mapping = ",".join([bsdconv01(x) for x in mapping.strip().split(" ")])
 	f_casefold.write("{f}\t{t}\n".format(f=code, t=mapping))
 f_casefold.close()
+
+
+# Blocks
+
+blocks={
+	"^.*Arabian$": "ARABIC",
+	"^Arabic.*$": "ARABIC",
+	"^Armenian$": "ARMENIAN",
+	"^.*Arrows.*$": "ARROWS",
+	"^Bopomofo.*$": "CJK",
+	"^Braille.*$": "BRAILLE",
+	"^Cherokee$": "CHEROKEE",
+	"^.*CJK.*$": "CJK",
+	"^Cuneiform.*$": "CUNEIFORM",
+	"^Currency.*$": "CURRENCY",
+	"^Cyrillic.*$": "CYRILLIC",
+	"^Devanagari$": "DEVANAGARI",
+	"^Egyptian.*$": "EGYPTIAN",
+	"^Emoticons$": "EMOTICON",
+	"^Ethiopic.*$": "ETHIOPIC",
+	"^Georgian.*$": "GEORGIAN",
+	"^.*Greek.*$": "GREEK",
+	"^Hangul.*$": ["HANGUL", "CJK"],
+	"^Hebrew$": "HEBREW",
+	"^Hiragana$": ["HIRAGANA", "CJK"],
+	"^IPA.*$": ["IPA", "PHONETIC"],
+	"^Javanese$": "JAVANESE",
+	"^Katakana.*$": ["KATAKANA", "CJK"],
+	"^Kana .*$": "CJK",
+	"^Kangxi Radicals$": "CJK",
+	"^Kannada$": "KANNADA",
+	"^Khmer.*$": "KHMER",
+	"^Lao$": "LAO",
+	"^.*Latin.*$": "LATIN",
+	"^Miao$": "MIAO",
+	"^Mahjong.*$": "MAHJONG",
+	"^Malayalam$": "MALAYALAM",
+	"^.*Mathematical.*$": "MATH",
+	"^Mongolian$": "MONGOLIAN",
+	"^.*Musical.*$": "MUSIC",
+	"^Myanmar.*$": "MYANMAR",
+	"^Phonetic.*$": "PHONETIC",
+	"^.*Private Use Area.*$": "PUA",
+	"^.*Punctuation.*$": "PUNCTUATION",
+	"^Samaritan$": "SAMARITAN",
+	"^Sinhala.*$": "SINHALA",
+	"^Sundanese.*$": "SUNDANESE",
+	"^Syriac$": "SYRIAC",
+	"^Tagalog$": "TAGALOG",
+	"^Tai Xuan Jing.*$": "CJK",
+	"^Tamil$": "TAMIL",
+	"^Telugu$": "TELUGU",
+	"^Thai$": "THAI",
+	"^Tibetan$": "TIBETAN",
+	"^Tifinagh$": "TIFINAGH",
+	"^Yi .*$": ["YI", "CJK"],
+}
+
+m={}
+blk=open("tmp/Blocks.txt")
+for l in blk:
+	l=l.strip()
+	if l=="" or l[0]=="#":
+		continue
+	r, d = l.split(";")
+	d=d.strip()
+	cl=[]
+	for pt in blocks:
+		if re.match(pt, d):
+			c=blocks[pt]
+			if type(c)==list:
+				cl.extend(c)
+			else:
+				cl.append(c)
+	print r, d, cl
+	for c in cl:
+		if c not in m:
+			m[c]=open(os.path.join("modules/filter", c+".c"), "w")
+			m[c].write("/*\n"
+			" * Generated from: "+m_url["Blocks.txt"]+"\n"
+			" */\n"
+			"\n"
+			"#include \"../../src/bsdconv.h\"\n"
+			"\n"
+			"static const struct uint32_range ranges[] = {\n"
+			)
+		b,e=r.split("..")
+		m[c].write("\t{{ 0x{beg}, 0x{end} }}, // {desc}\n".format(beg=b, end=e, desc=d))
+
+for c in m:
+	m[c].write("};\n"
+	"#include \"unicode_range.c\"\n")
+	m[c].close()

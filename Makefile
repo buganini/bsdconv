@@ -383,6 +383,7 @@ DerivedNormalizationProps=ftp://ftp.unicode.org/Public/7.0.0/ucd/DerivedNormaliz
 NormalizationTest=ftp://ftp.unicode.org/Public/7.0.0/ucd/NormalizationTest.txt
 SpecialCasing=ftp://ftp.unicode.org/Public/7.0.0/ucd/SpecialCasing.txt
 CaseFolding=ftp://ftp.unicode.org/Public/7.0.0/ucd/CaseFolding.txt
+Blocks=ftp://ftp.unicode.org/Public/7.0.0/ucd/Blocks.txt
 fetch:
 	@mkdir -p tmp
 	@if [ ! -e tmp/UnicodeData.txt ]; then \
@@ -400,12 +401,16 @@ fetch:
 	@if [ ! -e tmp/CaseFolding.txt ]; then \
 		wget -O tmp/CaseFolding.txt ${CaseFolding}; \
 	fi ;
+	@if [ ! -e tmp/Blocks.txt ]; then \
+		wget -O tmp/Blocks.txt ${Blocks}; \
+	fi ;
 	@cat /dev/null > tmp/map.txt
 	@echo "UnicodeData.txt	${UnicodeData}" >> tmp/map.txt
 	@echo "DerivedNormalizationProps.txt	${DerivedNormalizationProps}" >> tmp/map.txt
 	@echo "NormalizationTest.txt	${NormalizationTest}" >> tmp/map.txt
 	@echo "SpecialCasing.txt	${SpecialCasing}" >> tmp/map.txt
 	@echo "CaseFolding.txt	${CaseFolding}" >> tmp/map.txt
+	@echo "Blocks.txt	${Blocks}" >> tmp/map.txt
 
 test: fetch
 	@python testsuite/conversion.py
