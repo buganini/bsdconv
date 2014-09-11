@@ -5,9 +5,8 @@
 #include "../../src/bsdconv.h"
 
 static const struct uint32_range ranges[] = {
-	{ 0x0400, 0x04FF }, // Cyrillic
-	{ 0x0500, 0x052F }, // Cyrillic Supplement
-	{ 0x2DE0, 0x2DFF }, // Cyrillic Extended-A
-	{ 0xA640, 0xA69F }, // Cyrillic Extended-B
+	{ 0xE000, 0xF8FF }, // Private Use Area
+	{ 0xF0000, 0xFFFFF }, // Supplementary Private Use Area-A
+	{ 0x100000, 0x10FFFF }, // Supplementary Private Use Area-B
 };
 #include "unicode_range.c"
