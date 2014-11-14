@@ -412,10 +412,6 @@ plist:
 		if [ -e modules/$${item}.man ]; then echo %%EBCDIC%%%%DATADIR%%/$${item}.man ; fi ; \
 		if [ -e modules/$${item}.c ]; then echo %%EBCDIC%%%%DATADIR%%/$${item}.so ; fi ; \
 	done
-	@echo @dirrmtry %%DATADIR%%/to
-	@echo @dirrmtry %%DATADIR%%/inter
-	@echo @dirrmtry %%DATADIR%%/from
-	@echo @dirrmtry %%DATADIR%%
 
 UnicodeData=ftp://ftp.unicode.org/Public/7.0.0/ucd/UnicodeData.txt
 DerivedNormalizationProps=ftp://ftp.unicode.org/Public/7.0.0/ucd/DerivedNormalizationProps.txt
