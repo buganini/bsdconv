@@ -452,23 +452,7 @@ test: fetch
 	@$(CC) ${CFLAGS} -Isrc/ testsuite/api.c -L./build/lib/ -o testsuite/api -lbsdconv ${LIBS}
 	@./testsuite/api
 
-gen: unicode_gen chvar big5_bonus
-
-chvar_url=	http://cnmc.tw/~buganini/chvar/engine.php?action=dump
-chvar:
-	wget -O modules/inter/ZHTW.txt "${chvar_url}&mode=norml&for=tw"
-	wget -O modules/inter/ZHCN.txt "${chvar_url}&mode=norml&for=cn"
-	wget -O modules/inter/ZH-FUZZY-TW.txt "${chvar_url}&mode=fuzzy&for=tw"
-	wget -O modules/inter/ZH-FUZZY-CN.txt "${chvar_url}&mode=fuzzy&for=cn"
-	@for file in ZHTW ZHCN ZH-FUZZY-TW ZH-FUZZY-CN; do \
-		sed -i '' -e 's|^|01|g' "modules/inter/$${file}.txt" ; \
-		sed -i '' -e 's|	|	01|g' "modules/inter/$${file}.txt" ; \
-	done
-	wget -O modules/to/CP950-TRANS.txt "${chvar_url}&mode=trans&for=cp950"
-	wget -O modules/to/CP936-TRANS.txt "${chvar_url}&mode=trans&for=cp936"
-	@for file in CP950-TRANS CP936-TRANS ; do \
-		sed -i '' -e 's|^|01|g' "modules/to/$${file}.txt" ; \
-	done
+gen: unicode_gen bonus
 
 unicode_gen: fetch
 	python tools/unicode_gen.py
