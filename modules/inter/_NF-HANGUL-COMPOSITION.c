@@ -62,15 +62,38 @@ void cbconv(struct bsdconv_instance *ins){
 						this_phase->state.status=SUBMATCH;
 					}else{
 						cbflush(ins);
-						this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
-						this_phase->data_tail=this_phase->data_tail->next;
-						this_phase->data_tail->next=NULL;
+
+						LIndex = ucs - LBase;
+						if (0 <= LIndex && LIndex < LCount){
+							r->pending = ucs;
+							r->status=1;
+							this_phase->state.status=SUBMATCH;
+						}else{
+							this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
+							this_phase->data_tail=this_phase->data_tail->next;
+							this_phase->data_tail->next=NULL;
+						}
 					}
 				}else{
 					cbflush(ins);
-					this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
-					this_phase->data_tail=this_phase->data_tail->next;
-					this_phase->data_tail->next=NULL;
+
+					LIndex = ucs - LBase;
+					if (0 <= LIndex && LIndex < LCount){
+						r->pending = ucs;
+						r->status=1;
+						this_phase->state.status=SUBMATCH;
+					}else{
+						LIndex = ucs - LBase;
+						if (0 <= LIndex && LIndex < LCount){
+							r->pending = ucs;
+							r->status=1;
+							this_phase->state.status=SUBMATCH;
+						}else{
+							this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
+							this_phase->data_tail=this_phase->data_tail->next;
+							this_phase->data_tail->next=NULL;
+						}
+					}
 				}
 				return;
 			case 2:
