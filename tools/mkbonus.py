@@ -9,7 +9,7 @@ from bsdconv import Bsdconv
 clist=open(sys.argv[2], "w")
 plist=open(sys.argv[3], "w")
 
-sc=Bsdconv("utf-8:score#default:null")
+sc=Bsdconv("utf-8:score#with=cjk:null")
 bcv=Bsdconv("utf-8:insert#after=002c:bsdconv-keyword,bsdconv")
 bcv_zhtw=Bsdconv("utf-8:zhtw:insert#after=002c:bsdconv-keyword,bsdconv")
 
