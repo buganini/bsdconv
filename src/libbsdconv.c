@@ -1040,7 +1040,7 @@ void bsdconv(struct bsdconv_instance *ins){
 			break;
 		case BSDCONV_AUTOMALLOC:
 			i=ins->output.len;
-			data_ptr=last_phase->data_head;
+			data_ptr=last_phase->data_head->next;
 			while(data_ptr){
 				i+=data_ptr->len;
 				data_ptr=data_ptr->next;
