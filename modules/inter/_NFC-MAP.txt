@@ -1,4 +1,4 @@
-Source: ftp://ftp.unicode.org/Public/7.0.0/ucd/UnicodeData.txt
+Source: ftp://ftp.unicode.org/Public/9.0.0/ucd/UnicodeData.txt
 0141,010300	01C0
 0141,010301	01C1
 0141,010302	01C2

@@ -173,7 +173,9 @@ toNFD=Bsdconv("bsdconv:nfd:insert#after=002c:bsdconv-keyword,bsdconv")
 toNFKC=Bsdconv("bsdconv:nfkc:insert#after=002c:bsdconv-keyword,bsdconv")
 toNFKD=Bsdconv("bsdconv:nfkd:insert#after=002c:bsdconv-keyword,bsdconv")
 print("Normalization Tests: #"+url)
+ln = 0
 for l in nt:
+	ln += 1
 	if not l:
 		continue
 	if l[0]=="#":
@@ -219,6 +221,6 @@ for l in nt:
 	]
 	for a,b,desc in nftest:
 		if a!=b:
-			print("Failed: ",desc,a,"!=",b,comment)
+			print ln, "Failed: ", desc, a, "!=", b, comment
 
 print("Conversion tests finished.")

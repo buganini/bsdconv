@@ -1,5 +1,5 @@
 /*
- * Generated from: ftp://ftp.unicode.org/Public/7.0.0/ucd/Blocks.txt
+ * Generated from: ftp://ftp.unicode.org/Public/9.0.0/ucd/Blocks.txt
  */
 
 #include "../../src/bsdconv.h"

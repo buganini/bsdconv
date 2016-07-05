@@ -1,4 +1,4 @@
-Source: ftp://ftp.unicode.org/Public/7.0.0/ucd/UnicodeData.txt
+Source: ftp://ftp.unicode.org/Public/9.0.0/ucd/UnicodeData.txt
 01A0	0120	#noBreak
 01A8	0120,010308	#compat
 01AA	0161	#super
@@ -5167,6 +5167,7 @@ Source: ftp://ftp.unicode.org/Public/7.0.0/ucd/UnicodeData.txt
 0101F238	017533	#square
 0101F239	015272	#square
 0101F23A	0155B6	#square
+0101F23B	01914D	#square
 0101F240	013014,01672C,013015	#compat
 0101F241	013014,014E09,013015	#compat
 0101F242	013014,014E8C,013015	#compat

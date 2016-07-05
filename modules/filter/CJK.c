@@ -1,5 +1,5 @@
 /*
- * Generated from: ftp://ftp.unicode.org/Public/7.0.0/ucd/Blocks.txt
+ * Generated from: ftp://ftp.unicode.org/Public/9.0.0/ucd/Blocks.txt
  */
 
 #include "../../src/bsdconv.h"
@@ -35,6 +35,7 @@ static const struct uint32_range ranges[] = {
 	{ 0x20000, 0x2A6DF }, // CJK Unified Ideographs Extension B
 	{ 0x2A700, 0x2B73F }, // CJK Unified Ideographs Extension C
 	{ 0x2B740, 0x2B81F }, // CJK Unified Ideographs Extension D
+	{ 0x2B820, 0x2CEAF }, // CJK Unified Ideographs Extension E
 	{ 0x2F800, 0x2FA1F }, // CJK Compatibility Ideographs Supplement
 };
 #include "unicode_range.c"

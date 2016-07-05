@@ -42,7 +42,7 @@ f_lower.write("Source: {url}\n".format(url=m_url["SpecialCasing.txt"]))
 f_casefold.write("Source: {url}\n".format(url=m_url["CaseFolding.txt"]))
 
 f_ccc.write("""
-	struct ccc_interval {
+struct ccc_interval {
 	int beg;
 	int end;
 	int ccc;

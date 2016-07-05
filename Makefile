@@ -326,6 +326,7 @@ meta: libbsdconv
 clean:
 	rm -rf build
 	rm -rf testsuite/api
+	rm -rf tmp
 
 install: installdir install_main install_filters install_scorers install_basic install_chinese install_ebcdic
 
@@ -413,12 +414,12 @@ plist:
 		if [ -e modules/$${item}.c ]; then echo %%EBCDIC%%%%DATADIR%%/$${item}.so ; fi ; \
 	done
 
-UnicodeData=ftp://ftp.unicode.org/Public/7.0.0/ucd/UnicodeData.txt
-DerivedNormalizationProps=ftp://ftp.unicode.org/Public/7.0.0/ucd/DerivedNormalizationProps.txt
-NormalizationTest=ftp://ftp.unicode.org/Public/7.0.0/ucd/NormalizationTest.txt
-SpecialCasing=ftp://ftp.unicode.org/Public/7.0.0/ucd/SpecialCasing.txt
-CaseFolding=ftp://ftp.unicode.org/Public/7.0.0/ucd/CaseFolding.txt
-Blocks=ftp://ftp.unicode.org/Public/7.0.0/ucd/Blocks.txt
+UnicodeData=ftp://ftp.unicode.org/Public/9.0.0/ucd/UnicodeData.txt
+DerivedNormalizationProps=ftp://ftp.unicode.org/Public/9.0.0/ucd/DerivedNormalizationProps.txt
+NormalizationTest=ftp://ftp.unicode.org/Public/9.0.0/ucd/NormalizationTest.txt
+SpecialCasing=ftp://ftp.unicode.org/Public/9.0.0/ucd/SpecialCasing.txt
+CaseFolding=ftp://ftp.unicode.org/Public/9.0.0/ucd/CaseFolding.txt
+Blocks=ftp://ftp.unicode.org/Public/9.0.0/ucd/Blocks.txt
 fetch:
 	@mkdir -p tmp
 	@if [ ! -e tmp/UnicodeData.txt ]; then \
