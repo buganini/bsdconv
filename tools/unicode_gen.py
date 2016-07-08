@@ -10,6 +10,8 @@ def bsdconv01(dt):
 		return "01"+dt
 
 
+f_ambiguous=open("modules/inter/_AMBIGUOUS.h", "w")
+f_width=open("modules/inter/_WIDTH.h", "w")
 f_ccc=open("modules/inter/_NF-CCC.h", "w")
 f_nfd=open("modules/inter/_NFD.txt", "w")
 f_nfkd=open("modules/inter/_NFKD.txt", "w")
@@ -33,6 +35,8 @@ for l in f_map:
 	if len(l)==2:
 		m_url[l[0]]=l[1]
 
+f_ambiguous.write("/* Generated from {url}*/\n".format(url=m_url["EastAsianWidth.txt"]));
+f_width.write("/* Generated from {url}*/\n".format(url=m_url["EastAsianWidth.txt"]));
 f_ccc.write("/* Generated from {url}*/\n".format(url=m_url["UnicodeData.txt"]));
 for f in [f_nfc, f_nfd, f_nfkd, f_upper, f_lower]:
 	f.write("Source: {url}\n".format(url=m_url["UnicodeData.txt"]))
@@ -311,3 +315,84 @@ for c in m:
 	m[c].write("};\n"
 	"#include \"unicode_range.c\"\n")
 	m[c].close()
+
+f_ambiguous.write("""
+struct interval {
+	int first;
+	int last;
+};
+
+static const struct interval ambiguous[] = {
+""");
+
+f_width.write("""
+struct width_interval {
+	int beg;
+	int end;
+	int width;
+};
+
+static const struct width_interval width_table[] = {
+""");
+
+propmap = {"A":"AMBI", "F":"FULL", "H":"HALF", "N":"HALF", "Na":"HALF", "W":"FULL"}
+ambi_beg = None
+ambi_end = None
+width_beg = None
+width_end = None
+width_prop = None
+eaw=open("tmp/EastAsianWidth.txt")
+for l in eaw:
+	l = l.strip()
+	if not l:
+		continue
+	if l.startswith("#"):
+		continue
+	l, desc = l.split("#")
+	a=l.strip().split(";")
+	desc = desc[1:3]
+	w = a[1]
+	r = a[0].split("..")
+	b = r[0]
+	if len(r)==1:
+		e = b
+	else:
+		e = r[1]
+
+	if w == "A":
+		if ambi_beg is None:
+			ambi_beg = b
+			ambi_end = e
+		elif int(ambi_end, 16)+1==int(b, 16):
+			ambi_end = e
+		else:
+			f_ambiguous.write("{{ 0x{beg}, 0x{end} }},\n".format(beg=ambi_beg, end=ambi_end));
+			ambi_beg = b
+			ambi_end = e
+
+	if desc != "Cc":
+		p = propmap[w]
+		if width_prop is None:
+			width_prop = p
+			width_beg = b
+			width_end = e
+		elif p == width_prop:
+			if int(width_end, 16)+1==int(b, 16):
+				width_end = e
+			else:
+				f_width.write("{{ 0x{beg}, 0x{end}, {prop} }},\n".format(beg=width_beg, end=width_end, prop=width_prop));
+				width_beg = b
+				width_end = e
+		else:
+			f_width.write("{{ 0x{beg}, 0x{end}, {prop} }},\n".format(beg=width_beg, end=width_end, prop=width_prop));
+			width_prop = p
+			width_beg = b
+			width_end = e
+
+f_ambiguous.write("{{ 0x{beg}, 0x{end} }},\n".format(beg=ambi_beg, end=ambi_end));
+f_ambiguous.write("};\n")
+f_ambiguous.close()
+
+f_width.write("{{ 0x{beg}, 0x{end}, {prop} }},\n".format(beg=width_beg, end=width_end, prop=width_prop));
+f_width.write("};\n")
+f_width.close()

@@ -1,6 +1,6 @@
 #include "../../src/bsdconv.h"
 
-#include "AMBIGUOUS.h"
+#include "_AMBIGUOUS.h"
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	THIS_CODEC(ins)->priv=malloc(sizeof(int));

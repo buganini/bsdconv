@@ -416,6 +416,7 @@ plist:
 
 UnicodeData=ftp://ftp.unicode.org/Public/9.0.0/ucd/UnicodeData.txt
 DerivedNormalizationProps=ftp://ftp.unicode.org/Public/9.0.0/ucd/DerivedNormalizationProps.txt
+EastAsianWidth=ftp://ftp.unicode.org/Public/9.0.0/ucd/EastAsianWidth.txt
 NormalizationTest=ftp://ftp.unicode.org/Public/9.0.0/ucd/NormalizationTest.txt
 SpecialCasing=ftp://ftp.unicode.org/Public/9.0.0/ucd/SpecialCasing.txt
 CaseFolding=ftp://ftp.unicode.org/Public/9.0.0/ucd/CaseFolding.txt
@@ -427,6 +428,9 @@ fetch:
 	fi ;
 	@if [ ! -e tmp/DerivedNormalizationProps.txt ]; then \
 		wget -O tmp/DerivedNormalizationProps.txt ${DerivedNormalizationProps}; \
+	fi ;
+	@if [ ! -e tmp/EastAsianWidth.txt ]; then \
+		wget -O tmp/EastAsianWidth.txt ${EastAsianWidth}; \
 	fi ;
 	@if [ ! -e tmp/NormalizationTest.txt ]; then \
 		wget -O tmp/NormalizationTest.txt ${NormalizationTest}; \
@@ -443,6 +447,7 @@ fetch:
 	@cat /dev/null > tmp/map.txt
 	@echo "UnicodeData.txt	${UnicodeData}" >> tmp/map.txt
 	@echo "DerivedNormalizationProps.txt	${DerivedNormalizationProps}" >> tmp/map.txt
+	@echo "EastAsianWidth.txt	${EastAsianWidth}" >> tmp/map.txt
 	@echo "NormalizationTest.txt	${NormalizationTest}" >> tmp/map.txt
 	@echo "SpecialCasing.txt	${SpecialCasing}" >> tmp/map.txt
 	@echo "CaseFolding.txt	${CaseFolding}" >> tmp/map.txt

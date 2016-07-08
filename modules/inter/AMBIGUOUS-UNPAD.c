@@ -1,6 +1,6 @@
 #include "../../src/bsdconv.h"
 
-#include "AMBIGUOUS.h"
+#include "_AMBIGUOUS.h"
 
 struct my_s{
 	char s;
