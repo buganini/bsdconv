@@ -258,53 +258,53 @@ installdir:
 	mkdir -p ${DESTDIR}${PREFIX}/share/bsdconv/inter
 	mkdir -p ${DESTDIR}${PREFIX}/share/bsdconv/to
 
-libbsdconv: builddir src/libbsdconv*.c src/bsdconv.h
+libbsdconv: src/libbsdconv*.c src/bsdconv.h | builddir
 	$(CC) ${CFLAGS} src/libbsdconv.c -fPIC -shared -o build/lib/${SHLIBNAME} ${LIBS}
 
-bsdconv: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
+bsdconv: libbsdconv meta src/bsdconv.h src/bsdconv.c | builddir
 	$(CC) ${CFLAGS} src/bsdconv.c -L./build/lib/ -o build/bin/bsdconv -lbsdconv ${LIBS}
 
-bsdconv-mktable: builddir src/bsdconv.h src/bsdconv-mktable.c
+bsdconv-mktable: src/bsdconv.h src/bsdconv-mktable.c | builddir
 	$(CC) ${CFLAGS} -DUSE_FMALLOC src/libfmalloc.c src/bsdconv-mktable.c -o build/bin/bsdconv-mktable
 
-bsdconv-man: builddir libbsdconv meta src/bsdconv.h src/bsdconv.c
+bsdconv-man: libbsdconv meta src/bsdconv.h src/bsdconv.c | builddir
 	$(CC) ${CFLAGS} src/bsdconv-man.c -L./build/lib/ -o build/bin/bsdconv-man -lbsdconv ${LIBS}
 
-bsdconv-completion: builddir libbsdconv meta src/bsdconv.h src/bsdconv-completion.c
+bsdconv-completion: libbsdconv meta src/bsdconv.h src/bsdconv-completion.c | builddir
 	$(CC) ${CFLAGS} src/bsdconv-completion.c -L./build/lib -o build/bin/bsdconv-completion -lbsdconv ${LIBS}
 
-bsdconv-dbg: builddir libbsdconv src/libbsdconv.c src/bsdconv.h src/bsdconv-dbg.c
+bsdconv-dbg: libbsdconv src/libbsdconv.c src/bsdconv.h src/bsdconv-dbg.c | builddir
 	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv-dbg.c -o build/bin/bsdconv-dbg ${LIBS}
 
-filters: builddir
+filters: libbsdconv | builddir
 	for item in ${TODO_FILTERS} ; do \
 		echo Build filter $${item}.so ; \
 		$(CC) ${CFLAGS} modules/filter/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/filter/$${item}.so -lbsdconv ${LIBS} ; \
 		if [ -e modules/filter/$${item}.man ]; then cp modules/filter/$${item}.man ./build/share/bsdconv/filter/$${item}.man ; fi ; \
 	done
 
-scorers: builddir
+scorers: libbsdconv | builddir
 	for item in ${TODO_SCORERS} ; do \
 		echo Build scorer $${item}.so ; \
 		$(CC) ${CFLAGS} modules/scorer/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/scorer/$${item}.so -lbsdconv ${LIBS} ; \
 		if [ -e modules/scorer/$${item}.man ]; then cp modules/scorer/$${item}.man ./build/share/bsdconv/scorer/$${item}.man ; fi ; \
 	done
 
-codecs_basic: builddir bsdconv-mktable libbsdconv meta
+codecs_basic: bsdconv-mktable libbsdconv meta | builddir
 	for item in ${TODO_CODECS_BASIC} ; do \
 		./build/bin/bsdconv-mktable modules/$${item}.txt ./build/share/bsdconv/$${item} ; \
 		if [ -e modules/$${item}.man ]; then cp modules/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
 		if [ -e modules/$${item}.c ]; then echo Build $${item}.so; $(CC) ${CFLAGS} modules/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
 	done
 
-codecs_chinese: builddir bsdconv-mktable libbsdconv meta
+codecs_chinese: bsdconv-mktable libbsdconv meta | builddir
 	for item in ${TODO_CODECS_CHINESE} ; do \
 		./build/bin/bsdconv-mktable modules/$${item}.txt ./build/share/bsdconv/$${item} ; \
 		if [ -e modules/$${item}.man ]; then cp modules/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
 		if [ -e modules/$${item}.c ]; then echo Build $${item}.so; $(CC) ${CFLAGS} modules/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
 	done
 
-codecs_ebcdic: builddir bsdconv-mktable libbsdconv meta
+codecs_ebcdic: bsdconv-mktable libbsdconv meta | builddir
 	for item in ${TODO_CODECS_EBCDIC} ; do \
 		./build/bin/bsdconv-mktable modules/$${item}.txt ./build/share/bsdconv/$${item} ; \
 		if [ -e modules/$${item}.man ]; then cp modules/$${item}.man ./build/share/bsdconv/$${item}.man ; fi ; \
@@ -328,9 +328,9 @@ clean:
 	rm -rf testsuite/api
 	rm -rf tmp
 
-install: installdir install_main install_filters install_scorers install_basic install_chinese install_ebcdic
+install: install_main install_filters install_scorers install_basic install_chinese install_ebcdic
 
-install_main:
+install_main: | installdir
 	install -m 555 build/bin/bsdconv ${DESTDIR}${PREFIX}/bin
 	install -m 555 build/bin/bsdconv-man ${DESTDIR}${PREFIX}/bin
 	install -m 555 build/bin/bsdconv-mktable ${DESTDIR}${PREFIX}/bin
@@ -345,33 +345,33 @@ install_main:
 		ln -sf libbsdconv.so.${SHLIBVER} ${DESTDIR}${PREFIX}/lib/libbsdconv.so ; \
 	fi
 
-install_filters:
+install_filters: | installdir
 	for item in ${TODO_FILTERS} ; do \
 		install -m 444 build/share/bsdconv/filter/$${item}.so ${DESTDIR}${PREFIX}/share/bsdconv/filter/$${item}.so ; \
 		if [ -e build/share/bsdconv/filter/$${item}.man ]; then install -m 444 build/share/bsdconv/filter/$${item}.man ${DESTDIR}${PREFIX}/share/bsdconv/filter/$${item}.man ; fi ; \
 	done
 
-install_scorers:
+install_scorers: | installdir
 	for item in ${TODO_SCORERS} ; do \
 		install -m 444 build/share/bsdconv/scorer/$${item}.so ${DESTDIR}${PREFIX}/share/bsdconv/scorer/$${item}.so ; \
 		if [ -e build/share/bsdconv/scorer/$${item}.man ]; then install -m 444 build/share/bsdconv/scorer/$${item}.man ${DESTDIR}${PREFIX}/share/bsdconv/scorer/$${item}.man ; fi ; \
 	done
 
-install_basic:
+install_basic: | installdir
 	for item in ${TODO_CODECS_BASIC} ; do \
 		install -m 444 build/share/bsdconv/$${item} ${DESTDIR}${PREFIX}/share/bsdconv/$${item} ; \
 		if [ -e build/share/bsdconv/$${item}.man ]; then install -m 444 build/share/bsdconv/$${item}.man ${DESTDIR}${PREFIX}/share/bsdconv/$${item}.man ; fi ; \
 		if [ -e build/share/bsdconv/$${item}.so ]; then install -m 444 build/share/bsdconv/$${item}.so ${DESTDIR}${PREFIX}/share/bsdconv/$${item}.so ; fi ; \
 	done
 
-install_chinese:
+install_chinese: | installdir
 	for item in ${TODO_CODECS_CHINESE} ; do \
 		install -m 444 build/share/bsdconv/$${item} ${DESTDIR}${PREFIX}/share/bsdconv/$${item} ; \
 		if [ -e build/share/bsdconv/$${item}.man ]; then install -m 444 build/share/bsdconv/$${item}.man ${DESTDIR}${PREFIX}/share/bsdconv/$${item}.man ; fi ; \
 		if [ -e build/share/bsdconv/$${item}.so ]; then install -m 444 build/share/bsdconv/$${item}.so ${DESTDIR}${PREFIX}/share/bsdconv/$${item}.so ; fi ; \
 	done
 
-install_ebcdic:
+install_ebcdic: | installdir
 	for item in ${TODO_CODECS_EBCDIC} ; do \
 		install -m 444 build/share/bsdconv/$${item} ${DESTDIR}${PREFIX}/share/bsdconv/$${item} ; \
 		if [ -e build/share/bsdconv/$${item}.man ]; then install -m 444 build/share/bsdconv/$${item}.man ${DESTDIR}${PREFIX}/share/bsdconv/$${item}.man ; fi ; \
