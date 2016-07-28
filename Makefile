@@ -276,14 +276,14 @@ bsdconv-completion: libbsdconv meta src/bsdconv.h src/bsdconv-completion.c | bui
 bsdconv-dbg: libbsdconv src/libbsdconv.c src/bsdconv.h src/bsdconv-dbg.c | builddir
 	$(CC) ${CFLAGS} src/libbsdconv.c src/bsdconv-dbg.c -o build/bin/bsdconv-dbg ${LIBS}
 
-filters: libbsdconv | builddir
+filters: libbsdconv meta | builddir
 	for item in ${TODO_FILTERS} ; do \
 		echo Build filter $${item}.so ; \
 		$(CC) ${CFLAGS} modules/filter/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/filter/$${item}.so -lbsdconv ${LIBS} ; \
 		if [ -e modules/filter/$${item}.man ]; then cp modules/filter/$${item}.man ./build/share/bsdconv/filter/$${item}.man ; fi ; \
 	done
 
-scorers: libbsdconv | builddir
+scorers: libbsdconv meta | builddir
 	for item in ${TODO_SCORERS} ; do \
 		echo Build scorer $${item}.so ; \
 		$(CC) ${CFLAGS} modules/scorer/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/scorer/$${item}.so -lbsdconv ${LIBS} ; \
