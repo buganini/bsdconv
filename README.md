@@ -78,5 +78,22 @@ set BSDCONV_PATH environment variable to your path.
 
 Run setEnvVar.bat as administrator could help you set proper environment variables.
 
+#Bindings
+[Python](https://pypi.python.org/pypi/bsdconv/ "Python")
+
+[Perl](https://github.com/buganini/perl-bsdconv "Perl")
+
+[PHP](https://github.com/buganini/php-bsdconv "PHP")
+
+[Ruby](https://rubygems.org/gems/ruby-bsdconv/ "Ruby")
+
+[Go](https://github.com/buganini/go-bsdconv "Go")
+
+[Haskell](https://github.com/pkmx/hs-bsdconv "Haskell")
+
+[PostgreSQL](https://github.com/buganini/postgres-bsdconv "PostgreSQL")
+
+[MySQL](https://github.com/buganini/mysql-udf-bsdconv "MySQL")
+
 #Donate
 https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XLGVJ76ZAYKC2
