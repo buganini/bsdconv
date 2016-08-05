@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # python nfkc_gen.py '⁰¹²³'|sort|uniq
 import sys
 from bsdconv import Bsdconv
