@@ -1,0 +1,6 @@
+EXAMPLE
+	#used to removed untranslated characters
+	> echo ABCDEabcde|bsdconv utf-8:super:utf-8
+	ᴬᴮCᴰᴱᵃᵇᶜᵈᵉ
+	> echo ABCDEabcde|bsdconv utf-8:super,null:utf-8
+	ᴬᴮᴰᴱᵃᵇᶜᵈᵉ
