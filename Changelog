@@ -1,4 +1,11 @@
+11.4:
+	update to unicode 9.0.0
+	generate width data from ucd/EastAsianWidth.txt
+	add inter/{SUB,SUPER,NULL}
+	bug fixes
+
 11.3:
+	update to unicode 7.0.0
 	deprecate bsdconv_codecs_list() by bsdconv_modules_list(), old symbol will be remained until next major release
 	deprecate bsdconv_codec_check() by bsdconv_module_check(), old symbol will be remained until next major release
 	add filter/{CYRILLIC,HANGUL,HIRAGANA,KATAKANA,KHMER,LATIN1,MAHJONG,PRINT,ROMAN,THAI}
