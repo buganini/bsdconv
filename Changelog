@@ -1,7 +1,10 @@
+11.5:
+	add inter/NULL
+
 11.4:
 	update to unicode 9.0.0
 	generate width data from ucd/EastAsianWidth.txt
-	add inter/{SUB,SUPER,NULL}
+	add inter/{SUB,SUPER}
 	bug fixes
 
 11.3:
