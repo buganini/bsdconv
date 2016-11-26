@@ -621,11 +621,13 @@ void bsdconv(struct bsdconv_instance *ins){
 					this_phase->curr=this_phase->curr->next;
 					while(this_phase->i<this_phase->curr->len){
 						c=UCP(this_phase->curr->data)[this_phase->i];
-						if(c>=this_phase->state.beg && c<this_phase->state.end)
-							memcpy(&this_phase->offset, this_codec->z + (uintptr_t)this_phase->state.base + (c - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
-						else if(!(this_phase->flags & F_LOOPBACK))
+						offset_t next = get_offset(this_codec, &this_phase->state, c);
+						if(next){
+							this_phase->offset = next;
+						}else if(!(this_phase->flags & F_LOOPBACK)){
 							this_phase->offset=0;
-						this_phase->state=read_state(this_codec->z + this_phase->offset);
+						}
+						this_phase->state=read_state(this_codec, this_phase->offset);
 						from_x:
 						switch(this_phase->state.status){
 							case DEADEND:
@@ -648,7 +650,7 @@ void bsdconv(struct bsdconv_instance *ins){
 									this_phase->index++;
 									this_codec=THIS_CODEC(ins);
 
-									this_phase->state=read_state(this_codec->z);
+									this_phase->state=read_state(this_codec, 0);
 
 									this_phase->curr=prev_phase->data_head;
 									this_phase->i=this_phase->data_head->len;
@@ -738,12 +740,13 @@ void bsdconv(struct bsdconv_instance *ins){
 				this_phase->state.status=NOMATCH;
 				for(this_phase->i=0;this_phase->i<this_phase->curr->len;this_phase->i+=1){
 					c=UCP(this_phase->curr->data)[this_phase->i];
-					if(c>=this_phase->state.beg && c<this_phase->state.end){
-						memcpy(&this_phase->offset, this_codec->z + (uintptr_t)this_phase->state.base + (c - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
+					offset_t next = get_offset(this_codec, &this_phase->state, c);
+					if(next){
+						this_phase->offset = next;
 					}else if(!(this_phase->flags & F_LOOPBACK)){
 						this_phase->offset=0;
 					}
-					this_phase->state=read_state(this_codec->z + this_phase->offset);
+					this_phase->state=read_state(this_codec, this_phase->offset);
 					switch(this_phase->state.status){
 						case DEADEND:
 							goto inter_deadend;
@@ -779,7 +782,7 @@ void bsdconv(struct bsdconv_instance *ins){
 							this_phase->index++;
 							this_codec=THIS_CODEC(ins);
 
-							this_phase->state=read_state(this_codec->z);
+							this_phase->state=read_state(this_codec, 0);
 
 							this_phase->curr=prev_phase->data_head;
 							continue;
@@ -863,11 +866,13 @@ void bsdconv(struct bsdconv_instance *ins){
 						goto phase_begin;
 
 				}
-				if(256<this_phase->state.end)
-					memcpy(&this_phase->offset, this_codec->z + (uintptr_t)this_phase->state.base + (256 - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
-				else if(!(this_phase->flags & F_LOOPBACK))
+				offset_t next = get_offset(this_codec, &this_phase->state, 256);
+				if(next){
+					this_phase->offset = next;
+				}else if(!(this_phase->flags & F_LOOPBACK)){
 					this_phase->offset=0;
-				this_phase->state=read_state(this_codec->z + this_phase->offset);
+				}
+				this_phase->state=read_state(this_codec, this_phase->offset);
 				if(this_phase->state.status==DEADEND){ goto inter_deadend;}
 			}
 			break;
@@ -878,11 +883,13 @@ void bsdconv(struct bsdconv_instance *ins){
 				this_phase->state.status=NOMATCH;
 				for(this_phase->i=0;this_phase->i<this_phase->curr->len;this_phase->i+=1){
 					c=UCP(this_phase->curr->data)[this_phase->i];
-					if(c>=this_phase->state.beg && c<this_phase->state.end)
-						memcpy(&this_phase->offset, this_codec->z + (uintptr_t)this_phase->state.base + (c - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
-					else if(!(this_phase->flags & F_LOOPBACK))
+					offset_t next = get_offset(this_codec, &this_phase->state, c);
+					if(next){
+						this_phase->offset = next;
+					}else if(!(this_phase->flags & F_LOOPBACK)){
 						this_phase->offset=0;
-					this_phase->state=read_state(this_codec->z + this_phase->offset);
+					}
+					this_phase->state=read_state(this_codec, this_phase->offset);
 					switch(this_phase->state.status){
 						case DEADEND:
 							goto to_deadend;
@@ -918,7 +925,7 @@ void bsdconv(struct bsdconv_instance *ins){
 							this_phase->index++;
 							this_codec=THIS_CODEC(ins);
 
-							this_phase->state=read_state(this_codec->z);
+							this_phase->state=read_state(this_codec, 0);
 
 							this_phase->curr=prev_phase->data_head;
 							continue;
@@ -996,11 +1003,13 @@ void bsdconv(struct bsdconv_instance *ins){
 					case NOOP:
 						goto phase_begin;
 				}
-				if(256<this_phase->state.end)
-					memcpy(&this_phase->offset, this_codec->z + (uintptr_t)this_phase->state.base + (256 - this_phase->state.beg) * sizeof(offset_t), sizeof(offset_t));
-				else if(!(this_phase->flags & F_LOOPBACK))
+				offset_t next = get_offset(this_codec, &this_phase->state, 256);
+				if(next){
+					this_phase->offset = next;
+				}else if(!(this_phase->flags & F_LOOPBACK)){
 					this_phase->offset=0;
-				this_phase->state=read_state(this_codec->z + this_phase->offset);
+				}
+				this_phase->state=read_state(this_codec, this_phase->offset);
 				if(this_phase->state.status==DEADEND){ goto to_deadend;}
 			}
 			break;

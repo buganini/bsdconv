@@ -70,43 +70,22 @@ int main(int argc, char *argv[]){
 		exit(0);
 	}
 
-	struct state_st dstate;
 	struct state_rt state;
 	offset_t offset=0;
 	char op[16];
-	unsigned int c;
 	uintptr_t val;
-	memcpy(&dstate, cd.z, sizeof(struct state_st));
-	state.status=dstate.status;
-	state.data=(void *)(uintptr_t)de_offset(dstate.data);
-	state.beg=dstate.beg;
-	state.end=dstate.end;
-	state.base=de_offset(dstate.base);
+	state = read_state(&cd, 0);
 	while(!feof(stdin)){
 		printf("bsdconv_dbg@%x> ", offset);
 		scanf("%s %p", op, (void **) &val);
 		if(strcmp(op, "input")==0){
-			c=val;
-			if(c>=state.beg && c<state.end)
-				memcpy(&offset, cd.z + (uintptr_t)state.base + (c - state.beg) * sizeof(offset_t), sizeof(offset_t));
-			else
-				offset=0;
-			memcpy(&dstate, cd.z + offset, sizeof(struct state_st));
-			state.status=dstate.status;
-			state.data=(void *)(uintptr_t)de_offset(dstate.data);
-			state.beg=dstate.beg;
-			state.end=dstate.end;
-			state.base=de_offset(dstate.base);
+			offset = get_offset(&cd, &state, val);
+			state = read_state(&cd, offset);
 			print_state(&state);
 		}else if(strcmp(op, "data")==0){
 			print_data(val);
 		}else if(strcmp(op, "reset")==0){
-			memcpy(&dstate, cd.z, sizeof(struct state_st));
-			state.status=dstate.status;
-			state.data=(void *)(uintptr_t)de_offset(dstate.data);
-			state.beg=dstate.beg;
-			state.end=dstate.end;
-			state.base=de_offset(dstate.base);
+			state = read_state(&cd, 0);
 		}else{
 			break;
 		}

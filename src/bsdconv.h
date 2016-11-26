@@ -238,7 +238,6 @@ void unload_filter(struct bsdconv_filter *);
 struct bsdconv_scorer *load_scorer(const char *);
 void unload_scorer(struct bsdconv_scorer *);
 
-
 #define LISTCPY_ST(INS, X,Y,Z) for(data_ptr=(Y);data_ptr;){	\
 	struct data_st data_st; \
 	DATA_MALLOC(INS, (X)->next);	\
@@ -272,10 +271,19 @@ void unload_scorer(struct bsdconv_scorer *);
 	(X)->next=data_ptr;	\
 }
 
-static inline struct state_rt read_state(void *p){
+static inline offset_t get_offset(struct bsdconv_codec *codec, struct state_rt *state, int val){
+  offset_t offset;
+  if(val>=state->beg && val<state->end)
+    memcpy(&offset, codec->z + (uintptr_t)state->base + (val - state->beg) * sizeof(offset_t), sizeof(offset_t));
+  else
+    offset=0;
+  return offset;
+}
+
+static inline struct state_rt read_state(struct bsdconv_codec *codec, uintptr_t p){
 	struct state_st state_st;
 	struct state_rt state;
-	memcpy(&state_st, p, sizeof(struct state_st));
+	memcpy(&state_st, codec->z + p, sizeof(struct state_st));
 	state.status=state_st.status;
 	state.data=(void *)(uintptr_t)de_offset(state_st.data);
 	state.beg=de_uint16(state_st.beg);
@@ -287,7 +295,7 @@ static inline struct state_rt read_state(void *p){
 #define RESET(X) do{	\
 	ins->phase[X].index=0;	\
 	ins->phase[X].offset=0;	\
-	ins->phase[X].state=read_state(ins->phase[X].codec[ins->phase[X].index].z);	\
+	ins->phase[X].state=read_state(&ins->phase[X].codec[ins->phase[X].index], 0);	\
 }while(0)
 
 #define CP(X) ((char *)(X))
@@ -328,6 +336,10 @@ int bsdconv_module_check(int, const char *);
 int bsdconv_codec_check(int, const char *);
 char ** bsdconv_modules_list(int);
 char ** bsdconv_codecs_list(int);
+
+//codec
+int loadcodec(struct bsdconv_codec *cd, int type);
+void unloadcodec(struct bsdconv_codec *cd);
 
 //util
 int bsdconv_get_phase_index(struct bsdconv_instance *, int);
