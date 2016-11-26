@@ -75,7 +75,7 @@ void cbconv(struct bsdconv_instance *ins){
 	for(;this_phase->i<this_phase->curr->len;this_phase->i+=1){
 		d=UCP(this_phase->curr->data)[this_phase->i];
 		memcpy(&data, (char *)(this_phase->codec[this_phase->index].data_z+(uintptr_t)this_phase->state.data), sizeof(struct data_st));
-		c=UCP(this_phase->codec[this_phase->index].data_z+(uintptr_t)data.data);
+		c=UCP(this_phase->codec[this_phase->index].data_z+de_offset(data.data));
 		next:
 		switch(t->status){
 			case 0:
