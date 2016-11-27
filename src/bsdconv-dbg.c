@@ -2,9 +2,6 @@
 #include <string.h>
 #include "bsdconv.h"
 
-extern int loadcodec(struct bsdconv_codec *cd, int type);
-extern void unloadcodec(struct bsdconv_codec *cd);
-
 void print_state(struct state_rt *state);
 void print_data(uintptr_t val);
 
