@@ -1,0 +1,16 @@
+DESC
+	This could be used with windows codepages to achieve the behavior described in MICSFT/WindowsBestFit
+
+INPUT
+	DESC	Any
+
+OUTPUT
+	TYPE	Unicode
+	DESC	Same value of codepoint as input
+
+EXAMPLE
+	> printf "\x8E\x81" | bsdconv cp1252:bsdconv-stdout
+	01017D
+	> printf "\x8E\x81" | bsdconv cp1252,fallback-unicode:bsdconv-stdout
+	01017D
+	0181
