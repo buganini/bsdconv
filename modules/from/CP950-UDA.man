@@ -1,0 +1,2 @@
+DESC
+  Mapping CP950 UDA (User-Defined Areas) to Unicode PUA (Private Use Areas)
