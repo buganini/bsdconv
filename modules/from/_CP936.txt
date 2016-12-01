@@ -2,7 +2,7 @@
 # Language:     Simplified     Chinese
 # Family:       GB2312(?)
 #
-80    0120AC
+80	0120AC
 8140	014E02
 8141	014E04
 8142	014E05
