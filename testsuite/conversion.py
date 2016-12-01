@@ -114,7 +114,9 @@ iotest=[
 	["utf-8:replace#0142.0143=0132.0133:utf-8","ABCD","A23D"],
 	["utf-8:strings#min-len=2:utf-8","aㄎabㄎabcㄉabcd","ab\nabc\nabcd\n"],
 	["utf-8:strings#min-len=2&before=0128&after=0129.010a:utf-8","aㄎabㄎabcㄉabcd","(ab)\n(abc)\n(abcd)\n"],
-	["utf-8:whitespace-derail:zhtw:zhtw-words:whitespace-rerail:utf-8","之 后","之 後"]
+	["utf-8:whitespace-derail:zhtw:zhtw-words:whitespace-rerail:utf-8","之 后","之 後"],
+	["fallback-unicode:insert#after=002c:bsdconv-keyword,bsdconv", "\xe8","01E8,"],
+	["cp950-uda:insert#after=002c:bsdconv-keyword,bsdconv", "\xfa\x40\xfe\xfe\x8e\x40\xa0\xfe\x81\x40\x8d\xfe\xc6\xa1\xc8\xfe", "01E000,01E310,01E311,01EEB7,01EEB8,01F6B0,01F6B1,01F848,"],
 ]
 
 countertest=[
