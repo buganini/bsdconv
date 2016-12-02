@@ -1,8 +1,9 @@
 11.6:
 	add from/JIS (including JIS0201/JIS0208/JIS0212)
 	add from/CP950-UDA
+	add from/{_CP1254,_CP1255,_CP1256,_CP1257,_CP1258}
 	from/FALLBACK-UNICODE
-	fix bug in from/_CP936
+	fix bug in from/{_CP936,_CP874,_CP1253}
 
 11.5:
 	add inter/NULL
