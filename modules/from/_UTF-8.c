@@ -5,7 +5,7 @@
 
 struct my_s{
 	int status;
-	ucs_t lead_surrogates;
+	ucs_t lead_surrogate;
 	ucs_t ucs;
 	int cesu;
 	int loose;
@@ -43,7 +43,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 void cbinit(struct bsdconv_instance *ins){
 	struct my_s *r=THIS_CODEC(ins)->priv;
 	r->status = 0;
-	r->lead_surrogates.ucs4 = 0;
+	r->lead_surrogate.ucs4 = 0;
 	r->ucs.ucs4 = 0;
 }
 
@@ -54,7 +54,7 @@ void cbdestroy(struct bsdconv_instance *ins){
 
 #define DEADEND() do{	\
 	t->status = 0;	\
-	t->lead_surrogates.ucs4 = 0;	\
+	t->lead_surrogate.ucs4 = 0;	\
 	t->ucs.ucs4 = 0;	\
 	this_phase->state.status=DEADEND;	\
 	return;	\
@@ -66,14 +66,14 @@ void cbdestroy(struct bsdconv_instance *ins){
 	uint32_t ucs = be32toh(t->ucs.ucs4);	\
 	if(ucs >= 0xD800 && ucs <= 0xDBFF){	\
 		if(t->cesu){	\
-			if(t->lead_surrogates.ucs4){	\
+			if(t->lead_surrogate.ucs4){	\
 				if(t->loose){	\
-					PASS(t->lead_surrogates);	\
+					PASS(t->lead_surrogate);	\
 				}else{	\
 					DEADEND();	\
 				}	\
 			}	\
-			t->lead_surrogates.ucs4 = t->ucs.ucs4;	\
+			t->lead_surrogate.ucs4 = t->ucs.ucs4;	\
 			t->ucs.ucs4 = 0;	\
 			if(t->loose){	\
 				this_phase->state.status=SUBMATCH;	\
@@ -88,13 +88,13 @@ void cbdestroy(struct bsdconv_instance *ins){
 		}	\
 	}else if(ucs >= 0xDC00 && ucs <= 0xDFFF){	\
 		if(t->cesu){	\
-			if(t->lead_surrogates.ucs4){	\
+			if(t->lead_surrogate.ucs4){	\
 				uint32_t cp = 0x10000;	\
-				cp |= ((be32toh(t->lead_surrogates.ucs4) - 0xD800) << 10) & bb11111111110000000000;	\
+				cp |= ((be32toh(t->lead_surrogate.ucs4) - 0xD800) << 10) & bb11111111110000000000;	\
 				cp |= (ucs - 0xDC00) & bb1111111111;	\
 				t->ucs.ucs4 = htobe32(cp);	\
 				PASS(t->ucs);	\
-				t->lead_surrogates.ucs4 = 0;	\
+				t->lead_surrogate.ucs4 = 0;	\
 				t->ucs.ucs4 = 0;	\
 			}else if(t->loose){	\
 				PASS(t->ucs);	\
@@ -109,10 +109,10 @@ void cbdestroy(struct bsdconv_instance *ins){
 			DEADEND();	\
 		}	\
 	}else{	\
-		if(t->lead_surrogates.ucs4){	\
+		if(t->lead_surrogate.ucs4){	\
 			if(t->loose){	\
-				PASS(t->lead_surrogates);	\
-				t->lead_surrogates.ucs4 = 0;	\
+				PASS(t->lead_surrogate);	\
+				t->lead_surrogate.ucs4 = 0;	\
 			}else{	\
 				DEADEND();	\
 			}	\
@@ -153,9 +153,9 @@ void cbdestroy(struct bsdconv_instance *ins){
 void cbflush(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct my_s *t=THIS_CODEC(ins)->priv;
-	if(t->lead_surrogates.ucs4 && t->loose){
-		PASS(t->lead_surrogates);
-		t->lead_surrogates.ucs4 = 0;
+	if(t->lead_surrogate.ucs4 && t->loose){
+		PASS(t->lead_surrogate);
+		t->lead_surrogate.ucs4 = 0;
 	}
 }
 
