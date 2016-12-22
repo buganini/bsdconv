@@ -75,7 +75,6 @@ enum bsdconv_status {
 	NEXTPHASE,
 	NOMATCH,
 	NOOP,
-	YIELD,
 };
 #endif
 

@@ -696,20 +696,6 @@ void bsdconv(struct bsdconv_instance *ins){
 								this_phase->flags |= F_LOOPBACK;
 
 								goto from_x;
-							case YIELD:
-								// to be investigated
-								// this_phase->flags &= ~(F_MATCH | F_PENDING);
-								this_phase->match_data=NULL;
-
-								this_phase->bak=this_phase->curr;
-								LISTFREE(ins, prev_phase->data_head, this_phase->bak, prev_phase->data_tail);
-								this_phase->curr=prev_phase->data_head;
-								this_phase->data_head->len=this_phase->i;
-
-								this_codec->cbconv(ins);
-								this_phase->flags |= F_LOOPBACK;
-
-								goto from_x;
 							case NEXTPHASE:
 								this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 								this_phase->match_data=NULL;
@@ -837,16 +823,6 @@ void bsdconv(struct bsdconv_instance *ins){
 					case SUBMATCH_SUBROUTINE:
 						this_codec->cbconv(ins);
 						goto inter_x;
-					case YIELD:
-						// to be investigated
-						// this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
-						this_phase->match_data=NULL;
-
-						this_phase->bak=this_phase->curr;
-						LISTFREE(ins, prev_phase->data_head, this_phase->bak, prev_phase->data_tail);
-
-						this_codec->cbconv(ins);
-						goto inter_x;
 					case NEXTPHASE:
 						this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
 						this_phase->match_data=NULL;
@@ -972,16 +948,6 @@ void bsdconv(struct bsdconv_instance *ins){
 						break;
 					case SUBROUTINE:
 					case SUBMATCH_SUBROUTINE:
-						this_codec->cbconv(ins);
-						goto to_x;
-					case YIELD:
-						// to be investigated
-						//this_phase->flags &= ~(F_MATCH | F_PENDING | F_LOOPBACK);
-						this_phase->match_data=NULL;
-
-						this_phase->bak=this_phase->curr;
-						LISTFREE(ins, prev_phase->data_head, this_phase->bak, prev_phase->data_tail);
-
 						this_codec->cbconv(ins);
 						goto to_x;
 					case NEXTPHASE:
