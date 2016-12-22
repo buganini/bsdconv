@@ -4,6 +4,7 @@
 	add from/{_CP1254,_CP1255,_CP1256,_CP1257,_CP1258}
 	from/FALLBACK-UNICODE
 	fix bug in from/{_CP936,_CP874,_CP1253}
+	add CESU/LOOSE/NUL/OVERLONG/SUPER parameters to from/_UTF-8
 
 11.5:
 	add inter/NULL

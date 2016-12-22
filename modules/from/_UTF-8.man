@@ -1,1 +1,13 @@
 UTF-8, ASCII excluded
+
+ARGUMENT
+	CESU
+		DESC	Decode surrogate pairs
+	LOOSE
+		DESC	Accept undecoded surrogates
+	NUL
+		DESC	Accept NUL character, must used with OVERLONG, since ASCII is excluded, so they must be overlong
+	OVERLONG
+		DESC	Accept overlong sequence
+	SUPER
+		DESC	Accept code point over U+10FFFF

@@ -67,10 +67,7 @@ void cbconv(struct bsdconv_instance *ins){
 	int min = 0;
 	int mid;
 	int i;
-	union {
-		unsigned char byte[4];
-		uint32_t ucs4;
-	} ucs;
+	ucs_t ucs;
 
 	for(;this_phase->i<this_phase->curr->len;this_phase->i+=1){
 		d=UCP(this_phase->curr->data)[this_phase->i];
