@@ -1,4 +1,4 @@
-#Documentation & Support
+# Documentation & Support
 http://www.slideshare.net/buganini/bsdconv
 
 http://www.slideshare.net/Buganini/journey-of-bsdconv
@@ -9,11 +9,11 @@ Use bsdconv-man to show manual page for each module
 
 IRC: irc://irc.freenode.net#bsdconv
 
-#Compiling & Installation
+# Compilation & Installation
     make PREFIX=/usr # default is /usr/local
     sudo make install
 
-#Example
+# Example
 
 Convert traditional chinese big5 to simplified chinese utf-8
 
@@ -69,7 +69,7 @@ Maintain inter map:
     vi edit.tmp
     bsdconv bsdconv-keyword,utf-8:bsdconv-keyword,bsdconv edit.tmp > inter/FOO.txt
 
-#Windows
+# Windows
 Use mingw with Makefile.win to build it, then copy everythings in build/ to c:\bsdconv\
 the path of the executable will be c:\bsdconv\bsdconv.exe
 
@@ -78,7 +78,7 @@ set BSDCONV_PATH environment variable to your path.
 
 Run setEnvVar.bat as administrator could help you set proper environment variables.
 
-#Bindings
+# Bindings
 [Python](https://pypi.python.org/pypi/bsdconv/ "Python")
 
 [Perl](https://github.com/buganini/perl-bsdconv "Perl")
@@ -95,5 +95,5 @@ Run setEnvVar.bat as administrator could help you set proper environment variabl
 
 [MySQL](https://github.com/buganini/mysql-udf-bsdconv "MySQL")
 
-#Donate
+# Donate
 https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XLGVJ76ZAYKC2
