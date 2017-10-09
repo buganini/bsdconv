@@ -93,6 +93,8 @@ Run setEnvVar.bat as administrator could help you set proper environment variabl
 
 [Haskell](https://github.com/pkmx/hs-bsdconv "Haskell")
 
+[Elasticsearch](https://github.com/buganini/elasticsearch-bsdconv-plugin "Elasticsearch")
+
 [PostgreSQL](https://github.com/buganini/postgres-bsdconv "PostgreSQL")
 
 [MySQL](https://github.com/buganini/mysql-udf-bsdconv "MySQL")
