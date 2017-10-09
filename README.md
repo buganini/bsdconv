@@ -89,6 +89,8 @@ Run setEnvVar.bat as administrator could help you set proper environment variabl
 
 [Go](https://github.com/buganini/go-bsdconv "Go")
 
+[JAVA](https://github.com/buganini/jni-bsdconv "JAVA")
+
 [Haskell](https://github.com/pkmx/hs-bsdconv "Haskell")
 
 [PostgreSQL](https://github.com/buganini/postgres-bsdconv "PostgreSQL")
