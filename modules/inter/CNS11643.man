@@ -1,5 +1,0 @@
-EXAMPLE
-	#for internal use
-	> echo -n 測試 | bsdconv utf-8:cns11643:bsdconv_stdout
-	02016041
-	0201665C

@@ -1,3 +1,0 @@
-EXAMPLE
-	> echo 測試 | bsdconv utf-8:chewing:han_pinyin:utf-8
-	ce4[sh]4

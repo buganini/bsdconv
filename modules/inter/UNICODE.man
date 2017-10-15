@@ -1,5 +1,0 @@
-EXAMPLE
-	#for internal use
-	> echo 02016041,0201665C | bsdconv bsdconv:unicode:bsdconv_stdout
-	016E2C
-	018A66
