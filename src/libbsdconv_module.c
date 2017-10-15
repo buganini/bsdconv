@@ -1,4 +1,4 @@
-char * bsdconv_solve_alias(int type, char *_codec){
+char * bsdconv_solve_alias(int type, const char *_codec){
 	char *ret;
 	char *codec;
 	struct bsdconv_instance *ins;

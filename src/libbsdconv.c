@@ -315,7 +315,7 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 		if(*t==':' || *t=='|')++i;
 	}
 	ins->phasen=i;
-	char *opipe[i+1];
+	char *phase_off[i+1];
 
 	ins->phase=malloc(sizeof(struct bsdconv_phase) * (i+1));
 
@@ -327,7 +327,7 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 			ins->phase[i-1].type=TO;
 		}
 		f=0;
-		while((opipe[i]=strsep(&t1, ":"))!=NULL){
+		while((phase_off[i]=strsep(&t1, ":"))!=NULL){
 			ins->phase[i].type=INTER;
 			i+=1;
 			f+=1;
@@ -340,26 +340,25 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 	ins->phase[0].type=_INPUT;
 
 	for(i=1;i<=ins->phasen;++i){
-		if(*opipe[i]){
-			ins->phase[i].codecn=1;
-			for(t=(char *)opipe[i];*t;t++){
+		if(*phase_off[i]){
+			ins->phase[i].codecn = 0;
+			for(t=(char *)phase_off[i];*t;t++){
 				if(*t==','){
 					ins->phase[i].codecn+=1;
 				}
 			}
-		}else{
+		}else{ // empty phase
 			free(ins->phase);
 			free(ins);
 			free(conversion);
 			return NULL;
 		}
-		ins->phase[i].codecn-=1;
 	}
 	for(i=1;i<=ins->phasen;++i){
 		ins->phase[i].codec=malloc((ins->phase[i].codecn + 1)* sizeof(struct bsdconv_codec));
 	}
 	for(i=1;i<=ins->phasen;++i){
-		t=opipe[i];
+		t=phase_off[i];
 		for(j=0;j<=ins->phase[i].codecn;++j){
 			ins->phase[i].codec[j].desc=strdup(strsep(&t, ","));
 			ins->phase[i].codec[j].argv=strchr(ins->phase[i].codec[j].desc, '#');
