@@ -58,7 +58,7 @@ iotest=[
 	["utf-8:ambiguous-unpad:utf-8","Б И  2","БИ 2"],
 	["ansi-control,byte:big5-defrag:byte,ansi-control|skip,big5:split:bsdconv-keyword,bsdconv","\xaf\033[1m\xe0","0180FD,1B5B316D,"],
 	["utf-8:chewing:utf-8","abc測試xyz","abcㄘㄜˋㄕˋxyz"],
-	["utf-8:chewing:han-pinyin:utf-8","測試","ce4[sh]4"],
+	["utf-8:chewing:han-pinyin:utf-8","測試","ce4shi4"],
 	["utf-8:kana-phonetic:utf-8","ドラえもん","doraemon"],
 	["ascii:alias-from:ascii","BIG5","UAO250"],
 	["ascii:alias-from:ascii","UAO250","ASCII,_UAO250"],
