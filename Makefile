@@ -238,6 +238,7 @@ alias:
 	python tools/mkalias.py modules/from/alias modules/inter/ALIAS-FROM.txt
 	@printf "014C,014F,0143,0141,014C,0145\t?\n" >> modules/inter/ALIAS-FROM.txt
 	python tools/mkalias.py modules/inter/alias modules/inter/ALIAS-INTER.txt
+	@printf "0155,014E,0149,0143,014F,0144,0145\t?\n" >> modules/inter/ALIAS-INTER.txt
 	python tools/mkalias.py modules/to/alias modules/inter/ALIAS-TO.txt
 	@printf "014C,014F,0143,0141,014C,0145\t?\n" >> modules/inter/ALIAS-TO.txt
 
