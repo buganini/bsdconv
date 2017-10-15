@@ -302,6 +302,12 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 	int i, j;
 	int f=0;
 
+	ins->pool=NULL;
+	ins->hash=NULL;
+	ins->counter=NULL;
+	ins->input.flags=0;
+	ins->output.flags=0;
+
 	conversion=strdup(_conversion);
 	t1=t=conversion;
 	i=1;
@@ -459,12 +465,6 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 			}
 		}
 	}
-
-	ins->pool=NULL;
-	ins->hash=NULL;
-	ins->counter=NULL;
-	ins->input.flags=0;
-	ins->output.flags=0;
 
 	ins->ierr=bsdconv_counter(ins, "IERR");
 	ins->oerr=bsdconv_counter(ins, "OERR");
