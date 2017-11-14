@@ -19,6 +19,7 @@ f_nfc=open("modules/inter/_NFC-MAP.txt", "w")
 f_upper=open("modules/inter/UPPER.txt", "w")
 f_lower=open("modules/inter/LOWER.txt", "w")
 f_casefold=open("modules/inter/CASEFOLD.txt", "w")
+f_cjkvar=open("tmp/cjkvar.txt", "w")
 
 ccc_start=-1
 ccc_end=-1
@@ -97,6 +98,7 @@ def in_range(s,rs):
 			return True
 	return False
 
+# ftp://ftp.unicode.org/Public/3.0-Update/UnicodeData-3.0.0.html
 l_nfd=[]
 l_nfkd=[]
 ud=open("tmp/UnicodeData.txt")
@@ -106,6 +108,8 @@ for l in ud:
 	a=l.split(";")
 	cp=bsdconv01(a[0])
 	code_point=int(a[0], 16)
+	if "CJK" in a[1] and a[5] and not " "in a[5]:
+		f_cjkvar.write("{}\t{}\n".format(a[0], a[5]))
 	if a[3]!="0":
 		ccc=int(a[3])
 		if ccc:
@@ -145,6 +149,7 @@ for l in ud:
 f_ccc.write("{0x%x, 0x%x, %d},\n" % (ccc_start, ccc_end, ccc_value))
 f_ccc.write("};\n")
 f_ccc.close()
+f_cjkvar.close()
 
 sc=open("tmp/SpecialCasing.txt")
 for l in sc:
