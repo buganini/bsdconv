@@ -1,0 +1,3 @@
+EXAMPLE
+	> echo 澀谷驛渋谷駅涩谷驿| bsdconv utf-8:zh-fuzzy-cn:utf-8
+	澀谷驿澀谷驿澀谷驿
