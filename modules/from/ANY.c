@@ -19,6 +19,9 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 				r->counter=bsdconv_counter(ins, arg->ptr);
 			else
 				r->counter=bsdconv_counter(ins, "IERR");
+		}else if(strcasecmp(arg->key, "DROP")==0){
+			DATA_FREE(ins, r->data);
+			r->data = NULL;
 		}else{
 			bak=r->data;
 			r->data=str2data(arg->key, &e, ins);

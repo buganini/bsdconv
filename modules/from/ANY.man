@@ -9,6 +9,8 @@ OUTPUT
 ARGUMENT
 	ERROR
 		DESC	Increase counter (IERR if no counter name specified)
+	DROP
+		DESC	Don't output any data
 	$DataList
 		DESC	Output value
 		EXAMPLE	013F
