@@ -6,6 +6,7 @@
 	fix bug in from/{_CP936,_CP874,_CP1253}
 	add CESU/LOOSE/NUL/OVERLONG/SUPER parameters to from/_UTF-8
 	add inter/KANJI
+	add from/HEX, to/HEX
 
 11.5:
 	add inter/NULL
