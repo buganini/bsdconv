@@ -27,7 +27,7 @@ void * fmalloc(size_t s){
 			free(tmpfile);
 			ftruncate(tmpfd, FMALLOC_SIZE);
 			m=mmap(0, FMALLOC_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, tmpfd, 0);
-			if(m==NULL){
+			if(m==MAP_FAILED){
 				return malloc(s);
 			}
 			last=fmalloc_pools;
