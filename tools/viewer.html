@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>BsdConv</title>
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.2/vue.min.js"></script>
+  <style type="text/css">
+    [v-cloak] { display: none !important; }
+    textarea {
+      width: 100%;
+      height: 10em;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+  <textarea type="text" v-model="text"></textarea>
+  <div class="glyphs">
+    <a v-for="g in glyphs" :href="getInfoLink(g)"><img :src="getGlyphImage(g)" :title="g" /></a>
+  </div>
+  </div>
+  <script type="text/javascript">
+  	var app = new Vue({
+  	  el: '#app',
+  	  data: {
+  			text: "",
+        glyphs: [],
+  	  },
+      watch: {
+        text: function(){
+          var tks = this.text.split(/(,|\s+)/);
+          var l = [];
+          for(var i in tks){
+            l.push(tks[i].trim());
+          }
+          this.glyphs = l;
+        }
+      },
+  	  methods: {
+  			getGlyphImage: function(g){
+  				var cs = g.substring(0, 2);
+          if(cs == "01"){
+            return this.getGlyphImageUnicode(g.substring(2));
+          }else if(cs == "02"){
+            return this.getGlyphImageCNS11643(g.substring(2));
+          }
+        },
+        getGlyphImageUnicode: function(cp){
+          return "https://glyphwiki.org/glyph/u"+cp+".50px.png";
+        },
+        getGlyphImageCNS11643: function(cp){
+          var plane = parseInt(cp.substring(0, 2), 16);
+          var code = cp.substring(2).toLowerCase();
+          return "http://www.cns11643.gov.tw/cgi-bin/ttf2png?page="+plane+"&number="+code+"&face=sung&fontsize=50";
+        },
+        getInfoLink: function(g){
+          var cs = g.substring(0, 2);
+          if(cs == "01"){
+            return this.getInfoLinkUnicode(g.substring(2));
+          }else if(cs == "02"){
+            return this.getInfoLinkCNS11643(g.substring(2));
+          }
+        },
+        getInfoLinkUnicode: function(cp){
+          return "http://www.fileformat.info/info/unicode/char/"+cp+"/index.htm"
+        },
+        getInfoLinkCNS11643: function(cp){
+          var plane = cp.substring(0, 2);
+          var code = cp.substring(2);
+          return "http://www.cns11643.gov.tw/AIDB/query_general_view.do?page="+plane+"&code="+code;
+        }
+  	  }
+  	});
+  </script>
+</body>
+</html>
