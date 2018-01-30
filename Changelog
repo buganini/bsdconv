@@ -8,6 +8,7 @@
 	add inter/KANJI
 	add from/HEX, to/HEX
 	add inter/ASCIIFOLD
+	add inter/HANJA
 
 11.5:
 	add inter/NULL
