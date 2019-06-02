@@ -1,5 +1,5 @@
 /*
- * Generated from: ftp://ftp.unicode.org/Public/9.0.0/ucd/Blocks.txt
+ * Generated from: ftp://ftp.unicode.org/Public/12.1.0/ucd/Blocks.txt
  */
 
 #include "../../src/bsdconv.h"
@@ -31,11 +31,13 @@ static const struct uint32_range ranges[] = {
 	{ 0xF900, 0xFAFF }, // CJK Compatibility Ideographs
 	{ 0xFE30, 0xFE4F }, // CJK Compatibility Forms
 	{ 0x1B000, 0x1B0FF }, // Kana Supplement
+	{ 0x1B100, 0x1B12F }, // Kana Extended-A
 	{ 0x1D300, 0x1D35F }, // Tai Xuan Jing Symbols
 	{ 0x20000, 0x2A6DF }, // CJK Unified Ideographs Extension B
 	{ 0x2A700, 0x2B73F }, // CJK Unified Ideographs Extension C
 	{ 0x2B740, 0x2B81F }, // CJK Unified Ideographs Extension D
 	{ 0x2B820, 0x2CEAF }, // CJK Unified Ideographs Extension E
+	{ 0x2CEB0, 0x2EBEF }, // CJK Unified Ideographs Extension F
 	{ 0x2F800, 0x2FA1F }, // CJK Compatibility Ideographs Supplement
 };
 #include "unicode_range.c"

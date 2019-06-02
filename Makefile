@@ -423,13 +423,13 @@ plist:
 		if [ -e modules/$${item}.c ]; then echo %%EBCDIC%%%%DATADIR%%/$${item}.so ; fi ; \
 	done
 
-UnicodeData=ftp://ftp.unicode.org/Public/9.0.0/ucd/UnicodeData.txt
-DerivedNormalizationProps=ftp://ftp.unicode.org/Public/9.0.0/ucd/DerivedNormalizationProps.txt
-EastAsianWidth=ftp://ftp.unicode.org/Public/9.0.0/ucd/EastAsianWidth.txt
-NormalizationTest=ftp://ftp.unicode.org/Public/9.0.0/ucd/NormalizationTest.txt
-SpecialCasing=ftp://ftp.unicode.org/Public/9.0.0/ucd/SpecialCasing.txt
-CaseFolding=ftp://ftp.unicode.org/Public/9.0.0/ucd/CaseFolding.txt
-Blocks=ftp://ftp.unicode.org/Public/9.0.0/ucd/Blocks.txt
+UnicodeData=ftp://ftp.unicode.org/Public/12.1.0/ucd/UnicodeData.txt
+DerivedNormalizationProps=ftp://ftp.unicode.org/Public/12.1.0/ucd/DerivedNormalizationProps.txt
+EastAsianWidth=ftp://ftp.unicode.org/Public/12.1.0/ucd/EastAsianWidth.txt
+NormalizationTest=ftp://ftp.unicode.org/Public/12.1.0/ucd/NormalizationTest.txt
+SpecialCasing=ftp://ftp.unicode.org/Public/12.1.0/ucd/SpecialCasing.txt
+CaseFolding=ftp://ftp.unicode.org/Public/12.1.0/ucd/CaseFolding.txt
+Blocks=ftp://ftp.unicode.org/Public/12.1.0/ucd/Blocks.txt
 fetch:
 	@mkdir -p tmp
 	@if [ ! -e tmp/UnicodeData.txt ]; then \
