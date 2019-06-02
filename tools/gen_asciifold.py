@@ -13,7 +13,7 @@ outfile = sys.argv[1]
 cv = Bsdconv("utf-8:split:bsdconv-keyword,bsdconv")
 
 def bc(s):
-    return cv.conv(s).decode("utf-8").strip(",")
+    return cv.conv(s).strip(",")
 
 url = "https://raw.githubusercontent.com/apache/lucene-solr/master/lucene/analysis/common/src/java/org/apache/lucene/analysis/miscellaneous/ASCIIFoldingFilter.java"
 java = requests.get(url).text
