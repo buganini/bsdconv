@@ -85,7 +85,7 @@ iotest=[
 	["utf-8:zhtw:utf-8","测试之后","測試之后"],
 	["utf-8:zhtw:zhtw-words:utf-8","测试之后","測試之後"],
 	["utf-8:whitespace-derail:zhtw:zhtw-words:whitespace-rerail:utf-8","之 后","之 後"],
-	["utf-8:zh-decomp:zh-comp:utf-8","功夫不好不要艹我","巭孬嫑莪"],
+	["utf-8:zh-decomp:zh-comp:utf-8","功夫不好不要艹我","巭孬嫑󿾻莪"],
 	["utf-8:ibm-37","EBCDIC test","\xc5\xc2\xc3\xc4\xc9\xc3\x40\xa3\x85\xa2\xa3"],
 	["utf-8:ibm-37|ibm-37:utf-8","EBCDIC test","EBCDIC test"],
 	["utf-8:ibm-930|ibm-930:utf-8","ドラえもん","ドラえもん"],
