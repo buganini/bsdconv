@@ -13,6 +13,10 @@ IRC: irc://irc.freenode.net#bsdconv
     make PREFIX=/usr # default is /usr/local
     sudo make install
 
+# Add codec alias
+    Update modules/{from,inter,to}/alias
+    make alias
+
 # Example
 
 Convert traditional chinese big5 to simplified chinese utf-8
