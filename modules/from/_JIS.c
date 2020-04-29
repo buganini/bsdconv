@@ -57,7 +57,7 @@ void cbconv(struct bsdconv_instance *ins){
 	struct my_s *r = THIS_CODEC(ins)->priv;
 
 	unsigned char d = UCP(this_phase->curr->data)[this_phase->i];
-	struct bsdconv_codec *codec;
+	struct bsdconv_codec *codec = NULL;
 	struct data_rt *data_ptr;
 
 	switch(r->state){
