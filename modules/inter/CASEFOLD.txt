@@ -1,4 +1,4 @@
-Source: ftp://ftp.unicode.org/Public/12.1.0/ucd/CaseFolding.txt
+Source: ftp://ftp.unicode.org/Public/13.0.0/ucd/CaseFolding.txt
 0141	0161
 0142	0162
 0143	0163
@@ -1173,6 +1173,9 @@ Source: ftp://ftp.unicode.org/Public/12.1.0/ucd/CaseFolding.txt
 01A7C4	01A794
 01A7C5	010282
 01A7C6	011D8E
+01A7C7	01A7C8
+01A7C9	01A7CA
+01A7F5	01A7F6
 01AB70	0113A0
 01AB71	0113A1
 01AB72	0113A2

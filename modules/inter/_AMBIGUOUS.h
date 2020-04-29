@@ -1,4 +1,4 @@
-/* Generated from ftp://ftp.unicode.org/Public/12.1.0/ucd/EastAsianWidth.txt*/
+/* Generated from ftp://ftp.unicode.org/Public/13.0.0/ucd/EastAsianWidth.txt*/
 
 struct interval {
 	int first;

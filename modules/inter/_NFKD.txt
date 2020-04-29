@@ -1,4 +1,4 @@
-Source: ftp://ftp.unicode.org/Public/12.1.0/ucd/UnicodeData.txt
+Source: ftp://ftp.unicode.org/Public/13.0.0/ucd/UnicodeData.txt
 01A0	0120	#noBreak
 01A8	0120,010308	#compat
 01AA	0161	#super
@@ -2344,6 +2344,7 @@ Source: ftp://ftp.unicode.org/Public/12.1.0/ucd/UnicodeData.txt
 01AB5D	01AB37	#super
 01AB5E	01026B	#super
 01AB5F	01AB52	#super
+01AB69	01028D	#super
 01F900	018C48	#canonical
 01F901	0166F4	#canonical
 01F902	018ECA	#canonical
@@ -3895,6 +3896,7 @@ Source: ftp://ftp.unicode.org/Public/12.1.0/ucd/UnicodeData.txt
 010114BE	010114B9,010114BD	#canonical
 010115BA	010115B8,010115AF	#canonical
 010115BB	010115B9,010115AF	#canonical
+01011938	01011935,01011930	#canonical
 0101D15E	0101D157,0101D165	#canonical
 0101D15F	0101D158,0101D165	#canonical
 0101D160	0101D158,0101D165,0101D16E	#canonical
@@ -5181,6 +5183,16 @@ Source: ftp://ftp.unicode.org/Public/12.1.0/ucd/UnicodeData.txt
 0101F248	013014,016557,013015	#compat
 0101F250	015F97	#circle
 0101F251	0153EF	#circle
+0101FBF0	0130	#font
+0101FBF1	0131	#font
+0101FBF2	0132	#font
+0101FBF3	0133	#font
+0101FBF4	0134	#font
+0101FBF5	0135	#font
+0101FBF6	0136	#font
+0101FBF7	0137	#font
+0101FBF8	0138	#font
+0101FBF9	0139	#font
 0102F800	014E3D	#canonical
 0102F801	014E38	#canonical
 0102F802	014E41	#canonical

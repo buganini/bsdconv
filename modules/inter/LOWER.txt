@@ -1,5 +1,5 @@
-Source: ftp://ftp.unicode.org/Public/12.1.0/ucd/UnicodeData.txt
-Source: ftp://ftp.unicode.org/Public/12.1.0/ucd/SpecialCasing.txt
+Source: ftp://ftp.unicode.org/Public/13.0.0/ucd/UnicodeData.txt
+Source: ftp://ftp.unicode.org/Public/13.0.0/ucd/SpecialCasing.txt
 0141	0161
 0142	0162
 0143	0163
@@ -1139,6 +1139,9 @@ Source: ftp://ftp.unicode.org/Public/12.1.0/ucd/SpecialCasing.txt
 01A7C4	01A794
 01A7C5	010282
 01A7C6	011D8E
+01A7C7	01A7C8
+01A7C9	01A7CA
+01A7F5	01A7F6
 01FF21	01FF41
 01FF22	01FF42
 01FF23	01FF43

@@ -1,4 +1,4 @@
-Source: ftp://ftp.unicode.org/Public/12.1.0/ucd/UnicodeData.txt
+Source: ftp://ftp.unicode.org/Public/13.0.0/ucd/UnicodeData.txt
 0141,010300	01C0
 0141,010301	01C1
 0141,010302	01C2
@@ -939,3 +939,4 @@ Source: ftp://ftp.unicode.org/Public/12.1.0/ucd/UnicodeData.txt
 010114B9,010114BD	010114BE
 010115B8,010115AF	010115BA
 010115B9,010115AF	010115BB
+01011935,01011930	01011938
