@@ -56,12 +56,14 @@ void cbconv(struct bsdconv_instance *ins){
 	size_t i;
 
 	if(l != r->cursor->len){
+		r->cursor=r->from;
 		this_phase->state.status=DEADEND;
 		return;
 	}
 
 	for(i=0;i<l;i+=1){
 		if(datai[i] != datar[i]){
+			r->cursor=r->from;
 			this_phase->state.status=DEADEND;
 			return;
 		}
