@@ -1,5 +1,5 @@
 #include <errno.h>
-#include  <string.h>
+#include <string.h>
 #include "../../src/bsdconv.h"
 
 struct my_s{
@@ -20,6 +20,10 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 		if(e){
 			free(r);
 			return e;
+		}
+		if(r->from==NULL){
+			free(r);
+			return EINVAL;
 		}
 		if(arg->ptr){
 			r->to=str2data(arg->ptr, &e, ins);
