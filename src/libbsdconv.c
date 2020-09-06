@@ -420,6 +420,13 @@ struct bsdconv_instance *bsdconv_create(const char *_conversion){
 		for(i=1;i<=ins->phasen;++i){
 			for(j=0;j<=ins->phase[i].codecn;++j){
 				if(!bsdconv_module_check(ins->phase[i].type, ins->phase[i].codec[j].desc)){
+					if(bsdconv_module_vital(ins->phase[i].type, ins->phase[i].codec[j].desc)){
+						printf("error %s\n", ins->phase[i].codec[j].desc);
+						free(conversion);
+						bsdconv_destroy(ins);
+						SetLastError(EDOOFUS);
+						return NULL;
+					}
 					c=bsdconv_solve_alias(ins->phase[i].type, ins->phase[i].codec[j].desc);
 					if(c==NULL){
 						e=1;

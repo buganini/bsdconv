@@ -330,6 +330,7 @@ int bsdconv_hash_has(struct bsdconv_instance *, const char *);
 void bsdconv_hash_del(struct bsdconv_instance *, const char *);
 
 //module
+int bsdconv_module_vital(int, const char *);
 char * bsdconv_solve_alias(int, const char *);
 int bsdconv_module_check(int, const char *);
 int bsdconv_codec_check(int, const char *);

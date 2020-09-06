@@ -1,3 +1,33 @@
+int bsdconv_module_vital(int type, const char *codec){
+	switch(type){
+		case FROM:
+			if(strcasecmp("ASCII", codec)==0){
+				return 1;
+			}
+			break;
+		case INTER:
+			if(strcasecmp("ALIAS-FROM", codec)==0){
+				return 1;
+			}
+			if(strcasecmp("ALIAS-INTER", codec)==0){
+				return 1;
+			}
+			if(strcasecmp("ALIAS-TO", codec)==0){
+				return 1;
+			}
+			if(strcasecmp("COUNT", codec)==0){
+				return 1;
+			}
+			break;
+		case TO:
+			if(strcasecmp("ASCII", codec)==0){
+				return 1;
+			}
+			break;
+	}
+	return 0;
+}
+
 char * bsdconv_solve_alias(int type, const char *_codec){
 	char *ret;
 	char *codec;
