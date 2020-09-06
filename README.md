@@ -10,8 +10,8 @@ Use bsdconv-man to show manual page for each module
 IRC: irc://irc.freenode.net#bsdconv
 
 # Compilation & Installation
-    make PREFIX=/usr # default is /usr/local
-    sudo make install
+    make PREFIX=/usr # default to /usr/local
+    sudo make install PREFIX=/usr # default to /usr/local
 
 # Add codec alias
     Update modules/{from,inter,to}/alias
