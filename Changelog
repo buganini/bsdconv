@@ -1,14 +1,18 @@
 11.6:
+	update to Unicode 13.0.0
 	add from/JIS (including JIS0201/JIS0208/JIS0212)
 	add from/CP950-UDA
-	add from/{_CP1254,_CP1255,_CP1256,_CP1257,_CP1258}
+	add from/{_CP1254,_CP1255,_CP1256,_CP1257,_CP1258,_CP932}
+	add inter/{BMP-TRANS-CN,BMP-TRANS-TW}
 	from/FALLBACK-UNICODE
 	fix bug in from/{_CP936,_CP874,_CP1253}
+	fix bug in inter/REPLACE
 	add CESU/LOOSE/NUL/OVERLONG/SUPER parameters to from/_UTF-8
 	add inter/KANJI
 	add from/HEX, to/HEX
 	add inter/ASCIIFOLD
 	add inter/HANJA
+	sync data from project chvar
 
 11.5:
 	add inter/NULL
