@@ -410,6 +410,12 @@ plist:
 	@echo %%DATADIR%%/from/alias
 	@echo %%DATADIR%%/inter/alias
 	@echo %%DATADIR%%/to/alias
+	@for item in ${TODO_FILTERS} ; do \
+		echo %%DATADIR%%/filter/$${item}.so ; \
+	done
+	@for item in ${TODO_SCORERS} ; do \
+		echo %%DATADIR%%/scorer/$${item}.so ; \
+	done
 	@for item in ${TODO_CODECS_BASIC} ; do \
 		echo %%DATADIR%%/$${item} ; \
 		if [ -e modules/$${item}.man ]; then echo %%DATADIR%%/$${item}.man ; fi ; \
