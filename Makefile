@@ -410,23 +410,23 @@ plist:
 	@echo %%DATADIR%%/from/alias
 	@echo %%DATADIR%%/inter/alias
 	@echo %%DATADIR%%/to/alias
-	@for item in ${TODO_FILTERS} ; do \
+	@for item in `echo ${TODO_FILTERS} | sort` ; do \
 		echo %%DATADIR%%/filter/$${item}.so ; \
 	done
-	@for item in ${TODO_SCORERS} ; do \
+	@for item in `echo ${TODO_SCORERS} | sort` ; do \
 		echo %%DATADIR%%/scorer/$${item}.so ; \
 	done
-	@for item in ${TODO_CODECS_BASIC} ; do \
+	@for item in `echo ${TODO_CODECS_BASIC} | sort` ; do \
 		echo %%DATADIR%%/$${item} ; \
 		if [ -e modules/$${item}.man ]; then echo %%DATADIR%%/$${item}.man ; fi ; \
 		if [ -e modules/$${item}.c ]; then echo %%DATADIR%%/$${item}.so ; fi ; \
 	done
-	@for item in ${TODO_CODECS_CHINESE} ; do \
+	@for item in `echo ${TODO_CODECS_CHINESE} | sort` ; do \
 		echo %%CHINESE%%%%DATADIR%%/$${item} ; \
 		if [ -e modules/$${item}.man ]; then echo %%CHINESE%%%%DATADIR%%/$${item}.man ; fi ; \
 		if [ -e modules/$${item}.c ]; then echo %%CHINESE%%%%DATADIR%%/$${item}.so ; fi ; \
 	done
-	@for item in ${TODO_CODECS_EBCDIC} ; do \
+	@for item in `echo ${TODO_CODECS_EBCDIC} | sort` ; do \
 		echo %%EBCDIC%%%%DATADIR%%/$${item} ; \
 		if [ -e modules/$${item}.man ]; then echo %%EBCDIC%%%%DATADIR%%/$${item}.man ; fi ; \
 		if [ -e modules/$${item}.c ]; then echo %%EBCDIC%%%%DATADIR%%/$${item}.so ; fi ; \
