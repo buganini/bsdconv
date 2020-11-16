@@ -13,6 +13,7 @@
 	add inter/ASCIIFOLD
 	add inter/HANJA
 	sync data from project chvar
+	move CNS11643 modules to separeted project
 
 11.5:
 	add inter/NULL
