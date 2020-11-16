@@ -410,11 +410,14 @@ plist:
 	@echo %%DATADIR%%/from/alias
 	@echo %%DATADIR%%/inter/alias
 	@echo %%DATADIR%%/to/alias
+	@echo %%DATADIR%%/filter/alias
 	@for item in `echo ${TODO_FILTERS} | sort` ; do \
 		echo %%DATADIR%%/filter/$${item}.so ; \
+		if [ -e modules/filter/$${item}.man ]; then echo %%DATADIR%%/filter/$${item}.man ; fi ; \
 	done
 	@for item in `echo ${TODO_SCORERS} | sort` ; do \
 		echo %%DATADIR%%/scorer/$${item}.so ; \
+		if [ -e modules/scorer/$${item}.man ]; then echo %%DATADIR%%/scorer/$${item}.man ; fi ; \
 	done
 	@for item in `echo ${TODO_CODECS_BASIC} | sort` ; do \
 		echo %%DATADIR%%/$${item} ; \
