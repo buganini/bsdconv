@@ -1,3 +1,6 @@
+11.7:
+	include mathematical letters into inter/ASCIIFOLD
+
 11.6:
 	update to Unicode 13.0.0
 	add from/JIS (including JIS0201/JIS0208/JIS0212)
