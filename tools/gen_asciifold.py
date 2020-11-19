@@ -34,16 +34,64 @@ for tk in tks:
     else:
         print("Unexpected Error")
 
-l = []
+entries = []
 for f in m:
     t = m[f]
     for c in t:
         print("{}\t{}".format(c, f))
-        l.append((bc(c), bc(f)))
+        entries.append((bc(c), bc(f)))
 
-l.sort(key=lambda x: (len(x[0]), x[0]))
+codepoints = [
+    ["𝐀", "𝐙"], # BOLD CAPITAL
+    ["𝐚", "𝐳"], # BOLD SMALL
+    ["𝑨", "𝒁"], # BOLD ITALIC CAPITAL
+    ["𝒂", "𝒛"], # BOLD ITALIC SMALL
+    ["𝓐", "𝓩"], # BOLD SCRIPT CAPITAL
+    ["𝓪", "𝔃"], # BOLD SCRIPT SMALL
+    ["𝕬", "𝖅"], # BOLD FRAKTUR CAPITAL
+    ["𝖆", "𝖟"], # BOLD FRAKTUR SMALL
+    ["𝗔", "𝗭"], # SANS-SERIF BOLD CAPITAL
+    ["𝗮", "𝘇"], # SANS-SERIF BOLD SMALL
+    ["𝘼", "𝙕"], # SANS-SERIF BOLD ITALIC CAPITAL
+    ["𝙖", "𝙯"], # SANS-SERIF BOLD ITALIC SMALL
+    ["𝟎", "𝟗"], # BOLD DIGIT
+    ["𝟬", "𝟵"], # SANS-SERIF BOLD DIGIT
+]
+
+import unicodedata
+
+dm = {
+    "ZERO":"0",
+    "ONE":"1",
+    "TWO":"2",
+    "THREE":"3",
+    "FOUR":"4",
+    "FIVE":"5",
+    "SIX":"6",
+    "SEVEN":"7",
+    "EIGHT":"8",
+    "NINE":"9",
+}
+
+for b,e in codepoints:
+    for i in range(ord(b), ord(e)+1):
+        c = chr(i)
+        name = unicodedata.name(c)
+        tks = name.split(" ")
+        m = tks[-2]
+        l = tks[-1]
+        if m=="CAPITAL":
+            l = l.upper()
+        elif m=="SMALL":
+            l = l.lower()
+        elif m=="DIGIT":
+            l = dm[l]
+        print("{}\t{}".format(c, l))
+        entries.append((bc(c), bc(l)))
+
+entries.sort(key=lambda x: (len(x[0]), x[0]))
 
 with open(outfile, "w") as out:
-    out.write("# Derived from {}\n".format(url))
-    for f, t in l:
+    out.write("# Partially derived from {}\n".format(url))
+    for f, t in entries:
         out.write("{}\t{}\n".format(f, t))
