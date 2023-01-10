@@ -1,16 +1,19 @@
 PREFIX?=C:/bsdconv
 BSDCONV_PATH?=${PREFIX}
-CFLAGS+=-Wall -O2 -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"'
-CC=mingw32-cc
+CFLAGS+=-Wall -O2 -DPREFIX='"${PREFIX}"' -DBSDCONV_PATH='"${BSDCONV_PATH}"' -DWIN32 -D_BSDCONV_INTERNAL
+CC?=mingw32-cc
 
 all: builddir libbsdconv bsdconv_mktable bsdconv modules meta
 
 builddir:
 	mkdir -p build/
 	mkdir -p build/include
-	mkdir -p build/mofules
+	mkdir -p build/modules
+	mkdir -p build/modules/filter
 	mkdir -p build/modules/from
 	mkdir -p build/modules/inter
+	mkdir -p build/modules/scorer
+	mkdir -p build/modules/src
 	mkdir -p build/modules/to
 
 libbsdconv: builddir
@@ -19,8 +22,8 @@ libbsdconv: builddir
 bsdconv: builddir libbsdconv src/bsdconv.c
 	$(CC) ${CFLAGS} -lbsdconv -L./build/ src/bsdconv.c -o build/bsdconv.exe
 
-bsdconv_mktable: builddir src/bsdconv_mktable.c
-	$(CC) ${CFLAGS} src/missing_func.c src/bsdconv_mktable.c -o build/bsdconv_mktable.exe
+bsdconv_mktable: builddir src/bsdconv-mktable.c
+	$(CC) ${CFLAGS} src/missing_func.c src/bsdconv-mktable.c -o build/bsdconv_mktable.exe
 
 codecs_table: builddir bsdconv_mktable
 	cd modules && \
