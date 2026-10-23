@@ -1,5 +1,12 @@
 11.7:
+	update to Unicode 18.0.0
+	handle whitespace in newer EastAsianWidth.txt data
+	port Python tools and conversion tests to Python 3; use python3 in Makefile
+	fix buffer bounds and codec data ownership, including use-after-free issues
 	include mathematical letters into inter/ASCIIFOLD
+	update upside-down 'i' mapping in inter/UPSIDEDOWN
+	replace platform-specific endian definitions with portable_endian.h
+	fix Windows build flags, module directories and bsdconv-mktable source path
 
 11.6:
 	update to Unicode 13.0.0
