@@ -1,5 +1,5 @@
 /*
- * Generated from: ftp://ftp.unicode.org/Public/13.0.0/ucd/Blocks.txt
+ * Generated from: https://www.unicode.org/Public/18.0.0/ucd/Blocks.txt
  */
 
 #include "../../src/bsdconv.h"
@@ -9,6 +9,7 @@ static const struct uint32_range ranges[] = {
 	{ 0x27F0, 0x27FF }, // Supplemental Arrows-A
 	{ 0x2900, 0x297F }, // Supplemental Arrows-B
 	{ 0x2B00, 0x2BFF }, // Miscellaneous Symbols and Arrows
+	{ 0x1DB00, 0x1DBFF }, // Miscellaneous Symbols and Arrows Extended
 	{ 0x1F800, 0x1F8FF }, // Supplemental Arrows-C
 };
 #include "unicode_range.c"

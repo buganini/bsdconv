@@ -1,5 +1,5 @@
 /*
- * Generated from: ftp://ftp.unicode.org/Public/13.0.0/ucd/Blocks.txt
+ * Generated from: https://www.unicode.org/Public/18.0.0/ucd/Blocks.txt
  */
 
 #include "../../src/bsdconv.h"
@@ -13,5 +13,7 @@ static const struct uint32_range ranges[] = {
 	{ 0x2C60, 0x2C7F }, // Latin Extended-C
 	{ 0xA720, 0xA7FF }, // Latin Extended-D
 	{ 0xAB30, 0xAB6F }, // Latin Extended-E
+	{ 0x10780, 0x107BF }, // Latin Extended-F
+	{ 0x1DF00, 0x1DFFF }, // Latin Extended-G
 };
 #include "unicode_range.c"

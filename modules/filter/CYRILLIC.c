@@ -1,5 +1,5 @@
 /*
- * Generated from: ftp://ftp.unicode.org/Public/13.0.0/ucd/Blocks.txt
+ * Generated from: https://www.unicode.org/Public/18.0.0/ucd/Blocks.txt
  */
 
 #include "../../src/bsdconv.h"
@@ -10,5 +10,6 @@ static const struct uint32_range ranges[] = {
 	{ 0x1C80, 0x1C8F }, // Cyrillic Extended-C
 	{ 0x2DE0, 0x2DFF }, // Cyrillic Extended-A
 	{ 0xA640, 0xA69F }, // Cyrillic Extended-B
+	{ 0x1E030, 0x1E08F }, // Cyrillic Extended-D
 };
 #include "unicode_range.c"

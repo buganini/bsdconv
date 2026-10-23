@@ -1,5 +1,5 @@
 /*
- * Generated from: ftp://ftp.unicode.org/Public/13.0.0/ucd/Blocks.txt
+ * Generated from: https://www.unicode.org/Public/18.0.0/ucd/Blocks.txt
  */
 
 #include "../../src/bsdconv.h"
@@ -9,5 +9,6 @@ static const struct uint32_range ranges[] = {
 	{ 0x1380, 0x139F }, // Ethiopic Supplement
 	{ 0x2D80, 0x2DDF }, // Ethiopic Extended
 	{ 0xAB00, 0xAB2F }, // Ethiopic Extended-A
+	{ 0x1E7E0, 0x1E7FF }, // Ethiopic Extended-B
 };
 #include "unicode_range.c"

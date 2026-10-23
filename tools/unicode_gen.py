@@ -355,8 +355,8 @@ for l in eaw:
 	if l.startswith("#"):
 		continue
 	l, desc = l.split("#")
-	a=l.strip().split(";")
-	desc = desc[1:3]
+	a=[field.strip() for field in l.split(";")]
+	desc = desc.strip()[:2]
 	w = a[1]
 	r = a[0].split("..")
 	b = r[0]
