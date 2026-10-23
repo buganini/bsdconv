@@ -24,6 +24,32 @@ Update modules/{from,inter,to}/alias
 make alias
 ```
 
+# Internal data format
+
+Each internal data packet starts with a byte identifying its type. In codec
+mapping files and `bsdconv` codec output, bytes are written as hexadecimal pairs.
+
+| First byte (hex) | Type |
+| --- | --- |
+| `00` | bsdconv special characters and keywords |
+| `01` | Unicode code point |
+| `02` | CNS11643 |
+| `03` | Raw byte |
+| `04` | Chinese character components |
+| `1B` | ANSI control sequence |
+
+Examples:
+
+- `01E000` = `01 | E000`: Unicode U+E000. The payload is the code point
+  value in big-endian byte order, not its UTF-8 encoding.
+- `02102A68` = `02 | 10 | 2A68`: CNS11643 plane 16 (`0x10`), code `2A68`.
+  Plane numbers in CNS tables are commonly decimal; packet bytes are hexadecimal.
+- `0341` = `03 | 41`: the raw byte `0x41`.
+
+CNS11643 packets can be converted to Unicode when a corresponding mapping is
+available in the installed codecs. A packet beginning with `02` remains CNS11643
+data until such a conversion is performed.
+
 # Example
 
 Convert traditional chinese big5 to simplified chinese utf-8
