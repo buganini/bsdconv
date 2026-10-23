@@ -18,6 +18,11 @@ sudo ldconfig ${prefix}/lib # Linux
 sudo ldconfig -m ${prefix}/lib # FreeBSD
 ```
 
+Define `DISABLE_DYNAMIC_LOADING` when compiling to disable shared-library
+loading for codecs, filters, and scorers. Dynamic loading is enabled by default.
+Callback structures remain available; builds using callbacks must provide
+their own static binding mechanism.
+
 # Add codec alias
 ```
 Update modules/{from,inter,to}/alias

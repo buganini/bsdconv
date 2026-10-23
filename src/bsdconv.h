@@ -1,13 +1,17 @@
 #ifndef BSDCONV_H
 #define BSDCONV_H
 
+#ifndef DISABLE_DYNAMIC_LOADING
+#define ENABLE_DYNAMIC_LOADING
+#endif
+
 #include <stdint.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #ifdef WIN32
 #include <windows.h>
-#else
+#elif defined(ENABLE_DYNAMIC_LOADING)
  #include <dlfcn.h>
 #endif
 
@@ -144,11 +148,19 @@ struct bsdconv_phase {
 
 #ifdef WIN32
 #define SHAREOBJECT HMODULE
+#else
+#define SHAREOBJECT void *
+#endif
+
+#ifndef ENABLE_DYNAMIC_LOADING
+#define OPEN_SHAREOBJECT(path) NULL
+#define SHAREOBJECT_SYMBOL(so, symbol) NULL
+#define CLOSE_SHAREOBJECT(so) ((void)0)
+#elif defined(WIN32)
 #define OPEN_SHAREOBJECT(path) LoadLibrary(path)
 #define SHAREOBJECT_SYMBOL(so, symbol) ((void *)GetProcAddress(so, symbol))
 #define CLOSE_SHAREOBJECT(path) FreeLibrary(path)
 #else
-#define SHAREOBJECT void *
 #define OPEN_SHAREOBJECT(path) dlopen(path, RTLD_LAZY)
 #define SHAREOBJECT_SYMBOL(so, symbol) dlsym(so, symbol)
 #define CLOSE_SHAREOBJECT(so) dlclose(so)
