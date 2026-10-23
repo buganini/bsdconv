@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os,sys,re;
 
 def f(c):
@@ -8,8 +9,8 @@ def f(c):
 		r='01%s' % s;
 	return r;
 
-fi=open(sys.argv[1],'rU');
-fo=open(sys.argv[2],'w');
+fi=open(sys.argv[1],'r', encoding="utf-8");
+fo=open(sys.argv[2],'w', encoding="utf-8");
 
 for l in fi:
 	if l.find('\t')!=-1:

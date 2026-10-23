@@ -91,7 +91,7 @@ for b,e in codepoints:
 
 entries.sort(key=lambda x: (len(x[0]), x[0]))
 
-with open(outfile, "w") as out:
+with open(outfile, "w", encoding="utf-8") as out:
     out.write("# Partially derived from {}\n".format(url))
     for f, t in entries:
         out.write("{}\t{}\n".format(f, t))

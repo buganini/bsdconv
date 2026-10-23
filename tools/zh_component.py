@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 
 #argv[1] CNS_component_word_yyyymmdd.txt
 #argv[2] CNS_component_yyyymmdd.txt
@@ -16,13 +17,13 @@ def tw(s):
 	return r;
 
 w={};
-fi=open(sys.argv[1],'rU')
+fi=open(sys.argv[1],'r', encoding="utf-8")
 for l in fi:
 	a,b,c=l.strip().split('\t');
 	w[int(a)]=int(b);
 fi.close()
 
-fi=open(sys.argv[2],'rU')
+fi=open(sys.argv[2],'r', encoding="utf-8")
 for l in fi:
 	a,b,c=l.strip().split('\t');
 	a=p(a)
@@ -31,4 +32,4 @@ for l in fi:
 	comps=c.strip(';').split(';');
 	for comp in comps:
 		com=','.join(["04"+p("%X" % tw(int(x.strip()))) for x in comp.strip(',').split(',')]);
-		print "%s\t%s" % (cns,com)
+		print("%s\t%s" % (cns,com))

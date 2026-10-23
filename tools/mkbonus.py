@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #mkbonus.py src_list char_list phrase_list
 
@@ -6,8 +6,8 @@ import sys
 import re
 from bsdconv import Bsdconv
 
-clist=open(sys.argv[2], "w")
-plist=open(sys.argv[3], "w")
+clist=open(sys.argv[2], "w", encoding="utf-8")
+plist=open(sys.argv[3], "w", encoding="utf-8")
 
 sc=Bsdconv("utf-8:score#with=cjk:null")
 bcv=Bsdconv("utf-8:insert#after=002c:bsdconv-keyword,bsdconv")
@@ -15,7 +15,7 @@ bcv_zhtw=Bsdconv("utf-8:zhtw:insert#after=002c:bsdconv-keyword,bsdconv")
 
 sep=re.compile(r"\s+")
 
-f=open(sys.argv[1])
+f=open(sys.argv[1], encoding="utf-8")
 for l in f:
 	l = l.strip()
 	if l == "":
@@ -25,10 +25,10 @@ for l in f:
 		plist.write(l+"\n")
 	a = sep.split(l)
 	p = a[0]
-	ln = len(p.decode("utf-8"))
+	ln = len(p)
 	if ln > 1:
 		bonus = 6
-		p = bcv_zhtw.conv(p).rstrip(",")
+		p = bcv_zhtw.uconv(p).rstrip(",")
 		of = plist
 	else:
 		try:
@@ -42,7 +42,7 @@ for l in f:
 			bonus += 5*ln - score
 		if bonus == 0:
 			continue
-		p = bcv.conv(p).rstrip(",")
+		p = bcv.uconv(p).rstrip(",")
 		of = clist
 	of.write("%s\t?%02X,%s\n" % (p, bonus, p))
 

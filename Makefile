@@ -242,12 +242,12 @@ TODO_CODECS_EBCDIC+=to/IBM-939
 all: libbsdconv bsdconv-mktable meta bsdconv-man bsdconv-completion bsdconv filters scorers codecs
 
 alias:
-	python tools/mkalias.py modules/filter/alias modules/inter/ALIAS-FILTER.txt
-	python tools/mkalias.py modules/from/alias modules/inter/ALIAS-FROM.txt
+	python3 tools/mkalias.py modules/filter/alias modules/inter/ALIAS-FILTER.txt
+	python3 tools/mkalias.py modules/from/alias modules/inter/ALIAS-FROM.txt
 	@printf "014C,014F,0143,0141,014C,0145\t?\n" >> modules/inter/ALIAS-FROM.txt
-	python tools/mkalias.py modules/inter/alias modules/inter/ALIAS-INTER.txt
+	python3 tools/mkalias.py modules/inter/alias modules/inter/ALIAS-INTER.txt
 	@printf "0155,014E,0149,0143,014F,0144,0145\t?\n" >> modules/inter/ALIAS-INTER.txt
-	python tools/mkalias.py modules/to/alias modules/inter/ALIAS-TO.txt
+	python3 tools/mkalias.py modules/to/alias modules/inter/ALIAS-TO.txt
 	@printf "014C,014F,0143,0141,014C,0145\t?\n" >> modules/inter/ALIAS-TO.txt
 
 builddir:
@@ -475,14 +475,14 @@ fetch:
 	@echo "Blocks.txt	${Blocks}" >> tmp/map.txt
 
 test: fetch
-	@python testsuite/conversion.py
+	@python3 testsuite/conversion.py
 	@$(CC) ${CFLAGS} -Isrc/ testsuite/api.c -L./build/lib/ -o testsuite/api -lbsdconv ${LIBS}
 	@./testsuite/api
 
 gen: unicode_gen bonus
 
 unicode_gen: fetch
-	python tools/unicode_gen.py
+	python3 tools/unicode_gen.py
 
 bonus:
-	python tools/mkbonus.py modules/src/ZH-BONUS.txt modules/inter/ZH-BONUS.txt modules/inter/ZH-BONUS-PHRASE.txt
+	python3 tools/mkbonus.py modules/src/ZH-BONUS.txt modules/inter/ZH-BONUS.txt modules/inter/ZH-BONUS-PHRASE.txt

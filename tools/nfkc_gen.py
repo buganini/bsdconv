@@ -1,13 +1,13 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# python nfkc_gen.py '⁰¹²³'|sort|uniq
+# python3 nfkc_gen.py '⁰¹²³'|sort|uniq
 import sys
 from bsdconv import Bsdconv
 
 nfkc = Bsdconv("utf-8:nfkc:utf-8")
-i = sys.argv[1].decode("utf-8")
+i = sys.argv[1]
 for c in i:
-	c = c.encode("utf-8")
-	d = nfkc.conv(c)
+	d = nfkc.uconv(c)
 	if c==d:
 		continue
 	print("{}\t{}".format(d, c))

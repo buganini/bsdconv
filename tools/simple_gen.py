@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # simple_gen.py phase_type from_column to_column file
 import sys
 import re
@@ -30,7 +31,7 @@ vld = re.compile(r"^[a-fA-F0-9,]+$")
 from_column = int(sys.argv[2])
 to_column = int(sys.argv[3])
 
-f=open(sys.argv[4])
+f=open(sys.argv[4], encoding="utf-8")
 for l in f:
 	l = l.strip().upper()
 	if l == "":

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # AexcludeBCD.py A B [C...]
 
 import sys
@@ -8,7 +9,7 @@ sep = re.compile(r"\s+")
 excl={}
 
 for fn in sys.argv[2:]:
-	f = open(fn)
+	f = open(fn, encoding="utf-8")
 	for l in f:
 		l = l.strip()
 		if l == "":
@@ -20,7 +21,7 @@ for fn in sys.argv[2:]:
 		excl[p] = 1
 	f.close()
 
-f = open(sys.argv[1])
+f = open(sys.argv[1], encoding="utf-8")
 for l in f:
 	l2 = l.strip()
 	if l2 == "":

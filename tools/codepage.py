@@ -1,4 +1,5 @@
-# python codepage.py CPXXXX.TXT | sort > _CPXXXX.txt
+#!/usr/bin/env python3
+# python3 codepage.py CPXXXX.TXT | sort > _CPXXXX.txt
 import os
 import sys
 import re
@@ -19,7 +20,7 @@ def f2(s):
         s = "0"+s
     return "01"+s
 
-f = open(sys.argv[1])
+f = open(sys.argv[1], encoding="utf-8")
 for l in f:
     l = l.strip()
     if l=="":
@@ -32,4 +33,4 @@ for l in f:
         continue
     if v(a[0])<=0x7F and v(a[0])==v(a[1]):
         continue
-    print f1(a[0])+"\t"+f2(a[1])
+    print(f1(a[0])+"\t"+f2(a[1]))

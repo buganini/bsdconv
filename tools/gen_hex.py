@@ -27,13 +27,13 @@ m = {
 "F": "fF",
 }
 
-with open(tofile, "w") as tof:
+with open(tofile, "w", encoding="utf-8") as tof:
     for i in range(256):
         hh = "{:02X}".format(i)
         bb = "".join(["{:02X}".format(ord(c)) for c in hh])
         tof.write("03{}\t{}\n".format(hh, bb))
 
-with open(fromfile, "w") as fromf:
+with open(fromfile, "w", encoding="utf-8") as fromf:
     for i in range(256):
         hh = "{:02X}".format(i)
         hhs = [""]

@@ -1,11 +1,12 @@
+#!/usr/bin/env python3
 import sys
 import re
 
 sep = re.compile(r"\s+")
 stp = re.compile(r"^0[xX]")
 
-fa = open(sys.argv[1])
-fb = open(sys.argv[2])
+fa = open(sys.argv[1], encoding="utf-8")
+fb = open(sys.argv[2], encoding="utf-8")
 
 la = {}
 lb = {}

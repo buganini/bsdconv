@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 import re
 import os
@@ -10,16 +11,16 @@ def bsdconv01(dt):
 		return "01"+dt
 
 
-f_ambiguous=open("modules/inter/_AMBIGUOUS.h", "w")
-f_width=open("modules/inter/_WIDTH.h", "w")
-f_ccc=open("modules/inter/_NF-CCC.h", "w")
-f_nfd=open("modules/inter/_NFD.txt", "w")
-f_nfkd=open("modules/inter/_NFKD.txt", "w")
-f_nfc=open("modules/inter/_NFC-MAP.txt", "w")
-f_upper=open("modules/inter/UPPER.txt", "w")
-f_lower=open("modules/inter/LOWER.txt", "w")
-f_casefold=open("modules/inter/CASEFOLD.txt", "w")
-f_cjkvar=open("tmp/cjkvar.txt", "w")
+f_ambiguous=open("modules/inter/_AMBIGUOUS.h", "w", encoding="utf-8")
+f_width=open("modules/inter/_WIDTH.h", "w", encoding="utf-8")
+f_ccc=open("modules/inter/_NF-CCC.h", "w", encoding="utf-8")
+f_nfd=open("modules/inter/_NFD.txt", "w", encoding="utf-8")
+f_nfkd=open("modules/inter/_NFKD.txt", "w", encoding="utf-8")
+f_nfc=open("modules/inter/_NFC-MAP.txt", "w", encoding="utf-8")
+f_upper=open("modules/inter/UPPER.txt", "w", encoding="utf-8")
+f_lower=open("modules/inter/LOWER.txt", "w", encoding="utf-8")
+f_casefold=open("modules/inter/CASEFOLD.txt", "w", encoding="utf-8")
+f_cjkvar=open("tmp/cjkvar.txt", "w", encoding="utf-8")
 
 ccc_start=-1
 ccc_end=-1
@@ -30,7 +31,7 @@ m_nfd_raw={}
 m_nfkd={}
 
 m_url={}
-f_map=open("tmp/map.txt")
+f_map=open("tmp/map.txt", encoding="utf-8")
 for l in f_map:
 	l=l.strip().split("\t")
 	if len(l)==2:
@@ -101,7 +102,7 @@ def in_range(s,rs):
 # ftp://ftp.unicode.org/Public/3.0-Update/UnicodeData-3.0.0.html
 l_nfd=[]
 l_nfkd=[]
-ud=open("tmp/UnicodeData.txt")
+ud=open("tmp/UnicodeData.txt", encoding="utf-8")
 for l in ud:
 	if not l.strip():
 		continue
@@ -151,7 +152,7 @@ f_ccc.write("};\n")
 f_ccc.close()
 f_cjkvar.close()
 
-sc=open("tmp/SpecialCasing.txt")
+sc=open("tmp/SpecialCasing.txt", encoding="utf-8")
 for l in sc:
 	l=l.strip()
 	if not l:
@@ -176,7 +177,7 @@ f_upper.close()
 f_lower.close()
 
 l_fce=[]
-dnp=open("tmp/DerivedNormalizationProps.txt")
+dnp=open("tmp/DerivedNormalizationProps.txt", encoding="utf-8")
 for l in dnp:
 	l=l.strip()
 	if not l:
@@ -210,7 +211,7 @@ for cp in l_nfd:
 	f_nfc.write("{f}\t{t}\n".format(f=",".join(l), t=cp))
 f_nfc.close()
 
-cf=open("tmp/CaseFolding.txt")
+cf=open("tmp/CaseFolding.txt", encoding="utf-8")
 for l in cf:
 	l=l.strip()
 	if not l:
@@ -286,7 +287,7 @@ blocks={
 }
 
 m={}
-blk=open("tmp/Blocks.txt")
+blk=open("tmp/Blocks.txt", encoding="utf-8")
 for l in blk:
 	l=l.strip()
 	if l=="" or l[0]=="#":
@@ -301,10 +302,10 @@ for l in blk:
 				cl.extend(c)
 			else:
 				cl.append(c)
-	print r, d, cl
+	print(r, d, cl)
 	for c in cl:
 		if c not in m:
-			m[c]=open(os.path.join("modules/filter", c+".c"), "w")
+			m[c]=open(os.path.join("modules/filter", c+".c"), "w", encoding="utf-8")
 			m[c].write("/*\n"
 			" * Generated from: "+m_url["Blocks.txt"]+"\n"
 			" */\n"
@@ -346,7 +347,7 @@ ambi_end = None
 width_beg = None
 width_end = None
 width_prop = None
-eaw=open("tmp/EastAsianWidth.txt")
+eaw=open("tmp/EastAsianWidth.txt", encoding="utf-8")
 for l in eaw:
 	l = l.strip()
 	if not l:
