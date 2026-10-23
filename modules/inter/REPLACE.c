@@ -16,6 +16,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	while(arg){
 		DATA_FREE(ins, r->from);
 		DATA_FREE(ins, r->to);
+		r->to=NULL;
 		r->from=str2data(arg->key, &e, ins);
 		if(e){
 			free(r);
@@ -34,6 +35,10 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 			}
 		}
 		arg=arg->next;
+	}
+	if(r->from==NULL){
+		free(r);
+		return EINVAL;
 	}
 	THIS_CODEC(ins)->priv=r;
 	return 0;

@@ -29,6 +29,7 @@ void cbinit(struct bsdconv_instance *ins){
 	struct data_rt *t;
 	if(r->starter){
 		DATUM_FREE(ins, r->starter);
+		r->starter=NULL;
 	}
 	while(r->pending_head->next){
 		t=r->pending_head->next->next;

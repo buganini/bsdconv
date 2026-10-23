@@ -25,11 +25,19 @@ struct bsdconv_filter *load_filter(const char *_name){
 	}
 	chdir(MODULES_SUBPATH);
 	chdir("filter");
-	REALPATH(name, path);
+	char *filename=malloc(strlen(name)+sizeof("." SHLIBEXT));
+	int resolved=0;
+	if(filename){
+		strcpy(filename, name);
+		strcat(filename, "." SHLIBEXT);
+		resolved=REALPATH(filename, path)!=0;
+		free(filename);
+	}
 	chdir(cwd);
 	free(cwd);
 	free(name);
-	strcat(path, "." SHLIBEXT);
+	if(!resolved)
+		return NULL;
 
 	filter=malloc(sizeof(struct bsdconv_filter));
 	filter->so=OPEN_SHAREOBJECT(path);

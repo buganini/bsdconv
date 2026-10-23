@@ -25,11 +25,19 @@ struct bsdconv_scorer *load_scorer(const char *_name){
 	}
 	chdir(MODULES_SUBPATH);
 	chdir("scorer");
-	REALPATH(name, path);
+	char *filename=malloc(strlen(name)+sizeof("." SHLIBEXT));
+	int resolved=0;
+	if(filename){
+		strcpy(filename, name);
+		strcat(filename, "." SHLIBEXT);
+		resolved=REALPATH(filename, path)!=0;
+		free(filename);
+	}
 	chdir(cwd);
 	free(cwd);
 	free(name);
-	strcat(path, "." SHLIBEXT);
+	if(!resolved)
+		return NULL;
 
 	scorer=malloc(sizeof(struct bsdconv_scorer));
 	scorer->so=OPEN_SHAREOBJECT(path);

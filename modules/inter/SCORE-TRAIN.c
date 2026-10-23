@@ -1,4 +1,5 @@
 #include <limits.h>
+#include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -15,13 +16,30 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	char buf[256]={0};
 	char *p=getenv("BSDCONV_SCORE");
 	if(p==NULL){
-		strcpy(buf,getenv("HOME"));
-		strcat(buf,"/.bsdconv.score");
+		const char *home=getenv("HOME");
+		if(home==NULL){
+			free(r);
+			return EINVAL;
+		}
+		if(snprintf(buf, sizeof(buf), "%s/.bsdconv.score", home)>=(int)sizeof(buf)){
+			free(r);
+			return ENAMETOOLONG;
+		}
 		p=buf;
 	}
 	r->bak=fopen(p,"a"); //ensure file existence
+	if(r->bak==NULL){
+		int e=errno;
+		free(r);
+		return e;
+	}
 	fclose(r->bak);
 	r->bak=r->score=fopen(p,"rb+");
+	if(r->bak==NULL){
+		int e=errno;
+		free(r);
+		return e;
+	}
 	r->list=NULL;
 	THIS_CODEC(ins)->priv=r;
 	return 0;

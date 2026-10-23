@@ -8,6 +8,10 @@ void cbconv(struct bsdconv_instance *ins){
 	unsigned int len, i;
 	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	data=this_phase->curr->data;
+	if(this_phase->curr->len<1 || this_phase->curr->len>5){
+		this_phase->state.status=DEADEND;
+		return;
+	}
 
 	this_phase->state.status=NEXTPHASE;
 	data+=1;

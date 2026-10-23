@@ -27,6 +27,7 @@ void cbinit(struct bsdconv_instance *ins){
 	t->data.len=0;
 	if(t->data.data)
 		free(t->data.data);
+	t->data.data=NULL;
 	t->data.next=NULL;
 	t->flag=F_CLEAR;
 }
@@ -42,7 +43,17 @@ void cbdestroy(struct bsdconv_instance *ins){
 void cbflush(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct my_s *t=THIS_CODEC(ins)->priv;
-	LISTCPY(ins, this_phase->data_tail, &t->data);
+	if(t->data.data){
+		DATA_MALLOC(ins, this_phase->data_tail->next);
+		this_phase->data_tail=this_phase->data_tail->next;
+		this_phase->data_tail->data=t->data.data;
+		this_phase->data_tail->len=t->data.len;
+		this_phase->data_tail->flags=F_FREE;
+		this_phase->data_tail->next=NULL;
+		t->data.data=NULL;
+	}
+	t->data.len=0;
+	t->flag=F_CLEAR;
 }
 
 void cbconv(struct bsdconv_instance *ins){

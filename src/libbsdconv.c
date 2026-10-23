@@ -131,7 +131,7 @@ int _loadcodec(struct bsdconv_codec *cd, char *path){
 int loadcodec(struct bsdconv_codec *cd, int type){
 	char *cwd;
 	char *c;
-	char buf[PATH_MAX+1];
+	char buf[PATH_MAX+sizeof("." SHLIBEXT)];
 	char *upper;
 	cwd=getcwd(NULL, 0);
 	if((c=getenv("BSDCONV_PATH"))){
@@ -153,10 +153,12 @@ int loadcodec(struct bsdconv_codec *cd, int type){
 	}
 	upper=strdup(cd->desc);
 	strtoupper(upper);
-	REALPATH(upper, buf);
+	int resolved=REALPATH(upper, buf)!=0;
 	chdir(cwd);
 	free(cwd);
 	free(upper);
+	if(!resolved)
+		return 0;
 	if(!_loadcodec(cd, buf))
 		return 0;
 	return 1;
@@ -184,8 +186,11 @@ void bsdconv_init(struct bsdconv_instance *ins){
 	ins->input.data=NULL;
 	ins->input.flags=0;
 	ins->input.len=0;
+	ins->input.next=NULL;
 	ins->output.data=NULL;
 	ins->output.len=0;
+	ins->output.flags=0;
+	ins->output.next=NULL;
 	ins->output_mode=BSDCONV_HOLD;
 
 	for(i=0;i<=ins->phasen;++i){
@@ -298,7 +303,7 @@ char *bsdconv_pack(struct bsdconv_instance *ins){
 struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 	struct bsdconv_instance *ins=malloc(sizeof(struct bsdconv_instance));
 	char *conversion;
-	char *t, *t1;
+	char *t, *t1, *phase;
 	int i, j;
 	int f=0;
 
@@ -327,7 +332,8 @@ struct bsdconv_instance *bsdconv_unpack(const char *_conversion){
 			ins->phase[i-1].type=TO;
 		}
 		f=0;
-		while((phase_off[i]=strsep(&t1, ":"))!=NULL){
+		while((phase=strsep(&t1, ":"))!=NULL){
+			phase_off[i]=phase;
 			ins->phase[i].type=INTER;
 			i+=1;
 			f+=1;

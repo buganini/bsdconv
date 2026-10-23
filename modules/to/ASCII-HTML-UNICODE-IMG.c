@@ -6,19 +6,23 @@
 #define TAILIZE(p) while(*p){ p++ ;}
 
 void cbconv(struct bsdconv_instance *ins){
-	char *data, *p, buf[128]={0};
-	unsigned int len, i;
+	char *data, *p, *buf;
+	size_t len, i;
 	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	data=this_phase->curr->data;
-	if(*data!=0x01){
+	if(this_phase->curr->len<1 || *data!=0x01 ||
+		this_phase->curr->len-1>(SIZE_MAX-128)/2){
 		this_phase->state.status=DEADEND;
 		return;
 	}
 	this_phase->state.status=NEXTPHASE;
-	p=buf;
-	i=*data;
 	data+=1;
 	len=this_phase->curr->len-1;
+	p=buf=malloc(len*2+128);
+	if(buf==NULL){
+		this_phase->state.status=DEADEND;
+		return;
+	}
 	DATA_MALLOC(ins, this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
 	this_phase->data_tail->next=NULL;
@@ -38,8 +42,7 @@ void cbconv(struct bsdconv_instance *ins){
 	len=p-buf;
 	this_phase->data_tail->len=len;
 	this_phase->data_tail->flags=F_FREE;
-	this_phase->data_tail->data=malloc(len);
-	memcpy(this_phase->data_tail->data, buf, len);
+	this_phase->data_tail->data=buf;
 
 	return;
 }

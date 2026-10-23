@@ -119,6 +119,7 @@ void cbflush(struct bsdconv_instance *ins){
 				LISTCPY(ins, this_phase->data_tail, r->after);
 		}else{
 			DATA_FREE(ins, r->qh->next);
+			r->qh->next=NULL;
 			r->qt=r->qh;
 			r->acc_len=0;
 		}

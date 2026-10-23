@@ -24,7 +24,9 @@ char * getCodecDir(){
 int str2datum(const char *s, struct data_rt *d){
 	d->data=NULL;
 	d->len=0;
-	if(!s)
+	d->flags=0;
+	d->next=NULL;
+	if(!s || strlen(s)%2)
 		return EINVAL;
 	d->data=malloc(strlen(s)/2);
 	d->flags=F_FREE;
@@ -74,6 +76,12 @@ struct data_rt * str2data(const char *_s, int *r, struct bsdconv_instance *ins){
 
 	cur=s;
 	while((k=strsep(&cur, "."))!=NULL){
+		if(!*k || strlen(k)%2){
+			DATA_FREE(ins, ph.next);
+			*r=EINVAL;
+			free(s);
+			return NULL;
+		}
 		t->next=malloc(sizeof(struct data_rt));
 		t=t->next;
 		t->next=NULL;

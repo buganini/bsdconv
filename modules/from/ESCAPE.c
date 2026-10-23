@@ -177,7 +177,7 @@ void cbconv(struct bsdconv_instance *ins){
 					i=0;
 					t->buf[1]*=16;
 					t->buf[1]+=hex[(unsigned char)d];
-					while(t->buf[i]==0)++i;
+					while(i<2 && t->buf[i]==0)++i;
 					DATA_MALLOC(ins, this_phase->data_tail->next);
 					this_phase->data_tail=this_phase->data_tail->next;
 					this_phase->data_tail->next=NULL;

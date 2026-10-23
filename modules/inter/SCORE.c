@@ -36,8 +36,15 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 		char *p=getenv("BSDCONV_SCORE");
 		if(p==NULL){
 			//try default score file
-			strcpy(buf,getenv("HOME"));
-			strcat(buf,"/.bsdconv.score");
+			const char *home=getenv("HOME");
+			if(home==NULL){
+				free(r);
+				return EINVAL;
+			}
+			if(snprintf(buf, sizeof(buf), "%s/.bsdconv.score", home)>=(int)sizeof(buf)){
+				free(r);
+				return ENAMETOOLONG;
+			}
 			p=buf;
 		}
 		r->bak=r->score=fopen(p,"rb+");

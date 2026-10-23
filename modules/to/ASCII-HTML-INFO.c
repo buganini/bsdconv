@@ -38,7 +38,11 @@ void cbconv(struct bsdconv_instance *ins){
 				bsdconv(cns);
 				data_p=cns->phase[cns->phasen].data_head->next;
 				cns->phase[cns->phasen].data_head->next=NULL;
-				data=data_p->data;
+				cns->phase[cns->phasen].data_tail=cns->phase[cns->phasen].data_head;
+				if(data_p)
+					data=data_p->data;
+				else
+					data_p=this_phase->curr;
 			}
 			if(*data==0x02){
 				goto converted;
@@ -47,6 +51,7 @@ void cbconv(struct bsdconv_instance *ins){
 				if(data_p!=this_phase->curr)
 					DATUM_FREE(ins, data_p);
 			}
+			data=this_phase->curr->data;
 			len=THIS_PHASE(ins)->curr->len-1;
 
 			DATA_MALLOC(ins, this_phase->data_tail->next);
