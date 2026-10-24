@@ -8,8 +8,6 @@ API Reference: http://buganini.github.io/bsdconv/
 
 Use bsdconv-man to show manual page for each module
 
-IRC: irc://irc.freenode.net#bsdconv
-
 # Compilation & Installation
 ```
 make PREFIX=${prefix} # default to /usr/local
